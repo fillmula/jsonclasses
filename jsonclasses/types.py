@@ -17,6 +17,9 @@ class Types:
   def str(self):
     return Types(self.validator.append(StrValidator()))
 
+  def match(self, pattern):
+    return TYpes(self.validator.append(MatchValidator(pattern)))
+
   @property
   def int(self):
     return Types(self.validator.append(IntValidator()))

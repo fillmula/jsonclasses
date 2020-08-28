@@ -2,6 +2,7 @@ from .validator import Validator
 
 # str validators
 from .str_validator import StrValidator
+from .match_validator import MatchValidator
 from .truncate_validator import TruncateValidator
 
 # number validators
