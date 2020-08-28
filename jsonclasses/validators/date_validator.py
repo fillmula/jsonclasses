@@ -12,7 +12,9 @@ class DateValidator(Validator):
       )
 
   def transform(self, value):
-    return date.fromisoformat(value)
+    if value is not None:
+      return date.fromisoformat(value)
 
   def to_json(self, value):
-    return value.isoformat()
+    if value is not None:
+      return value.isoformat()

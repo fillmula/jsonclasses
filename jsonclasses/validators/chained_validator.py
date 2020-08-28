@@ -1,4 +1,5 @@
 from typing import List, Dict
+from functools import reduce
 from ..exceptions import ValidationException
 from .validator import Validator
 
@@ -25,3 +26,9 @@ class ChainedValidator(Validator):
           break
     if keypath_messages.__len__ > 0:
       raise ValidationException(keypath_messages, root)
+
+  def transform(self, value):
+    return reduce(lambda value, validator: validator.transform(value), self.validators, value)
+
+  def to_json(self, value):
+    return reduce(lambda value, validator: validator.to_json(value), self.validators, value)
