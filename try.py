@@ -1,11 +1,13 @@
-from jsonclasses import jsonclass, JsonObject, PersistableJsonObject
+from jsonclasses import jsonclass, PersistableJsonObject, types
 
 @jsonclass
-class Point(PersistableJsonObject):
-  x: float
-  y: float
+class Color(PersistableJsonObject):
+  red: int = types.int.range(0, 255).default(0).required
+  green: int = types.int.range(0, 255).default(0).required
+  blue: int = types.int.range(0, 255).default(0).required
+  alpha: float = types.float.range(0, 1).default(1).required
 
-ddd = { "x": 2.5, "y": 3.6, "z": 7.8 }
-point = Point(**ddd)
-print(point)
-print(point.to_json())
+network_input = { "red": 200, "green": 100, "unused": "我來搗亂哈哈" }
+color = Color(**network_input)
+print(color)
+print(color.to_json())

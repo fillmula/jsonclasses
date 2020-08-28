@@ -1,0 +1,15 @@
+from ..exceptions import ValidationException
+
+class Validator:
+
+  def validate(self, value, key_path, root, all):
+    raise ValidationException(
+      { key_path: f'Value \'{value}\' at {key_path} is invalid.' },
+      root
+    )
+
+  def transform(self, value):
+    return value
+
+  def to_json(self, value):
+    return value
