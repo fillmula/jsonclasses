@@ -1,8 +1,17 @@
+import pathlib
 from setuptools import setup
+
+# The directory containing this file
+HERE = pathlib.Path(__file__).parent
+
+# The text of the README file
+README = (HERE / "README.md").read_text()
 
 setup(name='jsonclasses',
   version='0.1',
   description='Python dataclass & json interchangeable.',
+  long_description=README,
+  long_description_content_type="text/markdown",
   author='Wiosoft Crafts',
   author_email='wiosoftvictor@163.com',
   license='MIT',
