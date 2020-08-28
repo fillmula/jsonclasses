@@ -18,7 +18,10 @@ class Types:
     return Types(self.validator.append(StrValidator()))
 
   def match(self, pattern):
-    return TYpes(self.validator.append(MatchValidator(pattern)))
+    return Types(self.validator.append(MatchValidator(pattern)))
+
+  def one_of(self, str_list: List[str]):
+    return Types(self.validator.append(OneOfValidator(str_list)))
 
   @property
   def int(self):
