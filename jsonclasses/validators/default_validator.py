@@ -4,13 +4,16 @@ from .validator import Validator
 
 class DefaultValidator(Validator):
 
-  value: Any
+  default_value: Any
 
-  def __init__(self, value):
-    self.value = value
+  def __init__(self, default_value):
+    self.default_value = default_value
 
   def validate(self, value, key_path, root, all):
     pass
 
   def transform(self, value):
-    return self.value if value is None else value
+    if hasattr(self.default_value, '__call__'):
+      return self.default_value() if value is None else value
+    else:
+      return self.default_value if value is None else value
