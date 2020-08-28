@@ -20,7 +20,7 @@ class Types:
   def match(self, pattern):
     return Types(self.validator.append(MatchValidator(pattern)))
 
-  def one_of(self, str_list: List[str]):
+  def one_of(self, str_list):
     return Types(self.validator.append(OneOfValidator(str_list)))
 
   @property

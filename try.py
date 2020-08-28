@@ -1,4 +1,5 @@
-from jsonclasses import jsonclass, PersistableJsonObject, types
+from jsonclasses import jsonclass, PersistableJsonObject, types, JSONEncoder
+from json import dumps
 
 @jsonclass
 class Color(PersistableJsonObject):
@@ -24,3 +25,4 @@ print(color.to_json())
 # 'blue': 0,
 # 'alpha': 1
 # }
+print(dumps(color, cls=JSONEncoder))
