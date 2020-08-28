@@ -4,7 +4,7 @@ from inflection import underscore, camelize
 from jsonclasses.types import Types
 
 @dataclass
-class JsonObject:
+class JSONObject:
   def __init__(self, **kwargs):
     object_fields = { f.name: f for f in fields(self) }
     unused_names = list(object_fields.keys())

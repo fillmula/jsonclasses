@@ -1,10 +1,10 @@
 from datetime import datetime
 from .jsonclass import jsonclass
-from .json_object import JsonObject
+from .json_object import JSONObject
 from .types import types
 
 @jsonclass
-class PersistableJsonObject(JsonObject):
+class PersistableJSONObject(JSONObject):
 
   id: str
 

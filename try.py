@@ -1,8 +1,8 @@
-from jsonclasses import jsonclass, PersistableJsonObject, types, JSONEncoder
+from jsonclasses import jsonclass, PersistableJSONObject, types, JSONEncoder
 from json import dumps
 
 @jsonclass
-class Color(PersistableJsonObject):
+class Color(PersistableJSONObject):
   red: int = types.int.range(0, 255).default(0).required
   green: int = types.int.range(0, 255).default(0).required
   blue: int = types.int.range(0, 255).default(0).required
