@@ -127,5 +127,24 @@ class TestJSONObject(unittest.TestCase):
       }
     )
 
+  def test_initialize_date_with_date(self):
+    @jsonclass
+    class Semester(JSONObject):
+      start: date
+      end: date
+    start = date.fromisoformat('2020-10-10')
+    end = date.fromisoformat('2020-12-12')
+    semester = Semester(start=start, end=end)
+    self.assertEqual(semester.start, start)
+    self.assertEqual(semester.end, end)
+
+  def test_initialize_datetime_with_datetime(self):
+    @jsonclass
+    class Timer(JSONObject):
+      expired_at: datetime
+    expired_at = datetime.fromisoformat('2020-10-10T05:03:02.999888')
+    timer = Timer(**{ 'expiredAt': expired_at })
+    self.assertEqual(timer.expired_at, expired_at)
+
 if __name__ == '__main__':
     unittest.main()
