@@ -14,3 +14,4 @@ class PersistableJSONObject(JSONObject):
 
   def mark_updated(self):
     self.updated_at = datetime.now()
+    return self
