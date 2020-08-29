@@ -1,5 +1,5 @@
 import pathlib
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # The directory containing this file
 HERE = pathlib.Path(__file__).parent
@@ -8,14 +8,14 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
 setup(name='jsonclasses',
-  version='0.1',
+  version='0.1.1',
   description='Python dataclass & json interchangeable.',
   long_description=README,
   long_description_content_type="text/markdown",
   author='Wiosoft Crafts',
   author_email='wiosoftvictor@163.com',
   license='MIT',
-  packages=['jsonclasses'],
+  packages=find_packages(exclude=("tests")),
   zip_safe=False,
   url='https://github.com/Wiosoft-Crafts/jsonclasses',
   include_package_data=True,
