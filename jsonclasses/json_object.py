@@ -35,19 +35,20 @@ class JSONObject:
       else:
         setattr(self, k_with_blank_value, default)
 
-  def to_json(self):
+  def to_json(self, camelize_keys=True):
     retval = {}
     object_fields = { f.name: f for f in fields(self) }
     for name, field in object_fields.items():
+      key = camelize(name, False) if camelize_keys else name
       value = getattr(self, name)
       default = field.default
       object_type = field.type
       if isinstance(default, Types):
-        retval[camelize(name, False)] = default.validator.to_json(value)
+        retval[key] = default.validator.to_json(value)
       else:
         types = default_types_for_type(object_type)
         if types is not None:
-          retval[camelize(name, False)] = types.validator.to_json(value)
+          retval[key] = types.validator.to_json(value)
         else:
-          retval[camelize(name, False)] = value
+          retval[key] = value
     return retval

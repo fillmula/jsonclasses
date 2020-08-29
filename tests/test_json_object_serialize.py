@@ -49,3 +49,38 @@ class TestJSONObjectSerialize(unittest.TestCase):
       day: date
     countdown = Countdown(**{ 'day': '2020-08-29' })
     self.assertEqual(countdown.to_json(), { 'day': '2020-08-29T00:00:00.000Z' })
+
+  def test_serialize_none_into_null(self):
+    @jsonclass
+    class Point(JSONObject):
+      x: int
+      y: int
+    point = Point()
+    point.x = 5
+    self.assertEqual(point.to_json(), { 'x': 5, 'y': None })
+
+  def test_serialize_auto_camelize_keys(self):
+    @jsonclass
+    class Article(JSONObject):
+      article_title: str
+      article_content: str
+    article = Article()
+    article.article_title = "title"
+    article.article_content = "content"
+    self.assertEqual(
+      article.to_json(),
+      { 'articleTitle': 'title', 'articleContent': 'content' }
+    )
+
+  def test_serialize_keep_snakecase_keys_if_explicitly_addressed(self):
+    @jsonclass
+    class Article(JSONObject):
+      article_title: str
+      article_content: str
+    article = Article()
+    article.article_title = "title"
+    article.article_content = "content"
+    self.assertEqual(
+      article.to_json(camelize_keys=False),
+      { 'article_title': 'title', 'article_content': 'content' }
+    )
