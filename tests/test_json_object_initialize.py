@@ -61,5 +61,21 @@ class TestJSONObject(unittest.TestCase):
     size = Size(**input)
     self.assertEqual(size.__dict__, { 'width': 10.5, 'height': 7.5 })
 
+  def test_initialize_fill_default_values_for_blank_keys(self):
+    @jsonclass
+    class Student(JSONObject):
+      student_id: int = 5
+      name: str = 'Student X'
+    student = Student()
+    self.assertEqual(student.__dict__, { 'student_id': 5, 'name': 'Student X' })
+
+  def test_initialize_with_value_passed_in_rather_than_default_value(self):
+    @jsonclass
+    class Employee(JSONObject):
+      no: int = 3
+      name: str = 'Employee D'
+    employee = Employee(no=20, name='John Larryson')
+    self.assertEqual(employee.__dict__, { 'no': 20, 'name': 'John Larryson' })
+
 if __name__ == '__main__':
     unittest.main()

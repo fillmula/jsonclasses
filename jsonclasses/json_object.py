@@ -18,11 +18,14 @@ class JSONObject:
           setattr(self, underscore_k, v)
         unused_names.remove(underscore_k)
     for k_with_blank_value in unused_names:
-      types = object_fields[k_with_blank_value].default
-      if isinstance(types, Types):
-        setattr(self, k_with_blank_value, types.validator.transform(None))
-      else:
+      default = object_fields[k_with_blank_value].default
+      default_factory = object_fields[k_with_blank_value].default_factory
+      if isinstance(default, Types):
+        setattr(self, k_with_blank_value, default.validator.transform(None))
+      elif default is default_factory:
         setattr(self, k_with_blank_value, None)
+      else:
+        setattr(self, k_with_blank_value, default)
 
   def to_json(self):
     retval = {}
