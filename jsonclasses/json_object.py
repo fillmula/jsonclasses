@@ -64,12 +64,21 @@ class JSONObject:
     return self
 
   def validate(self, all=True):
+    keypath_messages = {}
     for object_field in fields(self):
       default = object_field.default
       if isinstance(default, Types):
         name = object_field.name
         value = getattr(self, name)
-        default.validator.validate(value, name, self, all)
+        try:
+          default.validator.validate(value, name, self, all)
+        except ValidationException as exception:
+          if all:
+            keypath_messages.update(exception.keypath_messages)
+          else:
+            raise exception
+    if len(keypath_messages) > 0:
+      raise ValidationException(keypath_messages=keypath_messages, root=self)
 
   def is_valid(self):
     try:
