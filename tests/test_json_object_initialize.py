@@ -2,7 +2,7 @@ import unittest
 from jsonclasses import jsonclass, JSONObject
 from datetime import datetime, date
 
-class TestJSONObject(unittest.TestCase):
+class TestJSONObjectInitialize(unittest.TestCase):
 
   def test_initialize_without_arguments(self):
     @jsonclass

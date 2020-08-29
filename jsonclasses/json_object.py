@@ -40,9 +40,14 @@ class JSONObject:
     object_fields = { f.name: f for f in fields(self) }
     for name, field in object_fields.items():
       value = getattr(self, name)
-      types = field.default
-      if isinstance(types, Types):
-        retval[camelize(name, False)] = types.validator.to_json(value)
+      default = field.default
+      object_type = field.type
+      if isinstance(default, Types):
+        retval[camelize(name, False)] = default.validator.to_json(value)
       else:
-        retval[camelize(name, False)] = value
+        types = default_types_for_type(object_type)
+        if types is not None:
+          retval[camelize(name, False)] = types.validator.to_json(value)
+        else:
+          retval[camelize(name, False)] = value
     return retval
