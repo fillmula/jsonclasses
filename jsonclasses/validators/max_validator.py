@@ -12,6 +12,6 @@ class MaxValidator(Validator):
   def validate(self, value, key_path, root, all):
     if value is not None and value > self.value:
       raise ValidationException(
-        { key_path: f'Value \'{value}\' at {key_path} should not be greater than {self.value}.' },
+        { key_path: f'Value \'{value}\' at \'{key_path}\' should not be greater than {self.value}.' },
         root
       )

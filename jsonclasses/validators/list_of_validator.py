@@ -12,7 +12,7 @@ class ListOfValidator:
   def validate(self, value, key_path, root, all):
     if value is not None and type(value) is not list:
       raise ValidationException(
-        { key_path: f'Value \'{value}\' at {key_path} should be list.' },
+        { key_path: f'Value \'{value}\' at \'{key_path}\' should be list.' },
         root
       )
     for v in value:

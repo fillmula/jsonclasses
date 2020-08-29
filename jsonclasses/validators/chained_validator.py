@@ -19,12 +19,12 @@ class ChainedValidator(Validator):
     keypath_messages: Dict[str, str] = {}
     for validator in self.validators:
       try:
-        validator.validate(value, key_path, root)
+        validator.validate(value, key_path, root, all)
       except ValidationException as exception:
         keypath_messages.update(exception.keypath_messages)
         if not all:
           break
-    if keypath_messages.__len__ > 0:
+    if len(keypath_messages) > 0:
       raise ValidationException(keypath_messages, root)
 
   def transform(self, value):

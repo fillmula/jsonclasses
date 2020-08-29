@@ -4,7 +4,7 @@ class Validator:
 
   def validate(self, value, key_path, root, all):
     raise ValidationException(
-      { key_path: f'Value \'{value}\' at {key_path} is invalid.' },
+      { key_path: f'Value \'{value}\' at \'{key_path}\' is invalid.' },
       root
     )
 

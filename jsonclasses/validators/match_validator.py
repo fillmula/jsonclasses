@@ -12,6 +12,6 @@ class MatchValidator(Validator):
   def validate(self, value, key_path, root, all):
     if value is not None and search(self.pattern, value) is None:
       raise ValidationException(
-        { key_path: f'Value \'{value}\' at {key_path} should match \'{self.pattern}\'.' },
+        { key_path: f'Value \'{value}\' at \'{key_path}\' should match \'{self.pattern}\'.' },
         root
       )

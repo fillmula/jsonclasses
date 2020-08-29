@@ -3,6 +3,7 @@ from datetime import datetime
 from inflection import underscore, camelize
 from jsonclasses.types import Types
 from jsonclasses.default_types_for_type import default_types_for_type
+from jsonclasses.exceptions import ValidationException
 
 @dataclass
 class JSONObject:
@@ -61,3 +62,18 @@ class JSONObject:
   def set(self, **kwargs):
     self._set(fill_blanks=False, **kwargs)
     return self
+
+  def validate(self, all=True):
+    for object_field in fields(self):
+      default = object_field.default
+      if isinstance(default, Types):
+        name = object_field.name
+        value = getattr(self, name)
+        default.validator.validate(value, name, self, all)
+
+  def is_valid(self):
+    try:
+      self.validate(all=False)
+    except ValidationException:
+      return False
+    return True
