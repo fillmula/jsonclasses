@@ -12,8 +12,12 @@ class DatetimeValidator(Validator):
       )
 
   def transform(self, value):
-    if value is not None:
+    if value is None:
+      return None
+    elif type(value) is str:
       return datetime.fromisoformat(value.replace('Z', ''))
+    else:
+      return value
 
   def to_json(self, value):
     if value is not None:
