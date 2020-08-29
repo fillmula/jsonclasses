@@ -14,7 +14,7 @@ class RangeValidator(Validator):
     self.min_value = min_value
     self.max_value = max_value
 
-  def validate(self, value, key_path, root, all):
+  def validate(self, value, key_path, root, all_fields):
     if value is not None:
-      MinValidator(self.min_value).validate(value, key_path, root, all)
-      MaxValidator(self.max_value).validate(value, key_path, root, all)
+      MinValidator(self.min_value).validate(value, key_path, root, all_fields)
+      MaxValidator(self.max_value).validate(value, key_path, root, all_fields)

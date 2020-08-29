@@ -63,7 +63,7 @@ class JSONObject:
     self._set(fill_blanks=False, **kwargs)
     return self
 
-  def validate(self, all=True):
+  def validate(self, all_fields=True):
     keypath_messages = {}
     for object_field in fields(self):
       default = object_field.default
@@ -71,7 +71,7 @@ class JSONObject:
         name = object_field.name
         value = getattr(self, name)
         try:
-          default.validator.validate(value, name, self, all)
+          default.validator.validate(value, name, self, all_fields)
         except ValidationException as exception:
           if all:
             keypath_messages.update(exception.keypath_messages)
@@ -79,10 +79,11 @@ class JSONObject:
             raise exception
     if len(keypath_messages) > 0:
       raise ValidationException(keypath_messages=keypath_messages, root=self)
+    return self
 
   def is_valid(self):
     try:
-      self.validate(all=False)
+      self.validate(all_fields=False)
     except ValidationException:
       return False
     return True

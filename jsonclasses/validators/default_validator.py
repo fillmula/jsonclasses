@@ -9,7 +9,7 @@ class DefaultValidator(Validator):
   def __init__(self, default_value):
     self.default_value = default_value
 
-  def validate(self, value, key_path, root, all):
+  def validate(self, value, key_path, root, all_fields):
     pass
 
   def transform(self, value):
