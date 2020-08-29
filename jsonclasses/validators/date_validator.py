@@ -13,7 +13,7 @@ class DateValidator(Validator):
 
   def transform(self, value):
     if value is not None:
-      return date.fromisoformat(value)
+      return date.fromisoformat(value[:10])
 
   def to_json(self, value):
     if value is not None:

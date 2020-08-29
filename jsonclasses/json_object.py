@@ -2,6 +2,7 @@ from dataclasses import dataclass, fields
 from datetime import datetime
 from inflection import underscore, camelize
 from jsonclasses.types import Types
+from jsonclasses.default_types_for_type import default_types_for_type
 
 @dataclass
 class JSONObject:
@@ -11,15 +12,22 @@ class JSONObject:
     for k, v in kwargs.items():
       underscore_k = underscore(k)
       if underscore_k in unused_names:
-        types = object_fields[underscore_k].default
-        if isinstance(types, Types):
-          setattr(self, underscore_k, types.validator.transform(v))
+        object_field = object_fields[underscore_k]
+        object_type = object_field.type
+        default = object_field.default
+        if isinstance(default, Types):
+          setattr(self, underscore_k, default.validator.transform(v))
         else:
-          setattr(self, underscore_k, v)
+          types = default_types_for_type(object_type)
+          if types is not None:
+            setattr(self, underscore_k, types.validator.transform(v))
+          else:
+            setattr(self, underscore_k, v)
         unused_names.remove(underscore_k)
     for k_with_blank_value in unused_names:
-      default = object_fields[k_with_blank_value].default
-      default_factory = object_fields[k_with_blank_value].default_factory
+      object_field = object_fields[k_with_blank_value]
+      default = object_field.default
+      default_factory = object_field.default_factory
       if isinstance(default, Types):
         setattr(self, k_with_blank_value, default.validator.transform(None))
       elif default is default_factory:

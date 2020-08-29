@@ -1,5 +1,6 @@
 import unittest
 from jsonclasses import jsonclass, JSONObject
+from datetime import datetime, date
 
 class TestJSONObject(unittest.TestCase):
 
@@ -76,6 +77,55 @@ class TestJSONObject(unittest.TestCase):
       name: str = 'Employee D'
     employee = Employee(no=20, name='John Larryson')
     self.assertEqual(employee.__dict__, { 'no': 20, 'name': 'John Larryson' })
+
+  def test_initialize_auto_convert_camelcase_keys_into_snakecase(self):
+    @jsonclass
+    class Coupon(JSONObject):
+      minimum_purchase_value: int
+      discount_rate: float
+    coupon = Coupon(**{ 'minimumPurchaseValue': 1000, 'discountRate': 0.5 })
+    self.assertEqual(coupon.minimum_purchase_value, 1000)
+    self.assertEqual(coupon.discount_rate, 0.5)
+
+  def test_initialize_auto_convert_json_date_string_to_date(self):
+    @jsonclass
+    class Semester(JSONObject):
+      start: date
+      end: date
+    semester = Semester(**{ 'start': '2020-02-20', 'end': '2020-06-30' })
+    self.assertEqual(
+      semester.__dict__,
+      {
+        'start': date.fromisoformat('2020-02-20'),
+        'end': date.fromisoformat('2020-06-30')
+      }
+    )
+
+  def test_initialize_auto_convert_json_datetime_string_to_date(self):
+    @jsonclass
+    class Semester(JSONObject):
+      start: date
+      end: date
+    semester = Semester(**{ 'start': '2020-02-20T00:00:00.000Z', 'end': '2020-06-30T03:03:03.333Z' })
+    self.assertEqual(
+      semester.__dict__,
+      {
+        'start': date.fromisoformat('2020-02-20'),
+        'end': date.fromisoformat('2020-06-30')
+      }
+    )
+
+  def test_initialize_auto_convert_json_datetime_string_to_datetime(self):
+    @jsonclass
+    class Timer(JSONObject):
+      expired_at: datetime
+    timer = Timer(**{ 'expiredAt': '2020-08-29T06:38:34.242Z' })
+    self.assertEqual(
+      timer.__dict__,
+      {
+        'expired_at': datetime.fromisoformat('2020-08-29T06:38:34.242000')
+      }
+    )
 
 if __name__ == '__main__':
     unittest.main()
