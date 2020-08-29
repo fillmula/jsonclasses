@@ -145,6 +145,3 @@ class TestJSONObjectInitialize(unittest.TestCase):
     expired_at = datetime.fromisoformat('2020-10-10T05:03:02.999888')
     timer = Timer(**{ 'expiredAt': expired_at })
     self.assertEqual(timer.expired_at, expired_at)
-
-if __name__ == '__main__':
-    unittest.main()
