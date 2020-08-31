@@ -9,6 +9,26 @@ class Types:
   def __init__(self, validator: ChainedValidator = ChainedValidator()):
     self.validator = validator
 
+  # def __infer_python_type_from_validator(self):
+  #   validators = self.validator.validators
+  #   if len(validators) > 0:
+  #     validator = validators[0]
+  #     validator_type = type(validator)
+  #     if validator_type is StrValidator:
+  #       return str
+  #     elif validator_type is BoolValidator:
+  #       return bool
+  #     elif validator_type is IntValidator:
+  #       return int
+  #     elif validator_type is FloatValidator:
+  #       return float
+  #     elif validator_type is DateValidator:
+  #       return date
+  #     elif validator_type is DatetimeValidator:
+  #       return datetime
+
+  # chained validators
+
   @property
   def invalid(self):
     return Types(self.validator.append(Validator()))
