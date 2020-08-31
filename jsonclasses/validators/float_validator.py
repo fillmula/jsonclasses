@@ -9,3 +9,11 @@ class FloatValidator(Validator):
         { key_path: f'Value \'{value}\' at \'{key_path}\' should be float.' },
         root
       )
+
+  def transform(self, value):
+    if value is None:
+      return None
+    elif type(value) is int:
+      return float(value)
+    else:
+      return value
