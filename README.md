@@ -1,6 +1,6 @@
 # jsonclasses
 
-Python @dataclass <=> JSON declarable, interchangeable, validatable, sanitizable.
+Python dataclasses <=> JSON declarable, interchangeable, validatable, sanitizable.
 
 ## Motivation
 

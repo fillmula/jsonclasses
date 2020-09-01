@@ -12,6 +12,11 @@ class PersistableJSONObject(JSONObject):
 
   updated_at: datetime = types.datetime.default(lambda: datetime.now()).required
 
+  def set(self, fill_blanks=True, **kwargs):
+    self._set(fill_blanks=False, **kwargs)
+    self.updated_at = datetime.now()
+    return self
+
   def mark_updated(self):
     self.updated_at = datetime.now()
     return self
