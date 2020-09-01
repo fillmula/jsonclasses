@@ -22,7 +22,7 @@ class ChainedValidator(Validator):
         validator.validate(value, key_path, root, all_fields)
       except ValidationException as exception:
         keypath_messages.update(exception.keypath_messages)
-        if not all:
+        if not all_fields:
           break
     if len(keypath_messages) > 0:
       raise ValidationException(keypath_messages, root)

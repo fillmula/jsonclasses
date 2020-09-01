@@ -73,7 +73,7 @@ class JSONObject:
         try:
           default.validator.validate(value, name, self, all_fields)
         except ValidationException as exception:
-          if all:
+          if all_fields:
             keypath_messages.update(exception.keypath_messages)
           else:
             raise exception
