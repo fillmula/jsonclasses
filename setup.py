@@ -8,7 +8,7 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
 setup(name='jsonclasses',
-  version='0.1.9',
+  version='0.2.0',
   description='Python @dataclass <=> JSON declarable, interchangeable, validatable, sanitizable.',
   long_description=README,
   long_description_content_type="text/markdown",
