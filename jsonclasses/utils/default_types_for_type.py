@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from .types import types
+from ..types import types
 
 def default_types_for_type(type):
   if type is str:

@@ -9,15 +9,15 @@ class PersistableJSONObject(JSONObject):
   Additional fields in this class are id, created_at, and updated_at.
   '''
 
-  id: str
+  id: str = types.str.readonly
   '''The id string of the object.
   '''
 
-  created_at: datetime = types.datetime.default(lambda: datetime.now()).required
+  created_at: datetime = types.datetime.readonly.default(lambda: datetime.now()).required
   '''This field records when this object is created.
   '''
 
-  updated_at: datetime = types.datetime.default(lambda: datetime.now()).required
+  updated_at: datetime = types.datetime.readonly.default(lambda: datetime.now()).required
   '''This field records when this object is last updated.
   '''
 

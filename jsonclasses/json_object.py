@@ -2,16 +2,16 @@ from dataclasses import dataclass, fields
 from datetime import datetime
 from inflection import underscore, camelize
 from jsonclasses.types import Types
-from jsonclasses.default_types_for_type import default_types_for_type
+from jsonclasses.utils import *
 from jsonclasses.exceptions import ValidationException
 
 @dataclass
 class JSONObject:
 
   def __init__(self, **kwargs):
-    self._set(**kwargs)
+    self._set(**kwargs, fill_blanks=True)
 
-  def to_json(self, camelize_keys=True):
+  def to_json(self, camelize_keys=True, ignore_writeonly=False):
     retval = {}
     object_fields = { f.name: f for f in fields(self) }
     for name, field in object_fields.items():
@@ -20,7 +20,10 @@ class JSONObject:
       default = field.default
       object_type = field.type
       if isinstance(default, Types):
-        retval[key] = default.validator.to_json(value)
+        if is_writeonly_type(default) and not ignore_writeonly:
+          continue
+        else:
+          retval[key] = default.validator.to_json(value)
       else:
         types = default_types_for_type(object_type)
         if types is not None:
@@ -29,7 +32,7 @@ class JSONObject:
           retval[key] = value
     return retval
 
-  def _set(self, fill_blanks=True, transform=True, validate=True, **kwargs):
+  def _set(self, fill_blanks=False, transform=True, validate=True, ignore_readonly=False, **kwargs):
     object_fields = { f.name: f for f in fields(self) }
     unused_names = list(object_fields.keys())
     for k, v in kwargs.items():
@@ -38,33 +41,47 @@ class JSONObject:
         object_field = object_fields[underscore_k]
         object_type = object_field.type
         default = object_field.default
-        if isinstance(default, Types):
-          setattr(self, underscore_k, default.validator.transform(v))
+        readonly = False
+        if isinstance(default, Types): # user specified types
+          if not is_readonly_type(default) or ignore_readonly:
+            if transform:
+              setattr(self, underscore_k, default.validator.transform(v))
+            else:
+              setattr(self, underscore_k, v)
+          else:
+            readonly = True
         else:
           types = default_types_for_type(object_type)
-          if types is not None:
-            setattr(self, underscore_k, types.validator.transform(v))
+          if types is not None: # for supported types, sync a default type for user
+            if transform:
+              setattr(self, underscore_k, types.validator.transform(v))
+            else:
+              setattr(self, underscore_k, v)
           else:
             setattr(self, underscore_k, v)
-        unused_names.remove(underscore_k)
+        if not readonly:
+          unused_names.remove(underscore_k)
     if fill_blanks:
       for k_with_blank_value in unused_names:
         object_field = object_fields[k_with_blank_value]
         default = object_field.default
         default_factory = object_field.default_factory
         if isinstance(default, Types):
-          setattr(self, k_with_blank_value, default.validator.transform(None))
+          if transform:
+            setattr(self, k_with_blank_value, default.validator.transform(None))
+          else:
+            setattr(self, k_with_blank_value, None)
         elif default is default_factory:
           setattr(self, k_with_blank_value, None)
-        else:
+        else: # user specified a default value
           setattr(self, k_with_blank_value, default)
 
   def set(self, **kwargs):
-    self._set(fill_blanks=False, **kwargs)
+    self._set(**kwargs)
     return self
 
   def update(self, **kwargs):
-    self._set(fill_blanks=False, validate=False, transform=False, **kwargs)
+    self._set(fill_blanks=False, validate=False, transform=False, ignore_readonly=True, **kwargs)
     return self
 
   def validate(self, all_fields=True):

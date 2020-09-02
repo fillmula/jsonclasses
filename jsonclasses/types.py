@@ -9,29 +9,34 @@ class Types:
   def __init__(self, validator: ChainedValidator = ChainedValidator()):
     self.validator = validator
 
-  # def __infer_python_type_from_validator(self):
-  #   validators = self.validator.validators
-  #   if len(validators) > 0:
-  #     validator = validators[0]
-  #     validator_type = type(validator)
-  #     if validator_type is StrValidator:
-  #       return str
-  #     elif validator_type is BoolValidator:
-  #       return bool
-  #     elif validator_type is IntValidator:
-  #       return int
-  #     elif validator_type is FloatValidator:
-  #       return float
-  #     elif validator_type is DateValidator:
-  #       return date
-  #     elif validator_type is DatetimeValidator:
-  #       return datetime
-
   # chained validators
 
   @property
   def invalid(self):
     return Types(self.validator.append(Validator()))
+
+  @property
+  def readonly(self):
+    '''Fields marked with readonly will not be able to go through
+    initialization and set method. You can update value of these fields
+    directly or through update method. This prevents client side to post data
+    directly into these fields.
+    '''
+    return Types(self.validator.append(ReadonlyValidator()))
+
+  @property
+  def writeonly(self):
+    '''Fields marked with writeonly will not be available in outgoing json form.
+    Users' password is a great example of writeonly.
+    '''
+    return Types(self.validator.append(WriteonlyValidator()))
+
+  @property
+  def readwrite(self):
+    '''Fields marked with readwrite will be presented in both inputs and outputs.
+    This is the default behavior. And this specifier can be omitted.
+    '''
+    return Types(self.validator.append(ReadwriteValidator()))
 
   @property
   def str(self):

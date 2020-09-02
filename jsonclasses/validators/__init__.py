@@ -1,5 +1,10 @@
 from .validator import Validator
 
+# access markers
+from .writeonly_validator import WriteonlyValidator
+from .readonly_validator import ReadonlyValidator
+from .readwrite_validator import ReadwriteValidator
+
 # str validators
 from .str_validator import StrValidator
 from .match_validator import MatchValidator
