@@ -6,6 +6,11 @@ class ObjectNotFoundException(Exception):
     self.message = message
     super().__init__(self.message)
 
+class UniqueFieldException(Exception):
+  def __init__(self, value: Any, field: str, obj: Any):
+    self.message = f'Value \'{value}\' of field \'{field}\' of object {obj} exists in database.'
+    super().__init__(self.message)
+
 class ValidationException(Exception):
 
   keypath_messages: Dict[str, str] = {}

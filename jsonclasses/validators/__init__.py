@@ -6,6 +6,10 @@ from .readonly_validator import ReadonlyValidator
 from .readwrite_validator import ReadwriteValidator
 from .writeonce_validator import WriteonceValidator
 
+# database command marks
+from .index_validator import IndexValidator
+from .unique_validator import UniqueValidator
+
 # str validators
 from .str_validator import StrValidator
 from .match_validator import MatchValidator

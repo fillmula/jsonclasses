@@ -57,6 +57,28 @@ class Types:
     return Types(self.validator.append(WriteonceValidator()))
 
   @property
+  def index(self):
+    '''Fields marked with index are picked up by ORM integrations to setup
+    database column index for you. This marker doesn't have any effect around
+    transforming and validating.
+    '''
+    return Types(self.validator.append(IndexValidator))
+
+  @property
+  def unique(self):
+    '''Fields marked with unique are picked up by ORM integrations to setup
+    database column unique index for you. This marker doesn't have any effect
+    around transforming and validating. When database engine raises an
+    exception, jsonclasses's web framework integration will catch it and return
+    400 automatically.
+
+    If you are implementing jsonclasses ORM integration, you should use
+    UniqueFieldException provided by jsonclasses.exceptions to keep consistency
+    with other jsonclasses integrations.
+    '''
+    return Types(self.validator.append(UniqueValidator))
+
+  @property
   def str(self):
     '''Fields marked with str should be str type. This is a type marker.
     '''
