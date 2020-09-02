@@ -35,3 +35,9 @@ class TestJSONObjectValidate(unittest.TestCase):
       code: str = types.str.required
     language = Language(name="English", code="en_US")
     self.assertEqual(language.is_valid(), True)
+
+  def test_validate_validates_all_fields_if_with_all_fields_option_set_to_true(self):
+    pass
+
+  def test_validate_validates_until_it_found_an_invalid_field_with_all_fields_option_set_to_false(self):
+    pass

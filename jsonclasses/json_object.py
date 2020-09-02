@@ -9,7 +9,7 @@ from jsonclasses.exceptions import ValidationException
 class JSONObject:
 
   def __init__(self, **kwargs):
-    self._set(fill_blanks=True, **kwargs)
+    self._set(**kwargs)
 
   def to_json(self, camelize_keys=True):
     retval = {}
@@ -29,7 +29,7 @@ class JSONObject:
           retval[key] = value
     return retval
 
-  def _set(self, fill_blanks=True, **kwargs):
+  def _set(self, fill_blanks=True, transform=True, validate=True, **kwargs):
     object_fields = { f.name: f for f in fields(self) }
     unused_names = list(object_fields.keys())
     for k, v in kwargs.items():
@@ -61,6 +61,10 @@ class JSONObject:
 
   def set(self, **kwargs):
     self._set(fill_blanks=False, **kwargs)
+    return self
+
+  def update(self, **kwargs):
+    self._set(fill_blanks=False, validate=False, transform=False, **kwargs)
     return self
 
   def validate(self, all_fields=True):
