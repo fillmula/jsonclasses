@@ -11,5 +11,5 @@ class TestWriteonlyValidator(unittest.TestCase):
       password: str = types.str.writeonly.required
     user = User(username='John', password='123456')
     self.assertEqual(user.password, '123456')
-    json_object = user.to_json()
+    json_object = user.tojson()
     self.assertEqual(json_object, { 'username': 'John' })

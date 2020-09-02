@@ -89,7 +89,7 @@ class JSONObject:
     )
     return self
 
-  def to_json(self, camelize_keys=True, ignore_writeonly=False):
+  def tojson(self, camelize_keys=True, ignore_writeonly=False):
     retval = {}
     object_fields = { f.name: f for f in fields(self) }
     for name, field in object_fields.items():
@@ -101,11 +101,11 @@ class JSONObject:
         if is_writeonly_type(default) and not ignore_writeonly:
           continue
         else:
-          retval[key] = default.validator.to_json(value)
+          retval[key] = default.validator.tojson(value)
       else:
         types = default_types_for_type(object_type)
         if types is not None:
-          retval[key] = types.validator.to_json(value)
+          retval[key] = types.validator.tojson(value)
         else:
           retval[key] = value
     return retval

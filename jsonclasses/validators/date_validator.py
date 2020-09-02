@@ -19,6 +19,6 @@ class DateValidator(Validator):
     else:
       return value
 
-  def to_json(self, value):
+  def tojson(self, value):
     if value is not None:
       return value.isoformat() + 'T00:00:00.000Z'

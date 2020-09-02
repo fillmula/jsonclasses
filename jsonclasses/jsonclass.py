@@ -5,5 +5,5 @@ def jsonclass(original_class):
 
   # unused monkey patch methods
   # klass.__init__ = MethodType(__init__, klass)
-  # klass.to_json = MethodType(to_json, klass)
+  # klass.tojson = MethodType(tojson, klass)
   # return klass

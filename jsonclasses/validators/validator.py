@@ -11,5 +11,5 @@ class Validator:
   def transform(self, value):
     return value
 
-  def to_json(self, value):
+  def tojson(self, value):
     return value
