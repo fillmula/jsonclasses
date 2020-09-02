@@ -96,7 +96,7 @@ class Types:
     '''
     return Types(self.validator.append(OneOfValidator(str_list)))
 
-  def minlength(self, length: int):
+  def minlength(self, length):
     '''Values at fields marked with minlength should have a length which is not
     less than length.
 
@@ -108,7 +108,7 @@ class Types:
     '''
     return Types(self.validator.append(MinlengthValidator(length)))
 
-  def maxlength(self, length: int):
+  def maxlength(self, length):
     '''Values at fields marked with maxlength should have a length which is not
     greater than length.
 
