@@ -96,6 +96,31 @@ class Types:
     '''
     return Types(self.validator.append(OneOfValidator(str_list)))
 
+  def minlength(self, length: int):
+    '''Values at fields marked with minlength should have a length which is not
+    less than length.
+
+    Args:
+      length (int): The minimum length required for the value.
+
+    Returns:
+      Types: A new types chained with this marker.
+    '''
+    return Types(self.validator.append(MinlengthValidator(length)))
+
+  def maxlength(self, length: int):
+    '''Values at fields marked with maxlength should have a length which is not
+    greater than length.
+
+    Args:
+      length (int): The minimum length required for the value.
+
+    Returns:
+      Types: A new types chained with this marker.
+    '''
+    return Types(self.validator.append(MaxlengthValidator(length)))
+
+
   @property
   def int(self):
     '''Fields marked with int should be int type. This is a type marker.
