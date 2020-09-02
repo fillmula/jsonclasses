@@ -4,6 +4,7 @@ from .validator import Validator
 from .writeonly_validator import WriteonlyValidator
 from .readonly_validator import ReadonlyValidator
 from .readwrite_validator import ReadwriteValidator
+from .writeonce_validator import WriteonceValidator
 
 # str validators
 from .str_validator import StrValidator

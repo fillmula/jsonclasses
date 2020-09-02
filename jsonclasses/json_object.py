@@ -11,28 +11,15 @@ class JSONObject:
   def __init__(self, **kwargs):
     self._set(**kwargs, fill_blanks=True)
 
-  def to_json(self, camelize_keys=True, ignore_writeonly=False):
-    retval = {}
-    object_fields = { f.name: f for f in fields(self) }
-    for name, field in object_fields.items():
-      key = camelize(name, False) if camelize_keys else name
-      value = getattr(self, name)
-      default = field.default
-      object_type = field.type
-      if isinstance(default, Types):
-        if is_writeonly_type(default) and not ignore_writeonly:
-          continue
-        else:
-          retval[key] = default.validator.to_json(value)
-      else:
-        types = default_types_for_type(object_type)
-        if types is not None:
-          retval[key] = types.validator.to_json(value)
-        else:
-          retval[key] = value
-    return retval
-
-  def _set(self, fill_blanks=False, transform=True, validate=True, ignore_readonly=False, **kwargs):
+  def _set(
+    self,
+    fill_blanks=False,
+    transform=True,
+    validate=True,
+    ignore_readonly=False,
+    ignore_writeonce=False,
+    **kwargs
+  ):
     object_fields = { f.name: f for f in fields(self) }
     unused_names = list(object_fields.keys())
     for k, v in kwargs.items():
@@ -41,15 +28,26 @@ class JSONObject:
         object_field = object_fields[underscore_k]
         object_type = object_field.type
         default = object_field.default
-        readonly = False
+        remove_key = True
         if isinstance(default, Types): # user specified types
-          if not is_readonly_type(default) or ignore_readonly:
+          # handle readonly (aka no write)
+          if is_readonly_type(default) and not ignore_readonly:
+            remove_key = False
+          # handle writeonce (aka write only once)
+          elif is_writeonce_type(default) and not ignore_writeonce:
+            current_value = getattr(self, underscore_k)
+            if current_value is None or type(current_value) is Types:
+              if transform:
+                setattr(self, underscore_k, default.validator.transform(v))
+              else:
+                setattr(self, underscore_k, v)
+            else:
+              remove_key = False
+          else:
             if transform:
               setattr(self, underscore_k, default.validator.transform(v))
             else:
               setattr(self, underscore_k, v)
-          else:
-            readonly = True
         else:
           types = default_types_for_type(object_type)
           if types is not None: # for supported types, sync a default type for user
@@ -59,7 +57,7 @@ class JSONObject:
               setattr(self, underscore_k, v)
           else:
             setattr(self, underscore_k, v)
-        if not readonly:
+        if remove_key:
           unused_names.remove(underscore_k)
     if fill_blanks:
       for k_with_blank_value in unused_names:
@@ -81,8 +79,36 @@ class JSONObject:
     return self
 
   def update(self, **kwargs):
-    self._set(fill_blanks=False, validate=False, transform=False, ignore_readonly=True, **kwargs)
+    self._set(
+      fill_blanks=False,
+      validate=False,
+      transform=False,
+      ignore_readonly=True,
+      ignore_writeonce=True,
+      **kwargs
+    )
     return self
+
+  def to_json(self, camelize_keys=True, ignore_writeonly=False):
+    retval = {}
+    object_fields = { f.name: f for f in fields(self) }
+    for name, field in object_fields.items():
+      key = camelize(name, False) if camelize_keys else name
+      value = getattr(self, name)
+      default = field.default
+      object_type = field.type
+      if isinstance(default, Types):
+        if is_writeonly_type(default) and not ignore_writeonly:
+          continue
+        else:
+          retval[key] = default.validator.to_json(value)
+      else:
+        types = default_types_for_type(object_type)
+        if types is not None:
+          retval[key] = types.validator.to_json(value)
+        else:
+          retval[key] = value
+    return retval
 
   def validate(self, all_fields=True):
     keypath_messages = {}
