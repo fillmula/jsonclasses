@@ -6,6 +6,7 @@ def eager_validator_index_after_index(vs: List[Validator], index: int) -> Option
 
   Args:
     vs (List[Validator]): A list of validators usually from chained validator.
+    index (int): The starting index to begin search with.
 
   Returns:
     Optional[int]: The found index or None.

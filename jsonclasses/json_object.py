@@ -41,7 +41,7 @@ class JSONObject:
       while next_index is not None:
         validators = chained_validator.validators[index:next_index]
         curvalue = reduce(lambda v, validator: self._validate_and_transform(validator, v, key), validators, curvalue)
-        index = next_index
+        index = next_index + 1
         next_index = eager_validator_index_after_index(chained_validator.validators, index)
       curvalue = reduce(lambda v, validator: validator.transform(v), chained_validator.validators[index:], curvalue)
       setattr(self, key, curvalue)
@@ -153,7 +153,8 @@ class JSONObject:
         name = object_field.name
         value = getattr(self, name)
         try:
-          default.validator.validate(value, name, self, all_fields)
+          start_validator_index = last_eager_validator_index(default.validator.validators)
+          default.validator.validate(value, name, self, all_fields, start_validator_index)
         except ValidationException as exception:
           if all_fields:
             keypath_messages.update(exception.keypath_messages)

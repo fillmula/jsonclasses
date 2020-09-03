@@ -11,11 +11,18 @@ class ChainedValidator(Validator):
   def append(self, *args: Validator):
     return ChainedValidator([*self.validators, *args])
 
-  def validate(self, value, key_path = '', root = None, all_fields = True):
+  def validate(
+    self,
+    value,
+    key_path = '',
+    root = None,
+    all_fields = True,
+    start_validator_index: int = 0
+  ):
     if root == None:
       root = value
     keypath_messages: Dict[str, str] = {}
-    for validator in self.validators:
+    for validator in self.validators[start_validator_index:]:
       try:
         validator.validate(value, key_path, root, all_fields)
       except ValidationException as exception:
