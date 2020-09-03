@@ -1,7 +1,9 @@
+from typing import Any
 from dataclasses import dataclass, fields
 from datetime import datetime
 from inflection import underscore, camelize
 from jsonclasses.types import Types
+from jsonclasses.validators import ChainedValidator
 from jsonclasses.utils import *
 from jsonclasses.exceptions import ValidationException
 
@@ -11,11 +13,24 @@ class JSONObject:
   def __init__(self, **kwargs):
     self._set(**kwargs, fill_blanks=True)
 
+  def _eager_validate_transform(
+    self,
+    chained_validator: ChainedValidator,
+    value: Any = None,
+    key: str = '',
+    eager_validate: bool = True
+  ):
+    if not eager_validate:
+      setattr(self, key, chained_validator.transform(value))
+    else:
+      setattr(self, key, chained_validator.transform(value))
+      pass
+
   def _set(
     self,
     fill_blanks=False,
     transform=True,
-    validate=True,
+    ignore_eager_validate=False,
     ignore_readonly=False,
     ignore_writeonce=False,
     **kwargs
@@ -38,14 +53,14 @@ class JSONObject:
             current_value = getattr(self, underscore_k)
             if current_value is None or type(current_value) is Types:
               if transform:
-                setattr(self, underscore_k, default.validator.transform(v))
+                self._eager_validate_transform(default.validator, v, underscore_k, not ignore_eager_validate)
               else:
                 setattr(self, underscore_k, v)
             else:
               remove_key = False
           else:
             if transform:
-              setattr(self, underscore_k, default.validator.transform(v))
+              self._eager_validate_transform(default.validator, v, underscore_k, not ignore_eager_validate)
             else:
               setattr(self, underscore_k, v)
         else:
@@ -66,7 +81,7 @@ class JSONObject:
         default_factory = object_field.default_factory
         if isinstance(default, Types):
           if transform:
-            setattr(self, k_with_blank_value, default.validator.transform(None))
+            self._eager_validate_transform(default.validator, None, k_with_blank_value, not ignore_eager_validate)
           else:
             setattr(self, k_with_blank_value, None)
         elif default is default_factory:
@@ -81,8 +96,8 @@ class JSONObject:
   def update(self, **kwargs):
     self._set(
       fill_blanks=False,
-      validate=False,
       transform=False,
+      ignore_eager_validate=True,
       ignore_readonly=True,
       ignore_writeonce=True,
       **kwargs
