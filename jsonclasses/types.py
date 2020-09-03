@@ -57,6 +57,13 @@ class Types:
     return Types(self.validator.append(WriteonceValidator()))
 
   @property
+  def internal(self):
+    '''Fields marked with internal will not be accepted as input, and it will
+    not be present in output. These fields are internal and hidden from users.
+    '''
+    return Types(self.validator.append(ReadonlyValidator(), WriteonlyValidator()))
+
+  @property
   def index(self):
     '''Fields marked with index are picked up by ORM integrations to setup
     database column index for you. This marker doesn't have any effect around
