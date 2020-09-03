@@ -11,6 +11,6 @@ def last_eager_validator_index(vs: List[Validator]) -> Optional[int]:
     Optional[int]: The found index or None.
   '''
   try:
-    return len(vs) - vs.index(next(v for v in vs[::-1] if type(v) is EagerValidator))
-  except StopIteration:
+    return max([i for (i, v) in enumerate(vs) if type(v) is EagerValidator])
+  except ValueError:
     return None

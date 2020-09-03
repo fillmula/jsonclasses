@@ -18,7 +18,7 @@ class TestEagerValidator(unittest.TestCase):
     @jsonclass
     class User(JSONObject):
       username: str = types.str.required
-      password: str = types.str.minlength(8).maxlength(16).transform(lambda s: s + '0x0x').required
+      password: str = types.str.minlength(8).maxlength(10).transform(lambda s: s + '0x0x').required
     user = User(password='12345678')
     self.assertEqual(user.__dict__, { 'username': None, 'password': '123456780x0x' })
 
