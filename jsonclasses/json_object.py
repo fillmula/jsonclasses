@@ -1,9 +1,10 @@
 from typing import Any
 from dataclasses import dataclass, fields
 from datetime import datetime
+from functools import reduce
 from inflection import underscore, camelize
 from jsonclasses.types import Types
-from jsonclasses.validators import ChainedValidator
+from jsonclasses.validators import ChainedValidator, Validator
 from jsonclasses.utils import *
 from jsonclasses.exceptions import ValidationException
 
@@ -13,18 +14,37 @@ class JSONObject:
   def __init__(self, **kwargs):
     self._set(**kwargs, fill_blanks=True)
 
+  def _validate_and_transform(
+    self,
+    validator: Validator,
+    value: Any = None,
+    key: str = ''
+  ) -> Any:
+    validator.validate(value, key, self, False)
+    return validator.transform(value)
+
   def _eager_validate_transform(
     self,
-    chained_validator: ChainedValidator,
+    types: Types,
     value: Any = None,
     key: str = '',
     eager_validate: bool = True
   ):
+    chained_validator = types.validator
     if not eager_validate:
       setattr(self, key, chained_validator.transform(value))
     else:
-      setattr(self, key, chained_validator.transform(value))
-      pass
+      validators = chained_validator.validators
+      curvalue = value
+      index = 0
+      next_index = eager_validator_index_after_index(chained_validator.validators, index)
+      while next_index is not None:
+        validators = chained_validator.validators[index:next_index]
+        curvalue = reduce(lambda v, validator: self._validate_and_transform(validator, v, key), validators, curvalue)
+        index = next_index
+        next_index = eager_validator_index_after_index(chained_validator.validators, index)
+      curvalue = reduce(lambda v, validator: validator.transform(v), chained_validator.validators[index:], curvalue)
+      setattr(self, key, curvalue)
 
   def _set(
     self,
@@ -53,14 +73,14 @@ class JSONObject:
             current_value = getattr(self, underscore_k)
             if current_value is None or type(current_value) is Types:
               if transform:
-                self._eager_validate_transform(default.validator, v, underscore_k, not ignore_eager_validate)
+                self._eager_validate_transform(default, v, underscore_k, not ignore_eager_validate)
               else:
                 setattr(self, underscore_k, v)
             else:
               remove_key = False
           else:
             if transform:
-              self._eager_validate_transform(default.validator, v, underscore_k, not ignore_eager_validate)
+              self._eager_validate_transform(default, v, underscore_k, not ignore_eager_validate)
             else:
               setattr(self, underscore_k, v)
         else:
@@ -81,7 +101,7 @@ class JSONObject:
         default_factory = object_field.default_factory
         if isinstance(default, Types):
           if transform:
-            self._eager_validate_transform(default.validator, None, k_with_blank_value, not ignore_eager_validate)
+            self._eager_validate_transform(default, None, k_with_blank_value, not ignore_eager_validate)
           else:
             setattr(self, k_with_blank_value, None)
         elif default is default_factory:
