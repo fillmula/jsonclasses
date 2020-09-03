@@ -10,8 +10,8 @@ class ChainedValidator(Validator):
   def __init__(self, validators: List[Validator] = []):
     self.validators = validators
 
-  def append(self, validator: Validator):
-    return ChainedValidator([*self.validators, validator])
+  def append(self, *args: Validator):
+    return ChainedValidator([*self.validators, *args])
 
   def validate(self, value, key_path = '', root = None, all_fields = True):
     if root == None:

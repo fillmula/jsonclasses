@@ -1,4 +1,4 @@
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Callable, Any
 from datetime import date, datetime
 from .validators import *
 
@@ -84,7 +84,7 @@ class Types:
     '''
     return Types(self.validator.append(StrValidator()))
 
-  def match(self, pattern):
+  def match(self, pattern: str):
     '''Fields marked with match are tested againest the argument regular
     expression pattern.
     '''
@@ -101,7 +101,7 @@ class Types:
     less than length.
 
     Args:
-      length (int): The minimum length required for the value.
+      length (): The minimum length required for the value.
 
     Returns:
       Types: A new types chained with this marker.
@@ -186,7 +186,7 @@ class Types:
 
   # transformers
 
-  def default(self, value):
+  def default(self, value: Any):
     '''During initialization, if values of fields with default are not provided.
     The default value is used instead of leaving blank.
 
@@ -199,7 +199,7 @@ class Types:
     '''
     return Types(self.validator.append(DefaultValidator(value)))
 
-  def truncate(self, max_length):
+  def truncate(self, max_length: int):
     '''During initialization and set, if string value is too long, it's
     truncated to argument max length.
 
@@ -210,5 +210,19 @@ class Types:
       Types: A new types chained with this marker.
     '''
     return Types(self.validator.append(TruncateValidator(max_length)))
+
+  def transform(self, transformer: Callable):
+    '''This mark applies transfromer on the value. When value is None, the
+    transformer is not called. This class barely means to transform. Use
+    default mark with a callable to assign calculated default value.
+
+    Args:
+      transformer (Callable): This transformer function takes one argument which
+      is the current value of the field.
+
+    Returns:
+      Types: A new types chained with this marker.
+    '''
+    return Types(self.validator.append(EagerValidator(), TransformValidator(transformer)))
 
 types = Types()

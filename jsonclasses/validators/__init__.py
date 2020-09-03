@@ -10,6 +10,9 @@ from .writeonce_validator import WriteonceValidator
 from .index_validator import IndexValidator
 from .unique_validator import UniqueValidator
 
+# eager validation marks
+from .eager_validator import EagerValidator
+
 # str validators
 from .str_validator import StrValidator
 from .match_validator import MatchValidator
@@ -40,6 +43,9 @@ from .required_validator import RequiredValidator
 
 # default transformer
 from .default_validator import DefaultValidator
+
+# transform
+from .transform_validator import TransformValidator
 
 # chained validator
 from .chained_validator import ChainedValidator
