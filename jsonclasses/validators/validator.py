@@ -8,7 +8,7 @@ class Validator:
       root
     )
 
-  def transform(self, value):
+  def transform(self, value = None):
     return value
 
   def tojson(self, value):
