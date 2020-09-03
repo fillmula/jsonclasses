@@ -18,3 +18,31 @@ class TestUniqueValidator(unittest.TestCase):
       _user = TestUser()
     except ValidationException:
       self.fail('unique should not break things')
+
+  def test_unique_shouldnt_break_things_and_remove_value(self):
+    data = {
+      "username": "john.qq",
+      "nickname": "John QQ",
+      "gender": "male",
+      "email": "john.qq@wiosoftcrafts.com",
+      "phoneNo": "+12345678"
+    }
+    @jsonclass
+    class User(JSONObject):
+      username: str = types.str.writeonce.unique.required
+      password: str = types.str.writeonly.minlength(8).maxlength(16).transform(lambda v: v + 'z').required
+      nickname: str = types.str.maxlength(30).required
+      gender: str = types.str.writeonce.one_of(['male', 'female'])
+      email: str = types.str.unique.required
+      phone_no: str
+      wechat_open_id: str
+    user = User(**data, password='1234567890')
+    self.assertEqual(user.__dict__, {
+      'username': 'john.qq',
+      'nickname': 'John QQ',
+      'gender': 'male',
+      'email': 'john.qq@wiosoftcrafts.com',
+      'phone_no': '+12345678',
+      'password': '1234567890z',
+      'wechat_open_id': None
+    })

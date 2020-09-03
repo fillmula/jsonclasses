@@ -69,7 +69,7 @@ class Types:
     database column index for you. This marker doesn't have any effect around
     transforming and validating.
     '''
-    return Types(self.validator.append(IndexValidator))
+    return Types(self.validator.append(IndexValidator()))
 
   @property
   def unique(self):
@@ -83,7 +83,7 @@ class Types:
     UniqueFieldException provided by jsonclasses.exceptions to keep consistency
     with other jsonclasses integrations.
     '''
-    return Types(self.validator.append(UniqueValidator))
+    return Types(self.validator.append(UniqueValidator()))
 
   @property
   def str(self):
