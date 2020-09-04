@@ -83,3 +83,27 @@ class TestListOfValidator(unittest.TestCase):
     self.assertEqual(memory.tojson(), {
       'days': ['2020-06-01T00:00:00.000Z', '2020-07-02T00:00:00.000Z']
     })
+
+  def test_list_of_does_not_allow_null_by_default_for_raw_type(self):
+    @jsonclass
+    class Quiz(JSONObject):
+      numbers: List[int] = types.list_of(int)
+    quiz = Quiz(numbers=[0,1,None,3,4,5])
+    self.assertRaises(ValidationException, quiz.validate)
+
+  def test_list_of_does_not_allow_null_by_default_for_typed_type(self):
+    @jsonclass
+    class Quiz(JSONObject):
+      numbers: List[int] = types.list_of(types.int)
+    quiz = Quiz(numbers=[0,1,None,3,4,5])
+    self.assertRaises(ValidationException, quiz.validate)
+
+  def test_list_of_does_allow_null_for_typed_type_marked_with_nullable(self):
+    @jsonclass
+    class Quiz(JSONObject):
+      numbers: List[int] = types.list_of(types.int.nullable)
+    quiz = Quiz(numbers=[0,1,None,3,4,5])
+    try:
+      quiz.validate()
+    except:
+      self.fail('nullable marked should allow None in list of validator')

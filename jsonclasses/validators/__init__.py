@@ -39,11 +39,9 @@ from .datetime_validator import DatetimeValidator
 # list validators
 from .list_of_validator import ListOfValidator
 
-# non None validator
+# nullability validators
 from .required_validator import RequiredValidator
-
-# list validators
-# from .list_of_validator import ListOfValidator
+from .nullable_validator import NullableValidator
 
 # default transformer
 from .default_validator import DefaultValidator

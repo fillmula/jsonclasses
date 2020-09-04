@@ -193,6 +193,18 @@ class Types:
     '''
     return Types(self.validator.append(RequiredValidator()))
 
+  @property
+  def nullable(self):
+    '''Fields marked with nullable can be None. This is the default behavior
+    even without this marker. It's the opposite to required marker. Values
+    inside lists have implicitly required marker. Use this to allow null or
+    None values inside lists.
+
+    Returns:
+      Types: A new types chained with this marker.
+    '''
+    return Types(self.validator.append(NullableValidator()))
+
   # transformers
 
   def default(self, value: Any):
