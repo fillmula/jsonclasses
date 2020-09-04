@@ -21,3 +21,31 @@ class ListOfValidator(Validator):
         validator = default_validator_for_type(self.types)
         if validator:
           validator.validate(v, keypath(key_path, i), root, all_fields)
+
+  def transform(self, value):
+    if value is None:
+      return None
+    if type(value) is not list:
+      return value
+    if hasattr(self.types, 'validator'):
+      validator = self.types.validator
+    else:
+      validator = default_validator_for_type(self.types)
+    if validator:
+      return [ validator.transform(v) for v in value ]
+    else:
+      return value
+
+  def tojson(self, value):
+    if value is None:
+      return None
+    if type(value) is not list:
+      return value
+    if hasattr(self.types, 'validator'):
+      validator = self.types.validator
+    else:
+      validator = default_validator_for_type(self.types)
+    if validator:
+      return [ validator.tojson(v) for v in value ]
+    else:
+      return value
