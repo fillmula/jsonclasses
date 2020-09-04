@@ -1,7 +1,7 @@
-from ..types import Types
-from ..validators import WriteonlyValidator
+from ..validators.writeonly_validator import WriteonlyValidator
+from ..validators.chained_validator import ChainedValidator
 
-def is_writeonly_type(types: Types) -> bool:
+def is_writeonly_type(validator: ChainedValidator) -> bool:
   '''Use this method to test if given types has writeonly marker inside.
 
   Args:
@@ -11,7 +11,7 @@ def is_writeonly_type(types: Types) -> bool:
     bool: Return True if the given type definition has writeonly marker inside
     else False.
   '''
-  vs = types.validator.validators
+  vs = validator.validators
   try:
     next(v for v in vs if type(v) is WriteonlyValidator)
     return True

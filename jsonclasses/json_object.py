@@ -93,10 +93,10 @@ class JSONObject:
         remove_key = True
         if isinstance(default, Types): # user specified types
           # handle readonly (aka no write)
-          if is_readonly_type(default) and not ignore_readonly:
+          if is_readonly_type(default.validator) and not ignore_readonly:
             remove_key = False
           # handle writeonce (aka write only once)
-          elif is_writeonce_type(default) and not ignore_writeonce:
+          elif is_writeonce_type(default.validator) and not ignore_writeonce:
             current_value = getattr(self, key)
             if current_value is None or type(current_value) is Types:
               if transform:
@@ -186,7 +186,7 @@ class JSONObject:
       default = field.default
       object_type = field.type
       if isinstance(default, Types):
-        if is_writeonly_type(default) and not ignore_writeonly:
+        if is_writeonly_type(default.validator) and not ignore_writeonly:
           continue
         else:
           retval[key] = default.validator.tojson(value)

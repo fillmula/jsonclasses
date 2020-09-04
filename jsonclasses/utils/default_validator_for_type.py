@@ -1,5 +1,11 @@
 from datetime import date, datetime
-from ..validators import ChainedValidator, StrValidator, FloatValidator, IntValidator, BoolValidator, DateValidator, DatetimeValidator
+from ..validators.chained_validator import ChainedValidator
+from ..validators.str_validator import StrValidator
+from ..validators.float_validator import FloatValidator
+from ..validators.int_validator import IntValidator
+from ..validators.bool_validator import BoolValidator
+from ..validators.date_validator import DateValidator
+from ..validators.datetime_validator import DatetimeValidator
 
 def default_validator_for_type(type):
   '''This function returns the default synthesized validator for given Python

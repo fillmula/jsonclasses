@@ -2,6 +2,7 @@ from typing import Any
 from ..exceptions import ValidationException
 from .validator import Validator
 from .utils import keypath
+from ..utils import default_validator_for_type
 
 class ListOfValidator(Validator):
 
