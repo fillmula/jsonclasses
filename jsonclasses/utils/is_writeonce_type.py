@@ -5,7 +5,7 @@ def is_writeonce_type(validator: ChainedValidator) -> bool:
   '''Use this method to test if given types has writeonce marker inside.
 
   Args:
-    types (Types): A jsonclasses types object.
+    validator (ChainedValidator): A jsonclasses types object's chained validator.
 
   Returns:
     bool: Return True if the given type definition has writeonce marker inside

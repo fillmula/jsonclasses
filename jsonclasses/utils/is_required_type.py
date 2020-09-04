@@ -6,7 +6,7 @@ def is_required_type(validator: ChainedValidator) -> bool:
   mainly use this when implementing jsonclasses ORM integration.
 
   Args:
-    types (Types): A jsonclasses types object.
+    validator (ChainedValidator): A jsonclasses types object's chained validator.
 
   Returns:
     bool: Return True if the given type definition has required marker inside

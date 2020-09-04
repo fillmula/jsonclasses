@@ -5,7 +5,7 @@ def is_readonly_type(validator: ChainedValidator) -> bool:
   '''Use this method to test if given types has readonly marker inside.
 
   Args:
-    types (Types): A jsonclasses types object.
+    validator (ChainedValidator): A jsonclasses types object's chained validator.
 
   Returns:
     bool: Return True if the given type definition has readonly marker inside
