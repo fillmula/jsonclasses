@@ -28,7 +28,7 @@ class ShapeValidator(Validator):
       if validator:
         validator.validate(value_at_key, keypath(key_path, k), root, all_fields)
 
-  def transform(self, value):
+  def transform(self, value, camelize_keys: bool):
     if value is None:
       return None
     if type(value) is not dict:
@@ -44,7 +44,7 @@ class ShapeValidator(Validator):
       else:
         validator = default_validator_for_type(t)
       if validator:
-        retval[k] = validator.transform(value_at_key)
+        retval[k] = validator.transform(value_at_key, camelize_keys)
       else:
         [retval][k] = value_at_key
     return retval

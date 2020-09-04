@@ -11,7 +11,7 @@ class DatetimeValidator(Validator):
         root
       )
 
-  def transform(self, value):
+  def transform(self, value, camelize_keys: bool):
     if value is None:
       return None
     elif type(value) is str:

@@ -26,7 +26,7 @@ class ListOfValidator(Validator):
           validator = validator.append(RequiredValidator())
         validator.validate(v, keypath(key_path, i), root, all_fields)
 
-  def transform(self, value):
+  def transform(self, value, camelize_keys: bool):
     if value is None:
       return None
     if type(value) is not list:
@@ -36,7 +36,7 @@ class ListOfValidator(Validator):
     else:
       validator = default_validator_for_type(self.types)
     if validator:
-      return [ validator.transform(v) for v in value ]
+      return [ validator.transform(v, camelize_keys) for v in value ]
     else:
       return value
 

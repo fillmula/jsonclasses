@@ -32,12 +32,8 @@ class ChainedValidator(Validator):
     if len(keypath_messages) > 0:
       raise ValidationException(keypath_messages, root)
 
-  def transform(self, value):
-    return reduce(lambda v, validator: validator.transform(v), self.validators, value)
+  def transform(self, value, camelize_keys: bool):
+    return reduce(lambda v, validator: validator.transform(v, camelize_keys), self.validators, value)
 
   def tojson(self, value, camelize_keys: bool):
     return reduce(lambda v, validator: validator.tojson(v, camelize_keys), self.validators, value)
-
-  def __validate_and_transform(self, validator: Validator, value: Any):
-    validator.validate(value)
-    return validator.transform(value)
