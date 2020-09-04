@@ -102,13 +102,3 @@ class TestShapeValidator(unittest.TestCase):
         return False
     score = Score(scores={ 'student_a': 2, 'student_b': 4 })
     self.assertEqual(score.__dict__, { 'scores': { 'student_a': 2, 'student_b': 4 }})
-
-  # def test_shape_should_be_fine_if_type_hint_not_specified(self):
-  #   @jsonclass
-  #   class Score(JSONObject):
-  #     scores = types.shape({
-  #       'student_a': types.int,
-  #       'student_b': types.int
-  #     })
-  #   score = Score(scores={ 'studentA': 2, 'studentB': 4 })
-  #   self.assertEqual(score.__dict__, { 'scores': { 'student_a': 2, 'student_b': 4 }})
