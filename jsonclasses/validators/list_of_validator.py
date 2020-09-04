@@ -18,4 +18,6 @@ class ListOfValidator(Validator):
       if hasattr(self.types, 'validator'):
         self.types.validator.validate(v, keypath(key_path, i), root, all_fields)
       else:
+        # it's good to synthesis a validator here, however, cannot overcome
+        # Python's circular import issue
         pass

@@ -111,10 +111,10 @@ class JSONObject:
             else:
               setattr(self, key, v)
         else:
-          types = default_types_for_type(object_type)
-          if types is not None: # for supported types, sync a default type for user
+          validator = default_validator_for_type(object_type)
+          if validator is not None: # for supported types, sync a default type for user
             if transform:
-              setattr(self, key, types.validator.transform(v))
+              setattr(self, key, validator.transform(v))
             else:
               setattr(self, key, v)
           else:
@@ -191,9 +191,9 @@ class JSONObject:
         else:
           retval[key] = default.validator.tojson(value)
       else:
-        types = default_types_for_type(object_type)
-        if types is not None:
-          retval[key] = types.validator.tojson(value)
+        validator = default_validator_for_type(object_type)
+        if validator is not None:
+          retval[key] = validator.tojson(value)
         else:
           retval[key] = value
     return retval
