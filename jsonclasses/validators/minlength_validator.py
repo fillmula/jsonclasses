@@ -4,14 +4,12 @@ from .validator import Validator
 
 class MinlengthValidator(Validator):
 
-  value: int
-
-  def __init__(self, value: int):
-    self.value = value
+  def __init__(self, minlength: int):
+    self.minlength = minlength
 
   def validate(self, value, key_path, root, all_fields):
-    if value is not None and len(value) < self.value:
+    if value is not None and len(value) < self.minlength:
       raise ValidationException(
-        { key_path: f'Value \'{value}\' at \'{key_path}\' should have length not less than {self.value}.' },
+        { key_path: f'Value \'{value}\' at \'{key_path}\' should have length not less than {self.minlength}.' },
         root
       )

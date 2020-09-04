@@ -1,12 +1,9 @@
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..types import Types
 
 class ListOfValidator:
 
-  types: Types
-
-  def __init__(self, types: Types):
+  def __init__(self, types: 'Types'):
     self.types = types
 
   def validate(self, value, key_path, root, all_fields):

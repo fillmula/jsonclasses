@@ -7,13 +7,35 @@ from jsonclasses.types import Types
 from jsonclasses.validators import ChainedValidator, Validator
 from jsonclasses.utils import *
 from jsonclasses.exceptions import ValidationException
-from .config import camelize_json_keys
+from . import config
 
 @dataclass
 class JSONObject:
+  '''JSONObject is the base class of jsonclass objects. It provides crutial
+  instance methods e.g. __init__, set and update, validate and tojson.
+
+  To declare a new jsonclass, use the following syntax:
+
+    from jsonclasses import jsonclass, JSONObject, types
+
+    @jsonclass
+    class MyObject(JSONObject):
+      my_field_one: str = types.str.required
+      my_field_two: int = types.int.range(0, 10).required
+  '''
 
   def __init__(self, **kwargs):
     self._set(**kwargs, fill_blanks=True)
+
+  def camelize_json_keys(self) -> bool:
+    '''When initiating, setting values, updating values, and serializing,
+    whether automatically camelize json keys or not. Most of the times, JSON
+    keys are camelized since this is a data transfering format. Most of other
+    programming languages have camelized naming convensions. Python is an
+    exception. Use `config.camelize_json_keys = False` to disable this behavior
+    globally.
+    '''
+    return config.camelize_json_keys
 
   def _validate_and_transform(
     self,
@@ -59,7 +81,7 @@ class JSONObject:
     object_fields = { f.name: f for f in fields(self) }
     unused_names = list(object_fields.keys())
     for k, v in kwargs.items():
-      key = underscore(k) if camelize_json_keys else k
+      key = underscore(k) if self.camelize_json_keys() else k
       if key in unused_names:
         object_field = object_fields[key]
         object_type = object_field.type
@@ -111,10 +133,25 @@ class JSONObject:
           setattr(self, k_with_blank_value, default)
 
   def set(self, **kwargs):
+    '''Set object values in a batch. This method is suitable for web and fraud
+    inputs. This method takes accessor marks into consideration, means readonly
+    and internal field values will be just ignored. Writeonce fields are
+    accepted only if the current value is None. This method triggers eager
+    validation and transform. This method returns self, thus you can chain
+    calling with other instance methods.
+    '''
     self._set(**kwargs)
     return self
 
   def update(self, **kwargs):
+    '''Update object values in a batch. This method is suitable for internal
+    inputs. This method ignores accessor marks, thus you can update readonly
+    and internal values through this method. Writeonce doesn't have effect on
+    this method. You can change writeonce fields' value freely in this method.
+    This method does not trigger eager validation and transform. You should
+    pass valid and final form values through this method. This method returns
+    self, thus you can chain calling with other instance methods.
+    '''
     self._set(
       fill_blanks=False,
       transform=False,
@@ -126,8 +163,10 @@ class JSONObject:
     return self
 
   def tojson(self, camelize_keys: Optional[bool]=None, ignore_writeonly=False):
+    '''
+    '''
     if camelize_keys is None:
-      camelize_keys = camelize_json_keys
+      camelize_keys = self.camelize_json_keys()
     retval = {}
     object_fields = { f.name: f for f in fields(self) }
     for name, field in object_fields.items():

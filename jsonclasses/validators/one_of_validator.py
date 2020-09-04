@@ -5,8 +5,6 @@ from .validator import Validator
 
 class OneOfValidator(Validator):
 
-  str_list: List[str]
-
   def __init__(self, str_list: List[str]):
     self.str_list = str_list
 

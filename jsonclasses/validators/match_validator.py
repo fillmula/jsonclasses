@@ -4,8 +4,6 @@ from .validator import Validator
 
 class MatchValidator(Validator):
 
-  pattern: str
-
   def __init__(self, pattern):
     self.pattern = pattern
 

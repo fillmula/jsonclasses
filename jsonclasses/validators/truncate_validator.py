@@ -3,8 +3,6 @@ from .validator import Validator
 
 class TruncateValidator(Validator):
 
-  max_length: int
-
   def __init__(self, max_length):
     self.max_length = max_length
 

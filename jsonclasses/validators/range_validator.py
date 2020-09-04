@@ -6,10 +6,6 @@ from .max_validator import MaxValidator
 
 class RangeValidator(Validator):
 
-  min_value: float
-
-  max_value: float
-
   def __init__(self, min_value, max_value):
     self.min_value = min_value
     self.max_value = max_value
