@@ -9,17 +9,17 @@ class TestShapeValidator(unittest.TestCase):
   def test_shape_validator_validates_subfields(self):
     @jsonclass
     class User(JSONObject):
-      address: dict = types.default({}).shape({
+      address: dict = types.nonnull.shape({
         'line1': types.str.required,
         'line2': types.str
-      }).required
+      })
     user = User()
     self.assertRaisesRegex(ValidationException, '\'address\\.line1\' should not be None', user.validate)
 
   def test_shape_validator_do_not_throw_if_subfields_are_ok(self):
     @jsonclass
     class User(JSONObject):
-      address: dict = types.default({}).shape({
+      address: dict = types.nonnull.shape({
         'line1': types.str.required,
         'line2': types.str
       }).required

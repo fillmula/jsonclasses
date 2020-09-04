@@ -53,5 +53,8 @@ from .default_validator import DefaultValidator
 # transform
 from .transform_validator import TransformValidator
 
+# shape transformer
+from .nonnull_validator import NonnullValidator
+
 # chained validator
 from .chained_validator import ChainedValidator

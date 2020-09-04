@@ -261,6 +261,18 @@ class Types:
     '''
     return Types(self.validator.append(EagerValidator(), TransformValidator(transformer)))
 
+  @property
+  def nonnull(self):
+    '''This marker is a instructional transformer designated for shape. This is
+    not a validator. To mark a field is required and should not be null, use
+    `required` instead. This transformer should be used right before shape, to
+    given shape an instruction of not leaving null for the shaped field.
+
+    Returns:
+      Types: A new types chained with this marker.
+    '''
+    return Types(self.validator.append(NonnullValidator()))
+
 types = Types()
 '''The root of the types marker. To mark an field with type annotation,
 accessor annotation, validator annotation and transformer annotation, use types
