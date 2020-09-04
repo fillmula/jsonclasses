@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 from dataclasses import dataclass, fields
 from datetime import datetime
 from functools import reduce
@@ -125,7 +125,9 @@ class JSONObject:
     )
     return self
 
-  def tojson(self, camelize_keys=True, ignore_writeonly=False):
+  def tojson(self, camelize_keys: Optional[bool]=None, ignore_writeonly=False):
+    if camelize_keys is None:
+      camelize_keys = camelize_json_keys
     retval = {}
     object_fields = { f.name: f for f in fields(self) }
     for name, field in object_fields.items():
