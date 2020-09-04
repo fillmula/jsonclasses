@@ -8,8 +8,6 @@ class Types:
   sanitization.
   '''
 
-  validator: ChainedValidator
-
   def __init__(self, validator: ChainedValidator = ChainedValidator()):
     self.validator = validator
 
@@ -233,3 +231,12 @@ class Types:
     return Types(self.validator.append(EagerValidator(), TransformValidator(transformer)))
 
 types = Types()
+'''The root of the types marker. To mark an field with type annotation,
+accessor annotation, validator annotation and transformer annotation, use types
+like this:
+
+  @jsonclass
+  class MyObject(JSONObject):
+    my_field_one: bool = types.bool.readonly.required
+    my_field_two: password = types.bool.writeonly.minlength(8).maxlength(16).transform(salt).required
+'''

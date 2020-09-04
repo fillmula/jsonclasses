@@ -1,9 +1,12 @@
 from dataclasses import dataclass
 
 def jsonclass(original_class):
-  return dataclass(original_class, init=False)
+  '''The jsonclass object class decorator. To declare a jsonclass class, use
+  this syntax:
 
-  # unused monkey patch methods
-  # klass.__init__ = MethodType(__init__, klass)
-  # klass.tojson = MethodType(tojson, klass)
-  # return klass
+    @jsonclass
+    class MyObject(JSONObject):
+      my_field_one: str
+      my_field_two: bool
+  '''
+  return dataclass(original_class, init=False)
