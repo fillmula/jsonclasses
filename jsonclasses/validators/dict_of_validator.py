@@ -37,7 +37,7 @@ class DictOfValidator(Validator):
     else:
       validator = default_validator_for_type(self.types)
     if validator:
-      return { k: validator.transform(v, camelize_keys) for k, v in value.items() }
+      return { underscore(k) if camelize_keys else k: validator.transform(v, camelize_keys) for k, v in value.items() }
     else:
       return value
 

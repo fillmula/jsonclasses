@@ -130,5 +130,19 @@ class TestDictOfValidator(unittest.TestCase):
     self.assertEqual(score.tojson(), { 'scores': { 'john_leo': 2, 'peter_sun': 4 }})
 
   def test_dict_of_should_handle_camelized_keys_when_initializing_if_its_the_class_setting(self):
+    @jsonclass
+    class Score(JSONObject):
+      scores: Dict[str, int] = types.dict_of(types.int)
+      def camelize_json_keys(self) -> bool:
+        return True
+    score = Score(scores={ 'johnLeo': 2, 'peterSun': 4 })
+    self.assertEqual(score.__dict__, { 'scores': { 'john_leo': 2, 'peter_sun': 4 }})
 
-    pass
+  def test_dict_of_should_not_handle_camelized_keys_when_initializing_if_its_the_class_setting(self):
+    @jsonclass
+    class Score(JSONObject):
+      scores: Dict[str, int] = types.dict_of(types.int)
+      def camelize_json_keys(self) -> bool:
+        return False
+    score = Score(scores={ 'johnLeo': 2, 'peterSun': 4 })
+    self.assertEqual(score.__dict__, { 'scores': { 'johnLeo': 2, 'peterSun': 4 }})
