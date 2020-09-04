@@ -1,4 +1,4 @@
-from ..types import types, Types
+from ..types import Types
 from ..validators import RequiredValidator
 
 def is_required_type(types: Types) -> bool:

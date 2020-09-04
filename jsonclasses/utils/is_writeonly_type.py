@@ -1,4 +1,4 @@
-from ..types import types, Types
+from ..types import Types
 from ..validators import WriteonlyValidator
 
 def is_writeonly_type(types: Types) -> bool:

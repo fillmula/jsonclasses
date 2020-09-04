@@ -1,3 +1,4 @@
+# from __future__ import annotations
 from typing import List, Dict, Union, Callable, Any, Optional
 from datetime import date, datetime
 from .validators import *
@@ -179,9 +180,8 @@ class Types:
     '''
     return Types(self.validator.append(DatetimeValidator()))
 
-  # @property
-  # def list_of(self, types: Types):
-  #   return Types(self.validator.append(ListOfValidator(types)))
+  def list_of(self, types: Any):
+    return Types(self.validator.append(ListOfValidator(types)))
 
   @property
   def required(self):

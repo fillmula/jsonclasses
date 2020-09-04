@@ -1,4 +1,4 @@
-from ..types import types, Types
+from ..types import Types
 from ..validators import WriteonceValidator
 
 def is_writeonce_type(types: Types) -> bool:

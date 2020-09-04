@@ -1,4 +1,4 @@
-from ..types import types, Types
+from ..types import Types
 from ..validators import UniqueValidator
 
 def is_unique_type(types: Types) -> bool:

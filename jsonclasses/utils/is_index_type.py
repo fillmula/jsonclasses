@@ -1,4 +1,4 @@
-from ..types import types, Types
+from ..types import Types
 from ..validators import IndexValidator
 
 def is_index_type(types: Types) -> bool:

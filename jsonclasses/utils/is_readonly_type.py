@@ -1,4 +1,4 @@
-from ..types import types, Types
+from ..types import Types
 from ..validators import ReadonlyValidator
 
 def is_readonly_type(types: Types) -> bool:
