@@ -189,11 +189,11 @@ class JSONObject:
         if is_writeonly_type(default.validator) and not ignore_writeonly:
           continue
         else:
-          retval[key] = default.validator.tojson(value)
+          retval[key] = default.validator.tojson(value, camelize_keys)
       else:
         validator = default_validator_for_type(object_type)
         if validator is not None:
-          retval[key] = validator.tojson(value)
+          retval[key] = validator.tojson(value, camelize_keys)
         else:
           retval[key] = value
     return retval

@@ -110,3 +110,25 @@ class TestDictOfValidator(unittest.TestCase):
       quiz.validate()
     except:
       self.fail('nullable marked should allow None in list of validator')
+
+  def test_dict_of_should_camelize_keys_when_serializing_if_its_the_class_setting(self):
+    @jsonclass
+    class Score(JSONObject):
+      scores: Dict[str, int] = types.dict_of(types.int)
+      def camelize_json_keys(self) -> bool:
+        return True
+    score = Score(scores={ 'john_leo': 2, 'peter_sun': 4 })
+    self.assertEqual(score.tojson(), { 'scores': { 'johnLeo': 2, 'peterSun': 4 }})
+
+  def test_dict_of_should_not_camelize_keys_when_serializing_if_its_the_class_setting(self):
+    @jsonclass
+    class Score(JSONObject):
+      scores: Dict[str, int] = types.dict_of(types.int)
+      def camelize_json_keys(self) -> bool:
+        return False
+    score = Score(scores={ 'john_leo': 2, 'peter_sun': 4 })
+    self.assertEqual(score.tojson(), { 'scores': { 'john_leo': 2, 'peter_sun': 4 }})
+
+  def test_dict_of_should_handle_camelized_keys_when_initializing_if_its_the_class_setting(self):
+
+    pass

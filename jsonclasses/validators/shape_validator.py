@@ -49,7 +49,7 @@ class ShapeValidator(Validator):
         [retval][k] = value_at_key
     return retval
 
-  def tojson(self, value):
+  def tojson(self, value, camelize_keys: bool):
     if value is None:
       return None
     if type(value) is not dict:
@@ -65,7 +65,7 @@ class ShapeValidator(Validator):
       else:
         validator = default_validator_for_type(t)
       if validator:
-        retval[k] = validator.tojson(value_at_key)
+        retval[k] = validator.tojson(value_at_key, camelize_keys)
       else:
         [retval][k] = value_at_key
     return retval

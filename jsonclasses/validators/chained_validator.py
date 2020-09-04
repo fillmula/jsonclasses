@@ -35,8 +35,8 @@ class ChainedValidator(Validator):
   def transform(self, value):
     return reduce(lambda v, validator: validator.transform(v), self.validators, value)
 
-  def tojson(self, value):
-    return reduce(lambda v, validator: validator.tojson(v), self.validators, value)
+  def tojson(self, value, camelize_keys: bool):
+    return reduce(lambda v, validator: validator.tojson(v, camelize_keys), self.validators, value)
 
   def __validate_and_transform(self, validator: Validator, value: Any):
     validator.validate(value)

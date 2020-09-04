@@ -11,5 +11,5 @@ class Validator:
   def transform(self, value = None):
     return value
 
-  def tojson(self, value):
+  def tojson(self, value, camelize_keys: bool):
     return value

@@ -19,6 +19,6 @@ class DatetimeValidator(Validator):
     else:
       return value
 
-  def tojson(self, value):
+  def tojson(self, value, camelize_keys: bool):
     if value is not None:
       return value.isoformat()[:23] + 'Z'

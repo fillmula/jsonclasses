@@ -3,6 +3,7 @@ from ..exceptions import ValidationException
 from .validator import Validator
 from .required_validator import RequiredValidator
 from ..utils import default_validator_for_type, keypath, is_nullable_type
+from inflection import underscore, camelize
 
 class DictOfValidator(Validator):
 
@@ -40,7 +41,7 @@ class DictOfValidator(Validator):
     else:
       return value
 
-  def tojson(self, value):
+  def tojson(self, value, camelize_keys: bool):
     if value is None:
       return None
     if type(value) is not dict:
@@ -50,6 +51,6 @@ class DictOfValidator(Validator):
     else:
       validator = default_validator_for_type(self.types)
     if validator:
-      return { k: validator.tojson(v) for k, v in value.items() }
+      return { camelize(k, False) if camelize_keys else k: validator.tojson(v, camelize_keys) for k, v in value.items() }
     else:
       return value
