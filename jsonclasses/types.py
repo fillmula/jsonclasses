@@ -181,7 +181,16 @@ class Types:
     return Types(self.validator.append(DatetimeValidator()))
 
   def list_of(self, types: Any):
+    '''Fields marked with list_of should be a list of the given type. This is a
+    type marker.
+    '''
     return Types(self.validator.append(ListOfValidator(types)))
+
+  def dict_of(self, types: Any):
+    '''Fields marked with list_of should be a str keyed dict of the given type.
+    This is a type marker.
+    '''
+    return Types(self.validator.append(DictOfValidator(types)))
 
   @property
   def required(self):

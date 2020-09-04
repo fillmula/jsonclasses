@@ -36,8 +36,9 @@ from .bool_validator import BoolValidator
 from .date_validator import DateValidator
 from .datetime_validator import DatetimeValidator
 
-# list validators
+# collection validators
 from .list_of_validator import ListOfValidator
+from .dict_of_validator import DictOfValidator
 
 # nullability validators
 from .required_validator import RequiredValidator
