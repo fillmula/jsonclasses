@@ -25,10 +25,14 @@ class JSONObject:
   '''
 
   def __init__(self, **kwargs):
+    '''Initialize a new jsonclass object from keyed arguments or a dict. This
+    method is suitable for accepting web and malformed inputs. Eager validation
+    and transformation are applied during the initialization process.
+    '''
     self._set(**kwargs, fill_blanks=True)
 
   def camelize_json_keys(self) -> bool:
-    '''When initiating, setting values, updating values, and serializing,
+    '''When initializing, setting values, updating values, and serializing,
     whether automatically camelize json keys or not. Most of the times, JSON
     keys are camelized since this is a data transfering format. Most of other
     programming languages have camelized naming convensions. Python is an
@@ -163,7 +167,14 @@ class JSONObject:
     return self
 
   def tojson(self, camelize_keys: Optional[bool]=None, ignore_writeonly=False):
-    '''
+    '''Serialize this jsonclass object to JSON dict.
+
+    Args:
+      camelize_keys (Optional[bool]): Whether camelize json keys or not. It
+      defaults to `jsonclasses.config.camelize_json_keys`.
+
+    Returns:
+      dict: A dict represents this object's JSON object.
     '''
     if camelize_keys is None:
       camelize_keys = self.camelize_json_keys()
@@ -188,6 +199,17 @@ class JSONObject:
     return retval
 
   def validate(self, all_fields=True):
+    '''Validate the jsonclass object's validity. Raises ValidationException on
+    validation failed.
+
+    Args:
+      all_fields (bool): Whether continue validation to fetch more error
+      messages after the first error is found. This is useful when you are
+      building a frontend form and want to display detailed messages.
+
+    Returns:
+      None: upon successful validation, returns nothing.
+    '''
     keypath_messages = {}
     for object_field in fields(self):
       default = object_field.default
@@ -207,6 +229,12 @@ class JSONObject:
     return self
 
   def is_valid(self):
+    '''Test whether the jsonclass object is valid or not. This method triggers
+    object validation.
+
+    Returns:
+      bool: the validity of the object.
+    '''
     try:
       self.validate(all_fields=False)
     except ValidationException:
