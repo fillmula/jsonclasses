@@ -10,6 +10,6 @@ class MaxlengthValidator(Validator):
   def validate(self, value, key_path, root, all_fields):
     if value is not None and len(value) > self.maxlength:
       raise ValidationException(
-        { key_path: f'Value \'{value}\' at \'{key_path}\' should have length not greater than {self.maxlength}.' },
+        { key_path: f'Length of value \'{value}\' at \'{key_path}\' should not be greater than {self.maxlength}.' },
         root
       )

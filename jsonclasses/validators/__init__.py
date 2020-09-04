@@ -20,6 +20,7 @@ from .one_of_validator import OneOfValidator
 from .truncate_validator import TruncateValidator
 from .minlength_validator import MinlengthValidator
 from .maxlength_validator import MaxlengthValidator
+from .length_validator import LengthValidator
 
 # number validators
 from .int_validator import IntValidator

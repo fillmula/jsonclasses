@@ -10,6 +10,6 @@ class MinlengthValidator(Validator):
   def validate(self, value, key_path, root, all_fields):
     if value is not None and len(value) < self.minlength:
       raise ValidationException(
-        { key_path: f'Value \'{value}\' at \'{key_path}\' should have length not less than {self.minlength}.' },
+        { key_path: f'Length of value \'{value}\' at \'{key_path}\' should not be less than {self.minlength}.' },
         root
       )

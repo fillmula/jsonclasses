@@ -1,4 +1,4 @@
-from typing import List, Dict, Union, Callable, Any
+from typing import List, Dict, Union, Callable, Any, Optional
 from datetime import date, datetime
 from .validators import *
 
@@ -101,7 +101,7 @@ class Types:
     '''
     return Types(self.validator.append(OneOfValidator(str_list)))
 
-  def minlength(self, length):
+  def minlength(self, length: 'int'):
     '''Values at fields marked with minlength should have a length which is not
     less than length.
 
@@ -113,7 +113,7 @@ class Types:
     '''
     return Types(self.validator.append(MinlengthValidator(length)))
 
-  def maxlength(self, length):
+  def maxlength(self, length: 'int'):
     '''Values at fields marked with maxlength should have a length which is not
     greater than length.
 
@@ -125,6 +125,10 @@ class Types:
     '''
     return Types(self.validator.append(MaxlengthValidator(length)))
 
+  def length(self, minlength: 'int', maxlength: Optional['int'] = None):
+    '''
+    '''
+    return Types(self.validator.append(LengthValidator(minlength, maxlength)))
 
   @property
   def int(self):
