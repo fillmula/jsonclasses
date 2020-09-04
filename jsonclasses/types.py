@@ -192,6 +192,12 @@ class Types:
     '''
     return Types(self.validator.append(DictOfValidator(types)))
 
+  def shape(self, types):
+    '''Fields marked with shape are objects shaped with given shape. This is a
+    type marker.
+    '''
+    return Types(self.validator.append(ShapeValidator(types)))
+
   @property
   def required(self):
     '''Fields marked with required are invalid when value is not presented aka

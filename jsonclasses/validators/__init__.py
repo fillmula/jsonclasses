@@ -6,11 +6,11 @@ from .readonly_validator import ReadonlyValidator
 from .readwrite_validator import ReadwriteValidator
 from .writeonce_validator import WriteonceValidator
 
-# database command marks
+# database command markers
 from .index_validator import IndexValidator
 from .unique_validator import UniqueValidator
 
-# eager validation marks
+# eager validation markers
 from .eager_validator import EagerValidator
 
 # str validators
@@ -39,6 +39,9 @@ from .datetime_validator import DatetimeValidator
 # collection validators
 from .list_of_validator import ListOfValidator
 from .dict_of_validator import DictOfValidator
+
+# object validators
+from .shape_validator import ShapeValidator
 
 # nullability validators
 from .required_validator import RequiredValidator
