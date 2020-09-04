@@ -242,5 +242,5 @@ like this:
   @jsonclass
   class MyObject(JSONObject):
     my_field_one: bool = types.bool.readonly.required
-    my_field_two: password = types.bool.writeonly.minlength(8).maxlength(16).transform(salt).required
+    my_field_two: password = types.bool.writeonly.length(8, 16).transform(salt).required
 '''
