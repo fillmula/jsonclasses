@@ -7,6 +7,7 @@ from jsonclasses.types import Types
 from jsonclasses.validators import ChainedValidator, Validator
 from jsonclasses.utils import *
 from jsonclasses.exceptions import ValidationException
+from .config import camelize_json_keys
 
 @dataclass
 class JSONObject:
@@ -58,9 +59,9 @@ class JSONObject:
     object_fields = { f.name: f for f in fields(self) }
     unused_names = list(object_fields.keys())
     for k, v in kwargs.items():
-      underscore_k = underscore(k)
-      if underscore_k in unused_names:
-        object_field = object_fields[underscore_k]
+      key = underscore(k) if camelize_json_keys else k
+      if key in unused_names:
+        object_field = object_fields[key]
         object_type = object_field.type
         default = object_field.default
         remove_key = True
@@ -70,30 +71,30 @@ class JSONObject:
             remove_key = False
           # handle writeonce (aka write only once)
           elif is_writeonce_type(default) and not ignore_writeonce:
-            current_value = getattr(self, underscore_k)
+            current_value = getattr(self, key)
             if current_value is None or type(current_value) is Types:
               if transform:
-                self._eager_validate_transform(default, v, underscore_k, not ignore_eager_validate)
+                self._eager_validate_transform(default, v, key, not ignore_eager_validate)
               else:
-                setattr(self, underscore_k, v)
+                setattr(self, key, v)
             else:
               remove_key = False
           else:
             if transform:
-              self._eager_validate_transform(default, v, underscore_k, not ignore_eager_validate)
+              self._eager_validate_transform(default, v, key, not ignore_eager_validate)
             else:
-              setattr(self, underscore_k, v)
+              setattr(self, key, v)
         else:
           types = default_types_for_type(object_type)
           if types is not None: # for supported types, sync a default type for user
             if transform:
-              setattr(self, underscore_k, types.validator.transform(v))
+              setattr(self, key, types.validator.transform(v))
             else:
-              setattr(self, underscore_k, v)
+              setattr(self, key, v)
           else:
-            setattr(self, underscore_k, v)
+            setattr(self, key, v)
         if remove_key:
-          unused_names.remove(underscore_k)
+          unused_names.remove(key)
     if fill_blanks:
       for k_with_blank_value in unused_names:
         object_field = object_fields[k_with_blank_value]
