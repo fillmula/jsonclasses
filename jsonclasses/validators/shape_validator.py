@@ -2,6 +2,7 @@ from typing import Dict, Any
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils import default_validator_for_type, keypath
+from inflection import underscore, camelize
 
 class ShapeValidator(Validator):
 
@@ -33,20 +34,23 @@ class ShapeValidator(Validator):
       return None
     if type(value) is not dict:
       return value
+    unused_keys = list(self.types.keys())
     retval = {}
-    for k, t in self.types.items():
-      try:
-        value_at_key = value[k]
-      except KeyError:
-        value_at_key = None
-      if hasattr(t, 'validator'):
-        validator = t.validator
-      else:
-        validator = default_validator_for_type(t)
-      if validator:
-        retval[k] = validator.transform(value_at_key, camelize_keys)
-      else:
-        [retval][k] = value_at_key
+    for k, field_value in value.items():
+      key = underscore(k) if camelize_keys else k
+      if key in unused_keys:
+        t = self.types[key]
+        if hasattr(t, 'validator'):
+          validator = t.validator
+        else:
+          validator = default_validator_for_type(t)
+        if validator:
+          retval[key] = validator.transform(field_value, camelize_keys)
+        else:
+          retval[key] = field_value
+        unused_keys.remove(key)
+    for k in unused_keys:
+      retval[k] = None
     return retval
 
   def tojson(self, value, camelize_keys: bool):
@@ -56,6 +60,7 @@ class ShapeValidator(Validator):
       return value
     retval = {}
     for k, t in self.types.items():
+      key = camelize(k, False) if camelize_keys else k
       try:
         value_at_key = value[k]
       except KeyError:
@@ -65,7 +70,7 @@ class ShapeValidator(Validator):
       else:
         validator = default_validator_for_type(t)
       if validator:
-        retval[k] = validator.tojson(value_at_key, camelize_keys)
+        retval[key] = validator.tojson(value_at_key, camelize_keys)
       else:
-        [retval][k] = value_at_key
+        retval[key] = value_at_key
     return retval
