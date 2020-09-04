@@ -1,8 +1,7 @@
 from typing import Any
 from ..exceptions import ValidationException
 from .validator import Validator
-from .utils import keypath
-from ..utils import default_validator_for_type
+from ..utils import default_validator_for_type, keypath
 
 class ListOfValidator(Validator):
 
@@ -19,6 +18,6 @@ class ListOfValidator(Validator):
       if hasattr(self.types, 'validator'):
         self.types.validator.validate(v, keypath(key_path, i), root, all_fields)
       else:
-        # it's good to synthesis a validator here, however, cannot overcome
-        # Python's circular import issue
-        pass
+        validator = default_validator_for_type(self.types)
+        if validator:
+          validator.validate(v, keypath(key_path, i), root, all_fields)

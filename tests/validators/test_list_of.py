@@ -33,4 +33,14 @@ class TestListOfValidator(unittest.TestCase):
     class Book(JSONObject):
       chapters: List[str] = types.list_of(str).required
     book = Book(chapters=['abc', 'def', 'ghi', '789'])
-    book.validate()
+    try:
+      book.validate()
+    except:
+      self.fail('list validator should be ok if raw type passes.')
+
+  def test_list_validator_throws_if_given_values_doesnt_match_raw_type(self):
+    @jsonclass
+    class Book(JSONObject):
+      chapters: List[str] = types.list_of(str).required
+    book = Book(chapters=['abc', 'def', 'ghi', 5])
+    self.assertRaises(ValidationException, book.validate)
