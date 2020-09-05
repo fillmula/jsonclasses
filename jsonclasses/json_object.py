@@ -8,10 +8,9 @@ from jsonclasses.validators import ChainedValidator, Validator
 from jsonclasses.utils import *
 from jsonclasses.exceptions import ValidationException
 from . import config
-from . import jsonclass
 from .utils.keypath import keypath
 
-@jsonclass
+@dataclass(init=False)
 class JSONObject:
   '''JSONObject is the base class of jsonclass objects. It provides crutial
   instance methods e.g. __init__, set and update, validate and tojson.
