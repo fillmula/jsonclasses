@@ -7,7 +7,7 @@ from jsonclasses.exceptions import ValidationException
 class TestShapeValidator(unittest.TestCase):
 
   def test_shape_validator_validates_subfields(self):
-    @jsonclass
+    @jsonclass(graph='test_shape_1')
     class User(JSONObject):
       address: dict = types.nonnull.shape({
         'line1': types.str.required,
@@ -17,7 +17,7 @@ class TestShapeValidator(unittest.TestCase):
     self.assertRaisesRegex(ValidationException, '\'address\\.line1\' should not be None', user.validate)
 
   def test_shape_validator_do_not_throw_if_subfields_are_ok(self):
-    @jsonclass
+    @jsonclass(graph='test_shape_2')
     class User(JSONObject):
       address: dict = types.nonnull.shape({
         'line1': types.str.required,
@@ -30,7 +30,7 @@ class TestShapeValidator(unittest.TestCase):
       self.fail('shape validator should not throw if subfields are ok')
 
   def test_shape_validator_assigns_none_for_accessing(self):
-    @jsonclass
+    @jsonclass(graph='test_shape_3')
     class User(JSONObject):
       address: dict = types.shape({
         'line1': types.str,
@@ -43,7 +43,7 @@ class TestShapeValidator(unittest.TestCase):
     })
 
   def test_shape_validator_sanitizes_input(self):
-    @jsonclass
+    @jsonclass(graph='test_shape_4')
     class User(JSONObject):
       address: dict = types.shape({
         'line1': types.str,
@@ -56,7 +56,7 @@ class TestShapeValidator(unittest.TestCase):
     })
 
   def test_shape_should_camelize_keys_when_serializing_if_its_the_class_setting(self):
-    @jsonclass
+    @jsonclass(graph='test_shape_5')
     class Score(JSONObject):
       scores: dict = types.shape({
         'student_a': types.int,
@@ -68,7 +68,7 @@ class TestShapeValidator(unittest.TestCase):
     self.assertEqual(score.tojson(), { 'scores': { 'studentA': 2, 'studentB': 4 }})
 
   def test_shape_should_not_camelize_keys_when_serializing_if_its_the_class_setting(self):
-    @jsonclass
+    @jsonclass(graph='test_shape_6')
     class Score(JSONObject):
       scores: dict = types.shape({
         'student_a': types.int,
@@ -80,7 +80,7 @@ class TestShapeValidator(unittest.TestCase):
     self.assertEqual(score.tojson(), { 'scores': { 'student_a': 2, 'student_b': 4 }})
 
   def test_shape_should_handle_camelized_keys_when_initializing_if_its_the_class_setting(self):
-    @jsonclass
+    @jsonclass(graph='test_shape_7')
     class Score(JSONObject):
       scores: dict = types.shape({
         'student_a': types.int,
@@ -92,7 +92,7 @@ class TestShapeValidator(unittest.TestCase):
     self.assertEqual(score.__dict__, { 'scores': { 'student_a': 2, 'student_b': 4 }})
 
   def test_shape_should_not_handle_camelized_keys_when_initializing_if_its_the_class_setting(self):
-    @jsonclass
+    @jsonclass(graph='test_shape_8')
     class Score(JSONObject):
       scores: dict = types.shape({
         'student_a': types.int,

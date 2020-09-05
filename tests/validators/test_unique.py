@@ -6,7 +6,7 @@ from datetime import datetime, date
 class TestUniqueValidator(unittest.TestCase):
 
   def test_unique_is_fine_when_create_an_object(self):
-    @jsonclass
+    @jsonclass(graph='test_unique_1')
     class TestUser(JSONObject):
       password: str = types.str.writeonly.minlength(8).maxlength(16).transform(lambda p: p + '00xx').required
       phone_no: str
@@ -27,7 +27,7 @@ class TestUniqueValidator(unittest.TestCase):
       "email": "john.qq@wiosoftcrafts.com",
       "phoneNo": "+12345678"
     }
-    @jsonclass
+    @jsonclass(graph='test_unique_2')
     class User(JSONObject):
       username: str = types.str.writeonce.unique.required
       password: str = types.str.writeonly.minlength(8).maxlength(16).transform(lambda v: v + 'z').required

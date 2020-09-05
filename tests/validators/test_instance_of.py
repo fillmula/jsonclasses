@@ -7,11 +7,11 @@ from jsonclasses.exceptions import ValidationException
 class TestInstanceOfValidator(unittest.TestCase):
 
   def test_instance_of_validator_creates_instance_of_designated_class_on_transforming(self):
-    @jsonclass
+    @jsonclass(graph='test_instanceof_1')
     class Address(JSONObject):
       line1: str = types.str
       line2: str = types.str
-    @jsonclass
+    @jsonclass(graph='test_instanceof_1')
     class User(JSONObject):
       name: str = types.str
       address: Address = types.instance_of(Address)
@@ -19,11 +19,11 @@ class TestInstanceOfValidator(unittest.TestCase):
     self.assertIsInstance(user.address, Address)
 
   def test_instance_of_validator_validates_using_validator_inside(self):
-    @jsonclass
+    @jsonclass(graph='test_instanceof_2')
     class Address(JSONObject):
       line1: str = types.str.required
       line2: str = types.str
-    @jsonclass
+    @jsonclass(graph='test_instanceof_2')
     class User(JSONObject):
       name: str = types.str
       address: Address = types.instance_of(Address)
@@ -31,11 +31,11 @@ class TestInstanceOfValidator(unittest.TestCase):
     self.assertRaisesRegex(ValidationException, 'Value at \'address\\.line1\' should not be None.', user.validate)
 
   def test_instance_of_validator_convert_subfields_to_json(self):
-    @jsonclass
+    @jsonclass(graph='test_instanceof_3')
     class Address(JSONObject):
       line1: str = types.str.required
       line2: str = types.str
-    @jsonclass
+    @jsonclass(graph='test_instanceof_3')
     class User(JSONObject):
       name: str = types.str
       address: Address = types.instance_of(Address)
@@ -44,11 +44,11 @@ class TestInstanceOfValidator(unittest.TestCase):
     self.assertEqual(result, { 'name': 'John', 'address': { 'line1': 'OK', 'line2': 'Road' }})
 
   def test_instance_of_validator_creates_instances_inside_list(self):
-    @jsonclass
+    @jsonclass(graph='test_instanceof_4')
     class Address(JSONObject):
       line1: str = types.str
       line2: str = types.str
-    @jsonclass
+    @jsonclass(graph='test_instanceof_4')
     class User(JSONObject):
       name: str = types.str
       addresses: List[Address] = types.list_of(types.instance_of(Address))
@@ -63,11 +63,11 @@ class TestInstanceOfValidator(unittest.TestCase):
     self.assertEqual(user.addresses[1].__dict__, { 'line1': 'Paris', 'line2': 'Road' })
 
   def test_instance_of_validator_validates_instances_inside_list(self):
-    @jsonclass
+    @jsonclass(graph='test_instanceof_5')
     class Address(JSONObject):
       line1: str = types.str.required
       line2: str = types.str.required
-    @jsonclass
+    @jsonclass(graph='test_instanceof_5')
     class User(JSONObject):
       name: str = types.str
       addresses: List[Address] = types.list_of(types.instance_of(Address))
@@ -78,11 +78,11 @@ class TestInstanceOfValidator(unittest.TestCase):
     self.assertRaises(ValidationException, user.validate)
 
   def test_instance_of_validator_converts_to_json_inside_list(self):
-    @jsonclass
+    @jsonclass(graph='test_instanceof_6')
     class Address(JSONObject):
       line1: str = types.str
       line2: str = types.str
-    @jsonclass
+    @jsonclass(graph='test_instanceof_6')
     class User(JSONObject):
       name: str = types.str
       addresses: List[Address] = types.list_of(types.instance_of(Address))

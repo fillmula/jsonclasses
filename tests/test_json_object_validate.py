@@ -5,7 +5,7 @@ from jsonclasses.exceptions import ValidationException
 class TestJSONObjectValidate(unittest.TestCase):
 
   def test_validate_throws_if_object_is_not_valid(self):
-    @jsonclass
+    @jsonclass(graph='test_validate_1')
     class Contact(JSONObject):
       name: str = types.str.required
       address: str = types.str.required
@@ -13,7 +13,7 @@ class TestJSONObjectValidate(unittest.TestCase):
     self.assertRaises(ValidationException, contact.validate)
 
   def test_validate_does_not_throw_and_returns_self_if_object_is_valid(self):
-    @jsonclass
+    @jsonclass(graph='test_validate_2')
     class Name(JSONObject):
       first: str = types.str.required
       last: str = types.str.required
@@ -21,7 +21,7 @@ class TestJSONObjectValidate(unittest.TestCase):
     self.assertEqual(name.validate(), name)
 
   def test_is_valid_returns_false_if_object_is_not_valid(self):
-    @jsonclass
+    @jsonclass(graph='test_validate_3')
     class Language(JSONObject):
       name: str = types.str.required
       code: str = types.str.required
@@ -29,7 +29,7 @@ class TestJSONObjectValidate(unittest.TestCase):
     self.assertEqual(language.is_valid(), False)
 
   def test_is_valid_returns_true_if_object_is_valid(self):
-    @jsonclass
+    @jsonclass(graph='test_validate_4')
     class Language(JSONObject):
       name: str = types.str.required
       code: str = types.str.required

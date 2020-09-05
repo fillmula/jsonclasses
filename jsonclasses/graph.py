@@ -26,8 +26,8 @@ def register_class(cls: type, graph: str = 'default'):
   name = cls.__name__
   graph_table = __graph_table(graph)
   exist_cls = graph_table.get(name)
-  # if exist_cls is not None:
-  #   raise JSONClassRedefinitionError(cls, exist_cls)
+  if exist_cls is not None:
+    raise JSONClassRedefinitionError(cls, exist_cls)
   graph_table[name] = cls
   return cls
 

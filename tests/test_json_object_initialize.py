@@ -5,7 +5,7 @@ from datetime import datetime, date
 class TestJSONObjectInitialize(unittest.TestCase):
 
   def test_initialize_without_arguments(self):
-    @jsonclass
+    @jsonclass(graph='test_initialize_1')
     class Contact(JSONObject):
       name: str
       address: str
@@ -13,7 +13,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
     self.assertEqual(contact.__dict__, { 'name': None, 'address': None })
 
   def test_initialize_with_keyed_arguments(self):
-    @jsonclass
+    @jsonclass(graph='test_initialize_2')
     class BusinessCard(JSONObject):
       name: str
       phone_no: str
@@ -21,7 +21,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
     self.assertEqual(card.__dict__, { 'name': 'John', 'phone_no': '012345678' })
 
   def test_initialize_with_keyed_arguments_fill_none_on_blank_keys(self):
-    @jsonclass
+    @jsonclass(graph='test_initialize_3')
     class Point(JSONObject):
       x: int
       y: int
@@ -29,7 +29,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
     self.assertEqual(point.__dict__, { 'x': 50, 'y': None })
 
   def test_initialize_with_keyed_arguments_remove_redundant_keys(self):
-    @jsonclass
+    @jsonclass(graph='test_initialize_4')
     class Size(JSONObject):
       width: float
       height: float
@@ -37,7 +37,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
     self.assertEqual(size.__dict__, { 'width': 10.5, 'height': 7.5 })
 
   def test_initialize_with_a_dict(self):
-    @jsonclass
+    @jsonclass(graph='test_initialize_5')
     class Location(JSONObject):
       longitude: float
       latitude: float
@@ -45,7 +45,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
     self.assertEqual(location.__dict__, { 'longitude': 0, 'latitude': 30 })
 
   def test_initialize_with_dict_fill_none_on_blank_keys(self):
-    @jsonclass
+    @jsonclass(graph='test_initialize_6')
     class Point(JSONObject):
       x: int
       y: int
@@ -54,7 +54,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
     self.assertEqual(point.__dict__, { 'x': 50, 'y': None })
 
   def test_initialize_with_dict_remove_redundant_keys(self):
-    @jsonclass
+    @jsonclass(graph='test_initialize_7')
     class Size(JSONObject):
       width: float
       height: float
@@ -63,7 +63,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
     self.assertEqual(size.__dict__, { 'width': 10.5, 'height': 7.5 })
 
   def test_initialize_fill_default_values_for_blank_keys(self):
-    @jsonclass
+    @jsonclass(graph='test_initialize_8')
     class Student(JSONObject):
       student_id: int = 5
       name: str = 'Student X'
@@ -71,7 +71,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
     self.assertEqual(student.__dict__, { 'student_id': 5, 'name': 'Student X' })
 
   def test_initialize_with_value_passed_in_rather_than_default_value(self):
-    @jsonclass
+    @jsonclass(graph='test_initialize_9')
     class Employee(JSONObject):
       no: int = 3
       name: str = 'Employee D'
@@ -79,7 +79,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
     self.assertEqual(employee.__dict__, { 'no': 20, 'name': 'John Larryson' })
 
   def test_initialize_auto_convert_camelcase_keys_into_snakecase(self):
-    @jsonclass
+    @jsonclass(graph='test_initialize_10')
     class Coupon(JSONObject):
       minimum_purchase_value: int
       discount_rate: float
@@ -88,7 +88,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
     self.assertEqual(coupon.discount_rate, 0.5)
 
   def test_initialize_auto_convert_json_date_string_to_date(self):
-    @jsonclass
+    @jsonclass(graph='test_initialize_11')
     class Semester(JSONObject):
       start: date
       end: date
@@ -102,7 +102,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
     )
 
   def test_initialize_auto_convert_json_datetime_string_to_date(self):
-    @jsonclass
+    @jsonclass(graph='test_initialize_12')
     class Semester(JSONObject):
       start: date
       end: date
@@ -116,7 +116,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
     )
 
   def test_initialize_auto_convert_json_datetime_string_to_datetime(self):
-    @jsonclass
+    @jsonclass(graph='test_initialize_13')
     class Timer(JSONObject):
       expired_at: datetime
     timer = Timer(**{ 'expiredAt': '2020-08-29T06:38:34.242Z' })
@@ -128,7 +128,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
     )
 
   def test_initialize_date_with_date(self):
-    @jsonclass
+    @jsonclass(graph='test_initialize_14')
     class Semester(JSONObject):
       start: date
       end: date
@@ -139,7 +139,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
     self.assertEqual(semester.end, end)
 
   def test_initialize_datetime_with_datetime(self):
-    @jsonclass
+    @jsonclass(graph='test_initialize_15')
     class Timer(JSONObject):
       expired_at: datetime
     expired_at = datetime.fromisoformat('2020-10-10T05:03:02.999888')
