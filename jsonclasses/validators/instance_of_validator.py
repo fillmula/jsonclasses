@@ -17,7 +17,7 @@ class InstanceOfValidator(Validator):
   def validate(self, value, key_path, root, all_fields):
     if value is None:
       return
-    value.validate(all_fields=all_fields)
+    value.validate(all_fields=all_fields, base_key=key_path, root=root)
 
   def transform(self, value, camelize_keys: bool):
     if value is None:
@@ -29,6 +29,4 @@ class InstanceOfValidator(Validator):
   def tojson(self, value, camelize_keys: bool):
     if value is None:
       return None
-    if type(value) is not dict:
-      return value
     return value.tojson()

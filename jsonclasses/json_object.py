@@ -9,6 +9,7 @@ from jsonclasses.utils import *
 from jsonclasses.exceptions import ValidationException
 from . import config
 from . import jsonclass
+from .utils.keypath import keypath
 
 @jsonclass
 class JSONObject:
@@ -204,7 +205,7 @@ class JSONObject:
           retval[key] = value
     return retval
 
-  def validate(self, all_fields=True):
+  def validate(self, all_fields=True, base_key = '', root = None):
     '''Validate the jsonclass object's validity. Raises ValidationException on
     validation failed.
 
@@ -216,6 +217,8 @@ class JSONObject:
     Returns:
       None: upon successful validation, returns nothing.
     '''
+    if root is None:
+      root = self
     keypath_messages = {}
     for object_field in fields(self):
       default = object_field.default
@@ -224,14 +227,14 @@ class JSONObject:
         value = getattr(self, name)
         try:
           start_validator_index = last_eager_validator_index(default.validator.validators)
-          default.validator.validate(value, name, self, all_fields, start_validator_index)
+          default.validator.validate(value, keypath(base_key, name), root, all_fields, start_validator_index)
         except ValidationException as exception:
           if all_fields:
             keypath_messages.update(exception.keypath_messages)
           else:
             raise exception
     if len(keypath_messages) > 0:
-      raise ValidationException(keypath_messages=keypath_messages, root=self)
+      raise ValidationException(keypath_messages=keypath_messages, root=root)
     return self
 
   def is_valid(self):
