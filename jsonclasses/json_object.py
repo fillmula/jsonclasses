@@ -180,8 +180,7 @@ class JSONObject:
         name = object_field.name
         value = getattr(self, name)
         try:
-          start_validator_index = last_eager_validator_index(default.validator.validators)
-          default.validator.validate(value, keypath(base_key, name), root, all_fields, start_validator_index)
+          default.validator.validate(value, keypath(base_key, name), root, all_fields)
         except ValidationException as exception:
           if all_fields:
             keypath_messages.update(exception.keypath_messages)

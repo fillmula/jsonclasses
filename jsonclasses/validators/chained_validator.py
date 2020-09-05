@@ -3,6 +3,7 @@ from functools import reduce
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.eager_validator_index_after_index import eager_validator_index_after_index
+from ..utils.last_eager_validator_index import last_eager_validator_index
 
 print(eager_validator_index_after_index)
 class ChainedValidator(Validator):
@@ -24,6 +25,7 @@ class ChainedValidator(Validator):
     if root == None:
       root = value
     keypath_messages: Dict[str, str] = {}
+    start_validator_index = last_eager_validator_index(self.validators)
     for validator in self.validators[start_validator_index:]:
       try:
         validator.validate(value, key_path, root, all_fields)
