@@ -1,4 +1,6 @@
-# jsonclasses
+jsonclasses
+===========
+[![Build Status][travis-image]][travis-url]
 
 Python dataclasses <=> JSON declarable, interchangeable, validatable, sanitizable.
 
@@ -16,7 +18,7 @@ Install jsonclasses with pip.
 pip install jsonclasses
 ```
 
-## Example
+## Examples
 
 ### Converting from json dict
 
@@ -137,3 +139,6 @@ Using `jsonclasses` with `flask` web framework.
 ## License
 
 [MIT License](https://github.com/WiosoftCrafts/jsonclasses/blob/master/LICENSE)
+
+[travis-image]: https://img.shields.io/travis/WiosoftCrafts/jsonclasses.svg?style=flat-square&color=blue&logo=travis
+[travis-url]: https://travis-ci.org/WiosoftCrafts/jsonclasses
