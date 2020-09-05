@@ -1,5 +1,5 @@
 import unittest
-from typing import Dict
+from typing import List, Dict
 from datetime import datetime, date
 from jsonclasses import jsonclass, JSONObject, types
 from jsonclasses.exceptions import ValidationException
@@ -7,7 +7,6 @@ from jsonclasses.exceptions import ValidationException
 class TestInstanceOfValidator(unittest.TestCase):
 
   def test_instance_of_validator_creates_instance_of_designated_class_on_transforming(self):
-    pass
     @jsonclass
     class Address(JSONObject):
       line1: str = types.str
@@ -43,3 +42,54 @@ class TestInstanceOfValidator(unittest.TestCase):
     user = User(**{ 'name': 'John', 'address': { 'line2': 'Road', 'line1': 'OK' }})
     result = user.tojson()
     self.assertEqual(result, { 'name': 'John', 'address': { 'line1': 'OK', 'line2': 'Road' }})
+
+  def test_instance_of_validator_creates_instances_inside_list(self):
+    @jsonclass
+    class Address(JSONObject):
+      line1: str = types.str
+      line2: str = types.str
+    @jsonclass
+    class User(JSONObject):
+      name: str = types.str
+      addresses: List[Address] = types.list_of(types.instance_of(Address))
+    user = User(**{ 'name': 'John', 'addresses': [
+      { 'line1': 'London', 'line2': 'Road' },
+      { 'line1': 'Paris', 'line2': 'Road' },
+    ]})
+    self.assertIsInstance(user.addresses[0], Address)
+    self.assertIsInstance(user.addresses[1], Address)
+    self.assertEqual(len(user.addresses), 2)
+    self.assertEqual(user.addresses[0].__dict__, { 'line1': 'London', 'line2': 'Road' })
+    self.assertEqual(user.addresses[1].__dict__, { 'line1': 'Paris', 'line2': 'Road' })
+
+  def test_instance_of_validator_validates_instances_inside_list(self):
+    @jsonclass
+    class Address(JSONObject):
+      line1: str = types.str.required
+      line2: str = types.str.required
+    @jsonclass
+    class User(JSONObject):
+      name: str = types.str
+      addresses: List[Address] = types.list_of(types.instance_of(Address))
+    user = User(**{ 'name': 'John', 'addresses': [
+      { 'line1': 'London' },
+      { 'line1': 'Paris' },
+    ]})
+    self.assertRaises(ValidationException, user.validate)
+
+  def test_instance_of_validator_converts_to_json_inside_list(self):
+    @jsonclass
+    class Address(JSONObject):
+      line1: str = types.str
+      line2: str = types.str
+    @jsonclass
+    class User(JSONObject):
+      name: str = types.str
+      addresses: List[Address] = types.list_of(types.instance_of(Address))
+    user = User(**{ 'name': 'John', 'addresses': [
+      { 'line1': 'London', 'line2': 'Road' },
+      { 'line1': 'Paris', 'line2': 'Road' },
+    ]})
+    result = user.tojson()
+    desired = {'name': 'John', 'addresses': [{'line1': 'London', 'line2': 'Road'}, {'line1': 'Paris', 'line2': 'Road'}]}
+    self.assertEqual(result, desired)
