@@ -5,7 +5,6 @@ from .validator import Validator
 from ..utils.eager_validator_index_after_index import eager_validator_index_after_index
 from ..utils.last_eager_validator_index import last_eager_validator_index
 
-print(eager_validator_index_after_index)
 class ChainedValidator(Validator):
 
   def __init__(self, validators: List[Validator] = []):

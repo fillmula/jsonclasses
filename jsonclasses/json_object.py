@@ -159,7 +159,7 @@ class JSONObject:
           retval[key] = value
     return retval
 
-  def validate(self, all_fields=True, base_key = '', root = None):
+  def validate(self, all_fields=True, base_key: str = '', root = None):
     '''Validate the jsonclass object's validity. Raises ValidationException on
     validation failed.
 
