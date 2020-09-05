@@ -138,3 +138,10 @@ class TestDictOfValidator(unittest.TestCase):
       scores: Dict[str, int] = types.dictof(types.int)
     score = Score(scores={ 'johnLeo': 2, 'peterSun': 4 })
     self.assertEqual(score.__dict__, { 'scores': { 'johnLeo': 2, 'peterSun': 4 }})
+
+  def test_dictof_produce_error_messages_for_all_items(self):
+    @jsonclass(graph='test_dictof_17')
+    class Quiz(JSONObject):
+      numbers: Dict[str, int] = types.dictof(types.int.min(100))
+    quiz = Quiz(numbers={ 'a': 200, 'b': 2, 'c': 4, 'd': 200, 'e': 6, 'f': 200 })
+    self.assertRaisesRegex(ValidationException, 'numbers\\.e', quiz.validate)
