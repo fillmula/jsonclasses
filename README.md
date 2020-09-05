@@ -142,6 +142,7 @@ Using `jsonclasses` with `flask` web framework.
 ## License
 
 [MIT License](https://github.com/WiosoftCrafts/jsonclasses/blob/master/LICENSE)
+
 [pypi-image]: https://img.shields.io/pypi/v/jsonclasses.svg?style=flat-square
 [pypi-url]: https://pypi.org/project/jsonclasses/
 [travis-image]: https://img.shields.io/travis/WiosoftCrafts/jsonclasses.svg?style=flat-square&color=blue&logo=travis
