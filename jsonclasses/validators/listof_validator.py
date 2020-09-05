@@ -15,16 +15,25 @@ class ListOfValidator(Validator):
         { key_path: f'Value \'{value}\' at \'{key_path}\' should be a list.' },
         root
       )
-    for i, v in enumerate(value):
-      validator = None
-      if hasattr(self.types, 'validator'):
-        validator = self.types.validator
-      else:
-        validator = default_validator_for_type(self.types)
-      if validator:
-        if not is_nullable_type(validator):
-          validator = validator.append(RequiredValidator())
-        validator.validate(v, keypath(key_path, i), root, all_fields)
+    validator = None
+    if hasattr(self.types, 'validator'):
+      validator = self.types.validator
+    else:
+      validator = default_validator_for_type(self.types)
+    if validator:
+      if not is_nullable_type(validator):
+        validator = validator.append(RequiredValidator())
+      keypath_messages = {}
+      for i, v in enumerate(value):
+        try:
+          validator.validate(v, keypath(key_path, i), root, all_fields)
+        except ValidationException as exception:
+          if all_fields:
+            keypath_messages.update(exception.keypath_messages)
+          else:
+            raise exception
+      if len(keypath_messages) > 0:
+        raise ValidationException(keypath_messages=keypath_messages, root=root)
 
   def transform(self, value, camelize_keys: bool, key: str = ''):
     if value is None:

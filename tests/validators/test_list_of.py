@@ -107,3 +107,10 @@ class TestListOfValidator(unittest.TestCase):
       quiz.validate()
     except:
       self.fail('nullable marked should allow None in list of validator')
+
+  def test_listof_produce_error_messages_for_all_items(self):
+    @jsonclass(graph='test_listof_13')
+    class Quiz(JSONObject):
+      numbers: List[int] = types.listof(types.int.min(100))
+    quiz = Quiz(numbers=[200,2,4,200,6,200])
+    self.assertRaisesRegex(ValidationException, 'numbers\\.4', quiz.validate)
