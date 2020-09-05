@@ -27,7 +27,7 @@ class DictOfValidator(Validator):
           validator = validator.append(RequiredValidator())
         validator.validate(v, keypath(key_path, k), root, all_fields)
 
-  def transform(self, value, camelize_keys: bool):
+  def transform(self, value, camelize_keys: bool, key: str = ''):
     if value is None:
       return None
     if type(value) is not dict:
@@ -37,7 +37,12 @@ class DictOfValidator(Validator):
     else:
       validator = default_validator_for_type(self.types)
     if validator:
-      return { underscore(k) if camelize_keys else k: validator.transform(v, camelize_keys) for k, v in value.items() }
+      retval = {}
+      for k, v in value.items():
+        new_key = underscore(k) if camelize_keys else k
+        new_value = validator.transform(v, camelize_keys, keypath(key, new_key))
+        retval[new_key] = new_value
+      return retval
     else:
       return value
 

@@ -11,7 +11,7 @@ class DateValidator(Validator):
         root
       )
 
-  def transform(self, value, camelize_keys: bool):
+  def transform(self, value, camelize_keys: bool, key: str = ''):
     if value is None:
       return None
     elif type(value) is str:

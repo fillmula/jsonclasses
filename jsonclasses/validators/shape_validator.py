@@ -29,7 +29,7 @@ class ShapeValidator(Validator):
       if validator:
         validator.validate(value_at_key, keypath(key_path, k), root, all_fields)
 
-  def transform(self, value, camelize_keys: bool):
+  def transform(self, value, camelize_keys: bool, key: str = ''):
     if value is None:
       return None
     if type(value) is not dict:
@@ -37,18 +37,18 @@ class ShapeValidator(Validator):
     unused_keys = list(self.types.keys())
     retval = {}
     for k, field_value in value.items():
-      key = underscore(k) if camelize_keys else k
-      if key in unused_keys:
-        t = self.types[key]
+      new_key = underscore(k) if camelize_keys else k
+      if new_key in unused_keys:
+        t = self.types[new_key]
         if hasattr(t, 'validator'):
           validator = t.validator
         else:
           validator = default_validator_for_type(t)
         if validator:
-          retval[key] = validator.transform(field_value, camelize_keys)
+          retval[new_key] = validator.transform(field_value, camelize_keys, keypath(key, new_key))
         else:
-          retval[key] = field_value
-        unused_keys.remove(key)
+          retval[new_key] = field_value
+        unused_keys.remove(new_key)
     for k in unused_keys:
       retval[k] = None
     return retval

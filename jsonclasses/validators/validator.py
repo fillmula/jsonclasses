@@ -8,7 +8,7 @@ class Validator:
       root
     )
 
-  def transform(self, value, camelize_keys: bool):
+  def transform(self, value, camelize_keys: bool, key: str = ''):
     return value
 
   def tojson(self, value, camelize_keys: bool):

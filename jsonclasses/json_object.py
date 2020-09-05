@@ -33,42 +33,6 @@ class JSONObject:
     '''
     self._set(**kwargs, fill_blanks=True)
 
-  def _validate_and_transform(
-    self,
-    validator: Validator,
-    value: Any = None,
-    key: str = '',
-    camelize_keys: bool = False
-  ) -> Any:
-    validator.validate(value, key, self, False)
-    return validator.transform(value, camelize_keys)
-
-  def _eager_validate_transform(
-    self,
-    types: Types,
-    value: Any = None,
-    key: str = '',
-    camelize_keys: bool = None,
-    eager_validate: bool = True
-  ):
-    if camelize_keys is None:
-      camelize_keys = Config.on(self.__class__).camelize_json_keys
-    chained_validator = types.validator
-    if not eager_validate:
-      setattr(self, key, chained_validator.transform(value, camelize_keys))
-    else:
-      validators = chained_validator.validators
-      curvalue = value
-      index = 0
-      next_index = eager_validator_index_after_index(chained_validator.validators, index)
-      while next_index is not None:
-        validators = chained_validator.validators[index:next_index]
-        curvalue = reduce(lambda v, validator: self._validate_and_transform(validator, v, key, camelize_keys), validators, curvalue)
-        index = next_index + 1
-        next_index = eager_validator_index_after_index(chained_validator.validators, index)
-      curvalue = reduce(lambda v, validator: validator.transform(v, camelize_keys), chained_validator.validators[index:], curvalue)
-      setattr(self, key, curvalue)
-
   def _set(
     self,
     fill_blanks=False,
@@ -97,21 +61,21 @@ class JSONObject:
             current_value = getattr(self, key)
             if current_value is None or type(current_value) is Types:
               if transform:
-                self._eager_validate_transform(default, v, key, camelize_keys, not ignore_eager_validate)
+                setattr(self, key, default.validator.transform(v, camelize_keys, key))
               else:
                 setattr(self, key, v)
             else:
               remove_key = False
           else:
             if transform:
-              self._eager_validate_transform(default, v, key, camelize_keys, not ignore_eager_validate)
+              setattr(self, key, default.validator.transform(v, camelize_keys, key))
             else:
               setattr(self, key, v)
         else:
           validator = default_validator_for_type(object_type)
           if validator is not None: # for supported types, sync a default type for user
             if transform:
-              setattr(self, key, validator.transform(v, camelize_keys))
+              setattr(self, key, validator.transform(v, camelize_keys, key))
             else:
               setattr(self, key, v)
           else:
@@ -125,7 +89,7 @@ class JSONObject:
         default_factory = object_field.default_factory
         if isinstance(default, Types):
           if transform:
-            self._eager_validate_transform(default, None, k_with_blank_value, not ignore_eager_validate)
+            setattr(self, k_with_blank_value, default.validator.transform(None, camelize_keys, k_with_blank_value))
           else:
             setattr(self, k_with_blank_value, None)
         elif default is default_factory:

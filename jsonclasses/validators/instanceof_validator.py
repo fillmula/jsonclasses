@@ -19,7 +19,7 @@ class InstanceOfValidator(Validator):
       return
     value.validate(all_fields=all_fields, base_key=key_path, root=root)
 
-  def transform(self, value, camelize_keys: bool):
+  def transform(self, value, camelize_keys: bool, key: str = ''):
     if value is None:
       return None
     if type(value) is not dict:

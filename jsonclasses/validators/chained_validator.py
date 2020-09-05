@@ -2,7 +2,9 @@ from typing import List, Dict, Any
 from functools import reduce
 from ..exceptions import ValidationException
 from .validator import Validator
+from ..utils.eager_validator_index_after_index import eager_validator_index_after_index
 
+print(eager_validator_index_after_index)
 class ChainedValidator(Validator):
 
   def __init__(self, validators: List[Validator] = []):
@@ -32,8 +34,27 @@ class ChainedValidator(Validator):
     if len(keypath_messages) > 0:
       raise ValidationException(keypath_messages, root)
 
-  def transform(self, value, camelize_keys: bool):
-    return reduce(lambda v, validator: validator.transform(v, camelize_keys), self.validators, value)
+  def _validate_and_transform(
+    self,
+    validator: Validator,
+    value: Any = None,
+    key: str = '',
+    camelize_keys: bool = False
+  ) -> Any:
+    validator.validate(value, key, self, False)
+    return validator.transform(value, camelize_keys)
+
+  def transform(self, value, camelize_keys: bool, key: str = ''):
+    curvalue = value
+    index = 0
+    next_index = eager_validator_index_after_index(self.validators, index)
+    while next_index is not None:
+      validators = self.validators[index:next_index]
+      curvalue = reduce(lambda v, validator: self._validate_and_transform(validator, v, key, camelize_keys), validators, curvalue)
+      index = next_index + 1
+      next_index = eager_validator_index_after_index(self.validators, index)
+    curvalue = reduce(lambda v, validator: validator.transform(v, camelize_keys), self.validators[index:], curvalue)
+    return curvalue
 
   def tojson(self, value, camelize_keys: bool):
     return reduce(lambda v, validator: validator.tojson(v, camelize_keys), self.validators, value)
