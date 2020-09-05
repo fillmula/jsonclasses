@@ -11,6 +11,6 @@ class OneOfValidator(Validator):
   def validate(self, value, key_path, root, all_fields):
     if value is not None and value not in self.str_list:
       raise ValidationException(
-        { key_path: f'Value \'{value}\' at \'{key_path}\' should be one of \'{self.str_list}\'.' },
+        { key_path: f'Value \'{value}\' at \'{key_path}\' should be one of {self.str_list}.' },
         root
       )
