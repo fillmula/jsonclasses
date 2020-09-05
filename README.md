@@ -8,6 +8,14 @@ Python lacks a great solution of handling JSON web inputs, JSON objects
 manipulation and serialization. By declaring field specifications with extended
 feature set of @dataclass, we can solve this issue elegantly.
 
+## Installation
+
+Install jsonclasses with pip.
+
+```sh
+pip install jsonclasses
+```
+
 ## Example
 
 ### Converting from json dict
@@ -105,7 +113,7 @@ user_profile = UserProfile(name='John', gender='mlae')
 user_profile.validate()
 # =>
 # jsonclasses.exceptions.ValidationException: Json classes validation failed:
-#   'gender': Value 'mlae' at 'gender' should be one of '['male', 'female']'.
+#   'gender': Value 'mlae' at 'gender' should be one of ['male', 'female'].
 ```
 
 ### Integration with web frameworks
@@ -122,16 +130,10 @@ Using `jsonclasses` with `flask` web framework.
 
 ```
 
-## Installation
-
-Install `jsonclasses` package with `pip`.
-
-```sh
-pip install jsonclasses
-```
-
 ## Supported Python versions
 
-`jsonclasses` supports `Python >= 3.5`.
+`jsonclasses` supports `Python >= 3.7`.
 
 ## License
+
+[MIT License](https://github.com/WiosoftCrafts/jsonclasses/blob/master/LICENSE)
