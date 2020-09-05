@@ -180,14 +180,14 @@ class Types:
     '''
     return Types(self.validator.append(DatetimeValidator()))
 
-  def list_of(self, types: Any):
-    '''Fields marked with list_of should be a list of the given type. This is a
+  def listof(self, types: Any):
+    '''Fields marked with listof should be a list of the given type. This is a
     type marker.
     '''
     return Types(self.validator.append(ListOfValidator(types)))
 
-  def dict_of(self, types: Any):
-    '''Fields marked with list_of should be a str keyed dict of the given type.
+  def dictof(self, types: Any):
+    '''Fields marked with listof should be a str keyed dict of the given type.
     This is a type marker.
     '''
     return Types(self.validator.append(DictOfValidator(types)))
@@ -198,7 +198,7 @@ class Types:
     '''
     return Types(self.validator.append(ShapeValidator(types)))
 
-  def instance_of(self, json_object_class):
+  def instanceof(self, json_object_class):
     '''Fields marked with instance of are objects of given class.
     '''
     return Types(self.validator.append(InstanceOfValidator(json_object_class)))

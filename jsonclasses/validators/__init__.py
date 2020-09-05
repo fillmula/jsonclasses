@@ -37,12 +37,12 @@ from .date_validator import DateValidator
 from .datetime_validator import DatetimeValidator
 
 # collection validators
-from .list_of_validator import ListOfValidator
-from .dict_of_validator import DictOfValidator
+from .listof_validator import ListOfValidator
+from .dictof_validator import DictOfValidator
 
 # object validators
 from .shape_validator import ShapeValidator
-from .instance_of_validator import InstanceOfValidator
+from .instanceof_validator import InstanceOfValidator
 
 # nullability validators
 from .required_validator import RequiredValidator
