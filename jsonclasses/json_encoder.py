@@ -1,7 +1,7 @@
-from json.encoder import JSONEncoder as OldAndGrayJSONEncoder
+from json.encoder import JSONEncoder as PythonDefaultJSONEncoder
 from .json_object import JSONObject
 
-class JSONEncoder(OldAndGrayJSONEncoder):
+class JSONEncoder(PythonDefaultJSONEncoder):
   '''The JSONEncoder that works with jsonclasses objects. To dump an json
   encodable object with jsonclasses, use the system default json like this:
 

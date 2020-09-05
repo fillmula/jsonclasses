@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional
+from typing import Optional, Type
 from dataclasses import dataclass
 
 camelize_json_keys = True
@@ -27,7 +27,7 @@ class Config:
     if self.camelize_db_keys is None:
       self.camelize_db_keys = camelize_db_keys
 
-  def install_on_class(self, cls: type):
+  def install_on_class(self, cls: Type['JSONObject']):
     cls.config = self
 
   @classmethod

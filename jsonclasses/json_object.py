@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Any, Optional
 from dataclasses import dataclass, fields
 from datetime import datetime
