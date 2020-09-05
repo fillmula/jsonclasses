@@ -94,3 +94,13 @@ class TestShapeValidator(unittest.TestCase):
       })
     score = Score(scores={ 'student_a': 2, 'student_b': 4 })
     self.assertEqual(score.__dict__, { 'scores': { 'student_a': 2, 'student_b': 4 }})
+
+  def test_dictof_produce_error_messages_for_all_items(self):
+    @jsonclass(graph='test_shape_9')
+    class Quiz(JSONObject):
+      numbers: Dict[str, int] = types.shape({
+      'a': types.int.min(140),
+      'b': types.int.min(150)
+      })
+    quiz = Quiz(numbers={ 'a': 1, 'b': 2, })
+    self.assertRaisesRegex(ValidationException, 'numbers\\.b', quiz.validate)

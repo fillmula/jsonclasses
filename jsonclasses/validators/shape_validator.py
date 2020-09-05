@@ -17,6 +17,7 @@ class ShapeValidator(Validator):
         { key_path: f'Value \'{value}\' at \'{key_path}\' should be a dict.' },
         root
       )
+    keypath_messages = {}
     for k, t in self.types.items():
       try:
         value_at_key = value[k]
@@ -27,7 +28,15 @@ class ShapeValidator(Validator):
       else:
         validator = default_validator_for_type(t)
       if validator:
-        validator.validate(value_at_key, keypath(key_path, k), root, all_fields)
+        try:
+          validator.validate(value_at_key, keypath(key_path, k), root, all_fields)
+        except ValidationException as exception:
+          if all_fields:
+            keypath_messages.update(exception.keypath_messages)
+          else:
+            raise exception
+    if len(keypath_messages) > 0:
+      raise ValidationException(keypath_messages=keypath_messages, root=root)
 
   def transform(self, value, camelize_keys: bool, key: str = ''):
     if value is None:
