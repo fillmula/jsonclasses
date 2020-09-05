@@ -1,4 +1,5 @@
 import unittest
+from typing import List
 from jsonclasses import jsonclass, JSONObject, types
 from jsonclasses.exceptions import ValidationException
 from datetime import datetime, date
@@ -63,3 +64,65 @@ class TestEagerValidator(unittest.TestCase):
       user.validate()
     except ValidationException:
       self.fail('eager validator should prevent validators before it to work on validate.')
+
+  def test_eager_validator_should_validate_and_transform_inside_list(self):
+    @jsonclass(graph='test_eager_validator_7')
+    class User(JSONObject):
+      passwords: List[str] = types.listof(
+        types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x')
+      )
+    try:
+      _user = User(passwords=['123', '456', '789', '012'])
+    except:
+      self.fail('eager validator should not throw if value is valid')
+
+  def test_eager_validator_should_validate_and_throw_inside_list(self):
+    @jsonclass(graph='test_eager_validator_8')
+    class User(JSONObject):
+      passwords: List[str] = types.listof(
+        types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x')
+      )
+    with self.assertRaises(ValidationException):
+      _user = User(passwords=['123xxx', '456xxx', '789xxx', '012xxx'])
+
+  def test_eager_validator_should_validate_and_transform_inside_dict(self):
+    @jsonclass(graph='test_eager_validator_9')
+    class User(JSONObject):
+      passwords: List[str] = types.dictof(
+        types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x')
+      )
+    try:
+      _user = User(passwords={ 'a': '123', 'b': '456', 'c': '789', 'd': '012' })
+    except:
+      self.fail('eager validator should not throw if value is valid')
+
+  def test_eager_validator_should_validate_and_throw_inside_dict(self):
+    @jsonclass(graph='test_eager_validator_10')
+    class User(JSONObject):
+      passwords: List[str] = types.dictof(
+        types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x')
+      )
+    with self.assertRaises(ValidationException):
+      _user = User(passwords={ 'a': '123xxx', 'b': '456xxx', 'c': '789xxx', 'd': '012xxx' })
+
+  def test_eager_validator_should_validate_and_transform_inside_shape(self):
+    @jsonclass(graph='test_eager_validator_11')
+    class User(JSONObject):
+      passwords: List[str] = types.shape({
+        'a': types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x'),
+        'b': types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x')
+      })
+    try:
+      _user = User(passwords={ 'a': '123', 'b': '456' })
+    except:
+      self.fail('eager validator should not throw if value is valid')
+
+  def test_eager_validator_should_validate_and_throw_inside_shape(self):
+    @jsonclass(graph='test_eager_validator_12')
+    class User(JSONObject):
+      passwords: List[str] = types.shape({
+        'a': types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x'),
+        'b': types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x')
+      })
+    with self.assertRaises(ValidationException):
+      _user = User(passwords={ 'a': '123xxx', 'b': '456xxx' })
