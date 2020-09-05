@@ -1,6 +1,7 @@
 jsonclasses
 ===========
 [![Pypi][pypi-image]][pypi-url]
+[![Python Version][python-image]][python-url]
 [![Build Status][travis-image]][travis-url]
 [![License][license-image]][license-url]
 [![PR Welcome][pr-image]][pr-url]
@@ -145,6 +146,8 @@ Using `jsonclasses` with `flask` web framework.
 
 [pypi-image]: https://img.shields.io/pypi/v/jsonclasses.svg?style=flat-square
 [pypi-url]: https://pypi.org/project/jsonclasses/
+[python-image]: https://img.shields.io/pypi/pyversions/jsonclasses?style=flat-square
+[python-url]: https://pypi.org/project/jsonclasses/
 [travis-image]: https://img.shields.io/travis/WiosoftCrafts/jsonclasses.svg?style=flat-square&color=blue&logo=travis
 [travis-url]: https://travis-ci.org/WiosoftCrafts/jsonclasses
 [license-image]: https://img.shields.io/github/license/WiosoftCrafts/jsonclasses.svg?style=flat-square
