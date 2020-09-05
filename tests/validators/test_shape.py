@@ -56,49 +56,41 @@ class TestShapeValidator(unittest.TestCase):
     })
 
   def test_shape_should_camelize_keys_when_serializing_if_its_the_class_setting(self):
-    @jsonclass(graph='test_shape_5')
+    @jsonclass(graph='test_shape_5', camelize_json_keys=True)
     class Score(JSONObject):
       scores: dict = types.shape({
         'student_a': types.int,
         'student_b': types.int
       })
-      def camelize_json_keys(self) -> bool:
-        return True
     score = Score(scores={ 'student_a': 2, 'student_b': 4 })
     self.assertEqual(score.tojson(), { 'scores': { 'studentA': 2, 'studentB': 4 }})
 
   def test_shape_should_not_camelize_keys_when_serializing_if_its_the_class_setting(self):
-    @jsonclass(graph='test_shape_6')
+    @jsonclass(graph='test_shape_6', camelize_json_keys=False)
     class Score(JSONObject):
       scores: dict = types.shape({
         'student_a': types.int,
         'student_b': types.int
       })
-      def camelize_json_keys(self) -> bool:
-        return False
     score = Score(scores={ 'student_a': 2, 'student_b': 4 })
     self.assertEqual(score.tojson(), { 'scores': { 'student_a': 2, 'student_b': 4 }})
 
   def test_shape_should_handle_camelized_keys_when_initializing_if_its_the_class_setting(self):
-    @jsonclass(graph='test_shape_7')
+    @jsonclass(graph='test_shape_7', camelize_json_keys=True)
     class Score(JSONObject):
       scores: dict = types.shape({
         'student_a': types.int,
         'student_b': types.int
       })
-      def camelize_json_keys(self) -> bool:
-        return True
     score = Score(scores={ 'studentA': 2, 'studentB': 4 })
     self.assertEqual(score.__dict__, { 'scores': { 'student_a': 2, 'student_b': 4 }})
 
   def test_shape_should_not_handle_camelized_keys_when_initializing_if_its_the_class_setting(self):
-    @jsonclass(graph='test_shape_8')
+    @jsonclass(graph='test_shape_8', camelize_json_keys=False)
     class Score(JSONObject):
       scores: dict = types.shape({
         'student_a': types.int,
         'student_b': types.int
       })
-      def camelize_json_keys(self) -> bool:
-        return False
     score = Score(scores={ 'student_a': 2, 'student_b': 4 })
     self.assertEqual(score.__dict__, { 'scores': { 'student_a': 2, 'student_b': 4 }})

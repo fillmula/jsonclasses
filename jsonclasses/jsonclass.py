@@ -30,5 +30,10 @@ def jsonclass(
       return register_class(dataclass(cls, init=False), graph=graph)
   else:
     def parametered_jsonclass(cls):
-      return jsonclass(cls, graph=graph)
+      return jsonclass(
+        cls,
+        graph=graph,
+        camelize_json_keys=camelize_json_keys,
+        camelize_db_keys=camelize_db_keys
+      )
     return parametered_jsonclass

@@ -13,7 +13,7 @@ class JSONClassRedefinitionError(Exception):
     name = new_cls.__name__
     original_file = getmodule(exist_cls).__file__
     new_file = getmodule(new_cls).__file__
-    graph = exist_cls.config['graph']
+    graph = exist_cls.config.graph
     message = f'Existing JSON Class \'{name}\' in graph \'{graph}\' is defined at \'{original_file}\'. Cannot define new JSON Class with same name in same graph \'{graph}\' at \'{new_file}\'.'
     super().__init__(message)
 
@@ -33,7 +33,7 @@ def register_class(cls: type, graph: str = 'default'):
 
 def get_registered_class(name: str, graph: str = 'default', sibling: Optional[type] = None):
   if sibling is not None:
-    graph = sibling.config['graph']
+    graph = sibling.config.graph
   cls = __graph_table(graph).get(name)
   if cls is None:
     raise JSONClassNotFoundError(name, graph)

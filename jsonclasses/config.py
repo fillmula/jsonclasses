@@ -1,9 +1,14 @@
+from __future__ import annotations
 from typing import Optional
 from dataclasses import dataclass
 
 camelize_json_keys = True
-'''When initializing jsonclasses objects and setting jsonclasses object values,
-handle key case style transforming or not.
+'''When initializing, setting values, updating values, and serializing,
+whether automatically camelize json keys or not. Most of the times, JSON
+keys are camelized since this is a data transfering format. Most of other
+programming languages have camelized naming convensions. Python is an
+exception. Use `config.camelize_json_keys = False` to disable this behavior
+globally.
 '''
 
 camelize_db_keys = True
@@ -26,5 +31,5 @@ class Config:
     cls.config = self
 
   @classmethod
-  def on(self, cls: type):
+  def on(self, cls: type) -> Config:
     return cls.config

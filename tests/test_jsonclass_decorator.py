@@ -1,6 +1,6 @@
 import unittest
 from jsonclasses import jsonclass, JSONObject
-from jsonclasses.graph import get_registered_class
+from jsonclasses.graph import get_registered_class, JSONClassRedefinitionError
 from jsonclasses.config import Config
 
 class TestJsonClassDecorator(unittest.TestCase):
@@ -67,3 +67,29 @@ class TestJsonClassDecorator(unittest.TestCase):
     config = Config.on(MyClassThatHasConfig)
     self.assertTrue(isinstance(config, Config))
     self.assertEqual(config, Config(graph='my-secret-graph-087', camelize_json_keys=True, camelize_db_keys=True))
+
+  def test_json_class_decorator_pass_settings_camelize_json_to_class(self):
+    @jsonclass(graph='my-secret-graph-087', camelize_json_keys=False)
+    class MyClassThatHasConfigWithJSONKey(JSONObject):
+      str_field: str
+      int_field: str
+    config = Config.on(MyClassThatHasConfigWithJSONKey)
+    self.assertTrue(isinstance(config, Config))
+    self.assertEqual(config, Config(graph='my-secret-graph-087', camelize_json_keys=False, camelize_db_keys=True))
+
+  def test_json_class_decorator_pass_settings_camelize_db_to_class(self):
+    @jsonclass(graph='my-secret-graph-087', camelize_db_keys=False)
+    class MyClassThatHasConfigWithDBKey(JSONObject):
+      str_field: str
+      int_field: str
+    config = Config.on(MyClassThatHasConfigWithDBKey)
+    self.assertTrue(isinstance(config, Config))
+    self.assertEqual(config, Config(graph='my-secret-graph-087', camelize_json_keys=True, camelize_db_keys=False))
+
+  def test_json_class_decorator_throws_if_defined_duplicate_name_class_on_same_graph(self):
+    with self.assertRaisesRegex(JSONClassRedefinitionError, 'Cannot define new JSON Class with same name in same graph'):
+      @jsonclass(graph='my-secret-graph-087', camelize_json_keys=False)
+      class MyClassThatHasConfigWithJSONKey(JSONObject):
+        str_field: str
+        int_field: str
+      MyClassThatHasConfigWithJSONKey()

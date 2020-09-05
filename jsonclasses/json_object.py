@@ -5,9 +5,9 @@ from functools import reduce
 from inflection import underscore, camelize
 from jsonclasses.types import Types
 from jsonclasses.validators import ChainedValidator, Validator
+from jsonclasses.config import Config
 from jsonclasses.utils import *
 from jsonclasses.exceptions import ValidationException
-from . import config
 from .utils.keypath import keypath
 
 @dataclass(init=False)
@@ -32,16 +32,6 @@ class JSONObject:
     '''
     self._set(**kwargs, fill_blanks=True)
 
-  def camelize_json_keys(self) -> bool:
-    '''When initializing, setting values, updating values, and serializing,
-    whether automatically camelize json keys or not. Most of the times, JSON
-    keys are camelized since this is a data transfering format. Most of other
-    programming languages have camelized naming convensions. Python is an
-    exception. Use `config.camelize_json_keys = False` to disable this behavior
-    globally.
-    '''
-    return config.camelize_json_keys
-
   def _validate_and_transform(
     self,
     validator: Validator,
@@ -61,7 +51,7 @@ class JSONObject:
     eager_validate: bool = True
   ):
     if camelize_keys is None:
-      camelize_keys = self.camelize_json_keys()
+      camelize_keys = Config.on(self.__class__).camelize_json_keys
     chained_validator = types.validator
     if not eager_validate:
       setattr(self, key, chained_validator.transform(value, camelize_keys))
@@ -89,7 +79,7 @@ class JSONObject:
   ):
     object_fields = { f.name: f for f in fields(self) }
     unused_names = list(object_fields.keys())
-    camelize_keys = self.camelize_json_keys()
+    camelize_keys = Config.on(self.__class__).camelize_json_keys
     for k, v in kwargs.items():
       key = underscore(k) if camelize_keys else k
       if key in unused_names:
@@ -183,7 +173,7 @@ class JSONObject:
       dict: A dict represents this object's JSON object.
     '''
     if camelize_keys is None:
-      camelize_keys = self.camelize_json_keys()
+      camelize_keys = Config.on(self.__class__).camelize_json_keys
     retval = {}
     object_fields = { f.name: f for f in fields(self) }
     for name, field in object_fields.items():
