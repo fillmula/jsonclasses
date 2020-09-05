@@ -1,6 +1,8 @@
 jsonclasses
 ===========
 [![Build Status][travis-image]][travis-url]
+[![License][license-image]][license-url]
+[![PR Welcome][pr-image]][pr-url]
 
 Python dataclasses <=> JSON declarable, interchangeable, validatable, sanitizable.
 
@@ -142,3 +144,7 @@ Using `jsonclasses` with `flask` web framework.
 
 [travis-image]: https://img.shields.io/travis/WiosoftCrafts/jsonclasses.svg?style=flat-square&color=blue&logo=travis
 [travis-url]: https://travis-ci.org/WiosoftCrafts/jsonclasses
+[license-image]: https://img.shields.io/github/license/WiosoftCrafts/jsonclasses.svg?style=flat-square
+[license-url]: https://github.com/WiosoftCrafts/jsonclasses/blob/master/LICENSE
+[pr-image]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square
+[pr-url]: https://github.com/WiosoftCrafts/jsonclasses
