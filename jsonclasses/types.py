@@ -96,7 +96,7 @@ class Types:
     '''
     return Types(self.validator.append(MatchValidator(pattern)))
 
-  def one_of(self, str_list):
+  def oneof(self, str_list):
     '''This is the enum equivalent for jsonclasses. Values in the provided list
     are considered valid values.
     '''

@@ -12,7 +12,7 @@ class TestUniqueValidator(unittest.TestCase):
       phone_no: str
       username: str = types.str.writeonce.unique.required
       nickname: str = types.str.maxlength(30).required
-      gender: str = types.str.writeonce.one_of(['male', 'female'])
+      gender: str = types.str.writeonce.oneof(['male', 'female'])
       email: str = types.str.unique.required
     try:
       _user = TestUser()
@@ -32,7 +32,7 @@ class TestUniqueValidator(unittest.TestCase):
       username: str = types.str.writeonce.unique.required
       password: str = types.str.writeonly.minlength(8).maxlength(16).transform(lambda v: v + 'z').required
       nickname: str = types.str.maxlength(30).required
-      gender: str = types.str.writeonce.one_of(['male', 'female'])
+      gender: str = types.str.writeonce.oneof(['male', 'female'])
       email: str = types.str.unique.required
       phone_no: str
       wechat_open_id: str

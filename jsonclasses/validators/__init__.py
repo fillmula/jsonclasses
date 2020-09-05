@@ -16,7 +16,7 @@ from .eager_validator import EagerValidator
 # str validators
 from .str_validator import StrValidator
 from .match_validator import MatchValidator
-from .one_of_validator import OneOfValidator
+from .oneof_validator import OneOfValidator
 from .truncate_validator import TruncateValidator
 from .minlength_validator import MinlengthValidator
 from .maxlength_validator import MaxlengthValidator

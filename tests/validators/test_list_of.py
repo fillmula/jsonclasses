@@ -12,7 +12,7 @@ class TestListOfValidator(unittest.TestCase):
       chapters: List[str] = types.listof(types.str).required
     self.assertRaises(ValidationException, Book(chapters='abc').validate)
 
-  def test_list_validator_throws_if_one_of_item_doesnt_match_inner_validator(self):
+  def test_list_validator_throws_if_oneof_item_doesnt_match_inner_validator(self):
     @jsonclass(graph='test_listof_2')
     class Book(JSONObject):
       chapters: List[str] = types.listof(types.str).required

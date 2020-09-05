@@ -12,7 +12,7 @@ class TestDictOfValidator(unittest.TestCase):
       chapters: Dict[str, str] = types.dictof(types.str).required
     self.assertRaises(ValidationException, Book(chapters='abc').validate)
 
-  def test_list_validator_throws_if_one_of_item_doesnt_match_inner_validator(self):
+  def test_list_validator_throws_if_oneof_item_doesnt_match_inner_validator(self):
     @jsonclass(graph='test_dictof_2')
     class Book(JSONObject):
       chapters: Dict[str, str] = types.dictof(types.str).required
