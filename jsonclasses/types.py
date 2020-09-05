@@ -198,6 +198,11 @@ class Types:
     '''
     return Types(self.validator.append(ShapeValidator(types)))
 
+  def instance_of(self, json_object_class):
+    '''Fields marked with instance of are objects of given class.
+    '''
+    return Types(self.validator.append(InstanceOfValidator(json_object_class)))
+
   @property
   def required(self):
     '''Fields marked with required are invalid when value is not presented aka

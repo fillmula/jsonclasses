@@ -42,6 +42,7 @@ from .dict_of_validator import DictOfValidator
 
 # object validators
 from .shape_validator import ShapeValidator
+from .instance_of_validator import InstanceOfValidator
 
 # nullability validators
 from .required_validator import RequiredValidator
