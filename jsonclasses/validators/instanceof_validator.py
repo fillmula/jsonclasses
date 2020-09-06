@@ -47,15 +47,15 @@ class InstanceOfValidator(Validator):
           elif is_writeonce_type(default.validator):
             current_value = getattr(base, key)
             if current_value is None or hasattr(type(current_value), '__jsonclass_type__'):
-              setattr(base, key, default.validator.transform(raw_value, key, self, False, config))
+              setattr(base, key, default.validator.transform(raw_value, keypath(key_path, key), root, all_fields, config))
             else:
               remove_key = False
           else:
-              setattr(base, key, default.validator.transform(raw_value, key, self, False, config))
+              setattr(base, key, default.validator.transform(raw_value, keypath(key_path, key), root, all_fields, config))
         else:
           validator = default_validator_for_type(object_type)
           if validator is not None: # for supported types, sync a default type for user
-            setattr(base, key, validator.transform(raw_value, key, self, False, config))
+            setattr(base, key, validator.transform(raw_value, keypath(key_path, key), root, all_fields, config))
           else:
             setattr(base, key, raw_value)
         if remove_key:
@@ -66,7 +66,7 @@ class InstanceOfValidator(Validator):
         default = object_field.default
         default_factory = object_field.default_factory
         if hasattr(default, '__jsonclass_type__'):
-          setattr(base, k_with_blank_value, default.validator.transform(None, k_with_blank_value, self, False, config))
+          setattr(base, k_with_blank_value, default.validator.transform(None, keypath(key_path, k_with_blank_value), root, all_fields, config))
         elif default is default_factory:
           setattr(base, k_with_blank_value, None)
         else: # user specified a default value

@@ -126,6 +126,7 @@ class JSONObject:
     pass valid and final form values through this method. This method returns
     self, thus you can chain calling with other instance methods.
     '''
+
     self._set(
       fill_blanks=False,
       transform=False,
