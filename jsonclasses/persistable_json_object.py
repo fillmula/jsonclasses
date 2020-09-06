@@ -27,6 +27,6 @@ class PersistableJSONObject(JSONObject):
   '''
 
   def set(self, fill_blanks=True, **kwargs):
-    self._set(fill_blanks=False, **kwargs)
+    super().set(**kwargs)
     self.updated_at = datetime.now()
     return self
