@@ -1,4 +1,5 @@
 import unittest
+from typing import List, Dict
 from jsonclasses import jsonclass, JSONObject, types
 from jsonclasses.exceptions import ValidationException
 
@@ -60,3 +61,55 @@ class TestJSONObjectValidate(unittest.TestCase):
     exception = context.exception
     self.assertTrue(len(exception.keypath_messages) == 1)
     self.assertRegex(exception.keypath_messages['name'], 'Value at \'name\' should not be None\\.')
+
+  def test_validate_validates_all_fields_inside_list(self):
+    @jsonclass(graph='test_validate_7')
+    class TestNumber(JSONObject):
+      numbers: List[int] = types.listof(types.int.min(100))
+    number = TestNumber(numbers=[1,2,3,4,5])
+    with self.assertRaises(ValidationException) as context:
+      number.validate()
+    exception = context.exception
+    self.assertTrue(len(exception.keypath_messages) == 5)
+    self.assertRegex(exception.keypath_messages['numbers.0'], 'Value \'1\' at \'numbers\\.0\' should not be less than 100\\.')
+    self.assertRegex(exception.keypath_messages['numbers.1'], 'Value \'2\' at \'numbers\\.1\' should not be less than 100\\.')
+    self.assertRegex(exception.keypath_messages['numbers.2'], 'Value \'3\' at \'numbers\\.2\' should not be less than 100\\.')
+    self.assertRegex(exception.keypath_messages['numbers.3'], 'Value \'4\' at \'numbers\\.3\' should not be less than 100\\.')
+    self.assertRegex(exception.keypath_messages['numbers.4'], 'Value \'5\' at \'numbers\\.4\' should not be less than 100\\.')
+
+  def test_validate_validates_only_one_field_inside_list(self):
+    @jsonclass(graph='test_validate_8')
+    class TestNumber(JSONObject):
+      numbers: List[int] = types.listof(types.int.min(100))
+    number = TestNumber(numbers=[1,2,3,4,5])
+    with self.assertRaises(ValidationException) as context:
+      number.validate(all_fields=False)
+    exception = context.exception
+    self.assertTrue(len(exception.keypath_messages) == 1)
+    self.assertRegex(exception.keypath_messages['numbers.0'], 'Value \'1\' at \'numbers\\.0\' should not be less than 100\\.')
+
+  def test_validate_validates_all_fields_inside_dict(self):
+    @jsonclass(graph='test_validate_9')
+    class TestNumber(JSONObject):
+      numbers: Dict[str, int] = types.dictof(types.int.min(100))
+    number = TestNumber(numbers={ 'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5 })
+    with self.assertRaises(ValidationException) as context:
+      number.validate()
+    exception = context.exception
+    self.assertTrue(len(exception.keypath_messages) == 5)
+    self.assertRegex(exception.keypath_messages['numbers.a'], 'Value \'1\' at \'numbers\\.a\' should not be less than 100\\.')
+    self.assertRegex(exception.keypath_messages['numbers.b'], 'Value \'2\' at \'numbers\\.b\' should not be less than 100\\.')
+    self.assertRegex(exception.keypath_messages['numbers.c'], 'Value \'3\' at \'numbers\\.c\' should not be less than 100\\.')
+    self.assertRegex(exception.keypath_messages['numbers.d'], 'Value \'4\' at \'numbers\\.d\' should not be less than 100\\.')
+    self.assertRegex(exception.keypath_messages['numbers.e'], 'Value \'5\' at \'numbers\\.e\' should not be less than 100\\.')
+
+  def test_validate_validates_only_one_field_inside_dict(self):
+    @jsonclass(graph='test_validate_10')
+    class TestNumber(JSONObject):
+      numbers: Dict[str, int] = types.dictof(types.int.min(100))
+    number = TestNumber(numbers={ 'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5 })
+    with self.assertRaises(ValidationException) as context:
+      number.validate(all_fields=False)
+    exception = context.exception
+    self.assertTrue(len(exception.keypath_messages) == 1)
+    self.assertRegex(exception.keypath_messages['numbers.a'], 'Value \'1\' at \'numbers\\.a\' should not be less than 100\\.')
