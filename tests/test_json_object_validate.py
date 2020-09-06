@@ -113,3 +113,41 @@ class TestJSONObjectValidate(unittest.TestCase):
     exception = context.exception
     self.assertTrue(len(exception.keypath_messages) == 1)
     self.assertRegex(exception.keypath_messages['numbers.a'], 'Value \'1\' at \'numbers\\.a\' should not be less than 100\\.')
+
+  def test_validate_validates_all_fields_inside_shape(self):
+    @jsonclass(graph='test_validate_11')
+    class TestNumber(JSONObject):
+      numbers: Dict[str, int] = types.shape({
+        'a': types.int.min(100),
+        'b': types.int.min(100),
+        'c': types.int.min(100),
+        'd': types.int.min(100),
+        'e': types.int.min(100)
+      })
+    number = TestNumber(numbers={ 'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5 })
+    with self.assertRaises(ValidationException) as context:
+      number.validate()
+    exception = context.exception
+    self.assertTrue(len(exception.keypath_messages) == 5)
+    self.assertRegex(exception.keypath_messages['numbers.a'], 'Value \'1\' at \'numbers\\.a\' should not be less than 100\\.')
+    self.assertRegex(exception.keypath_messages['numbers.b'], 'Value \'2\' at \'numbers\\.b\' should not be less than 100\\.')
+    self.assertRegex(exception.keypath_messages['numbers.c'], 'Value \'3\' at \'numbers\\.c\' should not be less than 100\\.')
+    self.assertRegex(exception.keypath_messages['numbers.d'], 'Value \'4\' at \'numbers\\.d\' should not be less than 100\\.')
+    self.assertRegex(exception.keypath_messages['numbers.e'], 'Value \'5\' at \'numbers\\.e\' should not be less than 100\\.')
+
+  def test_validate_validates_only_one_field_inside_shape(self):
+    @jsonclass(graph='test_validate_12')
+    class TestNumber(JSONObject):
+      numbers: Dict[str, int] = types.shape({
+        'a': types.int.min(100),
+        'b': types.int.min(100),
+        'c': types.int.min(100),
+        'd': types.int.min(100),
+        'e': types.int.min(100)
+      })
+    number = TestNumber(numbers={ 'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5 })
+    with self.assertRaises(ValidationException) as context:
+      number.validate(all_fields=False)
+    exception = context.exception
+    self.assertTrue(len(exception.keypath_messages) == 1)
+    self.assertRegex(exception.keypath_messages['numbers.a'], 'Value \'1\' at \'numbers\\.a\' should not be less than 100\\.')
