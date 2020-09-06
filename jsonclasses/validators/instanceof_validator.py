@@ -27,7 +27,7 @@ class InstanceOfValidator(Validator):
       return value
     return self.json_object_class(**value)
 
-  def tojson(self, value, camelize_keys: bool):
+  def tojson(self, value, config: Config):
     if value is None:
       return None
     return value.tojson()

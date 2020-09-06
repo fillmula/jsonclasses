@@ -50,7 +50,7 @@ class ListOfValidator(Validator):
     else:
       return value
 
-  def tojson(self, value, camelize_keys: bool):
+  def tojson(self, value, config: Config):
     if value is None:
       return None
     if type(value) is not list:
@@ -60,6 +60,6 @@ class ListOfValidator(Validator):
     else:
       validator = default_validator_for_type(self.types)
     if validator:
-      return [ validator.tojson(v, camelize_keys) for v in value ]
+      return [ validator.tojson(v, config) for v in value ]
     else:
       return value

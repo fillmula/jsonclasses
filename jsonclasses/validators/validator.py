@@ -13,5 +13,5 @@ class Validator:
   def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     return value
 
-  def tojson(self, value, camelize_keys: bool):
+  def tojson(self, value, config: Config):
     return value

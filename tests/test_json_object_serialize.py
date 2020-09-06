@@ -73,7 +73,7 @@ class TestJSONObjectSerialize(unittest.TestCase):
     )
 
   def test_serialize_keep_snakecase_keys_if_explicitly_addressed(self):
-    @jsonclass(graph='test_serialize_9')
+    @jsonclass(graph='test_serialize_9', camelize_json_keys=False)
     class Article(JSONObject):
       article_title: str
       article_content: str
@@ -81,6 +81,6 @@ class TestJSONObjectSerialize(unittest.TestCase):
     article.article_title = "title"
     article.article_content = "content"
     self.assertEqual(
-      article.tojson(camelize_keys=False),
+      article.tojson(),
       { 'article_title': 'title', 'article_content': 'content' }
     )

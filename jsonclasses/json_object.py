@@ -128,22 +128,22 @@ class JSONObject:
     )
     return self
 
-  def tojson(self, camelize_keys: Optional[bool]=None, ignore_writeonly=False):
+  def tojson(self, ignore_writeonly=False):
     '''Serialize this jsonclass object to JSON dict.
 
     Args:
-      camelize_keys (Optional[bool]): Whether camelize json keys or not. It
-      defaults to `jsonclasses.config.camelize_json_keys`.
+      ignore_writeonly (Optional[bool]): Whether ignore writeonly marks on
+      fields. Be careful when setting it to True.
 
     Returns:
       dict: A dict represents this object's JSON object.
     '''
-    if camelize_keys is None:
-      camelize_keys = Config.on(self.__class__).camelize_json_keys
+    config = Config.on(self.__class__)
+    camelize_json_keys = config.camelize_json_keys
     retval = {}
     object_fields = { f.name: f for f in fields(self) }
     for name, field in object_fields.items():
-      key = camelize(name, False) if camelize_keys else name
+      key = camelize(name, False) if camelize_json_keys else name
       value = getattr(self, name)
       default = field.default
       object_type = field.type
@@ -151,11 +151,11 @@ class JSONObject:
         if is_writeonly_type(default.validator) and not ignore_writeonly:
           continue
         else:
-          retval[key] = default.validator.tojson(value, camelize_keys)
+          retval[key] = default.validator.tojson(value, config)
       else:
         validator = default_validator_for_type(object_type)
         if validator is not None:
-          retval[key] = validator.tojson(value, camelize_keys)
+          retval[key] = validator.tojson(value, config)
         else:
           retval[key] = value
     return retval

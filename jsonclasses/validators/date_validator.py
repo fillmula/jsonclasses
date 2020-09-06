@@ -21,6 +21,6 @@ class DateValidator(Validator):
     else:
       return value
 
-  def tojson(self, value, camelize_keys: bool):
+  def tojson(self, value, config: Config):
     if value is not None:
       return value.isoformat() + 'T00:00:00.000Z'

@@ -63,14 +63,14 @@ class ShapeValidator(Validator):
       retval[k] = None
     return retval
 
-  def tojson(self, value, camelize_keys: bool):
+  def tojson(self, value, config: Config):
     if value is None:
       return None
     if type(value) is not dict:
       return value
     retval = {}
     for k, t in self.types.items():
-      key = camelize(k, False) if camelize_keys else k
+      key = camelize(k, False) if config.camelize_json_keys else k
       try:
         value_at_key = value[k]
       except KeyError:
@@ -80,7 +80,7 @@ class ShapeValidator(Validator):
       else:
         validator = default_validator_for_type(t)
       if validator:
-        retval[key] = validator.tojson(value_at_key, camelize_keys)
+        retval[key] = validator.tojson(value_at_key, config)
       else:
         retval[key] = value_at_key
     return retval
