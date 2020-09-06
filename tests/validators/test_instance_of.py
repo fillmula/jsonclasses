@@ -120,3 +120,19 @@ class TestInstanceOfValidator(unittest.TestCase):
       ]
     }
     self.assertEqual(result, desired)
+
+  def test_instanceof_works_without_assigning_a_types(self):
+    @jsonclass(graph='test_instanceof_8')
+    class Staff(JSONObject):
+      position: str
+      user: User
+    @jsonclass(graph='test_instanceof_8')
+    class User(JSONObject):
+      name: str = types.str
+      staff: Staff
+    user = User(**{ 'name': 'John', 'staff': { 'position': 'CEO' }})
+    self.assertIsInstance(user.staff, Staff)
+    self.assertEqual(user.staff.position, 'CEO')
+    staff = Staff(**{ 'position': 'Developer', 'user': { 'name': 'Valy' }})
+    self.assertIsInstance(staff.user, User)
+    self.assertEqual(staff.user.name, 'Valy')
