@@ -35,10 +35,14 @@ class InstanceOfValidator(Validator):
     for object_field in fields(value):
       default = object_field.default
       if isinstance(default, resolve_class('Types')):
+        validator = default.validator
+      else:
+        validator = default_validator_for_type(object_field.type, graph_sibling=root.__class__)
+      if validator:
         name = object_field.name
         field_value = getattr(value, name)
         try:
-          default.validator.validate(field_value, keypath(key_path, name), root, all_fields)
+          validator.validate(field_value, keypath(key_path, name), root, all_fields)
         except ValidationException as exception:
           if all_fields:
             keypath_messages.update(exception.keypath_messages)

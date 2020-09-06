@@ -114,3 +114,10 @@ class TestListOfValidator(unittest.TestCase):
       numbers: List[int] = types.listof(types.int.min(100))
     quiz = Quiz(numbers=[200,2,4,200,6,200])
     self.assertRaisesRegex(ValidationException, 'numbers\\.4', quiz.validate)
+
+  def test_listof_synthesis_types_from_field_type(self):
+    @jsonclass(graph='test_listof_14')
+    class Quiz(JSONObject):
+      numbers: List[int]
+    quiz = Quiz(numbers=[0,1,None,3,4,5])
+    self.assertRaises(ValidationException, quiz.validate)

@@ -145,3 +145,10 @@ class TestDictOfValidator(unittest.TestCase):
       numbers: Dict[str, int] = types.dictof(types.int.min(100))
     quiz = Quiz(numbers={ 'a': 200, 'b': 2, 'c': 4, 'd': 200, 'e': 6, 'f': 200 })
     self.assertRaisesRegex(ValidationException, 'numbers\\.e', quiz.validate)
+
+  def test_dictof_synthesis_types_from_field_type(self):
+    @jsonclass(graph='test_dictof_18')
+    class Quiz(JSONObject):
+      numbers: Dict[str, int]
+    quiz = Quiz(numbers={ 'a': 0, 'b': 1, 'c': None })
+    self.assertRaises(ValidationException, quiz.validate)

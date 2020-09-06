@@ -38,11 +38,11 @@ def default_validator_for_type(type: Any, graph_sibling: Any = None):
     if origin is list:
       inner_validator = default_validator_for_type(get_args(type)[0])
       ListOfValidator = resolve_class('ListOfValidator')
-      return ChainedValidator().append(ListOfValidator(inner_validator))
+      return ChainedValidator().append(ListOfValidator((resolve_class('Types'))(inner_validator)))
     elif origin is dict:
       inner_validator = default_validator_for_type(get_args(type)[1])
       DictOfValidator = resolve_class('DictOfValidator')
-      return ChainedValidator().append(DictOfValidator(inner_validator))
+      return ChainedValidator().append(DictOfValidator((resolve_class('Types'))(inner_validator)))
     else:
       return None
   elif isinstance(type, str):
@@ -62,6 +62,8 @@ def default_validator_for_type(type: Any, graph_sibling: Any = None):
       InstanceOfValidator = resolve_class('InstanceOfValidator')
       cls = get_registered_class(type, sibling=graph_sibling)
       return ChainedValidator().append(InstanceOfValidator(cls))
+  elif isinstance(type, ChainedValidator):
+    return type
   elif issubclass(type, resolve_class('JSONObject')):
     InstanceOfValidator = resolve_class('InstanceOfValidator')
     return ChainedValidator().append(InstanceOfValidator(type))
