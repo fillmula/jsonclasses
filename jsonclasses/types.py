@@ -225,6 +225,20 @@ class Types:
     '''
     return Types(self.validator.append(NullableValidator()))
 
+  def validate(self, validate_callable):
+    '''The validate field mark takes a validator callable as its sole argument.
+    Use this to define custom field value validations.
+
+    Args:
+      validate_callable (Callable): The validate callable tasks 3 arguments,
+      value, key_path, and root. Returning None means the value is valid, while
+      returning a str message means the validation failed.
+
+    Returns:
+      Types: A new types chained with this marker.
+    '''
+    return Types(self.validator.append(ValidateValidator(validate_callable)))
+
   # transformers
 
   def default(self, value: Any):

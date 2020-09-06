@@ -48,6 +48,9 @@ from .instanceof_validator import InstanceOfValidator
 from .required_validator import RequiredValidator
 from .nullable_validator import NullableValidator
 
+# custom validator
+from .validate_validator import ValidateValidator
+
 # default transformer
 from .default_validator import DefaultValidator
 
