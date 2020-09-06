@@ -7,8 +7,14 @@ from .validator import Validator
 from ..utils import default_validator_for_type, keypath
 from dataclasses import fields
 from inflection import underscore, camelize
-from jsonclasses.utils import *
+from ..utils.is_readonly_type import is_readonly_type
+from ..utils.is_writeonly_type import is_writeonly_type
+from ..utils.is_writeonce_type import is_writeonce_type
+from ..utils.default_validator_for_type import default_validator_for_type
+from ..utils.keypath import keypath
+from ..utils.reference_map import referenced
 
+@referenced
 class InstanceOfValidator(Validator):
 
   def __init__(self, json_object_class):

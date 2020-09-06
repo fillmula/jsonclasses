@@ -1,10 +1,13 @@
 from typing import Dict, Any
+from inflection import underscore, camelize
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..utils import default_validator_for_type, keypath
-from inflection import underscore, camelize
+from ..utils.default_validator_for_type import default_validator_for_type
+from ..utils.keypath import keypath
+from ..utils.reference_map import referenced
 
+@referenced
 class ShapeValidator(Validator):
 
   def __init__(self, types):

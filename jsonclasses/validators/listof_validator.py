@@ -1,10 +1,15 @@
+from __future__ import annotations
 from typing import Any
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 from .required_validator import RequiredValidator
-from ..utils import default_validator_for_type, keypath, is_nullable_type
+from ..utils.default_validator_for_type import default_validator_for_type
+from ..utils.keypath import keypath
+from ..utils.is_nullable_type import is_nullable_type
+from ..utils.reference_map import referenced
 
+@referenced
 class ListOfValidator(Validator):
 
   def __init__(self, types: Any):

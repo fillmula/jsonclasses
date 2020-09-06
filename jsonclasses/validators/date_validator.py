@@ -3,7 +3,9 @@ from datetime import date
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
+from ..utils.reference_map import referenced
 
+@referenced
 class DateValidator(Validator):
 
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
