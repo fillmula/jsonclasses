@@ -53,70 +53,6 @@ class JSONObject:
     config = Config.on(self.__class__)
     validator.transform(kwargs, '', self, True, config, self, fill_blanks)
 
-  def _set(
-    self,
-    fill_blanks=False,
-    transform=True,
-    ignore_eager_validate=False,
-    ignore_readonly=False,
-    ignore_writeonce=False,
-    **kwargs
-  ):
-    object_fields = { f.name: f for f in fields(self) }
-    unused_names = list(object_fields.keys())
-    config = Config.on(self.__class__)
-    for k, v in kwargs.items():
-      key = underscore(k) if config.camelize_json_keys else k
-      if key in unused_names:
-        object_field = object_fields[key]
-        object_type = object_field.type
-        default = object_field.default
-        remove_key = True
-        if isinstance(default, Types): # user specified types
-          # handle readonly (aka no write)
-          if is_readonly_type(default.validator) and not ignore_readonly:
-            remove_key = False
-          # handle writeonce (aka write only once)
-          elif is_writeonce_type(default.validator) and not ignore_writeonce:
-            current_value = getattr(self, key)
-            if current_value is None or type(current_value) is Types:
-              if transform:
-                setattr(self, key, default.validator.transform(v, key, self, False, config))
-              else:
-                setattr(self, key, v)
-            else:
-              remove_key = False
-          else:
-            if transform:
-              setattr(self, key, default.validator.transform(v, key, self, False, config))
-            else:
-              setattr(self, key, v)
-        else:
-          validator = default_validator_for_type(object_type)
-          if validator is not None: # for supported types, sync a default type for user
-            if transform:
-              setattr(self, key, validator.transform(v, key, self, False, config))
-            else:
-              setattr(self, key, v)
-          else:
-            setattr(self, key, v)
-        if remove_key:
-          unused_names.remove(key)
-    if fill_blanks:
-      for k_with_blank_value in unused_names:
-        object_field = object_fields[k_with_blank_value]
-        default = object_field.default
-        default_factory = object_field.default_factory
-        if isinstance(default, Types):
-          if transform:
-            setattr(self, k_with_blank_value, default.validator.transform(None, k_with_blank_value, self, False, config))
-          else:
-            setattr(self, k_with_blank_value, None)
-        elif default is default_factory:
-          setattr(self, k_with_blank_value, None)
-        else: # user specified a default value
-          setattr(self, k_with_blank_value, default)
-
   def update(self, **kwargs):
     '''Update object values in a batch. This method is suitable for internal
     inputs. This method ignores accessor marks, thus you can update readonly
@@ -126,15 +62,7 @@ class JSONObject:
     pass valid and final form values through this method. This method returns
     self, thus you can chain calling with other instance methods.
     '''
-
-    self._set(
-      fill_blanks=False,
-      transform=False,
-      ignore_eager_validate=True,
-      ignore_readonly=True,
-      ignore_writeonce=True,
-      **kwargs
-    )
+    self.__dict__.update(kwargs)
     return self
 
   def tojson(self, ignore_writeonly=False):

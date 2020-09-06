@@ -11,11 +11,13 @@ class InstanceOfValidator(Validator):
 
   def __init__(self, json_object_class):
     # is JSONObject
-    if hasattr(json_object_class, '_set'):
-      self.json_object_class = json_object_class
-    # in the future, handle string argument
+    if type(json_object_class) is str:
+      pass
+      # in the future, handle string argument
     else:
-      raise ValueError('argument passed to InstanceOfValidator should be subclass of JSONObject.')
+      self.json_object_class = json_object_class
+    #else:
+    #  raise ValueError('argument passed to InstanceOfValidator should be subclass of JSONObject.')
 
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
     if value is None:
