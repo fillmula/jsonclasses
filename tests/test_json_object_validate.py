@@ -37,7 +37,26 @@ class TestJSONObjectValidate(unittest.TestCase):
     self.assertEqual(language.is_valid(), True)
 
   def test_validate_validates_all_fields_if_with_all_fields_option_set_to_true(self):
-    pass
+    @jsonclass(graph='test_validate_5')
+    class Language(JSONObject):
+      name: str = types.str.required
+      code: str = types.str.required
+    language = Language()
+    with self.assertRaises(ValidationException) as context:
+      language.validate()
+    exception = context.exception
+    self.assertTrue(len(exception.keypath_messages) == 2)
+    self.assertRegex(exception.keypath_messages['name'], 'Value at \'name\' should not be None\\.')
+    self.assertRegex(exception.keypath_messages['code'], 'Value at \'code\' should not be None\\.')
 
   def test_validate_validates_until_it_found_an_invalid_field_with_all_fields_option_set_to_false(self):
-    pass
+    @jsonclass(graph='test_validate_6')
+    class Language(JSONObject):
+      name: str = types.str.required
+      code: str = types.str.required
+    language = Language()
+    with self.assertRaises(ValidationException) as context:
+      language.validate(all_fields=False)
+    exception = context.exception
+    self.assertTrue(len(exception.keypath_messages) == 1)
+    self.assertRegex(exception.keypath_messages['name'], 'Value at \'name\' should not be None\\.')
