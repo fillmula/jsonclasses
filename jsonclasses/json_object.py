@@ -44,9 +44,10 @@ class JSONObject:
   ):
     object_fields = { f.name: f for f in fields(self) }
     unused_names = list(object_fields.keys())
-    camelize_keys = Config.on(self.__class__).camelize_json_keys
+
+    config = Config.on(self.__class__)
     for k, v in kwargs.items():
-      key = underscore(k) if camelize_keys else k
+      key = underscore(k) if config else k
       if key in unused_names:
         object_field = object_fields[key]
         object_type = object_field.type
@@ -61,21 +62,21 @@ class JSONObject:
             current_value = getattr(self, key)
             if current_value is None or type(current_value) is Types:
               if transform:
-                setattr(self, key, default.validator.transform(v, key, self, False, camelize_keys))
+                setattr(self, key, default.validator.transform(v, key, self, False, config))
               else:
                 setattr(self, key, v)
             else:
               remove_key = False
           else:
             if transform:
-              setattr(self, key, default.validator.transform(v, key, self, False, camelize_keys))
+              setattr(self, key, default.validator.transform(v, key, self, False, config))
             else:
               setattr(self, key, v)
         else:
           validator = default_validator_for_type(object_type)
           if validator is not None: # for supported types, sync a default type for user
             if transform:
-              setattr(self, key, validator.transform(v, key, self, False, camelize_keys))
+              setattr(self, key, validator.transform(v, key, self, False, config))
             else:
               setattr(self, key, v)
           else:
@@ -89,7 +90,7 @@ class JSONObject:
         default_factory = object_field.default_factory
         if isinstance(default, Types):
           if transform:
-            setattr(self, k_with_blank_value, default.validator.transform(None, k_with_blank_value, self, False, camelize_keys))
+            setattr(self, k_with_blank_value, default.validator.transform(None, k_with_blank_value, self, False, config))
           else:
             setattr(self, k_with_blank_value, None)
         elif default is default_factory:

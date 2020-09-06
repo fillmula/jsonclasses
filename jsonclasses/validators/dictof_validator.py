@@ -1,4 +1,5 @@
 from typing import Any
+from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 from .required_validator import RequiredValidator
@@ -36,7 +37,7 @@ class DictOfValidator(Validator):
       if len(keypath_messages) > 0:
         raise ValidationException(keypath_messages=keypath_messages, root=root)
 
-  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, camelize_keys: bool):
+  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is None:
       return None
     if type(value) is not dict:
@@ -48,8 +49,8 @@ class DictOfValidator(Validator):
     if validator:
       retval = {}
       for k, v in value.items():
-        new_key = underscore(k) if camelize_keys else k
-        new_value = validator.transform(v, keypath(key_path, new_key), root, all_fields, camelize_keys)
+        new_key = underscore(k) if config.camelize_json_keys else k
+        new_value = validator.transform(v, keypath(key_path, new_key), root, all_fields, config)
         retval[new_key] = new_value
       return retval
     else:

@@ -1,4 +1,5 @@
 from typing import Any
+from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 
@@ -11,7 +12,7 @@ class FloatValidator(Validator):
         root
       )
 
-  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, camelize_keys: bool):
+  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is None:
       return None
     elif type(value) is int:

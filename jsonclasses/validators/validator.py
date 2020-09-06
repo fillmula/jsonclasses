@@ -1,4 +1,5 @@
 from typing import Any
+from ..config import Config
 from ..exceptions import ValidationException
 
 class Validator:
@@ -9,7 +10,7 @@ class Validator:
       root
     )
 
-  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, camelize_keys: bool):
+  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     return value
 
   def tojson(self, value, camelize_keys: bool):

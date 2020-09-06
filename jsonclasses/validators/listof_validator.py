@@ -1,4 +1,5 @@
 from typing import Any
+from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 from .required_validator import RequiredValidator
@@ -35,7 +36,7 @@ class ListOfValidator(Validator):
       if len(keypath_messages) > 0:
         raise ValidationException(keypath_messages=keypath_messages, root=root)
 
-  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, camelize_keys: bool):
+  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is None:
       return None
     if type(value) is not list:
@@ -45,7 +46,7 @@ class ListOfValidator(Validator):
     else:
       validator = default_validator_for_type(self.types)
     if validator:
-      return [ validator.transform(v, keypath(key_path, i), root, all_fields, camelize_keys) for i, v in enumerate(value) ]
+      return [ validator.transform(v, keypath(key_path, i), root, all_fields, config) for i, v in enumerate(value) ]
     else:
       return value
 

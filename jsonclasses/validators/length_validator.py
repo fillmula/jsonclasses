@@ -1,5 +1,6 @@
 from typing import Any
 from typing import Optional
+from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 

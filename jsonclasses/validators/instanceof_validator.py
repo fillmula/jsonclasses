@@ -1,4 +1,5 @@
 from typing import Dict, Any
+from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils import default_validator_for_type, keypath
@@ -19,7 +20,7 @@ class InstanceOfValidator(Validator):
       return
     value.validate(base_key=key_path, root=root, all_fields=all_fields)
 
-  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, camelize_keys: bool):
+  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is None:
       return None
     if type(value) is not dict:
