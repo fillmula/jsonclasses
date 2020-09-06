@@ -7,7 +7,7 @@ from .required_validator import RequiredValidator
 from ..utils.default_validator_for_type import default_validator_for_type
 from ..utils.keypath import keypath
 from ..utils.is_nullable_type import is_nullable_type
-from ..utils.reference_map import referenced
+from ..utils.reference_map import referenced, resolve_class
 from inflection import underscore, camelize
 
 @referenced
@@ -23,7 +23,7 @@ class DictOfValidator(Validator):
         root
       )
     validator = None
-    if hasattr(self.types, 'validator'):
+    if isinstance(self.types, resolve_class('Types')):
       validator = self.types.validator
     else:
       validator = default_validator_for_type(self.types, graph_sibling=root.__class__)
@@ -47,7 +47,7 @@ class DictOfValidator(Validator):
       return None
     if type(value) is not dict:
       return value
-    if hasattr(self.types, 'validator'):
+    if isinstance(self.types, resolve_class('Types')):
       validator = self.types.validator
     else:
       validator = default_validator_for_type(self.types, graph_sibling=config.linked_class)
@@ -66,7 +66,7 @@ class DictOfValidator(Validator):
       return None
     if type(value) is not dict:
       return value
-    if hasattr(self.types, 'validator'):
+    if isinstance(self.types, resolve_class('Types')):
       validator = self.types.validator
     else:
       validator = default_validator_for_type(self.types, graph_sibling=config.linked_class)

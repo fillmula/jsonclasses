@@ -11,7 +11,7 @@ from ..utils.is_writeonly_type import is_writeonly_type
 from ..utils.is_writeonce_type import is_writeonce_type
 from ..utils.default_validator_for_type import default_validator_for_type
 from ..utils.keypath import keypath
-from ..utils.reference_map import referenced
+from ..utils.reference_map import referenced, resolve_class
 
 @referenced
 class InstanceOfValidator(Validator):
@@ -20,6 +20,7 @@ class InstanceOfValidator(Validator):
     if type(json_object_class) is str:
       self.json_object_class_name = json_object_class
       self.json_object_class = None
+    #elif isinstance(json_object_class, resolve_class('JSONObject')):
     elif hasattr(json_object_class, 'config'):
       self.json_object_class = json_object_class
     else:
@@ -33,7 +34,7 @@ class InstanceOfValidator(Validator):
     keypath_messages = {}
     for object_field in fields(value):
       default = object_field.default
-      if hasattr(default, '__jsonclass_type__'):
+      if isinstance(default, resolve_class('Types')):
         name = object_field.name
         field_value = getattr(value, name)
         try:
@@ -65,14 +66,14 @@ class InstanceOfValidator(Validator):
         object_type = object_field.type
         default = object_field.default
         remove_key = True
-        if hasattr(default, '__jsonclass_type__'): # user specified types
+        if isinstance(default, resolve_class('Types')): # user specified types
           # handle readonly (aka no write)
           if is_readonly_type(default.validator):
             remove_key = False
           # handle writeonce (aka write only once)
           elif is_writeonce_type(default.validator):
             current_value = getattr(base, key)
-            if current_value is None or hasattr(type(current_value), '__jsonclass_type__'):
+            if current_value is None or isinstance(type(current_value), resolve_class('Types')):
               setattr(base, key, default.validator.transform(raw_value, keypath(key_path, key), root, all_fields, config))
             else:
               remove_key = False
@@ -81,7 +82,7 @@ class InstanceOfValidator(Validator):
         else:
           validator = None
           if validator is None:
-            if hasattr(object_type, 'config'):
+            if isinstance(object_type, resolve_class('JSONObject')):
               validator = self.__class__(object_type)
             else:
               validator = default_validator_for_type(object_type, graph_sibling=config.linked_class)
@@ -96,7 +97,7 @@ class InstanceOfValidator(Validator):
         object_field = object_fields[k_with_blank_value]
         default = object_field.default
         default_factory = object_field.default_factory
-        if hasattr(default, '__jsonclass_type__'):
+        if isinstance(default, resolve_class('Types')):
           setattr(base, k_with_blank_value, default.validator.transform(None, keypath(key_path, k_with_blank_value), root, all_fields, config))
         elif default is default_factory:
           setattr(base, k_with_blank_value, None)
@@ -115,7 +116,7 @@ class InstanceOfValidator(Validator):
       field_value = getattr(value, name)
       default = field.default
       object_type = field.type
-      if hasattr(default, '__jsonclass_type__'):
+      if isinstance(default, resolve_class('Types')):
         if is_writeonly_type(default.validator) and not ignore_writeonly:
           continue
         else:

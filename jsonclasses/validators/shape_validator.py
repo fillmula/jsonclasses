@@ -5,7 +5,7 @@ from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.default_validator_for_type import default_validator_for_type
 from ..utils.keypath import keypath
-from ..utils.reference_map import referenced
+from ..utils.reference_map import referenced, resolve_class
 
 @referenced
 class ShapeValidator(Validator):
@@ -27,7 +27,7 @@ class ShapeValidator(Validator):
         value_at_key = value[k]
       except KeyError:
         value_at_key = None
-      if hasattr(t, 'validator'):
+      if isinstance(t, resolve_class('Types')):
         validator = t.validator
       else:
         validator = default_validator_for_type(t, graph_sibling=root.__class__)
@@ -53,7 +53,7 @@ class ShapeValidator(Validator):
       new_key = underscore(k) if config.camelize_json_keys else k
       if new_key in unused_keys:
         t = self.types[new_key]
-        if hasattr(t, 'validator'):
+        if isinstance(t, resolve_class('Types')):
           validator = t.validator
         else:
           validator = default_validator_for_type(t, graph_sibling=config.linked_class)
@@ -78,7 +78,7 @@ class ShapeValidator(Validator):
         value_at_key = value[k]
       except KeyError:
         value_at_key = None
-      if hasattr(t, 'validator'):
+      if isinstance(t, resolve_class('Types')):
         validator = t.validator
       else:
         validator = default_validator_for_type(t, graph_sibling=config.linked_class)

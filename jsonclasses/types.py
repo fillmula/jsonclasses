@@ -1,8 +1,10 @@
 from __future__ import annotations
 from typing import List, Dict, Union, Callable, Any, Optional
 from datetime import date, datetime
+from .utils.reference_map import referenced
 from .validators import *
 
+@referenced
 class Types:
   '''The class of types marks object. Types marks provide necessary information
   about an json object's shape, transformation, validation, serialization and
@@ -11,7 +13,6 @@ class Types:
 
   def __init__(self, validator: ChainedValidator = ChainedValidator()):
     self.validator = validator
-    self.__jsonclass_type__ = True
 
   @property
   def invalid(self):
