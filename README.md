@@ -138,7 +138,7 @@ Using `jsonclasses` with `flask` web framework.
 
 ## Supported Python versions
 
-`jsonclasses` supports `Python >= 3.7`.
+`jsonclasses` supports `Python >= 3.8`.
 
 ## License
 
