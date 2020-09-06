@@ -63,7 +63,7 @@ class ShapeValidator(Validator):
       retval[k] = None
     return retval
 
-  def tojson(self, value, config: Config):
+  def tojson(self, value: Any, config: Config):
     if value is None:
       return None
     if type(value) is not dict:

@@ -76,7 +76,25 @@ class InstanceOfValidator(Validator):
     ### end assign
     return base
 
-  def tojson(self, value, config: Config):
+  def tojson(self, value, config: Config, ignore_writeonly: bool = False):
     if value is None:
       return None
-    return value.tojson()
+    retval = {}
+    object_fields = { f.name: f for f in fields(value) }
+    for name, field in object_fields.items():
+      key = camelize(name, False) if config.camelize_json_keys else name
+      field_value = getattr(value, name)
+      default = field.default
+      object_type = field.type
+      if hasattr(default, '__jsonclass_type__'):
+        if is_writeonly_type(default.validator) and not ignore_writeonly:
+          continue
+        else:
+          retval[key] = default.validator.tojson(field_value, config)
+      else:
+        validator = default_validator_for_type(object_type)
+        if validator is not None:
+          retval[key] = validator.tojson(field_value, config)
+        else:
+          retval[key] = field_value
+    return retval

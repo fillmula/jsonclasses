@@ -13,5 +13,5 @@ class Validator:
   def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     return value
 
-  def tojson(self, value, config: Config):
+  def tojson(self, value: Any, config: Config):
     return value

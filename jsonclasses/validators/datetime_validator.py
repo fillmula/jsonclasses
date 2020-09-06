@@ -21,6 +21,6 @@ class DatetimeValidator(Validator):
     else:
       return value
 
-  def tojson(self, value, config: Config):
+  def tojson(self, value: Any, config: Config):
     if value is not None:
       return value.isoformat()[:23] + 'Z'

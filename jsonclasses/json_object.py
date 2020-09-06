@@ -75,27 +75,9 @@ class JSONObject:
     Returns:
       dict: A dict represents this object's JSON object.
     '''
+    validator = InstanceOfValidator(self.__class__)
     config = Config.on(self.__class__)
-    camelize_json_keys = config.camelize_json_keys
-    retval = {}
-    object_fields = { f.name: f for f in fields(self) }
-    for name, field in object_fields.items():
-      key = camelize(name, False) if camelize_json_keys else name
-      value = getattr(self, name)
-      default = field.default
-      object_type = field.type
-      if isinstance(default, Types):
-        if is_writeonly_type(default.validator) and not ignore_writeonly:
-          continue
-        else:
-          retval[key] = default.validator.tojson(value, config)
-      else:
-        validator = default_validator_for_type(object_type)
-        if validator is not None:
-          retval[key] = validator.tojson(value, config)
-        else:
-          retval[key] = value
-    return retval
+    return validator.tojson(self, config, ignore_writeonly=ignore_writeonly)
 
   def validate(self, base_key: str = '', root: Any = None, all_fields: bool = True):
     '''Validate the jsonclass object's validity. Raises ValidationException on

@@ -53,5 +53,5 @@ class ChainedValidator(Validator):
     curvalue = reduce(lambda v, validator: validator.transform(v, key_path, root, all_fields, config), self.validators[index:], curvalue)
     return curvalue
 
-  def tojson(self, value, config: Config):
+  def tojson(self, value: Any, config: Config):
     return reduce(lambda v, validator: validator.tojson(v, config), self.validators, value)
