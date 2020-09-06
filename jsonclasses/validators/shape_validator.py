@@ -11,7 +11,7 @@ class ShapeValidator(Validator):
       raise ValueError('argument passed to ShapeValidator should be dict')
     self.types = types
 
-  def validate(self, value, key_path, root, all_fields):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
     if value is not None and type(value) is not dict:
       raise ValidationException(
         { key_path: f'Value \'{value}\' at \'{key_path}\' should be a dict.' },

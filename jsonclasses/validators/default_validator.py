@@ -7,7 +7,7 @@ class DefaultValidator(Validator):
   def __init__(self, default_value: Any):
     self.default_value = default_value
 
-  def validate(self, value, key_path, root, all_fields):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
     pass
 
   def transform(self, value: Any, camelize_keys: bool):

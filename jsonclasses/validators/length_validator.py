@@ -1,3 +1,4 @@
+from typing import Any
 from typing import Optional
 from ..exceptions import ValidationException
 from .validator import Validator
@@ -8,7 +9,7 @@ class LengthValidator(Validator):
     self.minlength = minlength
     self.maxlength = maxlength if maxlength is not None else minlength
 
-  def validate(self, value, key_path, root, all_fields):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
     if value is not None and len(value) > self.maxlength or len(value) < self.minlength:
       if self.minlength != self.maxlength:
         message = f'Length of value \'{value}\' at \'{key_path}\' should not be greater than {self.maxlength} or less than {self.minlength}.'

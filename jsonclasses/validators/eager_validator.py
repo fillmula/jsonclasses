@@ -1,3 +1,4 @@
+from typing import Any
 from .validator import Validator
 
 class EagerValidator(Validator):
@@ -5,5 +6,5 @@ class EagerValidator(Validator):
   This is used usually before heavy transforming validators.
   '''
 
-  def validate(self, value, key_path, root, all_fields):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
     pass

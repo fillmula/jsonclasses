@@ -14,7 +14,7 @@ class InstanceOfValidator(Validator):
     else:
       raise ValueError('argument passed to InstanceOfValidator should be subclass of JSONObject.')
 
-  def validate(self, value, key_path, root, all_fields):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
     if value is None:
       return
     value.validate(all_fields=all_fields, base_key=key_path, root=root)
