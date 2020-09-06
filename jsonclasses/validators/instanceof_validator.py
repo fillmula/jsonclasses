@@ -80,12 +80,6 @@ class InstanceOfValidator(Validator):
               setattr(base, key, default.validator.transform(raw_value, keypath(key_path, key), root, all_fields, config))
         else:
           validator = None
-          if type(object_type) is str:
-            try:
-              object_class = get_registered_class(name=object_type, sibling=config.linked_class)
-              validator = self.__class__(object_class)
-            except:
-              pass
           if validator is None:
             if hasattr(object_type, 'config'):
               validator = self.__class__(object_type)
