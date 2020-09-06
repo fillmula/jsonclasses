@@ -4,7 +4,6 @@ from ..config import Config
 from ..graph import get_registered_class
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..utils import default_validator_for_type, keypath
 from dataclasses import fields
 from inflection import underscore, camelize
 from ..utils.is_readonly_type import is_readonly_type
@@ -91,7 +90,7 @@ class InstanceOfValidator(Validator):
             if hasattr(object_type, 'config'):
               validator = self.__class__(object_type)
             else:
-              validator = default_validator_for_type(object_type)
+              validator = default_validator_for_type(object_type, graph_sibling=config.linked_class)
           if validator is not None: # for supported types, sync a default type for user
             setattr(base, key, validator.transform(raw_value, keypath(key_path, key), root, all_fields, config))
           else:
@@ -128,7 +127,7 @@ class InstanceOfValidator(Validator):
         else:
           retval[key] = default.validator.tojson(field_value, config)
       else:
-        validator = default_validator_for_type(object_type)
+        validator = default_validator_for_type(object_type, graph_sibling=config.linked_class)
         if validator is not None:
           retval[key] = validator.tojson(field_value, config)
         else:

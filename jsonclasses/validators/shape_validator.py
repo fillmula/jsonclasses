@@ -30,7 +30,7 @@ class ShapeValidator(Validator):
       if hasattr(t, 'validator'):
         validator = t.validator
       else:
-        validator = default_validator_for_type(t)
+        validator = default_validator_for_type(t, graph_sibling=root.__class__)
       if validator:
         try:
           validator.validate(value_at_key, keypath(key_path, k), root, all_fields)
@@ -56,7 +56,7 @@ class ShapeValidator(Validator):
         if hasattr(t, 'validator'):
           validator = t.validator
         else:
-          validator = default_validator_for_type(t)
+          validator = default_validator_for_type(t, graph_sibling=config.linked_class)
         if validator:
           retval[new_key] = validator.transform(field_value, keypath(key_path, new_key), root, all_fields, config)
         else:
@@ -81,7 +81,7 @@ class ShapeValidator(Validator):
       if hasattr(t, 'validator'):
         validator = t.validator
       else:
-        validator = default_validator_for_type(t)
+        validator = default_validator_for_type(t, graph_sibling=config.linked_class)
       if validator:
         retval[key] = validator.tojson(value_at_key, config)
       else:

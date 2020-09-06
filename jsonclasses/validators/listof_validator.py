@@ -25,7 +25,7 @@ class ListOfValidator(Validator):
     if hasattr(self.types, 'validator'):
       validator = self.types.validator
     else:
-      validator = default_validator_for_type(self.types)
+      validator = default_validator_for_type(self.types, graph_sibling=root.__class__)
     if validator:
       if not is_nullable_type(validator):
         validator = validator.append(RequiredValidator())
@@ -49,7 +49,7 @@ class ListOfValidator(Validator):
     if hasattr(self.types, 'validator'):
       validator = self.types.validator
     else:
-      validator = default_validator_for_type(self.types)
+      validator = default_validator_for_type(self.types, graph_sibling=config.linked_class)
     if validator:
       return [ validator.transform(v, keypath(key_path, i), root, all_fields, config) for i, v in enumerate(value) ]
     else:
@@ -63,7 +63,7 @@ class ListOfValidator(Validator):
     if hasattr(self.types, 'validator'):
       validator = self.types.validator
     else:
-      validator = default_validator_for_type(self.types)
+      validator = default_validator_for_type(self.types, graph_sibling=config.linked_class)
     if validator:
       return [ validator.tojson(v, config) for v in value ]
     else:

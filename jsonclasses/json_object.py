@@ -9,7 +9,9 @@ from jsonclasses.validators import ChainedValidator, Validator
 from jsonclasses.config import Config
 from jsonclasses.exceptions import ValidationException
 from .validators.instanceof_validator import InstanceOfValidator
+from .utils.reference_map import referenced
 
+@referenced
 @dataclass(init=False)
 class JSONObject:
   '''JSONObject is the base class of jsonclass objects. It provides crutial

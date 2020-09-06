@@ -26,7 +26,7 @@ class DictOfValidator(Validator):
     if hasattr(self.types, 'validator'):
       validator = self.types.validator
     else:
-      validator = default_validator_for_type(self.types)
+      validator = default_validator_for_type(self.types, graph_sibling=root.__class__)
     if validator:
       if not is_nullable_type(validator):
         validator = validator.append(RequiredValidator())
@@ -50,7 +50,7 @@ class DictOfValidator(Validator):
     if hasattr(self.types, 'validator'):
       validator = self.types.validator
     else:
-      validator = default_validator_for_type(self.types)
+      validator = default_validator_for_type(self.types, graph_sibling=config.linked_class)
     if validator:
       retval = {}
       for k, v in value.items():
@@ -69,7 +69,7 @@ class DictOfValidator(Validator):
     if hasattr(self.types, 'validator'):
       validator = self.types.validator
     else:
-      validator = default_validator_for_type(self.types)
+      validator = default_validator_for_type(self.types, graph_sibling=config.linked_class)
     if validator:
       return { camelize(k, False) if config.camelize_json_keys else k: validator.tojson(v, config) for k, v in value.items() }
     else:
