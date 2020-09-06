@@ -38,7 +38,7 @@ class ShapeValidator(Validator):
     if len(keypath_messages) > 0:
       raise ValidationException(keypath_messages=keypath_messages, root=root)
 
-  def transform(self, value, camelize_keys: bool, key: str = ''):
+  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, camelize_keys: bool):
     if value is None:
       return None
     if type(value) is not dict:
@@ -54,7 +54,7 @@ class ShapeValidator(Validator):
         else:
           validator = default_validator_for_type(t)
         if validator:
-          retval[new_key] = validator.transform(field_value, camelize_keys, keypath(key, new_key))
+          retval[new_key] = validator.transform(field_value, keypath(key_path, new_key), root, all_fields, camelize_keys)
         else:
           retval[new_key] = field_value
         unused_keys.remove(new_key)

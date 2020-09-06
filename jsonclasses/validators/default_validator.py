@@ -10,7 +10,7 @@ class DefaultValidator(Validator):
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
     pass
 
-  def transform(self, value: Any, camelize_keys: bool):
+  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, camelize_keys: bool):
     if value is None:
       if callable(self.default_value):
         return self.default_value()

@@ -36,7 +36,7 @@ class DictOfValidator(Validator):
       if len(keypath_messages) > 0:
         raise ValidationException(keypath_messages=keypath_messages, root=root)
 
-  def transform(self, value, camelize_keys: bool, key: str = ''):
+  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, camelize_keys: bool):
     if value is None:
       return None
     if type(value) is not dict:
@@ -49,7 +49,7 @@ class DictOfValidator(Validator):
       retval = {}
       for k, v in value.items():
         new_key = underscore(k) if camelize_keys else k
-        new_value = validator.transform(v, camelize_keys, keypath(key, new_key))
+        new_value = validator.transform(v, keypath(key_path, new_key), root, all_fields, camelize_keys)
         retval[new_key] = new_value
       return retval
     else:

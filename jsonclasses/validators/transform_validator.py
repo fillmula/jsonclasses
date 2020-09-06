@@ -10,7 +10,7 @@ class TransformValidator(Validator):
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
     pass
 
-  def transform(self, value, camelize_keys: bool, key: str = ''):
+  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, camelize_keys: bool):
     if value is not None:
       return self.transformer(value)
     else:

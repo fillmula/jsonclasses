@@ -31,23 +31,25 @@ class ChainedValidator(Validator):
   def _validate_and_transform(
     self,
     validator: Validator,
-    value: Any = None,
-    key: str = '',
-    camelize_keys: bool = False
+    value: Any,
+    key_path: str,
+    root: Any,
+    all_fields: bool,
+    camelize_keys: bool
   ) -> Any:
-    validator.validate(value, key, self, False)
-    return validator.transform(value, camelize_keys)
+    validator.validate(value, key_path, root, all_fields)
+    return validator.transform(value, key_path, root, all_fields, camelize_keys)
 
-  def transform(self, value, camelize_keys: bool, key: str = ''):
+  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, camelize_keys: bool):
     curvalue = value
     index = 0
     next_index = eager_validator_index_after_index(self.validators, index)
     while next_index is not None:
       validators = self.validators[index:next_index]
-      curvalue = reduce(lambda v, validator: self._validate_and_transform(validator, v, key, camelize_keys), validators, curvalue)
+      curvalue = reduce(lambda v, validator: self._validate_and_transform(validator, v, key_path, root, all_fields, camelize_keys), validators, curvalue)
       index = next_index + 1
       next_index = eager_validator_index_after_index(self.validators, index)
-    curvalue = reduce(lambda v, validator: validator.transform(v, camelize_keys), self.validators[index:], curvalue)
+    curvalue = reduce(lambda v, validator: validator.transform(v, key_path, root, all_fields, camelize_keys), self.validators[index:], curvalue)
     return curvalue
 
   def tojson(self, value, camelize_keys: bool):
