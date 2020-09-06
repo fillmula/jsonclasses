@@ -50,7 +50,7 @@ class TestLengthValidator(unittest.TestCase):
   def test_length_should_raise_if_value_length_is_larger_than_max(self):
     @jsonclass(graph='test_length_6')
     class Secret(JSONObject):
-      password: str = types.str.length(2,4)
+      password: str = types.str.length(2, 4)
     secret = Secret(password='55555')
     self.assertRaises(ValidationException, secret.validate)
 
