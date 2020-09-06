@@ -60,6 +60,13 @@ class JSONObject:
     pass valid and final form values through this method. This method returns
     self, thus you can chain calling with other instance methods.
     '''
+    unallowed_keys = set(kwargs.keys()) - set(self.__dict__.keys())
+    unallowed_keys_length = len(unallowed_keys)
+    if unallowed_keys_length:
+      keys = 'Keys' if unallowed_keys_length != 1 else 'Key'
+      are = 'are' if unallowed_keys_length != 1 else 'is'
+      keys_list = ', '.join(list(unallowed_keys))
+      raise ValueError(f'{keys} {keys_list} {are} not allowed when updating {self.__class__.__name__}.')
     self.__dict__.update(kwargs)
     return self
 
