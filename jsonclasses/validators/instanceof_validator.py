@@ -17,7 +17,7 @@ class InstanceOfValidator(Validator):
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
     if value is None:
       return
-    value.validate(all_fields=all_fields, base_key=key_path, root=root)
+    value.validate(base_key=key_path, root=root, all_fields=all_fields)
 
   def transform(self, value, camelize_keys: bool, key: str = ''):
     if value is None:
