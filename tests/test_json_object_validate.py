@@ -151,3 +151,35 @@ class TestJSONObjectValidate(unittest.TestCase):
     exception = context.exception
     self.assertTrue(len(exception.keypath_messages) == 1)
     self.assertRegex(exception.keypath_messages['numbers.a'], 'Value \'1\' at \'numbers\\.a\' should not be less than 100\\.')
+
+
+  def test_validate_validates_all_fields_inside_nested_json_objects(self):
+    @jsonclass(graph='test_validate_11')
+    class Post(JSONObject):
+      title: str = types.str.required
+    @jsonclass(graph='test_validate_11')
+    class User(JSONObject):
+      posts: List[Post] = types.listof(types.instanceof(Post))
+    user = User(posts=[{}, {}, {}, {}])
+    with self.assertRaises(ValidationException) as context:
+      user.validate()
+    exception = context.exception
+    self.assertTrue(len(exception.keypath_messages) == 4)
+    self.assertRegex(exception.keypath_messages['posts.0.title'], 'Value at \'posts\\.0\\.title\' should not be None\\.')
+    self.assertRegex(exception.keypath_messages['posts.1.title'], 'Value at \'posts\\.1\\.title\' should not be None\\.')
+    self.assertRegex(exception.keypath_messages['posts.2.title'], 'Value at \'posts\\.2\\.title\' should not be None\\.')
+    self.assertRegex(exception.keypath_messages['posts.3.title'], 'Value at \'posts\\.3\\.title\' should not be None\\.')
+
+  def test_validate_validates_only_one_field_inside_nested_json_objects(self):
+    @jsonclass(graph='test_validate_12')
+    class Post(JSONObject):
+      title: str = types.str.required
+    @jsonclass(graph='test_validate_12')
+    class User(JSONObject):
+      posts: List[Post] = types.listof(types.instanceof(Post))
+    user = User(posts=[{}, {}, {}, {}])
+    with self.assertRaises(ValidationException) as context:
+      user.validate(all_fields=False)
+    exception = context.exception
+    self.assertTrue(len(exception.keypath_messages) == 1)
+    self.assertRegex(exception.keypath_messages['posts.0.title'], 'Value at \'posts\\.0\\.title\' should not be None\\.')
