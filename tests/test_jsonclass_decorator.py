@@ -66,6 +66,7 @@ class TestJsonClassDecorator(unittest.TestCase):
       int_field: str
     config = Config.on(MyClassThatHasConfig)
     self.assertTrue(isinstance(config, Config))
+    del config.linked_class
     self.assertEqual(config, Config(graph='my-secret-graph-087', camelize_json_keys=True, camelize_db_keys=True))
 
   def test_json_class_decorator_pass_settings_camelize_json_to_class(self):
@@ -75,6 +76,7 @@ class TestJsonClassDecorator(unittest.TestCase):
       int_field: str
     config = Config.on(MyClassThatHasConfigWithJSONKey)
     self.assertTrue(isinstance(config, Config))
+    del config.linked_class
     self.assertEqual(config, Config(graph='my-secret-graph-087', camelize_json_keys=False, camelize_db_keys=True))
 
   def test_json_class_decorator_pass_settings_camelize_db_to_class(self):
@@ -84,6 +86,7 @@ class TestJsonClassDecorator(unittest.TestCase):
       int_field: str
     config = Config.on(MyClassThatHasConfigWithDBKey)
     self.assertTrue(isinstance(config, Config))
+    del config.linked_class
     self.assertEqual(config, Config(graph='my-secret-graph-087', camelize_json_keys=True, camelize_db_keys=False))
 
   def test_json_class_decorator_throws_if_defined_duplicate_name_class_on_same_graph(self):
@@ -93,3 +96,12 @@ class TestJsonClassDecorator(unittest.TestCase):
         str_field: str
         int_field: str
       MyClassThatHasConfigWithJSONKey()
+
+  def test_json_class_decorator_get_config_linked_with_class(self):
+    @jsonclass(graph='my-secret-graph-087', camelize_db_keys=False)
+    class MyClassThatConfigLinks(JSONObject):
+      str_field: str
+      int_field: str
+    config = Config.on(MyClassThatConfigLinks)
+    self.assertTrue(isinstance(config, Config))
+    self.assertIs(config.linked_class, MyClassThatConfigLinks)

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, Type
+from typing import Optional, Type, Any
 from dataclasses import dataclass
 
 camelize_json_keys = True
@@ -20,6 +20,7 @@ class Config:
   graph: str = 'default'
   camelize_json_keys: Optional[bool] = None
   camelize_db_keys: Optional[bool] = None
+  linked_class: Any = None
 
   def __post_init__(self):
     if self.camelize_json_keys is None:
@@ -29,6 +30,7 @@ class Config:
 
   def install_on_class(self, cls: Type['JSONObject']):
     cls.config = self
+    self.linked_class = cls
 
   @classmethod
   def on(self, cls: type) -> Config:

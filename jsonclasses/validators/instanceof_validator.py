@@ -1,5 +1,7 @@
+from __future__ import annotations
 from typing import Dict, Any
 from ..config import Config
+from ..graph import get_registered_class
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils import default_validator_for_type, keypath
@@ -10,18 +12,19 @@ from jsonclasses.utils import *
 class InstanceOfValidator(Validator):
 
   def __init__(self, json_object_class):
-    # is JSONObject
     if type(json_object_class) is str:
-      pass
-      # in the future, handle string argument
-    else:
+      self.json_object_class_name = json_object_class
+      self.json_object_class = None
+    elif hasattr(json_object_class, 'config'):
       self.json_object_class = json_object_class
-    #else:
-    #  raise ValueError('argument passed to InstanceOfValidator should be subclass of JSONObject.')
+    else:
+      raise ValueError('argument passed to InstanceOfValidator should be subclass of JSONObject.')
 
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
     if value is None:
       return
+    if hasattr(self, 'json_object_class_name') and self.json_object_class is None:
+      self.json_object_class = get_registered_class(name=self.json_object_class_name, sibling=value.__class__)
     keypath_messages = {}
     for object_field in fields(value):
       default = object_field.default
@@ -43,6 +46,8 @@ class InstanceOfValidator(Validator):
       return None if not base else base
     if type(value) is not dict:
       return value if not base else base
+    if hasattr(self, 'json_object_class_name') and self.json_object_class is None:
+      self.json_object_class = get_registered_class(name=self.json_object_class_name, sibling=config.linked_class)
     if not base:
       base = self.json_object_class(__empty=True)
     ### assign values to base
