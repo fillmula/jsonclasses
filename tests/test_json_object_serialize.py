@@ -1,5 +1,5 @@
 import unittest
-from jsonclasses import jsonclass, JSONObject
+from jsonclasses import jsonclass, JSONObject, types
 from datetime import datetime, date
 
 class TestJSONObjectSerialize(unittest.TestCase):
@@ -83,4 +83,30 @@ class TestJSONObjectSerialize(unittest.TestCase):
     self.assertEqual(
       article.tojson(),
       { 'article_title': 'title', 'article_content': 'content' }
+    )
+
+  def test_serialize_remove_writeonly_keys(self):
+    @jsonclass(graph='test_serialize_10')
+    class User(JSONObject):
+      email: str
+      password: str = types.str.writeonly
+    user = User()
+    user.email = 'a@bb.com'
+    user.password = '123456'
+    self.assertEqual(
+      user.tojson(),
+      { 'email': 'a@bb.com' }
+    )
+
+  def test_serialize_do_not_remove_writeonly_keys_if_explicitly_specified(self):
+    @jsonclass(graph='test_serialize_11')
+    class User(JSONObject):
+      email: str
+      password: str = types.str.writeonly
+    user = User()
+    user.email = 'a@bb.com'
+    user.password = '123456'
+    self.assertEqual(
+      user.tojson(ignore_writeonly=True),
+      { 'email': 'a@bb.com', 'password': '123456' }
     )
