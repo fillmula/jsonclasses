@@ -1,3 +1,4 @@
+from __future__ import annotations
 import unittest
 from typing import List, Dict
 from datetime import datetime, date
@@ -92,4 +93,30 @@ class TestInstanceOfValidator(unittest.TestCase):
     ]})
     result = user.tojson()
     desired = {'name': 'John', 'addresses': [{'line1': 'London', 'line2': 'Road'}, {'line1': 'Paris', 'line2': 'Road'}]}
+    self.assertEqual(result, desired)
+
+  def test_instanceof_validator_allow_argument_to_be_string(self):
+    @jsonclass(graph='test_instanceof_7')
+    class Post(JSONObject):
+      title: str = types.str
+      content: str = types.str
+      author: User = types.instanceof('User')
+    @jsonclass(graph='test_instanceof_7')
+    class User(JSONObject):
+      name: str = types.str
+      posts: List[Post] = types.listof(types.instanceof('Post'))
+    user = User(**{ 'name': 'John', 'posts': [
+      { 'title': 'P1', 'content': 'C1' },
+      { 'title': 'P2', 'content': 'C2' },
+    ]})
+    self.assertIs(user.posts[0].__class__, Post)
+    self.assertIs(user.posts[1].__class__, Post)
+    result = user.tojson()
+    desired = {
+      'name': 'John',
+      'posts': [
+        { 'title': 'P1', 'content': 'C1', 'author': None },
+        { 'title': 'P2', 'content': 'C2', 'author': None }
+      ]
+    }
     self.assertEqual(result, desired)
