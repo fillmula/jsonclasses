@@ -7,10 +7,8 @@ from inflection import underscore, camelize
 from jsonclasses.types import Types
 from jsonclasses.validators import ChainedValidator, Validator
 from jsonclasses.config import Config
-from jsonclasses.utils import *
 from jsonclasses.exceptions import ValidationException
 from .validators.instanceof_validator import InstanceOfValidator
-from .utils.keypath import keypath
 
 @dataclass(init=False)
 class JSONObject:
@@ -91,23 +89,7 @@ class JSONObject:
     Returns:
       None: upon successful validation, returns nothing.
     '''
-    if root is None:
-      root = self
-    keypath_messages = {}
-    for object_field in fields(self):
-      default = object_field.default
-      if isinstance(default, Types):
-        name = object_field.name
-        value = getattr(self, name)
-        try:
-          default.validator.validate(value, keypath(base_key, name), root, all_fields)
-        except ValidationException as exception:
-          if all_fields:
-            keypath_messages.update(exception.keypath_messages)
-          else:
-            raise exception
-    if len(keypath_messages) > 0:
-      raise ValidationException(keypath_messages=keypath_messages, root=root)
+    InstanceOfValidator(self.__class__).validate(self, '', self, all_fields)
     return self
 
   def is_valid(self):

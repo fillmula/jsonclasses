@@ -22,7 +22,21 @@ class InstanceOfValidator(Validator):
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
     if value is None:
       return
-    value.validate(base_key=key_path, root=root, all_fields=all_fields)
+    keypath_messages = {}
+    for object_field in fields(value):
+      default = object_field.default
+      if hasattr(default, '__jsonclass_type__'):
+        name = object_field.name
+        field_value = getattr(value, name)
+        try:
+          default.validator.validate(field_value, keypath(key_path, name), root, all_fields)
+        except ValidationException as exception:
+          if all_fields:
+            keypath_messages.update(exception.keypath_messages)
+          else:
+            raise exception
+    if len(keypath_messages) > 0:
+      raise ValidationException(keypath_messages=keypath_messages, root=root)
 
   def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config, base: Any = None, fill_blanks: bool = False):
     if value is None:
