@@ -9,6 +9,7 @@ from jsonclasses.validators import ChainedValidator, Validator
 from jsonclasses.config import Config
 from jsonclasses.utils import *
 from jsonclasses.exceptions import ValidationException
+from .validators.instanceof_validator import InstanceOfValidator
 from .utils.keypath import keypath
 
 @dataclass(init=False)
@@ -26,12 +27,31 @@ class JSONObject:
       my_field_two: int = types.int.range(0, 10).required
   '''
 
-  def __init__(self, **kwargs):
+  def __init__(self, __empty: bool = False, **kwargs):
     '''Initialize a new jsonclass object from keyed arguments or a dict. This
     method is suitable for accepting web and malformed inputs. Eager validation
     and transformation are applied during the initialization process.
     '''
-    self._set(**kwargs, fill_blanks=True)
+    for field in fields(self):
+      setattr(self, field.name, None)
+    if not __empty:
+      self.__set(fill_blanks=True, **kwargs)
+
+  def set(self, **kwargs):
+    '''Set object values in a batch. This method is suitable for web and fraud
+    inputs. This method takes accessor marks into consideration, means readonly
+    and internal field values will be just ignored. Writeonce fields are
+    accepted only if the current value is None. This method triggers eager
+    validation and transform. This method returns self, thus you can chain
+    calling with other instance methods.
+    '''
+    self.__set(fill_blanks=False, **kwargs)
+    return self
+
+  def __set(self, fill_blanks=False, **kwargs):
+    validator = InstanceOfValidator(self.__class__)
+    config = Config.on(self.__class__)
+    validator.transform(kwargs, '', self, True, config, self, fill_blanks)
 
   def _set(
     self,
@@ -44,10 +64,9 @@ class JSONObject:
   ):
     object_fields = { f.name: f for f in fields(self) }
     unused_names = list(object_fields.keys())
-
     config = Config.on(self.__class__)
     for k, v in kwargs.items():
-      key = underscore(k) if config else k
+      key = underscore(k) if config.camelize_json_keys else k
       if key in unused_names:
         object_field = object_fields[key]
         object_type = object_field.type
@@ -97,17 +116,6 @@ class JSONObject:
           setattr(self, k_with_blank_value, None)
         else: # user specified a default value
           setattr(self, k_with_blank_value, default)
-
-  def set(self, **kwargs):
-    '''Set object values in a batch. This method is suitable for web and fraud
-    inputs. This method takes accessor marks into consideration, means readonly
-    and internal field values will be just ignored. Writeonce fields are
-    accepted only if the current value is None. This method triggers eager
-    validation and transform. This method returns self, thus you can chain
-    calling with other instance methods.
-    '''
-    self._set(**kwargs)
-    return self
 
   def update(self, **kwargs):
     '''Update object values in a batch. This method is suitable for internal

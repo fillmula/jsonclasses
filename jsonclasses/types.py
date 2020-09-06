@@ -11,6 +11,7 @@ class Types:
 
   def __init__(self, validator: ChainedValidator = ChainedValidator()):
     self.validator = validator
+    self.__jsonclass_type__ = True
 
   @property
   def invalid(self):
