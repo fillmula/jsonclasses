@@ -87,6 +87,26 @@ class Types:
     return Types(self.validator.append(UniqueValidator()))
 
   @property
+  def embedded(self):
+    '''Instance fields marked with the embedded mark is embedded into the
+    hosting document for noSQL databases.
+    '''
+    return Types(self.validator.append(EmbeddedValidator()))
+
+  @property
+  def linkto(self):
+    '''In a database relationship, fields marked with linkto save an id of
+    the object being referenced at the local table.
+    '''
+    return Types(self.validator.append(LinkToValidator()))
+
+  def linkedby(self, foreign_key: str):
+    '''In a database relationship, fields marked with linkedby find reference
+    from the destination table.
+    '''
+    return Types(self.validator.append(LinkedByValidator(foreign_key)))
+
+  @property
   def str(self):
     '''Fields marked with str should be str type. This is a type marker.
     '''

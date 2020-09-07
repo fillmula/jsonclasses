@@ -6,9 +6,15 @@ from .readonly_validator import ReadonlyValidator
 from .readwrite_validator import ReadwriteValidator
 from .writeonce_validator import WriteonceValidator
 
-# database command markers
+# database index command markers
 from .index_validator import IndexValidator
 from .unique_validator import UniqueValidator
+
+# orm relationship command markers
+
+from .embedded_validator import EmbeddedValidator
+from .linkto_validator import LinkToValidator
+from .linkedby_validator import LinkedByValidator
 
 # eager validation markers
 from .eager_validator import EagerValidator
