@@ -42,17 +42,9 @@ and a generation empowered by AI. AI algorithms empower products with
 unimaginable stunning features. A great product should adapt to some level of AI
 to continue providing great functions for it's targeting audience.
 
-## Installation
+## Business Examples
 
-Install jsonclasses with pip.
-
-```sh
-pip install jsonclasses
-```
-
-## Example with JSON Classes
-
-### Define a User Table
+### Example 1: Dating App Users
 
 Let's say, you are building the base user functionality for a cross-platform
 dating app.
@@ -117,6 +109,18 @@ async def update_user(request, id):
 async def delete_user(request, id):
   return response.empty(User.delete_by_id(id))
 ```
+
+## Documentation
+
+Read our documentation on bla bla bla.
+
+## Database & Web Framework Integrations
+
+* [JSON Classes Pymongo](https://github.com/WiosoftCrafts/jsonclasses-pymongo)
+The mongodb integration through pymongo driver.
+
+* [JSON Classes Sanic](https://github.com/WiosoftCrafts/jsonclasses-sanic)
+The sanic async web framework integration.
 
 ## Supported Python versions
 
