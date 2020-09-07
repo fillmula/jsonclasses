@@ -35,7 +35,7 @@ functions, a DSL would become more and more like a programming language.
 This is why React.js embedded HTML into JavaScript/TypeScript and Apple built
 new Swift language features for SwiftUI.
 
-## Why Python is chosen?
+## Why Python Is Chosen?
 
 Python is the programming language which is nearest to AI areas. This is an era
 and a generation empowered by AI. AI algorithms empower products with
@@ -122,7 +122,7 @@ The mongodb integration through pymongo driver.
 * [JSON Classes Sanic](https://github.com/WiosoftCrafts/jsonclasses-sanic)
 The sanic async web framework integration.
 
-## Supported Python versions
+## Supported Python Versions
 
 `jsonclasses` supports `Python >= 3.8`.
 
