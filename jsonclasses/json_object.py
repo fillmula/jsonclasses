@@ -86,7 +86,7 @@ class JSONObject:
     config = Config.on(self.__class__)
     return validator.tojson(self, config, ignore_writeonly=ignore_writeonly)
 
-  def validate(self, base_key: str = '', root: Any = None, all_fields: bool = True):
+  def validate(self, all_fields: bool = True):
     '''Validate the jsonclass object's validity. Raises ValidationException on
     validation failed.
 
