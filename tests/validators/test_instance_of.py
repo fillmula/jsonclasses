@@ -152,3 +152,45 @@ class TestInstanceOfValidator(unittest.TestCase):
     staff = Staff(**{ 'position': 'Developer', 'users': [{ 'name': 'Valy' }, { 'name': 'Jonny' }]})
     self.assertIsInstance(staff.users[0], User)
     self.assertEqual(staff.users[0].name, 'Valy')
+
+  def test_instanceof_works_in_dict_without_assigning_a_types(self):
+    @jsonclass(graph='test_instanceof_10')
+    class Staff(JSONObject):
+      position: str
+      users: Dict[str, User]
+    @jsonclass(graph='test_instanceof_10')
+    class User(JSONObject):
+      name: str
+      staffs: Dict[str,Staff]
+    user = User(**{ 'name': 'John', 'staffs': { 'a': { 'position': 'CEO' }, 'b': { 'position': 'CSO' }}})
+    self.assertIsInstance(user.staffs['a'], Staff)
+    self.assertEqual(user.staffs['a'].position, 'CEO')
+    staff = Staff(**{ 'position': 'Developer', 'users': { 'a': { 'name': 'Valy' }, 'b': { 'name': 'Jonny' }}})
+    self.assertIsInstance(staff.users['a'], User)
+    self.assertEqual(staff.users['a'].name, 'Valy')
+
+  def test_instanceof_validates_in_list_without_assigning_a_types(self):
+    @jsonclass(graph='test_instanceof_11')
+    class Staff(JSONObject):
+      position: str
+      users: List[User]
+    @jsonclass(graph='test_instanceof_11')
+    class User(JSONObject):
+      name: str
+      staffs: List[Staff]
+    user = User(**{ 'name': 'John', 'staffs': [{ 'position': 'CEO' }, None, { 'position': 'CSO' }]})
+    with self.assertRaisesRegex(ValidationException, 'Value at \'staffs\\.1\' should not be None\\.'):
+      user.validate()
+
+  def test_instanceof_validates_in_dict_without_assigning_a_types(self):
+    @jsonclass(graph='test_instanceof_12')
+    class Staff(JSONObject):
+      position: str
+      users: Dict[str, User]
+    @jsonclass(graph='test_instanceof_12')
+    class User(JSONObject):
+      name: str
+      staffs: Dict[str, Staff]
+    user = User(**{ 'name': 'John', 'staffs': { 'a': { 'position': 'CEO' }, 'b': None, 'c': { 'position': 'CSO' }}})
+    with self.assertRaisesRegex(ValidationException, 'Value at \'staffs\\.b\' should not be None\\.'):
+      user.validate()

@@ -67,7 +67,7 @@ def default_validator_for_type(type: Any, graph_sibling: Any = None):
     elif type.startswith('Dict['):
       inner_type = match('Dict\\[.+, ?(.*)\\]', type).group(1)
       inner_validator = default_validator_for_type(inner_type, graph_sibling)
-      ListOfValidator = resolve_class('DictOfValidator')
+      DictOfValidator = resolve_class('DictOfValidator')
       return ChainedValidator().append(DictOfValidator((resolve_class('Types'))(inner_validator)))
     else:
       InstanceOfValidator = resolve_class('InstanceOfValidator')
