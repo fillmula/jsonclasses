@@ -1,4 +1,4 @@
-jsonclasses
+JSON Classes
 ===========
 [![Pypi][pypi-image]][pypi-url]
 [![Python Version][python-image]][python-url]
@@ -6,13 +6,41 @@ jsonclasses
 [![License][license-image]][license-url]
 [![PR Welcome][pr-image]][pr-url]
 
-Python dataclasses <=> JSON declarable, interchangeable, validatable, sanitizable.
+The Modern Declarative Data Flow Framework for the AI Empowered Generation.
 
-## Motivation
+JSON Classes eliminates the separation and redundant coding of data
+sanitization, data validation, data format converting, data serialization and
+data persistent storage.
 
-Python lacks a great solution of handling JSON web inputs, JSON objects
-manipulation and serialization. By declaring field specifications with extended
-feature set of @dataclass, we can solve this issue elegantly.
+JSON Classes transforms all the redundant procedures into declarative
+annotations and markers defined right on the data classes.
+
+Just like how React.js changed the paradigms of frontend development, JSON
+Classes aims leading the transforming of the insdustry backend development
+standards.
+
+## How JSON Classes Works?
+
+JSON Classes is built on top of Python Data Classes. With the great
+metaprogramming functionalities that Python Data Classes offers, we can easily
+extend it into a great DSL for declaring data structures, transforming rules
+and validation rules.
+
+## Why Not Create Another Schema Definition Language like GraphQL SDL?
+
+GraphQL's SDL cannot work well with programming languages' syntax checking and
+type completion. To support more and more functions, a DSL would become more
+and more like a programming language.
+
+This is why React.js embedded HTML into JavaScript/TypeScript and Apple built
+new Swift language features for SwiftUI.
+
+## Why Python is chosen?
+
+Python is the programming language which is nearest to AI areas. This is an era
+and a generation empowered by AI. AI algorithms empower products with
+unimaginable stunning features. A great product should adapt to some level of AI
+to continue providing great functions for it's targeting audience.
 
 ## Installation
 
