@@ -52,7 +52,7 @@ dating app.
 The product requirements are:
 
 1. Unique phone number is required
-2. Password should be secure and encrypted
+2. Password should be secure, encrypted, hidden from response
 3. Gender cannot be changed after set
 4. This product is adult only
 5. User intro should be brief
@@ -66,7 +66,7 @@ from jsonclasses import jsonclass, JSONObject, types
 class User(JSONObject):
   phone_no: str = types.str.unique.index.match(local_phone_no_regex).required #1
   email: str = types.str.match(email_regex)
-  password: str = types.str.length(8, 16).match(secure_password_regex).transform(salt).required #2
+  password: str = types.str.writeonly.length(8, 16).match(secure_password_regex).transform(salt).required #2
   nickname: str = types.str.required
   gender: str = types.str.writeonce.oneof(['male', 'female']) #3
   age: int = types.int.min(18).max(100) #4
