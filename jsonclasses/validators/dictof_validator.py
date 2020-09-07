@@ -9,6 +9,7 @@ from ..utils.keypath import keypath
 from ..utils.is_nullable_type import is_nullable_type
 from ..utils.reference_map import referenced, resolve_class
 from inflection import underscore, camelize
+from ..utils.nonnull_note import NonnullNote
 
 @referenced
 class DictOfValidator(Validator):
@@ -47,7 +48,9 @@ class DictOfValidator(Validator):
   def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is None:
       return None
-    if type(value) is not dict:
+    elif isinstance(value, NonnullNote):
+      value = {}
+    elif type(value) is not dict:
       return value
     if isinstance(self.types, resolve_class('Types')):
       validator = self.types.validator

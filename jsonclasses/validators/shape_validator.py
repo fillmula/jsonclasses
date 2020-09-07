@@ -6,6 +6,7 @@ from .validator import Validator
 from ..utils.default_validator_for_type import default_validator_for_type
 from ..utils.keypath import keypath
 from ..utils.reference_map import referenced, resolve_class
+from ..utils.nonnull_note import NonnullNote
 
 @referenced
 class ShapeValidator(Validator):
@@ -45,7 +46,9 @@ class ShapeValidator(Validator):
   def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is None:
       return None
-    if type(value) is not dict:
+    elif isinstance(value, NonnullNote):
+      value = {}
+    elif type(value) is not dict:
       return value
     unused_keys = list(self.types.keys())
     retval = {}

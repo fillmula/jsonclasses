@@ -8,6 +8,7 @@ from ..utils.default_validator_for_type import default_validator_for_type
 from ..utils.keypath import keypath
 from ..utils.is_nullable_type import is_nullable_type
 from ..utils.reference_map import referenced, resolve_class
+from ..utils.nonnull_note import NonnullNote
 
 @referenced
 class ListOfValidator(Validator):
@@ -46,7 +47,9 @@ class ListOfValidator(Validator):
   def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is None:
       return None
-    if type(value) is not list:
+    elif isinstance(value, NonnullNote):
+      value = []
+    elif type(value) is not list:
       return value
     if isinstance(self.types, resolve_class('Types')):
       validator = self.types.validator

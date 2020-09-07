@@ -2,6 +2,7 @@ from typing import Any
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
+from ..utils.nonnull_note import NonnullNote
 
 class NonnullValidator(Validator):
 
@@ -9,4 +10,4 @@ class NonnullValidator(Validator):
     pass
 
   def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
-    return {} if value is None else value
+    return NonnullNote() if value is None else value

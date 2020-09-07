@@ -304,10 +304,11 @@ class Types:
 
   @property
   def nonnull(self):
-    '''This marker is a instructional transformer designated for shape. This is
-    not a validator. To mark a field is required and should not be null, use
-    `required` instead. This transformer should be used right before shape, to
-    given shape an instruction of not leaving null for the shaped field.
+    '''This marker is a instructional transformer designated for shape, dictof
+    and listof. This is not a validator. To mark a field is required and should
+    not be null, use `required` instead. This transformer should be used right
+    before shape, dictof and listof, to given an instruction of not leaving null
+    for the field.
 
     Returns:
       Types: A new types chained with this marker.
