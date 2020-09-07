@@ -15,7 +15,7 @@ class ListOfValidator(Validator):
   def __init__(self, types: Any):
     self.types = types
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is not None and type(value) is not list:
       raise ValidationException(
         { key_path: f'Value \'{value}\' at \'{key_path}\' should be a list.' },
@@ -25,14 +25,14 @@ class ListOfValidator(Validator):
     if isinstance(self.types, resolve_class('Types')):
       validator = self.types.validator
     else:
-      validator = default_validator_for_type(self.types, graph_sibling=root.__class__)
+      validator = default_validator_for_type(self.types, graph_sibling=config.linked_class)
     if validator:
       if not is_nullable_type(validator):
         validator = validator.append(RequiredValidator())
       keypath_messages = {}
       for i, v in enumerate(value):
         try:
-          validator.validate(v, keypath(key_path, i), root, all_fields)
+          validator.validate(v, keypath(key_path, i), root, all_fields, config)
         except ValidationException as exception:
           if all_fields:
             keypath_messages.update(exception.keypath_messages)

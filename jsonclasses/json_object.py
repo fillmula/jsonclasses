@@ -98,7 +98,8 @@ class JSONObject:
     Returns:
       None: upon successful validation, returns nothing.
     '''
-    InstanceOfValidator(self.__class__).validate(self, '', self, all_fields)
+    config = Config.on(self.__class__)
+    InstanceOfValidator(self.__class__).validate(self, '', self, all_fields, config)
     return self
 
   def is_valid(self):

@@ -41,5 +41,5 @@ def get_registered_class(
     graph = sibling.config.graph
   cls = __graph_table(graph).get(name)
   if cls is None:
-    raise JSONClassNotFoundError(name, graph)
+    raise JSONClassNotFoundError(name=name, graph=graph)
   return cls

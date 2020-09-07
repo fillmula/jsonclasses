@@ -136,3 +136,19 @@ class TestInstanceOfValidator(unittest.TestCase):
     staff = Staff(**{ 'position': 'Developer', 'user': { 'name': 'Valy' }})
     self.assertIsInstance(staff.user, User)
     self.assertEqual(staff.user.name, 'Valy')
+
+  def test_instanceof_works_in_list_without_assigning_a_types(self):
+    @jsonclass(graph='test_instanceof_9')
+    class Staff(JSONObject):
+      position: str
+      users: List[User]
+    @jsonclass(graph='test_instanceof_9')
+    class User(JSONObject):
+      name: str
+      staffs: List[Staff]
+    user = User(**{ 'name': 'John', 'staffs': [{ 'position': 'CEO' }, { 'position': 'CSO' }]})
+    self.assertIsInstance(user.staffs[0], Staff)
+    self.assertEqual(user.staffs[0].position, 'CEO')
+    staff = Staff(**{ 'position': 'Developer', 'users': [{ 'name': 'Valy' }, { 'name': 'Jonny' }]})
+    self.assertIsInstance(staff.users[0], User)
+    self.assertEqual(staff.users[0].name, 'Valy')

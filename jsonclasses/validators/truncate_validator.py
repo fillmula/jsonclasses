@@ -8,7 +8,7 @@ class TruncateValidator(Validator):
   def __init__(self, max_length):
     self.max_length = max_length
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     pass
 
   def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):

@@ -4,7 +4,7 @@ from ..exceptions import ValidationException
 
 class Validator:
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     raise ValidationException(
       { key_path: f'Value \'{value}\' at \'{key_path}\' is invalid.' },
       root

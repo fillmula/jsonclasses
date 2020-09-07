@@ -16,14 +16,14 @@ class ChainedValidator(Validator):
   def append(self, *args: Validator):
     return ChainedValidator([*self.validators, *args])
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if root == None:
       root = value
     keypath_messages: Dict[str, str] = {}
     start_validator_index = last_eager_validator_index(self.validators)
     for validator in self.validators[start_validator_index:]:
       try:
-        validator.validate(value, key_path, root, all_fields)
+        validator.validate(value, key_path, root, all_fields, config)
       except ValidationException as exception:
         keypath_messages.update(exception.keypath_messages)
         if not all_fields:
@@ -40,7 +40,7 @@ class ChainedValidator(Validator):
     all_fields: bool,
     config: Config
   ) -> Any:
-    validator.validate(value, key_path, root, all_fields)
+    validator.validate(value, key_path, root, all_fields, config)
     return validator.transform(value, key_path, root, all_fields, config)
 
   def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):

@@ -8,7 +8,7 @@ class TransformValidator(Validator):
   def __init__(self, transformer: Callable):
     self.transformer = transformer
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     pass
 
   def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):

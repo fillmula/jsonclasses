@@ -15,7 +15,7 @@ class ShapeValidator(Validator):
       raise ValueError('argument passed to ShapeValidator should be dict')
     self.types = types
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is not None and type(value) is not dict:
       raise ValidationException(
         { key_path: f'Value \'{value}\' at \'{key_path}\' should be a dict.' },
@@ -30,10 +30,10 @@ class ShapeValidator(Validator):
       if isinstance(t, resolve_class('Types')):
         validator = t.validator
       else:
-        validator = default_validator_for_type(t, graph_sibling=root.__class__)
+        validator = default_validator_for_type(t, graph_sibling=config.linked_class)
       if validator:
         try:
-          validator.validate(value_at_key, keypath(key_path, k), root, all_fields)
+          validator.validate(value_at_key, keypath(key_path, k), root, all_fields, config)
         except ValidationException as exception:
           if all_fields:
             keypath_messages.update(exception.keypath_messages)

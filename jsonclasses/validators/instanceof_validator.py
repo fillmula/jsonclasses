@@ -26,23 +26,23 @@ class InstanceOfValidator(Validator):
     else:
       raise ValueError('argument passed to InstanceOfValidator should be subclass of JSONObject.')
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is None:
       return
     if hasattr(self, 'json_object_class_name') and self.json_object_class is None:
-      self.json_object_class = get_registered_class(name=self.json_object_class_name, sibling=value.__class__)
+      self.json_object_class = get_registered_class(name=self.json_object_class_name, sibling=config.linked_class)
     keypath_messages = {}
     for object_field in fields(value):
       default = object_field.default
       if isinstance(default, resolve_class('Types')):
         validator = default.validator
       else:
-        validator = default_validator_for_type(object_field.type, graph_sibling=root.__class__)
+        validator = default_validator_for_type(object_field.type, graph_sibling=config.linked_class)
       if validator:
         name = object_field.name
         field_value = getattr(value, name)
         try:
-          validator.validate(field_value, keypath(key_path, name), root, all_fields)
+          validator.validate(field_value, keypath(key_path, name), root, all_fields, config)
         except ValidationException as exception:
           if all_fields:
             keypath_messages.update(exception.keypath_messages)
