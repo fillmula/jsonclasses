@@ -50,118 +50,72 @@ Install jsonclasses with pip.
 pip install jsonclasses
 ```
 
-## Examples
+## Example with JSON Classes
 
-### Converting from json dict
+### Define a User Table
 
-To create a jsonclass object from json dict, just use its initialization
-method. Type transforming, input sanitization, and JSON key case convension are
-taken into consideration during this process.
+Let's say, you are building the base user functionality for a cross-platform
+dating app.
 
-```python
-from jsonclasses import jsonclass, JSONObject, types
+The product requirements are:
 
-@jsonclass
-class Article(JSONObject):
-  title: str = types.str.maxlength(100).required
-  content: str = types.str.required
-  read_count: int = types.int.default(0).required
+1. Unique phone number is required
+2. Password should be secure and encrypted
+3. Gender cannot be changed after set
+4. This product is adult only
+5. User intro should be brief
 
-json_input = {
-  'title': 'Declarative Web API Development with jsonclasses',
-  'content': 'With jsonclasses, you can easily implement your web API with declaration style rather than procedural style.'
-}
-
-article = Article(**json_input)
-# =>
-# Article(
-#   title='Declarative Web API Development with jsonclasses',
-#   content='With jsonclasses, you can easily implement your web API with declaration style rather than procedural style.',
-#   read_count=0
-# )
-```
-
-### Coverting to json dict
-
-To convert a jsonclass to json dict, use instance method `tojson`. During this
-process, Python data types are converted to JSON acceptable types.
+Let's transform the requirements into code.
 
 ```python
 from jsonclasses import jsonclass, JSONObject, types
 
 @jsonclass
-class MobilePhone(JSONObject):
-  name: str = types.str.maxlength(50).required,
-  model: str = types.str.oneof(['iphone', 'galaxy', 'pixel']).required,
-  year: int = types.int.range(2010, 2020).required
-
-mobile_phone = MobilePhone(name='iPhone 12', model='iphone', year=2020)
-
-mobile_phone.tojson()
-# =>
-# {'name': 'iPhone 12', 'model': 'iphone', 'year': 2020}
+class User(JSONObject):
+  phone_no: str = types.str.unique.index.match(local_phone_no_regex).required #1
+  email: str = types.str.match(email_regex)
+  password: str = types.str.length(8, 16).match(secure_password_regex).transform(salt).required #2
+  nickname: str = types.str.required
+  gender: str = types.str.writeonce.oneof(['male', 'female']) #3
+  age: int = types.int.min(18).max(100) #4
+  intro: str = types.str.truncate(500) #5
 ```
 
-### Sanitization
-
-Jsonclass sanitizes inputs on initialization and `set`. Values of extra fields
-are just ignored. Fields marked with `readonly` won't accept value inputs.
-
-```python
-from jsonclasses import jsonclass, JSONObject, types
-
-@jsonclass
-class Coupon(JSONObject):
-  type: str = types.str.oneof(['spring', 'flash', 'limited']).required
-  discount_rate: float = types.float.range(0, 1).required
-  used: bool = types.bool.readonly.default(False).required
-  user_id: str = types.str.length(24).required
-
-json_input = {
-  'type': 'flash',
-  'discount_rate': 0.3,
-  'used': True,
-  'user_id': '12345678901234567890abcd',
-  'haha': 'I want to hack into this system!'
-}
-
-Coupon(**json_input)
-# =>
-# Coupon(type='flash', discount_rate=0.3, used=False, user_id='12345678901234567890abcd')
-# * value of field 'haha' is ignored.
-# * value of 'used' is not affected by the fraud input.
-```
-
-### Validation
+Look how brief it is to describe our business requirements. JSON Classes has
+official support for some databases to store data permanently. If you are
+building a RESTful API, you can integrate JSON Classes with flask, sanic or any
+other web frameworks.
 
 ```python
-from jsonclasses import jsonclass, JSONObject, types
+from sanic import Blueprint
+from sanic.request import Request
+from jsonclasses_sanic import response
+from jsonclasses_sanic.middlewares import only_handle_json_middleware
+from models import User
 
-@jsonclass
-class UserProfile(JSONObject):
-  name: str = types.str.required
-  gender: str = types.str.oneof(['male', 'female'])
+bp = Blueprint('users')
 
-user_profile = UserProfile(name='John', gender='mlae')
+bp.middleware('request')(only_handle_json_middleware)
 
-user_profile.validate()
-# =>
-# jsonclasses.exceptions.ValidationException: Json classes validation failed:
-#   'gender': Value 'mlae' at 'gender' should be one of ['male', 'female'].
-```
+@bp.get('/')
+async def users(request: Request):
+  return response.data(User.find())
 
-### Integration with web frameworks
+@bp.get('/<id:string>')
+async def user(request, id):
+  return response.data(User.find_by_id(id))
 
-Using `jsonclasses` with `sanic` web framework.
+@bp.post('/')
+async def create_user(request):
+  return response.data(User(**request.json).save())
 
-```python
+@bp.patch('/<id:string>')
+async def update_user(request, id):
+  return response.data(User.find_by_id(id).set(**request.json).save())
 
-```
-
-Using `jsonclasses` with `flask` web framework.
-
-```python
-
+@bp.delete('/<id:string>')
+async def delete_user(request, id):
+  return response.empty(User.delete_by_id(id))
 ```
 
 ## Supported Python versions
