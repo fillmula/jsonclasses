@@ -26,11 +26,11 @@ metaprogramming functionalities that Python Data Classes offers, we can easily
 extend it into a great DSL for declaring data structures, transforming rules
 and validation rules.
 
-## Why Not Create Another Schema Definition Language like GraphQL SDL?
+## Why Not Create Another SDL?
 
-GraphQL's SDL cannot work well with programming languages' syntax checking and
-type completion. To support more and more functions, a DSL would become more
-and more like a programming language.
+GraphQL's Schema Definition Language cannot work well with programming
+languages' syntax checking and type completion. To support more and more
+functions, a DSL would become more and more like a programming language.
 
 This is why React.js embedded HTML into JavaScript/TypeScript and Apple built
 new Swift language features for SwiftUI.
