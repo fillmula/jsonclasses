@@ -5,12 +5,12 @@ from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 from .required_validator import RequiredValidator
-from ..utils.default_validator_for_type import default_validator_for_type
 from ..utils.keypath import keypath
-from ..utils.is_nullable_type import is_nullable_type
 from ..utils.reference_map import referenced, resolve_class
 from inflection import underscore, camelize
 from ..utils.nonnull_note import NonnullNote
+from ..fields import collection_argument_type_to_types
+from ..field_description import CollectionNullability
 
 @referenced
 class DictOfValidator(Validator):
@@ -29,18 +29,14 @@ class DictOfValidator(Validator):
         { key_path: f'Value \'{value}\' at \'{key_path}\' should be a dict.' },
         root
       )
-    validator = None
-    if isinstance(self.types, resolve_class('Types')):
-      validator = self.types.validator
-    else:
-      validator = default_validator_for_type(self.types, graph_sibling=config.linked_class)
-    if validator:
-      if not is_nullable_type(validator):
-        validator = validator.append(RequiredValidator())
+    types = collection_argument_type_to_types(self.types, config.linked_class)
+    if types:
+      if types.field_description.collection_nullability == CollectionNullability.UNDEFINED:
+        types = types.required
       keypath_messages = {}
       for k, v in value.items():
         try:
-          validator.validate(v, keypath(key_path, k), root, all_fields, config)
+          types.validator.validate(v, keypath(key_path, k), root, all_fields, config)
         except ValidationException as exception:
           if all_fields:
             keypath_messages.update(exception.keypath_messages)
@@ -56,15 +52,12 @@ class DictOfValidator(Validator):
       value = {}
     elif type(value) is not dict:
       return value
-    if isinstance(self.types, resolve_class('Types')):
-      validator = self.types.validator
-    else:
-      validator = default_validator_for_type(self.types, graph_sibling=config.linked_class)
-    if validator:
+    types = collection_argument_type_to_types(self.types, config.linked_class)
+    if types:
       retval = {}
       for k, v in value.items():
         new_key = underscore(k) if config.camelize_json_keys else k
-        new_value = validator.transform(v, keypath(key_path, new_key), root, all_fields, config)
+        new_value = types.validator.transform(v, keypath(key_path, new_key), root, all_fields, config)
         retval[new_key] = new_value
       return retval
     else:
@@ -75,11 +68,8 @@ class DictOfValidator(Validator):
       return None
     if type(value) is not dict:
       return value
-    if isinstance(self.types, resolve_class('Types')):
-      validator = self.types.validator
-    else:
-      validator = default_validator_for_type(self.types, graph_sibling=config.linked_class)
-    if validator:
-      return { camelize(k, False) if config.camelize_json_keys else k: validator.tojson(v, config) for k, v in value.items() }
+    types = collection_argument_type_to_types(self.types, config.linked_class)
+    if types:
+      return { camelize(k, False) if config.camelize_json_keys else k: types.validator.tojson(v, config) for k, v in value.items() }
     else:
       return value
