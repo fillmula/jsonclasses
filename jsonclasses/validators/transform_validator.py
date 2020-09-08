@@ -1,4 +1,5 @@
 from typing import Callable, Any
+from ..field import Field, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator

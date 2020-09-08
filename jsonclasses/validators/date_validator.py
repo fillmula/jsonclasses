@@ -1,5 +1,6 @@
 from typing import Any
 from datetime import date
+from ..field import Field, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
@@ -7,6 +8,9 @@ from ..utils.reference_map import referenced
 
 @referenced
 class DateValidator(Validator):
+
+  def define(self, field: Field):
+    field.field_type = FieldType.DATE
 
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is not None and type(value) is not date:

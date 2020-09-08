@@ -31,7 +31,7 @@ class WriteRule(Enum):
   WRITE_ONCE = 'write_once'
   WRITE_NONNULL = 'write_nonnull'
 
-class CollectionNullable(Enum):
+class CollectionNullability(Enum):
   UNDEFINED = 'undefined'
   NULLABLE = 'nullable'
 
@@ -48,7 +48,7 @@ class Field():
   read_rule: ReadRule = ReadRule.UNLIMITED
   write_rule: WriteRule = WriteRule.UNLIMITED
 
-  collection_nullable: CollectionNullable = CollectionNullable.UNDEFINED
+  collection_nullability: CollectionNullability = CollectionNullability.UNDEFINED
 
   has_eager_validator: bool = False
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Dict, Any
+from ..field import Field, FieldType
 from ..config import Config
 from ..graph import get_registered_class
 from ..exceptions import ValidationException
@@ -20,11 +21,14 @@ class InstanceOfValidator(Validator):
     if type(json_object_class) is str:
       self.json_object_class_name = json_object_class
       self.json_object_class = None
-    #elif isinstance(json_object_class, resolve_class('JSONObject')):
+    #elif issubclass(json_object_class, resolve_class('JSONObject')):
     elif hasattr(json_object_class, 'config'):
       self.json_object_class = json_object_class
     else:
       raise ValueError('argument passed to InstanceOfValidator should be subclass of JSONObject.')
+
+  def define(self, field: Field):
+    field.field_type = FieldType.INSTANCE
 
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is None:
