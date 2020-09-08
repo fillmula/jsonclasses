@@ -14,6 +14,7 @@ from ..utils.is_writeonce_type import is_writeonce_type
 from ..utils.default_validator_for_type import default_validator_for_type
 from ..utils.keypath import keypath
 from ..utils.reference_map import referenced, resolve_class
+from ..fields import collection_argument_type_to_types, fields as our_fields, dataclass_field_to_types
 
 @referenced
 class InstanceOfValidator(Validator):
@@ -36,17 +37,23 @@ class InstanceOfValidator(Validator):
     if hasattr(self, 'json_object_class_name') and self.json_object_class is None:
       self.json_object_class = get_registered_class(name=self.json_object_class_name, sibling=config.linked_class)
     keypath_messages = {}
+    # for our_field in our_fields(value):
+    #   if our_field.field_types:
+    #     field_value = getattr(value, our_field.field_name)
+    #     try:
+    #       our_field.field_types.validator.validate(field_value, keypath(key_path, our_field.field_name), root, all_fields, config)
+    #     except ValidationException as exception:
+    #       if all_fields:
+    #         keypath_messages.update(exception.keypath_messages)
+    #       else:
+    #         raise exception
     for object_field in fields(value):
-      default = object_field.default
-      if isinstance(default, resolve_class('Types')):
-        validator = default.validator
-      else:
-        validator = default_validator_for_type(object_field.type, graph_sibling=config.linked_class)
-      if validator:
+      types = dataclass_field_to_types(object_field, config.linked_class)
+      if types:
         name = object_field.name
         field_value = getattr(value, name)
         try:
-          validator.validate(field_value, keypath(key_path, name), root, all_fields, config)
+          types.validator.validate(field_value, keypath(key_path, name), root, all_fields, config)
         except ValidationException as exception:
           if all_fields:
             keypath_messages.update(exception.keypath_messages)

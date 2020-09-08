@@ -31,7 +31,7 @@ def string_type_to_default_types(type: str, graph_sibling: Any = None) -> 'Types
     item_type = match('Dict\\[.+, ?(.*)\\]', type).group(1)
     return types.dictof(string_type_to_default_types(item_type, graph_sibling))
   else:
-    return types.instanceof(get_registered_class(type, graph_sibling))
+    return types.instanceof(get_registered_class(type, sibling=graph_sibling))
 
 def type_to_default_types(type: Any, graph_sibling: Any = None) -> 'Types':
   JSONObject = resolve_class('JSONObject')
