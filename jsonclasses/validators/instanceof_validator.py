@@ -22,8 +22,7 @@ class InstanceOfValidator(Validator):
     if type(json_object_class) is str:
       self.json_object_class_name = json_object_class
       self.json_object_class = None
-    #elif issubclass(json_object_class, resolve_class('JSONObject')):
-    elif hasattr(json_object_class, 'config'):
+    elif issubclass(json_object_class, resolve_class('JSONObject')):
       self.json_object_class = json_object_class
     else:
       raise ValueError('argument passed to InstanceOfValidator should be subclass of JSONObject.')
