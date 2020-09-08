@@ -5,9 +5,7 @@ from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 from .required_validator import RequiredValidator
-from ..utils.default_validator_for_type import default_validator_for_type
 from ..utils.keypath import keypath
-from ..utils.is_nullable_type import is_nullable_type
 from ..utils.reference_map import referenced, resolve_class
 from ..utils.nonnull_note import NonnullNote
 from ..fields import collection_argument_type_to_types
@@ -53,12 +51,9 @@ class ListOfValidator(Validator):
       value = []
     elif type(value) is not list:
       return value
-    if isinstance(self.types, resolve_class('Types')):
-      validator = self.types.validator
-    else:
-      validator = default_validator_for_type(self.types, graph_sibling=config.linked_class)
-    if validator:
-      return [ validator.transform(v, keypath(key_path, i), root, all_fields, config) for i, v in enumerate(value) ]
+    types = collection_argument_type_to_types(self.types, config.linked_class)
+    if types:
+      return [ types.validator.transform(v, keypath(key_path, i), root, all_fields, config) for i, v in enumerate(value) ]
     else:
       return value
 
@@ -67,11 +62,8 @@ class ListOfValidator(Validator):
       return None
     if type(value) is not list:
       return value
-    if isinstance(self.types, resolve_class('Types')):
-      validator = self.types.validator
-    else:
-      validator = default_validator_for_type(self.types, graph_sibling=config.linked_class)
-    if validator:
-      return [ validator.tojson(v, config) for v in value ]
+    types = collection_argument_type_to_types(self.types, config.linked_class)
+    if types:
+      return [ types.validator.tojson(v, config) for v in value ]
     else:
       return value
