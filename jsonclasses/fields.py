@@ -94,4 +94,4 @@ def fields(class_or_instance: Any) -> List[Field]:
         field_types=field_types
       )
     )
-    return retval
+  return retval

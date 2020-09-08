@@ -37,23 +37,13 @@ class InstanceOfValidator(Validator):
     if hasattr(self, 'json_object_class_name') and self.json_object_class is None:
       self.json_object_class = get_registered_class(name=self.json_object_class_name, sibling=config.linked_class)
     keypath_messages = {}
-    # for our_field in our_fields(value):
-    #   if our_field.field_types:
-    #     field_value = getattr(value, our_field.field_name)
-    #     try:
-    #       our_field.field_types.validator.validate(field_value, keypath(key_path, our_field.field_name), root, all_fields, config)
-    #     except ValidationException as exception:
-    #       if all_fields:
-    #         keypath_messages.update(exception.keypath_messages)
-    #       else:
-    #         raise exception
-    for object_field in fields(value):
-      types = dataclass_field_to_types(object_field, config.linked_class)
-      if types:
-        name = object_field.name
-        field_value = getattr(value, name)
+    for our_field in our_fields(value):
+      if our_field.field_types:
+        field_types = our_field.field_types
+        field_name = our_field.field_name
+        field_value = getattr(value, field_name)
         try:
-          types.validator.validate(field_value, keypath(key_path, name), root, all_fields, config)
+          field_types.validator.validate(field_value, keypath(key_path, field_name), root, all_fields, config)
         except ValidationException as exception:
           if all_fields:
             keypath_messages.update(exception.keypath_messages)
