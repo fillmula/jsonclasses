@@ -21,6 +21,7 @@ class Types:
       validator = original.validator
       for arg in args:
         validator = validator.append(arg)
+        arg.define(self.field_description)
       self.validator = validator
 
   @property

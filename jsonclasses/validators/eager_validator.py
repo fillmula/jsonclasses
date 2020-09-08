@@ -9,7 +9,7 @@ class EagerValidator(Validator):
   '''
 
   def define(self, field_description: FieldDescription):
-    field.has_eager_validator = True
+    field_description.has_eager_validator = True
 
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     pass
