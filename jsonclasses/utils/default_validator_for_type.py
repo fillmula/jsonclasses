@@ -2,7 +2,7 @@ from typing import Any, get_origin, get_args
 from datetime import date, datetime
 from re import match
 from .reference_map import resolve_class
-from ..graph import get_registered_class, JSONClassNotFoundError
+from ..graph import get_registered_class
 
 def default_validator_for_type(type: Any, graph_sibling: Any = None):
   '''This function returns the default synthesized validator for given Python

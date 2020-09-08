@@ -1,6 +1,6 @@
 from typing import List, Dict, Any
 from functools import reduce
-from ..field import Field, FieldType
+from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator

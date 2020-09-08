@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Any
-from ..field import Field, FieldType
+from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
@@ -18,8 +18,8 @@ class DictOfValidator(Validator):
   def __init__(self, types: Any):
     self.types = types
 
-  def define(self, field: Field):
-    field.field_type = FieldType.DICT
+  def define(self, field_description: FieldDescription):
+    field_description.field_type = FieldType.DICT
 
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is None:

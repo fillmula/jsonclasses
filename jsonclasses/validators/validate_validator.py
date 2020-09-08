@@ -1,6 +1,6 @@
 from typing import Callable, Any
 from inspect import signature
-from ..field import Field, FieldType
+from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator

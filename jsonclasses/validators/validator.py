@@ -1,12 +1,12 @@
 from typing import Any
-from ..field import Field
-from ..field import Field, FieldType
+from ..field_description import FieldDescription
+from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 
 class Validator:
 
-  def define(self, field: Field):
+  def define(self, field_description: FieldDescription):
     pass
 
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):

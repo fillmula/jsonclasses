@@ -1,6 +1,6 @@
 from typing import Dict, Any
 from inflection import underscore, camelize
-from ..field import Field, FieldType
+from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
@@ -17,8 +17,8 @@ class ShapeValidator(Validator):
       raise ValueError('argument passed to ShapeValidator should be dict')
     self.types = types
 
-  def define(self, field: Field):
-    field.field_type = FieldType.SHAPE
+  def define(self, field_description: FieldDescription):
+    field_description.field_type = FieldType.SHAPE
 
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is not None and type(value) is not dict:

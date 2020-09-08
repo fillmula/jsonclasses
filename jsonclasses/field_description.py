@@ -36,7 +36,7 @@ class CollectionNullability(Enum):
   NULLABLE = 'nullable'
 
 @dataclass
-class Field():
+class FieldDescription():
   field_type: Optional[FieldType] = None
   field_storage: FieldStorage = FieldStorage.EMBEDDED
 
@@ -52,7 +52,7 @@ class Field():
 
   has_eager_validator: bool = False
 
-  def copy(self) -> Field:
+  def copy(self) -> FieldDescription:
     return deepcopy(self)
 
   # shape_types: Any = None

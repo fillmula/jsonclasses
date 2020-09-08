@@ -1,11 +1,12 @@
 from __future__ import annotations
 from typing import Dict, Any
-from ..field import Field, FieldType
+from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..graph import get_registered_class
 from ..exceptions import ValidationException
 from .validator import Validator
 from dataclasses import fields
+from ..fields import fields as our_fields
 from inflection import underscore, camelize
 from ..utils.is_readonly_type import is_readonly_type
 from ..utils.is_writeonly_type import is_writeonly_type
@@ -27,8 +28,8 @@ class InstanceOfValidator(Validator):
     else:
       raise ValueError('argument passed to InstanceOfValidator should be subclass of JSONObject.')
 
-  def define(self, field: Field):
-    field.field_type = FieldType.INSTANCE
+  def define(self, field_description: FieldDescription):
+    field_description.field_type = FieldType.INSTANCE
 
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is None:

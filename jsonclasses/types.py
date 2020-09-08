@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import List, Dict, Union, Callable, Any, Optional
 from datetime import date, datetime
-from .field import Field
+from .field_description import FieldDescription
 from .utils.reference_map import referenced
 from .validators import *
 
@@ -14,10 +14,10 @@ class Types:
 
   def __init__(self, original: Optional[Types] = None, *args: Validator):
     if not original:
-      self.field = Field()
+      self.field_description = FieldDescription()
       self.validator = ChainedValidator()
     else:
-      self.field = original.field.copy()
+      self.field_description = original.field_description.copy()
       validator = original.validator
       for arg in args:
         validator = validator.append(arg)
