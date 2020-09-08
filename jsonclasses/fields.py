@@ -1,4 +1,4 @@
-from typing import Any, get_origin, get_args
+from typing import List, Any, get_origin, get_args
 from datetime import date, datetime
 from re import match
 from dataclasses import fields as dataclass_fields, Field as DataclassField
@@ -6,6 +6,7 @@ from inflection import camelize
 from .config import Config
 from .utils.reference_map import resolve_class
 from .graph import get_registered_class
+from .field import Field
 
 def string_type_to_default_types(type: str, graph_sibling: Any = None) -> 'Types':
   Types = resolve_class('Types')
@@ -65,7 +66,7 @@ def dataclass_field_to_types(field: DataclassField, graph_sibling: Any = None) -
   else:
     return type_to_default_types(field.type, graph_sibling)
 
-def fields(class_or_instance: Any):
+def fields(class_or_instance: Any) -> List[Field]:
   JSONObject = resolve_class('JSONObject')
   if isinstance(class_or_instance, JSONObject):
     config: Config = class_or_instance.__class__.config
@@ -77,7 +78,12 @@ def fields(class_or_instance: Any):
     json_field_name = camelize(field_name, False) if config.camelize_json_keys else field_name
     db_field_name = camelize(field_name, False) if config.camelize_db_keys else field_name
     field_types = dataclass_field_to_types(field, config.linked_class)
-    retval.append({
-      'field_name': field_name,
-      'json_field': Any
-    })
+    retval.append(
+      Field(
+        field_name=field_name,
+        json_field_name=json_field_name,
+        db_field_name=db_field_name,
+        field_types=field_types
+      )
+    )
+    return retval
