@@ -39,11 +39,13 @@ def default_validator_for_type(type: Any, graph_sibling: Any = None):
     if origin is list:
       inner_validator = default_validator_for_type(get_args(type)[0], graph_sibling=graph_sibling)
       ListOfValidator = resolve_class('ListOfValidator')
-      return ChainedValidator().append(ListOfValidator((resolve_class('Types'))(inner_validator)))
+      Types = resolve_class('Types')
+      return ChainedValidator().append(ListOfValidator(Types(Types(), inner_validator)))
     elif origin is dict:
       inner_validator = default_validator_for_type(get_args(type)[1], graph_sibling=graph_sibling)
       DictOfValidator = resolve_class('DictOfValidator')
-      return ChainedValidator().append(DictOfValidator((resolve_class('Types'))(inner_validator)))
+      Types = resolve_class('Types')
+      return ChainedValidator().append(DictOfValidator(Types(Types(), inner_validator)))
     else:
       return None
   elif isinstance(type, str):
@@ -63,12 +65,14 @@ def default_validator_for_type(type: Any, graph_sibling: Any = None):
       inner_type = match('List\\[(.*)\\]', type).group(1)
       inner_validator = default_validator_for_type(inner_type, graph_sibling)
       ListOfValidator = resolve_class('ListOfValidator')
-      return ChainedValidator().append(ListOfValidator((resolve_class('Types'))(inner_validator)))
+      Types = resolve_class('Types')
+      return ChainedValidator().append(ListOfValidator(Types(Types(), inner_validator)))
     elif type.startswith('Dict['):
       inner_type = match('Dict\\[.+, ?(.*)\\]', type).group(1)
       inner_validator = default_validator_for_type(inner_type, graph_sibling)
+      Types = resolve_class('Types')
       DictOfValidator = resolve_class('DictOfValidator')
-      return ChainedValidator().append(DictOfValidator((resolve_class('Types'))(inner_validator)))
+      return ChainedValidator().append(DictOfValidator(Types(Types(), inner_validator)))
     else:
       InstanceOfValidator = resolve_class('InstanceOfValidator')
       cls = get_registered_class(type, sibling=graph_sibling)

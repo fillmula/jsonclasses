@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import List, Dict, Union, Callable, Any, Optional
 from datetime import date, datetime
+from .field import Field
 from .utils.reference_map import referenced
 from .validators import *
 
@@ -11,15 +12,23 @@ class Types:
   sanitization.
   '''
 
-  def __init__(self, validator: ChainedValidator = ChainedValidator()):
-    self.validator = validator
+  def __init__(self, original: Optional[Types] = None, *args: Validator):
+    if not original:
+      self.field = Field()
+      self.validator = ChainedValidator()
+    else:
+      self.field = original.field.copy()
+      validator = original.validator
+      for arg in args:
+        validator = validator.append(arg)
+      self.validator = validator
 
   @property
   def invalid(self):
     '''Fields marked with invalid will never be valid, thus these fields
     will never pass validation.
     '''
-    return Types(self.validator.append(Validator()))
+    return Types(self, Validator())
 
   @property
   def readonly(self):
@@ -30,21 +39,21 @@ class Types:
 
     Readonly and writeonce cannot be presented together.
     '''
-    return Types(self.validator.append(ReadonlyValidator()))
+    return Types(self, ReadonlyValidator())
 
   @property
   def writeonly(self):
     '''Fields marked with writeonly will not be available in outgoing json form.
     Users' password is a great example of writeonly.
     '''
-    return Types(self.validator.append(WriteonlyValidator()))
+    return Types(self, WriteonlyValidator())
 
   @property
   def readwrite(self):
     '''Fields marked with readwrite will be presented in both inputs and outputs.
     This is the default behavior. And this specifier can be omitted.
     '''
-    return Types(self.validator.append(ReadwriteValidator()))
+    return Types(self, ReadwriteValidator())
 
   @property
   def writeonce(self):
@@ -55,14 +64,14 @@ class Types:
 
     Writeonce and readonly cannot be presented together.
     '''
-    return Types(self.validator.append(WriteonceValidator()))
+    return Types(self, WriteonceValidator())
 
   @property
   def internal(self):
     '''Fields marked with internal will not be accepted as input, and it will
     not be present in output. These fields are internal and hidden from users.
     '''
-    return Types(self.validator.append(ReadonlyValidator(), WriteonlyValidator()))
+    return Types(self, ReadonlyValidator(), WriteonlyValidator())
 
   @property
   def index(self):
@@ -70,7 +79,7 @@ class Types:
     database column index for you. This marker doesn't have any effect around
     transforming and validating.
     '''
-    return Types(self.validator.append(IndexValidator()))
+    return Types(self, IndexValidator())
 
   @property
   def unique(self):
@@ -84,45 +93,45 @@ class Types:
     UniqueFieldException provided by jsonclasses.exceptions to keep consistency
     with other jsonclasses integrations.
     '''
-    return Types(self.validator.append(UniqueValidator()))
+    return Types(self, UniqueValidator())
 
   @property
   def embedded(self):
     '''Instance fields marked with the embedded mark is embedded into the
     hosting document for noSQL databases.
     '''
-    return Types(self.validator.append(EmbeddedValidator()))
+    return Types(self, EmbeddedValidator())
 
   @property
   def linkto(self):
     '''In a database relationship, fields marked with linkto save an id of
     the object being referenced at the local table.
     '''
-    return Types(self.validator.append(LinkToValidator()))
+    return Types(self, LinkToValidator())
 
   def linkedby(self, foreign_key: str):
     '''In a database relationship, fields marked with linkedby find reference
     from the destination table.
     '''
-    return Types(self.validator.append(LinkedByValidator(foreign_key)))
+    return Types(self, LinkedByValidator(foreign_key))
 
   @property
   def str(self):
     '''Fields marked with str should be str type. This is a type marker.
     '''
-    return Types(self.validator.append(StrValidator()))
+    return Types(self, StrValidator())
 
   def match(self, pattern: str):
     '''Fields marked with match are tested againest the argument regular
     expression pattern.
     '''
-    return Types(self.validator.append(MatchValidator(pattern)))
+    return Types(self, MatchValidator(pattern))
 
   def oneof(self, str_list):
     '''This is the enum equivalent for jsonclasses. Values in the provided list
     are considered valid values.
     '''
-    return Types(self.validator.append(OneOfValidator(str_list)))
+    return Types(self, OneOfValidator(str_list))
 
   def minlength(self, length: int):
     '''Values at fields marked with minlength should have a length which is not
@@ -134,7 +143,7 @@ class Types:
     Returns:
       Types: A new types chained with this marker.
     '''
-    return Types(self.validator.append(MinlengthValidator(length)))
+    return Types(self, MinlengthValidator(length))
 
   def maxlength(self, length: int):
     '''Values at fields marked with maxlength should have a length which is not
@@ -146,84 +155,84 @@ class Types:
     Returns:
       Types: A new types chained with this marker.
     '''
-    return Types(self.validator.append(MaxlengthValidator(length)))
+    return Types(self, MaxlengthValidator(length))
 
   def length(self, minlength: int, maxlength: Optional[int] = None):
     '''
     '''
-    return Types(self.validator.append(LengthValidator(minlength, maxlength)))
+    return Types(self, LengthValidator(minlength, maxlength))
 
   @property
   def int(self):
     '''Fields marked with int should be int type. This is a type marker.
     '''
-    return Types(self.validator.append(IntValidator()))
+    return Types(self, IntValidator())
 
   @property
   def float(self):
     '''Fields marked with float should be float type. This is a type marker.
     '''
-    return Types(self.validator.append(FloatValidator()))
+    return Types(self, FloatValidator())
 
   def min(self, value: float):
     '''Fields marked with min are tested again this value. Values less than
     the argument value are considered invalid.
     '''
-    return Types(self.validator.append(MinValidator(value)))
+    return Types(self, MinValidator(value))
 
   def max(self, value: float):
     '''Fields marked with max are tested again this value. Values greater than
     the argument value are considered invalid.
     '''
-    return Types(self.validator.append(MaxValidator(value)))
+    return Types(self, MaxValidator(value))
 
   def range(self, min_value: float, max_value: float):
     '''Fields marked with range are tested again argument values. Only values
     between the arguments range are considered valid.
     '''
-    return Types(self.validator.append(RangeValidator(min_value, max_value)))
+    return Types(self, RangeValidator(min_value, max_value))
 
   @property
   def bool(self):
     '''Fields marked with bool should be bool type. This is a type marker.
     '''
-    return Types(self.validator.append(BoolValidator()))
+    return Types(self, BoolValidator())
 
   @property
   def date(self):
     '''Fields marked with date should be date type. This is a type marker.
     '''
-    return Types(self.validator.append(DateValidator()))
+    return Types(self ,DateValidator())
 
   @property
   def datetime(self):
     '''Fields marked with datetime should be datetime type. This is a type
     marker.
     '''
-    return Types(self.validator.append(DatetimeValidator()))
+    return Types(self, DatetimeValidator())
 
   def listof(self, types: Any):
     '''Fields marked with listof should be a list of the given type. This is a
     type marker.
     '''
-    return Types(self.validator.append(ListOfValidator(types)))
+    return Types(self, ListOfValidator(types))
 
   def dictof(self, types: Any):
     '''Fields marked with listof should be a str keyed dict of the given type.
     This is a type marker.
     '''
-    return Types(self.validator.append(DictOfValidator(types)))
+    return Types(self, DictOfValidator(types))
 
   def shape(self, types):
     '''Fields marked with shape are objects shaped with given shape. This is a
     type marker.
     '''
-    return Types(self.validator.append(ShapeValidator(types)))
+    return Types(self, ShapeValidator(types))
 
   def instanceof(self, json_object_class):
     '''Fields marked with instance of are objects of given class.
     '''
-    return Types(self.validator.append(InstanceOfValidator(json_object_class)))
+    return Types(self, InstanceOfValidator(json_object_class))
 
   @property
   def required(self):
@@ -233,7 +242,7 @@ class Types:
     Returns:
       Types: A new types chained with this marker.
     '''
-    return Types(self.validator.append(RequiredValidator()))
+    return Types(self, RequiredValidator())
 
   @property
   def nullable(self):
@@ -245,7 +254,7 @@ class Types:
     Returns:
       Types: A new types chained with this marker.
     '''
-    return Types(self.validator.append(NullableValidator()))
+    return Types(self, NullableValidator())
 
   def validate(self, validate_callable):
     '''The validate field mark takes a validator callable as its sole argument.
@@ -259,7 +268,7 @@ class Types:
     Returns:
       Types: A new types chained with this marker.
     '''
-    return Types(self.validator.append(ValidateValidator(validate_callable)))
+    return Types(self, ValidateValidator(validate_callable))
 
   # transformers
 
@@ -274,7 +283,7 @@ class Types:
     Returns:
       Types: A new types chained with this marker.
     '''
-    return Types(self.validator.append(DefaultValidator(value)))
+    return Types(self, DefaultValidator(value))
 
   def truncate(self, max_length: int):
     '''During initialization and set, if string value is too long, it's
@@ -286,7 +295,7 @@ class Types:
     Returns:
       Types: A new types chained with this marker.
     '''
-    return Types(self.validator.append(TruncateValidator(max_length)))
+    return Types(self, TruncateValidator(max_length))
 
   def transform(self, transformer: Callable):
     '''This mark applies transfromer on the value. When value is None, the
@@ -300,7 +309,7 @@ class Types:
     Returns:
       Types: A new types chained with this marker.
     '''
-    return Types(self.validator.append(EagerValidator(), TransformValidator(transformer)))
+    return Types(self, EagerValidator(), TransformValidator(transformer))
 
   @property
   def nonnull(self):
@@ -313,7 +322,7 @@ class Types:
     Returns:
       Types: A new types chained with this marker.
     '''
-    return Types(self.validator.append(NonnullValidator()))
+    return Types(self, NonnullValidator())
 
 types = Types()
 '''The root of the types marker. To mark an field with type annotation,
