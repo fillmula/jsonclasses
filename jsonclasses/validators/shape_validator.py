@@ -4,10 +4,10 @@ from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..utils.default_validator_for_type import default_validator_for_type
 from ..utils.keypath import keypath
 from ..utils.reference_map import referenced, resolve_class
 from ..utils.nonnull_note import NonnullNote
+from ..fields import collection_argument_type_to_types
 
 @referenced
 class ShapeValidator(Validator):
@@ -32,13 +32,10 @@ class ShapeValidator(Validator):
         value_at_key = value[k]
       except KeyError:
         value_at_key = None
-      if isinstance(t, resolve_class('Types')):
-        validator = t.validator
-      else:
-        validator = default_validator_for_type(t, graph_sibling=config.linked_class)
-      if validator:
+      types = collection_argument_type_to_types(t, config.linked_class)
+      if types:
         try:
-          validator.validate(value_at_key, keypath(key_path, k), root, all_fields, config)
+          types.validator.validate(value_at_key, keypath(key_path, k), root, all_fields, config)
         except ValidationException as exception:
           if all_fields:
             keypath_messages.update(exception.keypath_messages)
@@ -60,12 +57,9 @@ class ShapeValidator(Validator):
       new_key = underscore(k) if config.camelize_json_keys else k
       if new_key in unused_keys:
         t = self.types[new_key]
-        if isinstance(t, resolve_class('Types')):
-          validator = t.validator
-        else:
-          validator = default_validator_for_type(t, graph_sibling=config.linked_class)
-        if validator:
-          retval[new_key] = validator.transform(field_value, keypath(key_path, new_key), root, all_fields, config)
+        types = collection_argument_type_to_types(t, config.linked_class)
+        if types:
+          retval[new_key] = types.validator.transform(field_value, keypath(key_path, new_key), root, all_fields, config)
         else:
           retval[new_key] = field_value
         unused_keys.remove(new_key)
@@ -85,12 +79,9 @@ class ShapeValidator(Validator):
         value_at_key = value[k]
       except KeyError:
         value_at_key = None
-      if isinstance(t, resolve_class('Types')):
-        validator = t.validator
-      else:
-        validator = default_validator_for_type(t, graph_sibling=config.linked_class)
-      if validator:
-        retval[key] = validator.tojson(value_at_key, config)
+      types = collection_argument_type_to_types(t, config.linked_class)
+      if types:
+        retval[key] = types.validator.tojson(value_at_key, config)
       else:
         retval[key] = value_at_key
     return retval
