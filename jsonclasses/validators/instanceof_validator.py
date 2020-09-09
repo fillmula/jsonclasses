@@ -8,10 +8,6 @@ from .validator import Validator
 from dataclasses import fields
 from ..fields import fields as our_fields
 from inflection import underscore, camelize
-from ..utils.is_readonly_type import is_readonly_type
-from ..utils.is_writeonly_type import is_writeonly_type
-from ..utils.is_writeonce_type import is_writeonce_type
-from ..utils.default_validator_for_type import default_validator_for_type
 from ..utils.keypath import keypath
 from ..utils.reference_map import referenced, resolve_class
 from ..fields import collection_argument_type_to_types, fields as our_fields, dataclass_field_to_types
@@ -97,21 +93,10 @@ class InstanceOfValidator(Validator):
     if value is None:
       return None
     retval = {}
-    object_fields = { f.name: f for f in fields(value) }
-    for name, field in object_fields.items():
-      key = camelize(name, False) if config.camelize_json_keys else name
-      field_value = getattr(value, name)
-      default = field.default
-      object_type = field.type
-      if isinstance(default, resolve_class('Types')):
-        if is_writeonly_type(default.validator) and not ignore_writeonly:
-          continue
-        else:
-          retval[key] = default.validator.tojson(field_value, config)
-      else:
-        validator = default_validator_for_type(object_type, graph_sibling=config.linked_class)
-        if validator is not None:
-          retval[key] = validator.tojson(field_value, config)
-        else:
-          retval[key] = field_value
+    for our_field in our_fields(value):
+      field_value = getattr(value, our_field.field_name)
+      json_field_name = our_field.json_field_name
+      if our_field.field_types.field_description.read_rule == ReadRule.NO_READ and not ignore_writeonly:
+        continue
+      retval[json_field_name] = our_field.field_types.validator.tojson(field_value, config)
     return retval
