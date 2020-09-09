@@ -1,3 +1,5 @@
+[![Logo][logo]][repo]
+
 JSON Classes
 ===========
 [![Pypi][pypi-image]][pypi-url]
@@ -130,6 +132,14 @@ The sanic async web framework integration.
 
 [MIT License](https://github.com/WiosoftCrafts/jsonclasses/blob/master/LICENSE)
 
+## Authors
+
+JSON Classes is authored by Victor Zhang.
+
+JSON Classes logo is designed by Albert Leung.
+
+[logo]: https://github.com/WiosoftCrafts/jsonclasses/blob/master/resources/logo.png
+[repo]: https://github.com/WiosoftCrafts/jsonclasses/blob/master
 [pypi-image]: https://img.shields.io/pypi/v/jsonclasses.svg?style=flat-square
 [pypi-url]: https://pypi.org/project/jsonclasses/
 [python-image]: https://img.shields.io/pypi/pyversions/jsonclasses?style=flat-square
