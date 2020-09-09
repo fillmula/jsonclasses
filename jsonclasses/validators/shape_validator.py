@@ -5,7 +5,7 @@ from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.keypath import keypath
-from ..utils.reference_map import referenced, resolve_class
+from ..reference_map import referenced, resolve_class
 from ..utils.nonnull_note import NonnullNote
 from ..fields import collection_argument_type_to_types
 

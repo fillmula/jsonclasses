@@ -6,7 +6,7 @@ from ..exceptions import ValidationException
 from .validator import Validator
 from .required_validator import RequiredValidator
 from ..utils.keypath import keypath
-from ..utils.reference_map import referenced, resolve_class
+from ..reference_map import referenced, resolve_class
 from ..utils.nonnull_note import NonnullNote
 from ..fields import collection_argument_type_to_types
 from ..field_description import CollectionNullability

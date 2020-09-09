@@ -9,7 +9,7 @@ from dataclasses import fields
 from ..fields import fields as our_fields
 from inflection import underscore, camelize
 from ..utils.keypath import keypath
-from ..utils.reference_map import referenced, resolve_class
+from ..reference_map import referenced, resolve_class
 from ..fields import collection_argument_type_to_types, fields as our_fields, dataclass_field_to_types
 from ..field_description import WriteRule, ReadRule
 

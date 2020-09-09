@@ -6,7 +6,7 @@ from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.eager_validator_index_after_index import eager_validator_index_after_index
 from ..utils.last_eager_validator_index import last_eager_validator_index
-from ..utils.reference_map import referenced
+from ..reference_map import referenced
 
 @referenced
 class ChainedValidator(Validator):

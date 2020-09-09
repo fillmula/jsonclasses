@@ -42,6 +42,7 @@ class FieldDescription():
 
   index: bool = False
   unique: bool = False
+  required: bool = False
 
   foreign_key: Optional[str] = None
 

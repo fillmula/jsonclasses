@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import List, Dict, Union, Callable, Any, Optional
 from datetime import date, datetime
 from .field_description import FieldDescription
-from .utils.reference_map import referenced
+from .reference_map import referenced
 from .validators import *
 
 @referenced

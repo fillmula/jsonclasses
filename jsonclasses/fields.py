@@ -5,7 +5,7 @@ from re import match
 from dataclasses import fields as dataclass_fields, Field as DataclassField
 from inflection import camelize
 from .config import Config
-from .utils.reference_map import resolve_class
+from .reference_map import resolve_class
 from .graph import get_registered_class
 from .field import Field
 
