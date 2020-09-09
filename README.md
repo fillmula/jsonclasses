@@ -1,4 +1,4 @@
-[![Logo][logo]][repo | height=88]
+[![Logo][logo | height=88]][repo]
 
 JSON Classes
 ===========
