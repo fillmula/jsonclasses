@@ -15,6 +15,7 @@ from ..utils.default_validator_for_type import default_validator_for_type
 from ..utils.keypath import keypath
 from ..utils.reference_map import referenced, resolve_class
 from ..fields import collection_argument_type_to_types, fields as our_fields, dataclass_field_to_types
+from ..field_description import WriteRule, ReadRule
 
 @referenced
 class InstanceOfValidator(Validator):
@@ -57,58 +58,39 @@ class InstanceOfValidator(Validator):
       return None if not base else base
     if type(value) is not dict:
       return value if not base else base
+    Types = resolve_class('Types')
     if hasattr(self, 'json_object_class_name') and self.json_object_class is None:
       self.json_object_class = get_registered_class(name=self.json_object_class_name, sibling=config.linked_class)
     if not base:
       base = self.json_object_class(__empty=True)
-    ### assign values to base
-    object_fields = { f.name: f for f in fields(base) }
-    unused_names = list(object_fields.keys())
-    for raw_key, raw_value in value.items():
-      key = underscore(raw_key) if config.camelize_json_keys else raw_key
-      if key in unused_names:
-        object_field = object_fields[key]
-        object_type = object_field.type
-        default = object_field.default
-        remove_key = True
-        if isinstance(default, resolve_class('Types')): # user specified types
-          # handle readonly (aka no write)
-          if is_readonly_type(default.validator):
-            remove_key = False
-          # handle writeonce (aka write only once)
-          elif is_writeonce_type(default.validator):
-            current_value = getattr(base, key)
-            if current_value is None or isinstance(type(current_value), resolve_class('Types')):
-              setattr(base, key, default.validator.transform(raw_value, keypath(key_path, key), root, all_fields, config))
-            else:
-              remove_key = False
+    def fill_blank_with_default_value(field):
+      if field.assigned_default_value is not None:
+        setattr(base, field.field_name, field.assigned_default_value)
+      else:
+        transformed_field_value = our_field.field_types.validator.transform(None, keypath(key_path, field.field_name), root, all_fields, config)
+        setattr(base, our_field.field_name, transformed_field_value)
+    for our_field in our_fields(base):
+      if our_field.json_field_name in value.keys() or our_field.field_name in value.keys():
+        field_value = value.get(our_field.json_field_name)
+        if field_value is None and config.camelize_json_keys:
+          field_value = value.get(our_field.field_name)
+        if our_field.field_types.field_description.write_rule == WriteRule.NO_WRITE:
+          if fill_blanks:
+            fill_blank_with_default_value(our_field)
+        elif our_field.field_types.field_description.write_rule == WriteRule.WRITE_ONCE:
+          current_field_value = getattr(base, our_field.field_name)
+          if current_field_value is None or isinstance(current_field_value, Types):
+            transformed_field_value = our_field.field_types.validator.transform(field_value, keypath(key_path, our_field.field_name), root, all_fields, config)
+            setattr(base, our_field.field_name, transformed_field_value)
           else:
-              setattr(base, key, default.validator.transform(raw_value, keypath(key_path, key), root, all_fields, config))
+            if fill_blanks:
+              fill_blank_with_default_value(our_field)
         else:
-          validator = None
-          if validator is None:
-            if isinstance(object_type, resolve_class('JSONObject')):
-              validator = self.__class__(object_type)
-            else:
-              validator = default_validator_for_type(object_type, graph_sibling=config.linked_class)
-          if validator is not None: # for supported types, sync a default type for user
-            setattr(base, key, validator.transform(raw_value, keypath(key_path, key), root, all_fields, config))
-          else:
-            setattr(base, key, raw_value)
-        if remove_key:
-          unused_names.remove(key)
-    if fill_blanks:
-      for k_with_blank_value in unused_names:
-        object_field = object_fields[k_with_blank_value]
-        default = object_field.default
-        default_factory = object_field.default_factory
-        if isinstance(default, resolve_class('Types')):
-          setattr(base, k_with_blank_value, default.validator.transform(None, keypath(key_path, k_with_blank_value), root, all_fields, config))
-        elif default is default_factory:
-          setattr(base, k_with_blank_value, None)
-        else: # user specified a default value
-          setattr(base, k_with_blank_value, default)
-    ### end assign
+          transformed_field_value = our_field.field_types.validator.transform(field_value, keypath(key_path, our_field.field_name), root, all_fields, config)
+          setattr(base, our_field.field_name, transformed_field_value)
+      else:
+        if fill_blanks:
+          fill_blank_with_default_value(our_field)
     return base
 
   def tojson(self, value, config: Config, ignore_writeonly: bool = False):

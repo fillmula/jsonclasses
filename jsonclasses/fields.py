@@ -75,6 +75,7 @@ def collection_argument_type_to_types(type: Any, graph_sibling: Any = None) -> '
     return type_to_default_types(type, graph_sibling)
 
 def fields(class_or_instance: Any) -> List[Field]:
+  Types = resolve_class('Types')
   JSONObject = resolve_class('JSONObject')
   if isinstance(class_or_instance, JSONObject):
     config: Config = class_or_instance.__class__.config
@@ -86,12 +87,16 @@ def fields(class_or_instance: Any) -> List[Field]:
     json_field_name = camelize(field_name, False) if config.camelize_json_keys else field_name
     db_field_name = camelize(field_name, False) if config.camelize_db_keys else field_name
     field_types = dataclass_field_to_types(field, config.linked_class)
+    assigned_default_value = None if isinstance(field.default, Types) else field.default
+    if field.default == field.default_factory:
+      assigned_default_value = None
     retval.append(
       Field(
         field_name=field_name,
         json_field_name=json_field_name,
         db_field_name=db_field_name,
-        field_types=field_types
+        field_types=field_types,
+        assigned_default_value=assigned_default_value
       )
     )
   return retval

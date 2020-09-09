@@ -91,7 +91,7 @@ class TestJSONObjectSet(unittest.TestCase):
       height: float
     size = Size(width=2, height=5)
     size.set(**{ 'width': None })
-    self.assertEqual(size.__dict__, { 'width': None, 'height': 5 })
+    self.assertEqual(size.__dict__, { 'width': None, 'height': 5.0 })
 
   def test_set_none_on_fields_from_keyed_arguments(self):
     @jsonclass(graph='test_set_9')
@@ -100,7 +100,7 @@ class TestJSONObjectSet(unittest.TestCase):
       height: float
     size = Size(width=2, height=5)
     size.set(width=None)
-    self.assertEqual(size.__dict__, { 'width': None, 'height': 5 })
+    self.assertEqual(size.__dict__, { 'width': None, 'height': 5.0 })
 
   def test_set_auto_convert_camelcase_keys_into_snakecase(self):
     @jsonclass(graph='test_set_10')
