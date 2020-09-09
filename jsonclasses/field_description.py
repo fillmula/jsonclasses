@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, Any
+from typing import Optional, Any, Dict
 from enum import Enum
 from dataclasses import dataclass
 from copy import deepcopy
@@ -44,6 +44,10 @@ class FieldDescription():
   unique: bool = False
   required: bool = False
 
+  # special marks
+  list_item_types: Optional[Any] = None
+  dict_item_types: Optional[Any] = None
+  shape_types: Optional[Dict[str, Any]] = None
   foreign_key: Optional[str] = None
 
   read_rule: ReadRule = ReadRule.UNLIMITED

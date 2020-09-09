@@ -19,6 +19,7 @@ class ListOfValidator(Validator):
 
   def define(self, field_description: FieldDescription):
     field_description.field_type = FieldType.LIST
+    field_description.list_item_types = self.types
 
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is None:

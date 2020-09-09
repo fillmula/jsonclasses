@@ -19,6 +19,7 @@ class ShapeValidator(Validator):
 
   def define(self, field_description: FieldDescription):
     field_description.field_type = FieldType.SHAPE
+    field_description.shape_types = self.types
 
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is not None and type(value) is not dict:
