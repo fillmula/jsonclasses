@@ -1,4 +1,4 @@
-![Logo](https://github.com/WiosoftCrafts/jsonclasses/blob/master/resources/logo.png | height=88)
+<img src="https://github.com/WiosoftCrafts/jsonclasses/blob/master/resources/logo.png" alt="Logo" width="auto" height="88">
 
 JSON Classes
 ===========
