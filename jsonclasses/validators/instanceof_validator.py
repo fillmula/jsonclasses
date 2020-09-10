@@ -14,25 +14,16 @@ from ..field_description import WriteRule, ReadRule
 @referenced
 class InstanceOfValidator(Validator):
 
-  def __init__(self, json_object_class):
-    self.types = json_object_class
-    if type(json_object_class) is str:
-      self.json_object_class_name = json_object_class
-      self.json_object_class = None
-    elif issubclass(json_object_class, resolve_class('JSONObject')):
-      self.json_object_class = json_object_class
-    else:
-      raise ValueError('argument passed to InstanceOfValidator should be subclass of JSONObject.')
+  def __init__(self, types):
+    self.types = types
 
   def define(self, field_description: FieldDescription):
     field_description.field_type = FieldType.INSTANCE
-    field_description.list_item_types = self.types
+    field_description.instance_types = self.types
 
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is None:
       return
-    if hasattr(self, 'json_object_class_name') and self.json_object_class is None:
-      self.json_object_class = get_registered_class(name=self.json_object_class_name, sibling=config.linked_class)
     keypath_messages = {}
     for field in fields(value):
       if field.field_types:
@@ -55,10 +46,10 @@ class InstanceOfValidator(Validator):
     if type(value) is not dict:
       return value if not base else base
     Types = resolve_class('Types')
-    if hasattr(self, 'json_object_class_name') and self.json_object_class is None:
-      self.json_object_class = get_registered_class(name=self.json_object_class_name, sibling=config.linked_class)
+    types = collection_argument_type_to_types(self.types, config.linked_class)
+    cls = types.field_description.instance_types
     if not base:
-      base = self.json_object_class(__empty=True)
+      base = cls(__empty=True)
     def fill_blank_with_default_value(field):
       if field.assigned_default_value is not None:
         setattr(base, field.field_name, field.assigned_default_value)
