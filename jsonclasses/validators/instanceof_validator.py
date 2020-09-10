@@ -15,6 +15,7 @@ from ..field_description import WriteRule, ReadRule
 class InstanceOfValidator(Validator):
 
   def __init__(self, json_object_class):
+    self.types = json_object_class
     if type(json_object_class) is str:
       self.json_object_class_name = json_object_class
       self.json_object_class = None
@@ -25,6 +26,7 @@ class InstanceOfValidator(Validator):
 
   def define(self, field_description: FieldDescription):
     field_description.field_type = FieldType.INSTANCE
+    field_description.list_item_types = self.types
 
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
     if value is None:

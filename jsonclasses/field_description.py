@@ -48,6 +48,7 @@ class FieldDescription():
   list_item_types: Optional[Any] = None
   dict_item_types: Optional[Any] = None
   shape_types: Optional[Dict[str, Any]] = None
+  instance_types: Optional[Any] = None
   foreign_key: Optional[str] = None
 
   read_rule: ReadRule = ReadRule.UNLIMITED
