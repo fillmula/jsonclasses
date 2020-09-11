@@ -14,14 +14,14 @@ from ..field_description import WriteRule, ReadRule
 @referenced
 class InstanceOfValidator(Validator):
 
-  def __init__(self, types):
+  def __init__(self, types) -> None:
     self.types = types
 
-  def define(self, field_description: FieldDescription):
+  def define(self, field_description: FieldDescription) -> None:
     field_description.field_type = FieldType.INSTANCE
     field_description.instance_types = self.types
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
     if value is None:
       return
     keypath_messages = {}

@@ -5,8 +5,8 @@ from .validator import Validator
 
 class EmbeddedValidator(Validator):
 
-  def define(self, field_description: FieldDescription):
+  def define(self, field_description: FieldDescription) -> None:
     field_description.field_storage = FieldStorage.EMBEDDED
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
     pass

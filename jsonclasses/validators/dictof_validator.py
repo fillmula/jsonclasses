@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, TYPE_CHECKING
 from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
@@ -15,14 +15,14 @@ from ..field_description import CollectionNullability
 @referenced
 class DictOfValidator(Validator):
 
-  def __init__(self, types: Any):
+  def __init__(self, types: Any) -> None:
     self.types = types
 
-  def define(self, field_description: FieldDescription):
+  def define(self, field_description: FieldDescription) -> None:
     field_description.field_type = FieldType.DICT
     field_description.dict_item_types = self.types
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
     if value is None:
       return
     if type(value) is not dict:
@@ -46,7 +46,7 @@ class DictOfValidator(Validator):
       if len(keypath_messages) > 0:
         raise ValidationException(keypath_messages=keypath_messages, root=root)
 
-  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> Any:
     if value is None:
       return None
     elif isinstance(value, NonnullNote):
@@ -64,7 +64,7 @@ class DictOfValidator(Validator):
     else:
       return value
 
-  def tojson(self, value: Any, config: Config):
+  def tojson(self, value: Any, config: Config) -> Any:
     if value is None:
       return None
     if type(value) is not dict:

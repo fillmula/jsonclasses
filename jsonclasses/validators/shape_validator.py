@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from inflection import underscore, camelize
 from ..field_description import FieldDescription, FieldType
 from ..config import Config
@@ -12,16 +12,16 @@ from ..fields import collection_argument_type_to_types
 @referenced
 class ShapeValidator(Validator):
 
-  def __init__(self, types):
+  def __init__(self, types: Dict[str, Any]) -> None:
     if type(types) is not dict:
       raise ValueError('argument passed to ShapeValidator should be dict')
     self.types = types
 
-  def define(self, field_description: FieldDescription):
+  def define(self, field_description: FieldDescription) -> None:
     field_description.field_type = FieldType.SHAPE
     field_description.shape_types = self.types
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
     if value is not None and type(value) is not dict:
       raise ValidationException(
         { key_path: f'Value \'{value}\' at \'{key_path}\' should be a dict.' },
@@ -45,7 +45,7 @@ class ShapeValidator(Validator):
     if len(keypath_messages) > 0:
       raise ValidationException(keypath_messages=keypath_messages, root=root)
 
-  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> Optional[Dict[str, Any]]:
     if value is None:
       return None
     elif isinstance(value, NonnullNote):
@@ -68,7 +68,7 @@ class ShapeValidator(Validator):
       retval[k] = None
     return retval
 
-  def tojson(self, value: Any, config: Config):
+  def tojson(self, value: Any, config: Config) -> Optional[Dict[str, Any]]:
     if value is None:
       return None
     if type(value) is not dict:

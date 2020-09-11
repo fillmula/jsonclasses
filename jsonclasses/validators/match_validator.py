@@ -7,10 +7,10 @@ from .validator import Validator
 
 class MatchValidator(Validator):
 
-  def __init__(self, pattern):
+  def __init__(self, pattern: str) -> None:
     self.pattern = pattern
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
     if value is not None and search(self.pattern, value) is None:
       raise ValidationException(
         { key_path: f'Value \'{value}\' at \'{key_path}\' should match \'{self.pattern}\'.' },

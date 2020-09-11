@@ -7,10 +7,10 @@ from .validator import Validator
 
 class ValidateValidator(Validator):
 
-  def __init__(self, validate_callable: Callable):
+  def __init__(self, validate_callable: Callable) -> None:
     self.validate_callable = validate_callable
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
     params_len = len(signature(self.validate_callable).parameters)
     if params_len == 1:
       result = self.validate_callable(value)

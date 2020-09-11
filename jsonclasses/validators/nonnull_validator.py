@@ -7,8 +7,8 @@ from ..utils.nonnull_note import NonnullNote
 
 class NonnullValidator(Validator):
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
     pass
 
-  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> Any:
     return NonnullNote() if value is None else value

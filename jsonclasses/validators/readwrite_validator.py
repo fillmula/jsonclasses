@@ -6,9 +6,9 @@ from .validator import Validator
 
 class ReadwriteValidator(Validator):
 
-  def define(self, field_description: FieldDescription):
+  def define(self, field_description: FieldDescription) -> None:
     field_description.write_rule = WriteRule.UNLIMITED
     field_description.read_rule = ReadRule.UNLIMITED
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
     pass

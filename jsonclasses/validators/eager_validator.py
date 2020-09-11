@@ -8,8 +8,8 @@ class EagerValidator(Validator):
   This is used usually before heavy transforming validators.
   '''
 
-  def define(self, field_description: FieldDescription):
+  def define(self, field_description: FieldDescription) -> None:
     field_description.has_eager_validator = True
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
     pass

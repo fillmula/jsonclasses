@@ -8,10 +8,10 @@ from ..reference_map import referenced
 @referenced
 class BoolValidator(Validator):
 
-  def define(self, field_description: FieldDescription):
+  def define(self, field_description: FieldDescription) -> None:
     field_description.field_type = FieldType.BOOL
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
     if value is not None and type(value) is not float:
       raise ValidationException(
         { key_path: f'Value \'{value}\' at \'{key_path}\' should be bool.' },

@@ -14,14 +14,14 @@ from ..field_description import CollectionNullability
 @referenced
 class ListOfValidator(Validator):
 
-  def __init__(self, types: Any):
+  def __init__(self, types: Any) -> None:
     self.types = types
 
-  def define(self, field_description: FieldDescription):
+  def define(self, field_description: FieldDescription) -> None:
     field_description.field_type = FieldType.LIST
     field_description.list_item_types = self.types
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
     if value is None:
       return
     if type(value) is not list:
@@ -45,7 +45,7 @@ class ListOfValidator(Validator):
       if len(keypath_messages) > 0:
         raise ValidationException(keypath_messages=keypath_messages, root=root)
 
-  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> Any:
     if value is None:
       return None
     elif isinstance(value, NonnullNote):
@@ -58,7 +58,7 @@ class ListOfValidator(Validator):
     else:
       return value
 
-  def tojson(self, value: Any, config: Config):
+  def tojson(self, value: Any, config: Config) -> Any:
     if value is None:
       return None
     if type(value) is not list:

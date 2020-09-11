@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import List, Dict, Any
 from functools import reduce
 from ..field_description import FieldDescription, FieldType
@@ -11,13 +12,13 @@ from ..reference_map import referenced
 @referenced
 class ChainedValidator(Validator):
 
-  def __init__(self, validators: List[Validator] = []):
+  def __init__(self, validators: List[Validator] = []) -> None:
     self.validators = validators
 
-  def append(self, *args: Validator):
+  def append(self, *args: Validator) -> ChainedValidator:
     return ChainedValidator([*self.validators, *args])
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
     if root == None:
       root = value
     keypath_messages: Dict[str, str] = {}
@@ -44,7 +45,7 @@ class ChainedValidator(Validator):
     validator.validate(value, key_path, root, all_fields, config)
     return validator.transform(value, key_path, root, all_fields, config)
 
-  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> Any:
     curvalue = value
     index = 0
     next_index = eager_validator_index_after_index(self.validators, index)
@@ -56,5 +57,5 @@ class ChainedValidator(Validator):
     curvalue = reduce(lambda v, validator: validator.transform(v, key_path, root, all_fields, config), self.validators[index:], curvalue)
     return curvalue
 
-  def tojson(self, value: Any, config: Config):
+  def tojson(self, value: Any, config: Config) -> Any:
     return reduce(lambda v, validator: validator.tojson(v, config), self.validators, value)

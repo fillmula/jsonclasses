@@ -9,17 +9,17 @@ from ..reference_map import referenced
 @referenced
 class DatetimeValidator(Validator):
 
-  def define(self, field_description: FieldDescription):
+  def define(self, field_description: FieldDescription) -> None:
     field_description.field_type = FieldType.DATETIME
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
     if value is not None and type(value) is not datetime:
       raise ValidationException(
         { key_path: f'Value \'{value}\' at \'{key_path}\' should be datetime.' },
         root
       )
 
-  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config):
+  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> Any:
     if value is None:
       return None
     elif type(value) is str:
@@ -27,6 +27,6 @@ class DatetimeValidator(Validator):
     else:
       return value
 
-  def tojson(self, value: Any, config: Config):
+  def tojson(self, value: Any, config: Config) -> Any:
     if value is not None:
       return value.isoformat()[:23] + 'Z'
