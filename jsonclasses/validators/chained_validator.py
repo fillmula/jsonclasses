@@ -7,9 +7,7 @@ from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.eager_validator_index_after_index import eager_validator_index_after_index
 from ..utils.last_eager_validator_index import last_eager_validator_index
-from ..reference_map import referenced
 
-@referenced
 class ChainedValidator(Validator):
 
   def __init__(self, validators: List[Validator] = []) -> None:

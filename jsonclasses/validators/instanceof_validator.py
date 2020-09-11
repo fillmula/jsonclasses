@@ -7,11 +7,9 @@ from ..exceptions import ValidationException
 from .validator import Validator
 from inflection import underscore, camelize
 from ..utils.keypath import keypath
-from ..reference_map import referenced, resolve_class
 from ..fields import collection_argument_type_to_types, fields, dataclass_field_to_types
 from ..field_description import WriteRule, ReadRule
 
-@referenced
 class InstanceOfValidator(Validator):
 
   def __init__(self, types) -> None:
@@ -41,11 +39,11 @@ class InstanceOfValidator(Validator):
       raise ValidationException(keypath_messages=keypath_messages, root=root)
 
   def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config, base: Any = None, fill_blanks: bool = False):
+    from ..types import Types
     if value is None:
       return None if not base else base
     if type(value) is not dict:
       return value if not base else base
-    Types = resolve_class('Types')
     types = collection_argument_type_to_types(self.types, config.linked_class)
     cls = types.field_description.instance_types
     if not base:

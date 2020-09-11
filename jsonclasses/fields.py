@@ -5,7 +5,6 @@ from re import match
 from dataclasses import fields as dataclass_fields, Field as DataclassField
 from inflection import camelize
 from .config import Config
-from .reference_map import resolve_class
 from .graph import get_registered_class
 from .field import Field
 if TYPE_CHECKING:
@@ -13,8 +12,7 @@ if TYPE_CHECKING:
   from .json_object import JSONObject
 
 def string_type_to_default_types(type: str, graph_sibling: Any = None) -> Types:
-  Types = resolve_class('Types')
-  types = Types()
+  from .types import types
   if type == 'str':
     return types.str
   elif type == 'int':
@@ -37,9 +35,8 @@ def string_type_to_default_types(type: str, graph_sibling: Any = None) -> Types:
     return types.instanceof(get_registered_class(type, sibling=graph_sibling))
 
 def type_to_default_types(type: Any, graph_sibling: Any = None) -> Types:
-  JSONObject = resolve_class('JSONObject')
-  Types = resolve_class('Types')
-  types = Types()
+  from .json_object import JSONObject
+  from .types import types
   if isinstance(type, str):
     return string_type_to_default_types(type, graph_sibling)
   elif type is str:
@@ -64,22 +61,22 @@ def type_to_default_types(type: Any, graph_sibling: Any = None) -> Types:
     return None
 
 def dataclass_field_to_types(field: DataclassField, graph_sibling: Any = None) -> Types:
-  Types = resolve_class('Types')
+  from .types import Types
   if isinstance(field.default, Types):
     return field.default
   else:
     return type_to_default_types(field.type, graph_sibling)
 
 def collection_argument_type_to_types(type: Any, graph_sibling: Any = None) -> Types:
-  Types = resolve_class('Types')
+  from .types import Types
   if isinstance(type, Types):
     return type
   else:
     return type_to_default_types(type, graph_sibling)
 
 def fields(class_or_instance: Union[JSONObject, Type[JSONObject]]) -> List[Field]:
-  Types = resolve_class('Types')
-  JSONObject = resolve_class('JSONObject')
+  from .types import Types
+  from .json_object import JSONObject
   if isinstance(class_or_instance, JSONObject):
     config: Config = class_or_instance.__class__.config
   elif issubclass(class_or_instance, JSONObject):

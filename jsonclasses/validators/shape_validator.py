@@ -5,11 +5,9 @@ from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.keypath import keypath
-from ..reference_map import referenced, resolve_class
 from ..utils.nonnull_note import NonnullNote
 from ..fields import collection_argument_type_to_types
 
-@referenced
 class ShapeValidator(Validator):
 
   def __init__(self, types: Dict[str, Any]) -> None:

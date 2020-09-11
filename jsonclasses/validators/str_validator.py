@@ -4,9 +4,7 @@ from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..reference_map import referenced
 
-@referenced
 class StrValidator(Validator):
 
   def define(self, field_description: FieldDescription) -> None:
