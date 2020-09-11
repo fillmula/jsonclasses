@@ -1,15 +1,28 @@
-from typing import Type, Optional
+from typing import Type, Optional, TypeVar, overload, Callable
 from dataclasses import dataclass
 from .json_object import JSONObject
 from .graph import register_class
 from .config import Config
 
+T = TypeVar('T', bound=Type[JSONObject])
+
+@overload
+def jsonclass(cls: T) -> T: ...
+
+@overload
 def jsonclass(
-  *args: Type[JSONObject],
+  *,
   graph: Optional[str] = 'default',
   camelize_json_keys: Optional[bool] = None,
   camelize_db_keys: Optional[bool] = None
-) -> Type[JSONObject]:
+) -> Callable[[T], T]: ...
+
+def jsonclass(
+  *args: T,
+  graph: Optional[str] = 'default',
+  camelize_json_keys: Optional[bool] = None,
+  camelize_db_keys: Optional[bool] = None
+) -> T:
   '''The jsonclass object class decorator. To declare a jsonclass class, use
   this syntax:
 
