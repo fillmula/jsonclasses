@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Optional
+from typing import Dict, Any, Optional
 from dataclasses import dataclass, fields
 from datetime import datetime
 from functools import reduce
@@ -27,17 +27,17 @@ class JSONObject:
       my_field_two: int = types.int.range(0, 10).required
   '''
 
-  def __init__(self, __empty: bool = False, **kwargs):
+  def __init__(self, __empty__: bool = False, **kwargs: Any) -> None:
     '''Initialize a new jsonclass object from keyed arguments or a dict. This
     method is suitable for accepting web and malformed inputs. Eager validation
     and transformation are applied during the initialization process.
     '''
     for field in fields(self):
       setattr(self, field.name, None)
-    if not __empty:
+    if not __empty__:
       self.__set(fill_blanks=True, **kwargs)
 
-  def set(self, **kwargs):
+  def set(self, **kwargs: Any) -> JSONObject:
     '''Set object values in a batch. This method is suitable for web and fraud
     inputs. This method takes accessor marks into consideration, means readonly
     and internal field values will be just ignored. Writeonce fields are
@@ -48,12 +48,12 @@ class JSONObject:
     self.__set(fill_blanks=False, **kwargs)
     return self
 
-  def __set(self, fill_blanks=False, **kwargs):
+  def __set(self, fill_blanks: bool = False, **kwargs: Any) -> None:
     validator = InstanceOfValidator(self.__class__)
     config = Config.on(self.__class__)
     validator.transform(kwargs, '', self, True, config, self, fill_blanks)
 
-  def update(self, **kwargs):
+  def update(self, **kwargs: Any) -> JSONObject:
     '''Update object values in a batch. This method is suitable for internal
     inputs. This method ignores accessor marks, thus you can update readonly
     and internal values through this method. Writeonce doesn't have effect on
@@ -72,7 +72,7 @@ class JSONObject:
     self.__dict__.update(kwargs)
     return self
 
-  def tojson(self, ignore_writeonly=False):
+  def tojson(self, ignore_writeonly: bool = False) -> Dict[str, Any]:
     '''Serialize this jsonclass object to JSON dict.
 
     Args:
@@ -86,7 +86,7 @@ class JSONObject:
     config = Config.on(self.__class__)
     return validator.tojson(self, config, ignore_writeonly=ignore_writeonly)
 
-  def validate(self, all_fields: bool = True):
+  def validate(self, all_fields: bool = True) -> JSONObject:
     '''Validate the jsonclass object's validity. Raises ValidationException on
     validation failed.
 
@@ -102,7 +102,7 @@ class JSONObject:
     InstanceOfValidator(self.__class__).validate(self, '', self, all_fields, config)
     return self
 
-  def is_valid(self):
+  def is_valid(self) -> bool:
     '''Test whether the jsonclass object is valid or not. This method triggers
     object validation.
 

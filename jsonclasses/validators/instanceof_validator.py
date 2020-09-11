@@ -49,7 +49,7 @@ class InstanceOfValidator(Validator):
     types = collection_argument_type_to_types(self.types, config.linked_class)
     cls = types.field_description.instance_types
     if not base:
-      base = cls(__empty=True)
+      base = cls(__empty__=True)
     def fill_blank_with_default_value(field):
       if field.assigned_default_value is not None:
         setattr(base, field.field_name, field.assigned_default_value)

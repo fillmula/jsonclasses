@@ -1,10 +1,12 @@
 from __future__ import annotations
-from typing import Dict, Optional, Type
+from typing import Dict, Optional, Type, TYPE_CHECKING
 from inspect import getmodule
+if TYPE_CHECKING:
+  from .json_object import JSONObject
 
-register_table: Dict[str, Dict[str, Type['JSONObject']]] = {}
+register_table: Dict[str, Dict[str, Type[JSONObject]]] = {}
 
-def __graph_table(graph: str = 'default') -> Dict[str, Type['JSONObject']]:
+def __graph_table(graph: str = 'default') -> Dict[str, Type[JSONObject]]:
   if register_table.get(graph) is None:
     register_table[graph] = {}
   return register_table[graph]
@@ -23,7 +25,7 @@ class JSONClassNotFoundError(Exception):
     message = f'JSON Class with name \'{name}\' in graph \'{graph}\' is not found.'
     super().__init__(message)
 
-def register_class(cls: Type['JSONObject'], graph: str = 'default') -> Type['JSONObject']:
+def register_class(cls: Type[JSONObject], graph: str = 'default') -> Type[JSONObject]:
   name = cls.__name__
   graph_table = __graph_table(graph)
   exist_cls = graph_table.get(name)
@@ -35,8 +37,8 @@ def register_class(cls: Type['JSONObject'], graph: str = 'default') -> Type['JSO
 def get_registered_class(
   name: str,
   graph: str = 'default',
-  sibling: Optional[Type['JSONObject']] = None
-) -> Type['JSONObject']:
+  sibling: Optional[Type[JSONObject]] = None
+) -> Type[JSONObject]:
   if sibling is not None:
     graph = sibling.config.graph
   cls = __graph_table(graph).get(name)

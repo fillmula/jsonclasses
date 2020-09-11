@@ -1,3 +1,4 @@
+from typing import Any
 from json.encoder import JSONEncoder as PythonDefaultJSONEncoder
 from .json_object import JSONObject
 
@@ -10,7 +11,7 @@ class JSONEncoder(PythonDefaultJSONEncoder):
 
     dumps(obj, cls=JSONEncoder)
   '''
-  def default(self, o):
+  def default(self, o: Any):
     if isinstance(o, JSONObject):
       return o.tojson()
     else:

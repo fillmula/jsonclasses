@@ -8,7 +8,7 @@ class Field():
     db_field_name: str = None,
     field_types: 'Types' = None,
     assigned_default_value: Any = None
-  ):
+  ) -> None:
     self.field_name = field_name
     self.json_field_name = json_field_name
     self.db_field_name = db_field_name

@@ -60,6 +60,3 @@ class FieldDescription():
 
   def copy(self) -> FieldDescription:
     return deepcopy(self)
-
-  # shape_types: Any = None
-  # inner_types: Any = None

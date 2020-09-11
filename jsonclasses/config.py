@@ -1,6 +1,8 @@
 from __future__ import annotations
-from typing import Optional, Type, Any
+from typing import Optional, Type, Any, TYPE_CHECKING
 from dataclasses import dataclass
+if TYPE_CHECKING:
+  from .json_object import JSONObject
 
 camelize_json_keys = True
 '''When initializing, setting values, updating values, and serializing,
@@ -20,7 +22,7 @@ class Config:
   graph: str = 'default'
   camelize_json_keys: Optional[bool] = None
   camelize_db_keys: Optional[bool] = None
-  linked_class: Any = None
+  linked_class: Type[JSONObject] = None
 
   def __post_init__(self):
     if self.camelize_json_keys is None:
@@ -28,10 +30,10 @@ class Config:
     if self.camelize_db_keys is None:
       self.camelize_db_keys = camelize_db_keys
 
-  def install_on_class(self, cls: Type['JSONObject']):
+  def install_on_class(self, cls: Type[JSONObject]):
     cls.config = self
     self.linked_class = cls
 
   @classmethod
-  def on(self, cls: type) -> Config:
+  def on(self, cls: Type[JSONObject]) -> Config:
     return cls.config

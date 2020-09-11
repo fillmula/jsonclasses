@@ -1,15 +1,15 @@
-from typing import Optional
+from typing import Type, Optional
 from dataclasses import dataclass
 from .json_object import JSONObject
 from .graph import register_class
 from .config import Config
 
 def jsonclass(
-  *args,
+  *args: Type[JSONObject],
   graph: Optional[str] = 'default',
   camelize_json_keys: Optional[bool] = None,
   camelize_db_keys: Optional[bool] = None
-):
+) -> Type[JSONObject]:
   '''The jsonclass object class decorator. To declare a jsonclass class, use
   this syntax:
 

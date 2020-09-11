@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Any, get_origin, get_args
+from typing import List, Any, Union, Type, get_origin, get_args, TYPE_CHECKING
 from datetime import date, datetime
 from re import match
 from dataclasses import fields as dataclass_fields, Field as DataclassField
@@ -8,8 +8,11 @@ from .config import Config
 from .reference_map import resolve_class
 from .graph import get_registered_class
 from .field import Field
+if TYPE_CHECKING:
+  from .types import Types
+  from .json_object import JSONObject
 
-def string_type_to_default_types(type: str, graph_sibling: Any = None) -> 'Types':
+def string_type_to_default_types(type: str, graph_sibling: Any = None) -> Types:
   Types = resolve_class('Types')
   types = Types()
   if type == 'str':
@@ -33,7 +36,7 @@ def string_type_to_default_types(type: str, graph_sibling: Any = None) -> 'Types
   else:
     return types.instanceof(get_registered_class(type, sibling=graph_sibling))
 
-def type_to_default_types(type: Any, graph_sibling: Any = None) -> 'Types':
+def type_to_default_types(type: Any, graph_sibling: Any = None) -> Types:
   JSONObject = resolve_class('JSONObject')
   Types = resolve_class('Types')
   types = Types()
@@ -60,21 +63,21 @@ def type_to_default_types(type: Any, graph_sibling: Any = None) -> 'Types':
   else:
     return None
 
-def dataclass_field_to_types(field: DataclassField, graph_sibling: Any = None) -> 'Types':
+def dataclass_field_to_types(field: DataclassField, graph_sibling: Any = None) -> Types:
   Types = resolve_class('Types')
   if isinstance(field.default, Types):
     return field.default
   else:
     return type_to_default_types(field.type, graph_sibling)
 
-def collection_argument_type_to_types(type: Any, graph_sibling: Any = None) -> 'Types':
+def collection_argument_type_to_types(type: Any, graph_sibling: Any = None) -> Types:
   Types = resolve_class('Types')
   if isinstance(type, Types):
     return type
   else:
     return type_to_default_types(type, graph_sibling)
 
-def fields(class_or_instance: Any) -> List[Field]:
+def fields(class_or_instance: Union[JSONObject, Type[JSONObject]]) -> List[Field]:
   Types = resolve_class('Types')
   JSONObject = resolve_class('JSONObject')
   if isinstance(class_or_instance, JSONObject):
