@@ -15,6 +15,10 @@ from .unique_validator import UniqueValidator
 from .embedded_validator import EmbeddedValidator
 from .linkto_validator import LinkToValidator
 from .linkedby_validator import LinkedByValidator
+from .linkedthru_validator import LinkedThruValidator
+from .linkedin_validator import LinkedInValidator
+from .referrer_validator import ReferrerValidator
+from .referee_validator import RefereeValidator
 
 # eager validation markers
 from .eager_validator import EagerValidator

@@ -114,6 +114,33 @@ class Types:
     '''
     return Types(self, LinkedByValidator(foreign_key))
 
+  def linkedthru(self, foreign_key: str) -> Types:
+    '''In a database relationship, fields marked with linkedthru save
+    relationships to a designated association table and find references through
+    it.
+    '''
+    return Types(self, LinkedThruValidator(foreign_key))
+
+  def linkedin(self, cls: Any) -> Types:
+    '''In a database relationship, fields marked with linkedin save
+    relationships to the table under provided class.
+    '''
+    return Types(self, LinkedInValidator(cls))
+
+  def referrer(self, referrer_key: str) -> Types:
+    '''In a many to many database relationship, fields marked with referrer has
+    a provided custom key name in the association table.
+    '''
+    return Types(self, ReferrerValidator(referrer_key))
+
+  def referee(self, referee_key: str) -> Types:
+    '''In a many to many database relationship, fields marked with referee
+    reference the other side of the relationship with this provided custom key
+    name.
+    '''
+    return Types(self, RefereeValidator(referee_key))
+
+
   @property
   def str(self) -> Types:
     '''Fields marked with str should be str type. This is a type marker.

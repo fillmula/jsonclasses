@@ -44,12 +44,20 @@ class FieldDescription():
   unique: bool = False
   required: bool = False
 
-  # special marks
+  # collection marks
   list_item_types: Optional[Any] = None
   dict_item_types: Optional[Any] = None
   shape_types: Optional[Dict[str, Any]] = None
+
+  # instance mark
   instance_types: Optional[Any] = None
+
+  # relationship
   foreign_key: Optional[str] = None
+  use_join_table: Optional[bool] = None
+  join_table_cls: Optional[Any] = None
+  join_table_referrer_key: Optional[str] = None
+  join_table_referee_key: Optional[str] = None
 
   read_rule: ReadRule = ReadRule.UNLIMITED
   write_rule: WriteRule = WriteRule.UNLIMITED
