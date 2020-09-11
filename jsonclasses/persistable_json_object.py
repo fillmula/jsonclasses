@@ -1,9 +1,11 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, TypeVar
 from datetime import datetime
 from .jsonclass import jsonclass
 from .json_object import JSONObject
 from .types import types
+
+T = TypeVar('T', bound='PersistableJSONObject')
 
 @jsonclass
 class PersistableJSONObject(JSONObject):
@@ -28,7 +30,7 @@ class PersistableJSONObject(JSONObject):
   managed internally thus cannot be updated externally with web request bodies.
   '''
 
-  def set(self, fill_blanks: bool = True, **kwargs: Any) -> PersistableJSONObject:
+  def set(self: T, fill_blanks: bool = True, **kwargs: Any) -> T:
     super().set(**kwargs)
     self.updated_at = datetime.now()
     return self
