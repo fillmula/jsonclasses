@@ -38,7 +38,7 @@ class InstanceOfValidator(Validator):
     if len(keypath_messages) > 0:
       raise ValidationException(keypath_messages=keypath_messages, root=root)
 
-  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config, base: Any = None, fill_blanks: bool = False):
+  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config, base: Any = None, fill_blanks: bool = True):
     from ..types import Types
     if value is None:
       return None if not base else base
