@@ -1,4 +1,7 @@
-from typing import Any
+from __future__ import annotations
+from typing import Any, TYPE_CHECKING
+if TYPE_CHECKING:
+  from .types import Types
 
 class Field():
   def __init__(
@@ -6,7 +9,7 @@ class Field():
     field_name: str = None,
     json_field_name: str = None,
     db_field_name: str = None,
-    field_types: 'Types' = None,
+    field_types: Types = None,
     assigned_default_value: Any = None
   ) -> None:
     self.field_name = field_name
