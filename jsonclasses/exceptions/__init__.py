@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import Dict, Any
 
 class ObjectNotFoundException(Exception):
   '''ObjectNotFoundException is designed to be raised by jsonclasses ORM
@@ -10,6 +10,10 @@ class ObjectNotFoundException(Exception):
     super().__init__(self.message)
 
 class UniqueFieldException(Exception):
+  '''UniqueFieldException is designed to be raised by JSON Classes ORM
+  integration implementations. When saving objects into the database, if object
+  violates the uniqueness rule, this exception should be raised.
+  '''
   def __init__(self, value: Any, field: str, obj: Any):
     self.message = f'Value \'{value}\' of field \'{field}\' of object {obj} exists in database.'
     super().__init__(self.message)

@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import List, Dict, Any
 from functools import reduce
-from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator

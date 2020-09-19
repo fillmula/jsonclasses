@@ -4,7 +4,6 @@ from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
-from .required_validator import RequiredValidator
 from ..utils.keypath import keypath
 from inflection import underscore, camelize
 from ..utils.nonnull_note import NonnullNote

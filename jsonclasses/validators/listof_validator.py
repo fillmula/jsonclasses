@@ -4,13 +4,14 @@ from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
-from .required_validator import RequiredValidator
 from ..utils.keypath import keypath
 from ..utils.nonnull_note import NonnullNote
 from ..fields import collection_argument_type_to_types
 from ..field_description import CollectionNullability
 
 class ListOfValidator(Validator):
+  '''This validator validates list.
+  '''
 
   def __init__(self, types: Any) -> None:
     self.types = types

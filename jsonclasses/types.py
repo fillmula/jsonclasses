@@ -1,8 +1,11 @@
 from __future__ import annotations
-from typing import List, Dict, Union, Callable, Any, Optional
-from datetime import date, datetime
+from typing import Callable, Any, Optional
 from .field_description import FieldDescription
 from .validators import *
+
+Str = str
+Int = int
+Float = float
 
 class Types:
   '''The class of types marks object. Types marks provide necessary information
@@ -36,7 +39,7 @@ class Types:
     directly or through update method. This prevents client side to post data
     directly into these fields.
 
-    Readonly and writeonce cannot be presented together.
+    `readonly` and `writeonce` cannot be presented together.
     '''
     return Types(self, ReadonlyValidator())
 
@@ -61,7 +64,7 @@ class Types:
     update method. This is suitable for e.g. dating app user gender. Gender
     should not be changed once set.
 
-    Writeonce and readonly cannot be presented together.
+    `writeonce` and `readonly` cannot be presented together.
     '''
     return Types(self, WriteonceValidator())
 
@@ -147,7 +150,7 @@ class Types:
     '''
     return Types(self, StrValidator())
 
-  def match(self, pattern: str) -> Types:
+  def match(self, pattern: Str) -> Types:
     '''Fields marked with match are tested againest the argument regular
     expression pattern.
     '''
@@ -209,19 +212,19 @@ class Types:
     '''
     return Types(self, FloatValidator())
 
-  def min(self, value: float) -> Types:
+  def min(self, value: Float) -> Types:
     '''Fields marked with min are tested again this value. Values less than
     the argument value are considered invalid.
     '''
     return Types(self, MinValidator(value))
 
-  def max(self, value: float) -> Types:
+  def max(self, value: Float) -> Types:
     '''Fields marked with max are tested again this value. Values greater than
     the argument value are considered invalid.
     '''
     return Types(self, MaxValidator(value))
 
-  def range(self, min_value: float, max_value: float) -> Types:
+  def range(self, min_value: Float, max_value: Float) -> Types:
     '''Fields marked with range are tested again argument values. Only values
     between the arguments range are considered valid.
     '''
@@ -320,7 +323,7 @@ class Types:
     '''
     return Types(self, DefaultValidator(value))
 
-  def truncate(self, max_length: int) -> Types:
+  def truncate(self, max_length: Int) -> Types:
     '''During initialization and set, if string value is too long, it's
     truncated to argument max length.
 

@@ -18,6 +18,7 @@ class TestJSONObjectSerialize(unittest.TestCase):
       x: int
       y: int
     point = Point(x=5, y=6)
+
     self.assertEqual(point.tojson(), { 'x': 5, 'y': 6 })
 
   def test_serialize_float_to_float(self):

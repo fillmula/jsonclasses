@@ -2,7 +2,9 @@
 indent-string='  '
 indent-after-paren=2
 
-[MASTER]
+[DESIGN]
+max-args=10
 
 [MESSAGES CONTROL]
-disable=no-else-return, import-outside-toplevel
+disable=no-else-return, import-outside-toplevel, invalid-name,
+too-few-public-methods

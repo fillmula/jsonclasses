@@ -2,7 +2,7 @@
 This module contains `JSONObject`, the main base class of JSON Classes.
 '''
 from __future__ import annotations
-from typing import Dict, Any, TypeVar
+from typing import Dict, Any, ClassVar, TypeVar
 from dataclasses import dataclass, fields
 from jsonclasses.config import Config
 from jsonclasses.exceptions import ValidationException
@@ -22,6 +22,8 @@ class JSONObject:
       my_field_one: str = types.str.required
       my_field_two: int = types.int.range(0, 10).required
   '''
+
+  config: ClassVar[Config]
 
   def __init__(self: T, __empty__: bool = False, **kwargs: Any) -> None:
     '''Initialize a new jsonclass object from keyed arguments or a dict. This

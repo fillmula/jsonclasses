@@ -78,9 +78,9 @@ def fields(class_or_instance: Union[JSONObject, Type[JSONObject]]) -> List[Field
   from .types import Types
   from .json_object import JSONObject
   if isinstance(class_or_instance, JSONObject):
-    config: Config = class_or_instance.__class__.config
+    config = class_or_instance.__class__.config
   elif issubclass(class_or_instance, JSONObject):
-    config: Config = class_or_instance.config
+    config = class_or_instance.config
   retval = []
   for field in dataclass_fields(class_or_instance):
     field_name = field.name
