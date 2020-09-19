@@ -1,3 +1,7 @@
+'''
+This module contains `JSONEncoder`, the encoder class for Python `json` module
+that encodes JSON Classes objects.
+'''
 from typing import Any
 from json.encoder import JSONEncoder as PythonDefaultJSONEncoder
 from .json_object import JSONObject
@@ -12,7 +16,4 @@ class JSONEncoder(PythonDefaultJSONEncoder):
     dumps(obj, cls=JSONEncoder)
   '''
   def default(self, o: Any):
-    if isinstance(o, JSONObject):
-      return o.tojson()
-    else:
-      return super().default(o)
+    return o.tojson() if isinstance(o, JSONObject) else super().default(o)

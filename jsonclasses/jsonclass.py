@@ -1,3 +1,6 @@
+'''
+This module contains `jsonclass`, the decorator for JSON Classes.
+'''
 from typing import Type, Optional, TypeVar, overload, Callable
 from dataclasses import dataclass
 from .json_object import JSONObject
@@ -35,12 +38,15 @@ def jsonclass(
     cls = args[0]
     if not isinstance(cls, type):
       raise ValueError('@jsonclass should be used to decorate a class.')
-    elif not issubclass(cls, JSONObject):
+    if not issubclass(cls, JSONObject):
       raise ValueError('@jsonclass should be used to decorate subclasses of JSONObject.')
-    else:
-      config = Config(graph=graph, camelize_json_keys=camelize_json_keys, camelize_db_keys=camelize_db_keys)
-      config.install_on_class(cls)
-      return register_class(dataclass(cls, init=False), graph=graph)
+    config = Config(
+      graph=graph,
+      camelize_json_keys=camelize_json_keys,
+      camelize_db_keys=camelize_db_keys
+    )
+    config.install_on_class(cls)
+    return register_class(dataclass(cls, init=False), graph=graph)
   else:
     def parametered_jsonclass(cls):
       return jsonclass(

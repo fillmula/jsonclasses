@@ -1,3 +1,14 @@
+'''
+  JSON Classes
+  ~~~~~~~~~~~~
+
+  JSON Classes is the Modern Declarative Data Flow and Data Graph Framework for
+  the AI Empowered Generation.
+
+  :copyright: (c) 2020 by Wiosoft Crafts, Victor Zhang
+
+  :license: MIT, see LICENSE for more details.
+'''
 from .jsonclass import jsonclass
 from .types import types, Types
 from .json_object import JSONObject

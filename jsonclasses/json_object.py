@@ -1,23 +1,19 @@
+'''
+This module contains `JSONObject`, the main base class of JSON Classes.
+'''
 from __future__ import annotations
-from typing import Dict, Any, Optional, TypeVar
+from typing import Dict, Any, TypeVar
 from dataclasses import dataclass, fields
-from datetime import datetime
-from functools import reduce
-from inflection import underscore, camelize
-from jsonclasses.types import Types
-from jsonclasses.validators import ChainedValidator, Validator
 from jsonclasses.config import Config
 from jsonclasses.exceptions import ValidationException
 from .validators.instanceof_validator import InstanceOfValidator
 
-T = TypeVar('T', bound='JSONObject')
-
 @dataclass(init=False)
 class JSONObject:
-  '''JSONObject is the base class of jsonclass objects. It provides crutial
-  instance methods e.g. __init__, set and update, validate and tojson.
+  '''JSONObject is the base class of JSON Classes objects. It provides crutial
+  instance methods e.g. __init__, set, update, validate and tojson.
 
-  To declare a new jsonclass, use the following syntax:
+  To declare a new JSON Class, use the following syntax:
 
     from jsonclasses import jsonclass, JSONObject, types
 
@@ -114,3 +110,5 @@ class JSONObject:
     except ValidationException:
       return False
     return True
+
+T = TypeVar('T', bound=JSONObject)

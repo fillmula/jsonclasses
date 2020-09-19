@@ -359,12 +359,6 @@ class Types:
     '''
     return Types(self, NonnullValidator())
 
-  def __getitem__(self, item):
-    '''This method is used to suppress linter error. Do not use subscription to
-    access types values.
-    '''
-    return getattr(self, item)
-
 types = Types()
 '''The root of the types marker. To mark an field with type annotation,
 accessor annotation, validator annotation and transformer annotation, use types

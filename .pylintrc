@@ -1,0 +1,8 @@
+[FORMAT]
+indent-string='  '
+indent-after-paren=2
+
+[MASTER]
+
+[MESSAGES CONTROL]
+disable=no-else-return, import-outside-toplevel

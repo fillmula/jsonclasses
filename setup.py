@@ -9,7 +9,7 @@ README = (HERE / "README.md").read_text()
 
 setup(name='jsonclasses',
   version='0.6.8',
-  description='The Modern Declarative Data Flow Framework for the AI Empowered Generation.',
+  description='The Modern Declarative Data Flow and Data Graph Framework for the AI Empowered Generation.',
   long_description=README,
   long_description_content_type='text/markdown',
   author='Wiosoft Crafts',

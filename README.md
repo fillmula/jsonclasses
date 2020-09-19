@@ -8,7 +8,8 @@ JSON Classes
 [![License][license-image]][license-url]
 [![PR Welcome][pr-image]][pr-url]
 
-The Modern Declarative Data Flow Framework for the AI Empowered Generation.
+The Modern Declarative Data Flow and Data Graph Framework for the AI Empowered
+Generation.
 
 JSON Classes eliminates the separation and redundant coding of data
 sanitization, data validation, data format converting, data serialization and
