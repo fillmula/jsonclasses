@@ -1,3 +1,4 @@
+'''This is an internal module.'''
 from __future__ import annotations
 from typing import List, Any, Union, Type, get_origin, get_args, TYPE_CHECKING
 from datetime import date, datetime
@@ -12,54 +13,55 @@ if TYPE_CHECKING:
 
 
 def string_type_to_default_types(
-    type: str, graph_sibling: Any = None
+    argtype: str, graph_sibling: Any = None
 ) -> Types:
+  '''Convert string type to Types object.'''
   from .types import types
-  if type == 'str':
+  if argtype == 'str':
     return types.str
-  elif type == 'int':
+  elif argtype == 'int':
     return types.int
-  elif type == 'float':
+  elif argtype == 'float':
     return types.float
-  elif type == 'bool':
+  elif argtype == 'bool':
     return types.bool
-  elif type == 'date':
+  elif argtype == 'date':
     return types.date
-  elif type == 'datetime':
+  elif argtype == 'datetime':
     return types.datetime
-  elif type.startswith('List['):
-    item_type = match('List\\[(.*)\\]', type).group(1)
+  elif argtype.startswith('List['):
+    item_type = match('List\\[(.*)\\]', argtype).group(1)
     return types.listof(string_type_to_default_types(item_type, graph_sibling))
-  elif type.startswith('Dict['):
-    item_type = match('Dict\\[.+, ?(.*)\\]', type).group(1)
+  elif argtype.startswith('Dict['):
+    item_type = match('Dict\\[.+, ?(.*)\\]', argtype).group(1)
     return types.dictof(string_type_to_default_types(item_type, graph_sibling))
   else:
-    return types.instanceof(get_registered_class(type, sibling=graph_sibling))
+    return types.instanceof(get_registered_class(argtype, sibling=graph_sibling))
 
 
-def type_to_default_types(type: Any, graph_sibling: Any = None) -> Types:
+def type_to_default_types(argtype: Any, graph_sibling: Any = None) -> Types:
   from .json_object import JSONObject
   from .types import types
-  if isinstance(type, str):
-    return string_type_to_default_types(type, graph_sibling)
-  elif type is str:
+  if isinstance(argtype, str):
+    return string_type_to_default_types(argtype, graph_sibling)
+  elif argtype is str:
     return types.str
-  elif type is int:
+  elif argtype is int:
     return types.int
-  elif type is float:
+  elif argtype is float:
     return types.float
-  elif type is bool:
+  elif argtype is bool:
     return types.bool
-  elif type is date:
+  elif argtype is date:
     return types.date
-  elif type is datetime:
+  elif argtype is datetime:
     return types.datetime
-  elif get_origin(type) is list:
-    return types.listof(get_args(type)[0])
-  elif get_origin(type) is dict:
-    return types.dictof(get_args(type)[1])
-  elif issubclass(type, JSONObject):
-    return types.instanceof(type)
+  elif get_origin(argtype) is list:
+    return types.listof(get_args(argtype)[0])
+  elif get_origin(argtype) is dict:
+    return types.dictof(get_args(argtype)[1])
+  elif issubclass(argtype, JSONObject):
+    return types.instanceof(argtype)
   else:
     return None
 
@@ -87,6 +89,7 @@ def collection_argument_type_to_types(
 def fields(
     class_or_instance: Union[JSONObject, Type[JSONObject]]
 ) -> List[Field]:
+  '''Iterate through a JSON Class or JSON Class instance's fields.'''
   from .types import Types
   from .json_object import JSONObject
   if isinstance(class_or_instance, JSONObject):

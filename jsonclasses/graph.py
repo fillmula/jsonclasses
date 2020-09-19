@@ -14,7 +14,7 @@ def __graph_table(graph: str = 'default') -> Dict[str, Type[JSONObject]]:
 
 
 class JSONClassRedefinitionError(Exception):
-  def __init__(self, new_cls: type, exist_cls: type):
+  def __init__(self, new_cls: Type[JSONObject], exist_cls: Type[JSONObject]):
     name = new_cls.__name__
     original_file = getmodule(exist_cls).__file__
     new_file = getmodule(new_cls).__file__
