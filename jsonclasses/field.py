@@ -11,11 +11,11 @@ class Field():
 
   def __init__(
       self,
-      field_name: str = None,
-      json_field_name: str = None,
-      db_field_name: str = None,
-      field_types: Types = None,
-      assigned_default_value: Any = None
+      field_name: str,
+      json_field_name: str,
+      db_field_name: str,
+      field_types: Types,
+      assigned_default_value: Any
   ) -> None:
     self.field_name = field_name
     self.json_field_name = json_field_name

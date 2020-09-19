@@ -16,8 +16,12 @@ def __graph_table(graph: str = 'default') -> Dict[str, Type[JSONObject]]:
 class JSONClassRedefinitionError(Exception):
   def __init__(self, new_cls: Type[JSONObject], exist_cls: Type[JSONObject]):
     name = new_cls.__name__
-    original_file = getmodule(exist_cls).__file__
-    new_file = getmodule(new_cls).__file__
+    original_module = getmodule(exist_cls)
+    assert original_module is not None
+    original_file = original_module.__file__
+    new_module = getmodule(new_cls)
+    assert new_module is not None
+    new_file = new_module.__file__
     graph = exist_cls.config.graph
     message = (f'Existing JSON Class \'{name}\' in graph \'{graph}\' is '
                f'defined at \'{original_file}\'. Cannot define new JSON Class '

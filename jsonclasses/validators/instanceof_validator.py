@@ -46,6 +46,7 @@ class InstanceOfValidator(Validator):
       return value if not base else base
     types = collection_argument_type_to_types(self.types, config.linked_class)
     cls = types.field_description.instance_types
+    assert cls is not None
     if not base:
       base = cls(__empty__=True)
     def fill_blank_with_default_value(field):

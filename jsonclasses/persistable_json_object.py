@@ -1,3 +1,4 @@
+# type: ignore
 '''
 This module contains `PersistableJSONObject`, the abstract base class for
 interacting with ORMs.
@@ -5,7 +6,7 @@ interacting with ORMs.
 from __future__ import annotations
 from typing import Any, TypeVar
 from datetime import datetime
-from .jsonclass import jsonclass
+from .jsonclass import jsonclass # type: ignore
 from .json_object import JSONObject
 from .types import types
 

@@ -1,5 +1,6 @@
 '''This is an internal module.'''
 from __future__ import annotations
+from jsonclasses.config import Config
 from typing import List, Any, Union, Type, get_origin, get_args, TYPE_CHECKING
 from datetime import date, datetime
 from re import match
@@ -30,10 +31,14 @@ def string_type_to_default_types(
   elif argtype == 'datetime':
     return types.datetime
   elif argtype.startswith('List['):
-    item_type = match('List\\[(.*)\\]', argtype).group(1)
+    match_data = match('List\\[(.*)\\]', argtype)
+    assert match_data is not None
+    item_type = match_data.group(1)
     return types.listof(string_type_to_default_types(item_type, graph_sibling))
   elif argtype.startswith('Dict['):
-    item_type = match('Dict\\[.+, ?(.*)\\]', argtype).group(1)
+    match_data = match('Dict\\[.+, ?(.*)\\]', argtype)
+    assert match_data is not None
+    item_type = match_data.group(1)
     return types.dictof(string_type_to_default_types(item_type, graph_sibling))
   else:
     return types.instanceof(get_registered_class(argtype, sibling=graph_sibling))
@@ -63,7 +68,7 @@ def type_to_default_types(argtype: Any, graph_sibling: Any = None) -> Types:
   elif issubclass(argtype, JSONObject):
     return types.instanceof(argtype)
   else:
-    return None
+    raise ValueError(f'{argtype} is not a valid JSON Class type.')
 
 
 def dataclass_field_to_types(
@@ -77,13 +82,13 @@ def dataclass_field_to_types(
 
 
 def collection_argument_type_to_types(
-    type: Any, graph_sibling: Any = None
+    argtype: Any, graph_sibling: Any = None
 ) -> Types:
   from .types import Types
-  if isinstance(type, Types):
-    return type
+  if isinstance(argtype, Types):
+    return argtype
   else:
-    return type_to_default_types(type, graph_sibling)
+    return type_to_default_types(argtype, graph_sibling)
 
 
 def fields(
@@ -96,6 +101,8 @@ def fields(
     config = class_or_instance.__class__.config
   elif issubclass(class_or_instance, JSONObject):
     config = class_or_instance.config
+  else:
+    config = Config()
   retval = []
   for field in dataclass_fields(class_or_instance):
     field_name = field.name
@@ -103,7 +110,7 @@ def fields(
     db_field_name = camelize(field_name, False) if config.camelize_db_keys else field_name
     field_types = dataclass_field_to_types(field, config.linked_class)
     assigned_default_value = None if isinstance(field.default, Types) else field.default
-    if field.default == field.default_factory:
+    if field.default == field.default_factory: # type: ignore
       assigned_default_value = None
     retval.append(
         Field(
