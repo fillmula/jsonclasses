@@ -20,6 +20,7 @@ is automatically on by default. Use `config.CAMELIZE_DB_KEYS = False` to
 disable this behavior globally.
 '''
 
+
 @dataclass
 class Config:
   '''The Config class contains user's settings for a JSON Class.

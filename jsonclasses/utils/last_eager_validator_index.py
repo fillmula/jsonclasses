@@ -1,6 +1,7 @@
 from typing import Optional, List
 from ..validators import Validator, EagerValidator
 
+
 def last_eager_validator_index(vs: List[Validator]) -> Optional[int]:
   '''This function returns the last eager validator index.
 

@@ -1,8 +1,8 @@
 from typing import Any
 from ..field_description import FieldDescription, WriteRule
 from ..config import Config
-from ..exceptions import ValidationException
 from .validator import Validator
+
 
 class WriteonceValidator(Validator):
 

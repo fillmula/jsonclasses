@@ -5,6 +5,7 @@ from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 
+
 class DateValidator(Validator):
 
   def define(self, field_description: FieldDescription) -> None:
@@ -13,8 +14,10 @@ class DateValidator(Validator):
   def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
     if value is not None and type(value) is not date:
       raise ValidationException(
-        { key_path: f'Value \'{value}\' at \'{key_path}\' should be date.' },
-        root
+          {
+              key_path: f'Value \'{value}\' at \'{key_path}\' should be date.'
+          },
+          root
       )
 
   def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> Any:

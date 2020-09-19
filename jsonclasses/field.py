@@ -4,16 +4,18 @@ from typing import Any, TYPE_CHECKING
 if TYPE_CHECKING:
   from .types import Types
 
+
 class Field():
   '''A JSON Class field.
   '''
+
   def __init__(
-    self,
-    field_name: str = None,
-    json_field_name: str = None,
-    db_field_name: str = None,
-    field_types: Types = None,
-    assigned_default_value: Any = None
+      self,
+      field_name: str = None,
+      json_field_name: str = None,
+      db_field_name: str = None,
+      field_types: Types = None,
+      assigned_default_value: Any = None
   ) -> None:
     self.field_name = field_name
     self.json_field_name = json_field_name

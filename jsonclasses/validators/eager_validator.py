@@ -1,7 +1,8 @@
 from typing import Any
 from .validator import Validator
-from ..field_description import FieldDescription, FieldType
+from ..field_description import FieldDescription
 from ..config import Config
+
 
 class EagerValidator(Validator):
   '''An EagerValidator marks fields for initialization and set stage validation.

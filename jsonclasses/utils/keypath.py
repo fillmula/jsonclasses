@@ -1,5 +1,6 @@
 from typing import Union
 
+
 def keypath(*args: Union[str, int]):
   retval = ''
   for arg in args:

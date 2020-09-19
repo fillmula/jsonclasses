@@ -3,6 +3,7 @@ from ..field_description import FieldDescription, FieldStorage
 from ..config import Config
 from .validator import Validator
 
+
 class EmbeddedValidator(Validator):
 
   def define(self, field_description: FieldDescription) -> None:

@@ -1,6 +1,7 @@
 from typing import Optional, List
 from ..validators import Validator, EagerValidator
 
+
 def eager_validator_index_after_index(vs: List[Validator], index: int) -> Optional[int]:
   '''This function returns the first eager validator index after given index.
 

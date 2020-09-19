@@ -4,14 +4,16 @@ from datetime import date, datetime
 from re import match
 from dataclasses import fields as dataclass_fields, Field as DataclassField
 from inflection import camelize
-from .config import Config
 from .graph import get_registered_class
 from .field import Field
 if TYPE_CHECKING:
   from .types import Types
   from .json_object import JSONObject
 
-def string_type_to_default_types(type: str, graph_sibling: Any = None) -> Types:
+
+def string_type_to_default_types(
+    type: str, graph_sibling: Any = None
+) -> Types:
   from .types import types
   if type == 'str':
     return types.str
@@ -33,6 +35,7 @@ def string_type_to_default_types(type: str, graph_sibling: Any = None) -> Types:
     return types.dictof(string_type_to_default_types(item_type, graph_sibling))
   else:
     return types.instanceof(get_registered_class(type, sibling=graph_sibling))
+
 
 def type_to_default_types(type: Any, graph_sibling: Any = None) -> Types:
   from .json_object import JSONObject
@@ -60,21 +63,30 @@ def type_to_default_types(type: Any, graph_sibling: Any = None) -> Types:
   else:
     return None
 
-def dataclass_field_to_types(field: DataclassField, graph_sibling: Any = None) -> Types:
+
+def dataclass_field_to_types(
+    field: DataclassField, graph_sibling: Any = None
+) -> Types:
   from .types import Types
   if isinstance(field.default, Types):
     return field.default
   else:
     return type_to_default_types(field.type, graph_sibling)
 
-def collection_argument_type_to_types(type: Any, graph_sibling: Any = None) -> Types:
+
+def collection_argument_type_to_types(
+    type: Any, graph_sibling: Any = None
+) -> Types:
   from .types import Types
   if isinstance(type, Types):
     return type
   else:
     return type_to_default_types(type, graph_sibling)
 
-def fields(class_or_instance: Union[JSONObject, Type[JSONObject]]) -> List[Field]:
+
+def fields(
+    class_or_instance: Union[JSONObject, Type[JSONObject]]
+) -> List[Field]:
   from .types import Types
   from .json_object import JSONObject
   if isinstance(class_or_instance, JSONObject):
@@ -91,12 +103,12 @@ def fields(class_or_instance: Union[JSONObject, Type[JSONObject]]) -> List[Field
     if field.default == field.default_factory:
       assigned_default_value = None
     retval.append(
-      Field(
-        field_name=field_name,
-        json_field_name=json_field_name,
-        db_field_name=db_field_name,
-        field_types=field_types,
-        assigned_default_value=assigned_default_value
-      )
+        Field(
+            field_name=field_name,
+            json_field_name=json_field_name,
+            db_field_name=db_field_name,
+            field_types=field_types,
+            assigned_default_value=assigned_default_value
+        )
     )
   return retval

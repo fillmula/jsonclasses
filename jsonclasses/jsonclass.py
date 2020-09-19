@@ -9,22 +9,25 @@ from .config import Config
 
 T = TypeVar('T', bound=Type[JSONObject])
 
+
 @overload
 def jsonclass(cls: T) -> T: ...
 
+
 @overload
 def jsonclass(
-  *,
-  graph: str = 'default',
-  camelize_json_keys: Optional[bool] = None,
-  camelize_db_keys: Optional[bool] = None
+    *,
+    graph: str = 'default',
+    camelize_json_keys: Optional[bool] = None,
+    camelize_db_keys: Optional[bool] = None
 ) -> Union[Callable[[T], T], T]: ...
 
+
 def jsonclass(
-  *args: T,
-  graph: str = 'default',
-  camelize_json_keys: Optional[bool] = None,
-  camelize_db_keys: Optional[bool] = None
+    *args: T,
+    graph: str = 'default',
+    camelize_json_keys: Optional[bool] = None,
+    camelize_db_keys: Optional[bool] = None
 ) -> Union[Callable[[T], T], T]:
   '''The jsonclass object class decorator. To declare a jsonclass class, use
   this syntax:
@@ -39,20 +42,21 @@ def jsonclass(
     if not isinstance(cls, type):
       raise ValueError('@jsonclass should be used to decorate a class.')
     if not issubclass(cls, JSONObject):
-      raise ValueError('@jsonclass should be used to decorate subclasses of JSONObject.')
+      raise ValueError('@jsonclass should be used to decorate subclasses of '
+            'JSONObject.')
     config = Config(
-      graph=graph,
-      camelize_json_keys=camelize_json_keys,
-      camelize_db_keys=camelize_db_keys
+        graph=graph,
+        camelize_json_keys=camelize_json_keys,
+        camelize_db_keys=camelize_db_keys
     )
     config.install_on_class(cls)
     return register_class(dataclass(cls, init=False), graph=graph)
   else:
     def parametered_jsonclass(cls):
       return jsonclass(
-        cls,
-        graph=graph,
-        camelize_json_keys=camelize_json_keys,
-        camelize_db_keys=camelize_db_keys
+          cls,
+          graph=graph,
+          camelize_json_keys=camelize_json_keys,
+          camelize_db_keys=camelize_db_keys
       )
     return parametered_jsonclass

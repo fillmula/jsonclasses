@@ -7,13 +7,18 @@ Str = str
 Int = int
 Float = float
 
+
 class Types:
   '''The class of types marks object. Types marks provide necessary information
   about an json object's shape, transformation, validation, serialization and
   sanitization.
   '''
 
-  def __init__(self, original: Optional[Types] = None, *args: Validator) -> None:
+  def __init__(
+      self,
+      original: Optional[Types] = None,
+      *args: Validator
+  ) -> None:
     if not original:
       self.field_description = FieldDescription()
       self.validator = ChainedValidator()
@@ -143,7 +148,6 @@ class Types:
     '''
     return Types(self, RefereeValidator(referee_key))
 
-
   @property
   def str(self) -> Types:
     '''Fields marked with str should be str type. This is a type marker.
@@ -240,7 +244,7 @@ class Types:
   def date(self) -> Types:
     '''Fields marked with date should be date type. This is a type marker.
     '''
-    return Types(self ,DateValidator())
+    return Types(self, DateValidator())
 
   @property
   def datetime(self) -> Types:
@@ -341,8 +345,8 @@ class Types:
     default mark with a callable to assign calculated default value.
 
     Args:
-      transformer (Callable): This transformer function takes one argument which
-      is the current value of the field.
+      transformer (Callable): This transformer function takes one argument
+      which is the current value of the field.
 
     Returns:
       Types: A new types chained with this marker.
@@ -354,13 +358,14 @@ class Types:
     '''This marker is a instructional transformer designated for shape, dictof
     and listof. This is not a validator. To mark a field is required and should
     not be null, use `required` instead. This transformer should be used right
-    before shape, dictof and listof, to given an instruction of not leaving null
-    for the field.
+    before shape, dictof and listof, to given an instruction of not leaving
+    null for the field.
 
     Returns:
       Types: A new types chained with this marker.
     '''
     return Types(self, NonnullValidator())
+
 
 types = Types()
 '''The root of the types marker. To mark an field with type annotation,
@@ -370,5 +375,6 @@ like this:
   @jsonclass
   class MyObject(JSONObject):
     my_field_one: bool = types.bool.readonly.required
-    my_field_two: password = types.bool.writeonly.length(8, 16).transform(salt).required
+    my_field_two: password = types.bool.writeonly.length(8, 16).transform(salt\
+).required
 '''

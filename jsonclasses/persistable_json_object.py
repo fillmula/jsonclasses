@@ -9,6 +9,7 @@ from .jsonclass import jsonclass
 from .json_object import JSONObject
 from .types import types
 
+
 @jsonclass
 class PersistableJSONObject(JSONObject):
   '''This class provides common interface for integrating with ORMs. ORM
@@ -28,13 +29,15 @@ class PersistableJSONObject(JSONObject):
   '''
 
   updated_at: datetime = types.datetime.readonly.default(datetime.now).required
-  '''This field records when this object is last updated. The value of this field is
-  managed internally thus cannot be updated externally with web request bodies.
+  '''This field records when this object is last updated. The value of this
+  field is managed internally thus cannot be updated externally with web
+  request bodies.
   '''
 
   def set(self: T, **kwargs: Any) -> T:
     super().set(**kwargs)
     self.updated_at = datetime.now()
     return self
+
 
 T = TypeVar('T', bound=PersistableJSONObject)

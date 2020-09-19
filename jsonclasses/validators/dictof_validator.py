@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import Any
 from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
@@ -9,6 +9,7 @@ from inflection import underscore, camelize
 from ..utils.nonnull_note import NonnullNote
 from ..fields import collection_argument_type_to_types
 from ..field_description import CollectionNullability
+
 
 class DictOfValidator(Validator):
 
@@ -68,6 +69,7 @@ class DictOfValidator(Validator):
       return value
     types = collection_argument_type_to_types(self.types, config.linked_class)
     if types:
+      # flake8: noqa
       return { camelize(k, False) if config.camelize_json_keys else k: types.validator.tojson(v, config) for k, v in value.items() }
     else:
       return value

@@ -4,6 +4,7 @@ from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 
+
 class FloatValidator(Validator):
 
   def define(self, field_description: FieldDescription) -> None:

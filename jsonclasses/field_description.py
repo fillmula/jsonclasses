@@ -5,6 +5,7 @@ from enum import Enum
 from dataclasses import dataclass
 from copy import deepcopy
 
+
 class FieldType(Enum):
   '''An Enum class represents JSON Class field's type.
   '''
@@ -20,6 +21,7 @@ class FieldType(Enum):
   SHAPE = 'shape'
   INSTANCE = 'instance'
 
+
 class FieldStorage(Enum):
   '''An Enum class represents JSON Class field's storage.
   '''
@@ -28,12 +30,14 @@ class FieldStorage(Enum):
   LOCAL_KEY = 'local_key'
   FOREIGN_KEY = 'foreign_key'
 
+
 class ReadRule(Enum):
   '''An Enum class represents JSON Class field's read rule.
   '''
 
   UNLIMITED = 'unlimited'
   NO_READ = 'no_read'
+
 
 class WriteRule(Enum):
   '''An Enum class represents JSON Class field's write rule.
@@ -44,6 +48,7 @@ class WriteRule(Enum):
   WRITE_ONCE = 'write_once'
   WRITE_NONNULL = 'write_nonnull'
 
+
 class CollectionNullability(Enum):
   '''An Enum class represents JSON Class field's collection nullability. This
   only works for collection types.
@@ -51,6 +56,7 @@ class CollectionNullability(Enum):
 
   UNDEFINED = 'undefined'
   NULLABLE = 'nullable'
+
 
 @dataclass
 class FieldDescription():

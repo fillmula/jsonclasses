@@ -1,8 +1,8 @@
 from typing import Any
 from ..field_description import FieldDescription
-from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
+
 
 class Validator:
 

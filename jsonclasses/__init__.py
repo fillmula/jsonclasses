@@ -9,6 +9,7 @@
 
   :license: MIT, see LICENSE for more details.
 '''
+# flake8: noqa: F401
 from .jsonclass import jsonclass
 from .types import types, Types
 from .json_object import JSONObject

@@ -8,6 +8,7 @@ from jsonclasses.config import Config
 from jsonclasses.exceptions import ValidationException
 from .validators.instanceof_validator import InstanceOfValidator
 
+
 @dataclass(init=False)
 class JSONObject:
   '''JSONObject is the base class of JSON Classes objects. It provides crutial
@@ -66,7 +67,8 @@ class JSONObject:
       keys = 'Keys' if unallowed_keys_length != 1 else 'Key'
       are = 'are' if unallowed_keys_length != 1 else 'is'
       keys_list = ', '.join(list(unallowed_keys))
-      raise ValueError(f'{keys} {keys_list} {are} not allowed when updating {self.__class__.__name__}.')
+      raise ValueError(f'{keys} {keys_list} {are} not allowed when updating '
+                       f'{self.__class__.__name__}.')
     self.__dict__.update(kwargs)
     return self
 
@@ -97,7 +99,9 @@ class JSONObject:
       None: upon successful validation, returns nothing.
     '''
     config = Config.on(self.__class__)
-    InstanceOfValidator(self.__class__).validate(self, '', self, all_fields, config)
+    InstanceOfValidator(self.__class__).validate(
+        self, '', self, all_fields, config
+    )
     return self
 
   def is_valid(self: T) -> bool:
@@ -112,5 +116,6 @@ class JSONObject:
     except ValidationException:
       return False
     return True
+
 
 T = TypeVar('T', bound=JSONObject)
