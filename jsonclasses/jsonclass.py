@@ -7,11 +7,11 @@ from .json_object import JSONObject
 from .graph import register_class
 from .config import Config
 
-T = TypeVar('T', bound=Type[JSONObject])
+T = TypeVar('T', bound=JSONObject)
 
 
 @overload
-def jsonclass(cls: T) -> T: ...
+def jsonclass(cls: Type[T]) -> Type[T]: ...
 
 @overload
 def jsonclass(
@@ -19,22 +19,22 @@ def jsonclass(
     graph: str = 'default',
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None
-) -> Callable[[T], T]: ...
+) -> Callable[[Type[T]], Type[T]]: ...
 
 @overload
 def jsonclass(
-    cls: T,
+    cls: Type[T],
     graph: str = 'default',
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None
-) -> T: ...
+) -> Type[T]: ...
 
 def jsonclass(
-    cls: Optional[T] = None,
+    cls: Optional[Type[T]] = None,
     graph: str = 'default',
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None
-) -> Union[Callable[[T], T], T]:
+) -> Union[Callable[[Type[T]], Type[T]], Type[T]]:
   '''The jsonclass object class decorator. To declare a jsonclass class, use
   this syntax:
 
