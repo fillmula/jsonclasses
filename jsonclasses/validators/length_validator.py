@@ -1,6 +1,5 @@
-from typing import Any
-from typing import Optional
-from ..field_description import FieldDescription, FieldType
+"""module for length validator."""
+from typing import Any, Optional
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator

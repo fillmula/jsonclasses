@@ -1,3 +1,4 @@
+"""module for nullable validator."""
 from typing import Any
 from ..field_description import FieldDescription, CollectionNullability
 from ..config import Config

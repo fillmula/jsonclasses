@@ -48,6 +48,7 @@ class JSONObject:
         return self
 
     def __set(self: T, fill_blanks: bool = False, **kwargs: Any) -> None:
+        """Set values of a JSON Class object internally."""
         validator = InstanceOfValidator(self.__class__)
         config = Config.on(self.__class__)
         validator.transform(kwargs, '', self, True, config, self, fill_blanks)

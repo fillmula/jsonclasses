@@ -1,3 +1,4 @@
+"""module for referee validator."""
 from typing import Any
 from ..field_description import FieldDescription
 from ..config import Config

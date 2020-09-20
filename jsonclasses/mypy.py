@@ -1,3 +1,4 @@
+# pylint: skip-file
 """JSON Class Mypy plugin for type checking JSON Class classes and objects."""
 from typing import Optional, Callable, Type as TypingType, Any
 from mypy.plugin import Plugin, ClassDefContext
@@ -12,7 +13,9 @@ TYPES_FULLNAME = 'jsonclasses.types.Types'
 JSONCLASS_FULLNAME = 'jsonclasses.jsonclass.jsonclass'
 
 ERROR_UNTYPED = ErrorCode('jsonclass-field', 'Untyped field disallowed', 'JSON Class')
-ERROR_MULTIPLE_DEFAULT_VALUES = ErrorCode('jsonclass-field', 'Multiple default values defined', 'JSON Class')
+ERROR_MULTIPLE_DEFAULT_VALUES = ErrorCode('jsonclass-field',
+                                          'Multiple default values defined',
+                                          'JSON Class')
 
 
 def is_json_class_types_expr(expr: Any) -> bool:

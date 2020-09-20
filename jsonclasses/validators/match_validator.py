@@ -1,3 +1,4 @@
+"""module for match validator."""
 from typing import Any
 from re import search
 from ..field_description import FieldDescription, FieldType

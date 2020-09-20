@@ -1,7 +1,21 @@
+"""This modules contains the JSON Class types marker."""
 from __future__ import annotations
 from typing import Callable, Any, Optional
 from .field_description import FieldDescription
-from .validators import *
+from .validators import (BoolValidator, ChainedValidator, DateValidator,
+                         DatetimeValidator, DefaultValidator, DictOfValidator,
+                         EagerValidator, EmbeddedValidator, FloatValidator,
+                         IndexValidator, InstanceOfValidator, IntValidator,
+                         LengthValidator, LinkedByValidator, LinkedInValidator,
+                         LinkedThruValidator, LinkToValidator, ListOfValidator,
+                         MatchValidator, MaxValidator, MaxlengthValidator,
+                         MinValidator, MinlengthValidator, NonnullValidator,
+                         NullableValidator, OneOfValidator, RangeValidator,
+                         ReadonlyValidator, ReadwriteValidator, RefereeValidator,
+                         ReferrerValidator, RequiredValidator, ShapeValidator,
+                         StrValidator, TransformValidator, TruncateValidator,
+                         UniqueValidator, ValidateValidator, Validator,
+                         WriteonceValidator, WriteonlyValidator)
 
 Str = str
 Int = int
@@ -14,7 +28,7 @@ class Types:
     sanitization.
     """
 
-    def __init__(
+    def __init__( # pylint: disable=keyword-arg-before-vararg
         self,
         original: Optional[Types] = None,
         *args: Validator
@@ -253,23 +267,23 @@ class Types:
         """
         return Types(self, DatetimeValidator())
 
-    def listof(self, types: Any) -> Types:
+    def listof(self, item_types: Any) -> Types:
         """Fields marked with listof should be a list of the given type. This is a
         type marker.
         """
-        return Types(self, ListOfValidator(types))
+        return Types(self, ListOfValidator(item_types))
 
-    def dictof(self, types: Any) -> Types:
+    def dictof(self, item_types: Any) -> Types:
         """Fields marked with listof should be a str keyed dict of the given type.
         This is a type marker.
         """
-        return Types(self, DictOfValidator(types))
+        return Types(self, DictOfValidator(item_types))
 
-    def shape(self, types) -> Types:
+    def shape(self, item_types_map) -> Types:
         """Fields marked with shape are objects shaped with given shape. This is a
         type marker.
         """
-        return Types(self, ShapeValidator(types))
+        return Types(self, ShapeValidator(item_types_map))
 
     def instanceof(self, json_object_class) -> Types:
         """Fields marked with instance of are objects of given class.

@@ -1,3 +1,4 @@
+"""Find the next eager validator index."""
 from typing import Optional, List
 from ..validators import Validator, EagerValidator
 
@@ -13,6 +14,6 @@ def eager_validator_index_after_index(vs: List[Validator], index: int) -> Option
       Optional[int]: The found index or None.
     """
     try:
-        return vs.index(next(v for v in vs[index:] if type(v) is EagerValidator))
+        return vs.index(next(v for v in vs[index:] if isinstance(v, EagerValidator)))
     except StopIteration:
         return None

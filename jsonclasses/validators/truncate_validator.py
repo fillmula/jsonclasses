@@ -1,3 +1,4 @@
+"""module for truncate validator."""
 from typing import Any
 from ..config import Config
 from .validator import Validator

@@ -1,11 +1,11 @@
 """This is an internal module."""
 from __future__ import annotations
-from jsonclasses.config import Config
 from typing import List, Any, Union, Type, get_origin, get_args, TYPE_CHECKING
 from datetime import date, datetime
 from re import match
 from dataclasses import fields as dataclass_fields, Field as DataclassField
 from inflection import camelize
+from .config import Config
 from .graph import get_registered_class
 from .field import Field
 if TYPE_CHECKING:
@@ -45,6 +45,7 @@ def string_type_to_default_types(
 
 
 def type_to_default_types(argtype: Any, graph_sibling: Any = None) -> Types:
+    """Convert arbitrary type to Types object."""
     from .json_object import JSONObject
     from .types import types
     if isinstance(argtype, str):
@@ -74,6 +75,7 @@ def type_to_default_types(argtype: Any, graph_sibling: Any = None) -> Types:
 def dataclass_field_to_types(
     field: DataclassField, graph_sibling: Any = None
 ) -> Types:
+    """Get JSON Class types from a dataclass field."""
     from .types import Types
     if isinstance(field.default, Types):
         return field.default
@@ -84,6 +86,7 @@ def dataclass_field_to_types(
 def collection_argument_type_to_types(
     argtype: Any, graph_sibling: Any = None
 ) -> Types:
+    """Get desired JSON Class types from collection marker argument."""
     from .types import Types
     if isinstance(argtype, Types):
         return argtype

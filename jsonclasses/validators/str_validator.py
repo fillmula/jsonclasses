@@ -1,3 +1,4 @@
+"""module for str validator."""
 from __future__ import annotations
 from typing import Any
 from ..field_description import FieldDescription, FieldType

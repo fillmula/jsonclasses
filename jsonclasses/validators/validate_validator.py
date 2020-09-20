@@ -1,3 +1,4 @@
+"""module for validate validator."""
 from typing import Callable, Any
 from inspect import signature
 from ..config import Config

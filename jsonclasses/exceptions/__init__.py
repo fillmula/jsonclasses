@@ -1,3 +1,4 @@
+"""JSON Class exceptions."""
 from typing import Dict, Any
 
 
@@ -36,6 +37,7 @@ class ValidationException(Exception):
         super().__init__(self.message)
 
     def formatted_keypath_messages(self):
+        """The formatted keypath message for print."""
         retval = 'Json classes validation failed:\n'
         for k, v in self.keypath_messages.items():
             retval += f'  \'{k}\': {v}\n'

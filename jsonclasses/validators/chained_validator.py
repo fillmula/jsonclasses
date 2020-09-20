@@ -1,5 +1,6 @@
+"""module for chained validator."""
 from __future__ import annotations
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from functools import reduce
 from ..config import Config
 from ..exceptions import ValidationException
@@ -9,11 +10,13 @@ from ..utils.last_eager_validator_index import last_eager_validator_index
 
 
 class ChainedValidator(Validator):
+    """Chained validator has a series of validators chained."""
 
-    def __init__(self, validators: List[Validator] = []) -> None:
-        self.validators = validators
+    def __init__(self, validators: Optional[List[Validator]] = None) -> None:
+        self.validators = validators or []
 
     def append(self, *args: Validator) -> ChainedValidator:
+        """Append validators to this chained validator chain."""
         return ChainedValidator([*self.validators, *args])
 
     def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
@@ -40,6 +43,7 @@ class ChainedValidator(Validator):
         all_fields: bool,
         config: Config
     ) -> Any:
+        """Validate as transform."""
         validator.validate(value, key_path, root, all_fields, config)
         return validator.transform(value, key_path, root, all_fields, config)
 
