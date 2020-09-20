@@ -1,6 +1,6 @@
 [FORMAT]
-indent-string='  '
-indent-after-paren=2
+indent-string='    '
+indent-after-paren=4
 
 [DESIGN]
 max-args=10

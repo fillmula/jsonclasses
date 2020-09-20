@@ -6,8 +6,8 @@ from .validator import Validator
 
 class UniqueValidator(Validator):
 
-  def define(self, field_description: FieldDescription) -> None:
-    field_description.unique = True
+    def define(self, field_description: FieldDescription) -> None:
+        field_description.unique = True
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
-    pass
+    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
+        pass

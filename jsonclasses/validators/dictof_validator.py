@@ -13,63 +13,63 @@ from ..field_description import CollectionNullability
 
 class DictOfValidator(Validator):
 
-  def __init__(self, types: Any) -> None:
-    self.types = types
+    def __init__(self, types: Any) -> None:
+        self.types = types
 
-  def define(self, field_description: FieldDescription) -> None:
-    field_description.field_type = FieldType.DICT
-    field_description.dict_item_types = self.types
+    def define(self, field_description: FieldDescription) -> None:
+        field_description.field_type = FieldType.DICT
+        field_description.dict_item_types = self.types
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
-    if value is None:
-      return
-    if type(value) is not dict:
-      raise ValidationException(
-        { key_path: f'Value \'{value}\' at \'{key_path}\' should be a dict.' },
-        root
-      )
-    types = collection_argument_type_to_types(self.types, config.linked_class)
-    if types:
-      if types.field_description.collection_nullability == CollectionNullability.UNDEFINED:
-        types = types.required
-      keypath_messages = {}
-      for k, v in value.items():
-        try:
-          types.validator.validate(v, keypath(key_path, k), root, all_fields, config)
-        except ValidationException as exception:
-          if all_fields:
-            keypath_messages.update(exception.keypath_messages)
-          else:
-            raise exception
-      if len(keypath_messages) > 0:
-        raise ValidationException(keypath_messages=keypath_messages, root=root)
+    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
+        if value is None:
+            return
+        if type(value) is not dict:
+            raise ValidationException(
+                {key_path: f'Value \'{value}\' at \'{key_path}\' should be a dict.'},
+                root
+            )
+        types = collection_argument_type_to_types(self.types, config.linked_class)
+        if types:
+            if types.field_description.collection_nullability == CollectionNullability.UNDEFINED:
+                types = types.required
+            keypath_messages = {}
+            for k, v in value.items():
+                try:
+                    types.validator.validate(v, keypath(key_path, k), root, all_fields, config)
+                except ValidationException as exception:
+                    if all_fields:
+                        keypath_messages.update(exception.keypath_messages)
+                    else:
+                        raise exception
+            if len(keypath_messages) > 0:
+                raise ValidationException(keypath_messages=keypath_messages, root=root)
 
-  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> Any:
-    if value is None:
-      return None
-    elif isinstance(value, NonnullNote):
-      value = {}
-    elif type(value) is not dict:
-      return value
-    types = collection_argument_type_to_types(self.types, config.linked_class)
-    if types:
-      retval = {}
-      for k, v in value.items():
-        new_key = underscore(k) if config.camelize_json_keys else k
-        new_value = types.validator.transform(v, keypath(key_path, new_key), root, all_fields, config)
-        retval[new_key] = new_value
-      return retval
-    else:
-      return value
+    def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> Any:
+        if value is None:
+            return None
+        elif isinstance(value, NonnullNote):
+            value = {}
+        elif type(value) is not dict:
+            return value
+        types = collection_argument_type_to_types(self.types, config.linked_class)
+        if types:
+            retval = {}
+            for k, v in value.items():
+                new_key = underscore(k) if config.camelize_json_keys else k
+                new_value = types.validator.transform(v, keypath(key_path, new_key), root, all_fields, config)
+                retval[new_key] = new_value
+            return retval
+        else:
+            return value
 
-  def tojson(self, value: Any, config: Config) -> Any:
-    if value is None:
-      return None
-    if type(value) is not dict:
-      return value
-    types = collection_argument_type_to_types(self.types, config.linked_class)
-    if types:
-      # flake8: noqa
-      return { camelize(k, False) if config.camelize_json_keys else k: types.validator.tojson(v, config) for k, v in value.items() }
-    else:
-      return value
+    def tojson(self, value: Any, config: Config) -> Any:
+        if value is None:
+            return None
+        if type(value) is not dict:
+            return value
+        types = collection_argument_type_to_types(self.types, config.linked_class)
+        if types:
+            # flake8: noqa
+            return {camelize(k, False) if config.camelize_json_keys else k: types.validator.tojson(v, config) for k, v in value.items()}
+        else:
+            return value

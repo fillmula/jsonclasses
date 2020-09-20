@@ -8,26 +8,26 @@ from .validator import Validator
 
 class DateValidator(Validator):
 
-  def define(self, field_description: FieldDescription) -> None:
-    field_description.field_type = FieldType.DATE
+    def define(self, field_description: FieldDescription) -> None:
+        field_description.field_type = FieldType.DATE
 
-  def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
-    if value is not None and type(value) is not date:
-      raise ValidationException(
-          {
-              key_path: f'Value \'{value}\' at \'{key_path}\' should be date.'
-          },
-          root
-      )
+    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
+        if value is not None and type(value) is not date:
+            raise ValidationException(
+                {
+                    key_path: f'Value \'{value}\' at \'{key_path}\' should be date.'
+                },
+                root
+            )
 
-  def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> Any:
-    if value is None:
-      return None
-    elif type(value) is str:
-      return date.fromisoformat(value[:10])
-    else:
-      return value
+    def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> Any:
+        if value is None:
+            return None
+        elif type(value) is str:
+            return date.fromisoformat(value[:10])
+        else:
+            return value
 
-  def tojson(self, value: Any, config: Config) -> Any:
-    if value is not None:
-      return value.isoformat() + 'T00:00:00.000Z'
+    def tojson(self, value: Any, config: Config) -> Any:
+        if value is not None:
+            return value.isoformat() + 'T00:00:00.000Z'
