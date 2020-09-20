@@ -1,4 +1,4 @@
-'''This is an internal module.'''
+"""This is an internal module."""
 from __future__ import annotations
 from jsonclasses.config import Config
 from typing import List, Any, Union, Type, get_origin, get_args, TYPE_CHECKING
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 def string_type_to_default_types(
     argtype: str, graph_sibling: Any = None
 ) -> Types:
-  '''Convert string type to Types object.'''
+  """Convert string type to Types object."""
   from .types import types
   if argtype == 'str':
     return types.str
@@ -94,7 +94,7 @@ def collection_argument_type_to_types(
 def fields(
     class_or_instance: Union[JSONObject, Type[JSONObject]]
 ) -> List[Field]:
-  '''Iterate through a JSON Class or JSON Class instance's fields.'''
+  """Iterate through a JSON Class or JSON Class instance's fields."""
   from .types import Types
   from .json_object import JSONObject
   if isinstance(class_or_instance, JSONObject):

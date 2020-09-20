@@ -1,4 +1,4 @@
-'''This is an internal module.'''
+"""This is an internal module."""
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 if TYPE_CHECKING:
@@ -6,8 +6,8 @@ if TYPE_CHECKING:
 
 
 class Field():
-  '''A JSON Class field.
-  '''
+  """A JSON Class field.
+  """
 
   def __init__(
       self,

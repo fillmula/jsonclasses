@@ -5,9 +5,9 @@ from ..config import Config
 
 
 class EagerValidator(Validator):
-  '''An EagerValidator marks fields for initialization and set stage validation.
+  """An EagerValidator marks fields for initialization and set stage validation.
   This is used usually before heavy transforming validators.
-  '''
+  """
 
   def define(self, field_description: FieldDescription) -> None:
     field_description.has_eager_validator = True

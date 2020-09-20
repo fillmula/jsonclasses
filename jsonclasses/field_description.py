@@ -1,4 +1,4 @@
-'''This module contains `FieldDescription`. This is an internal module.'''
+"""This module contains `FieldDescription`. This is an internal module."""
 from __future__ import annotations
 from typing import Optional, Any, Dict
 from enum import Enum
@@ -7,8 +7,8 @@ from copy import deepcopy
 
 
 class FieldType(Enum):
-  '''An Enum class represents JSON Class field's type.
-  '''
+  """An Enum class represents JSON Class field's type.
+  """
 
   STR = 'str'
   INT = 'int'
@@ -23,8 +23,8 @@ class FieldType(Enum):
 
 
 class FieldStorage(Enum):
-  '''An Enum class represents JSON Class field's storage.
-  '''
+  """An Enum class represents JSON Class field's storage.
+  """
 
   EMBEDDED = 'embedded'
   LOCAL_KEY = 'local_key'
@@ -32,16 +32,16 @@ class FieldStorage(Enum):
 
 
 class ReadRule(Enum):
-  '''An Enum class represents JSON Class field's read rule.
-  '''
+  """An Enum class represents JSON Class field's read rule.
+  """
 
   UNLIMITED = 'unlimited'
   NO_READ = 'no_read'
 
 
 class WriteRule(Enum):
-  '''An Enum class represents JSON Class field's write rule.
-  '''
+  """An Enum class represents JSON Class field's write rule.
+  """
 
   UNLIMITED = 'unlimited'
   NO_WRITE = 'no_write'
@@ -50,9 +50,9 @@ class WriteRule(Enum):
 
 
 class CollectionNullability(Enum):
-  '''An Enum class represents JSON Class field's collection nullability. This
+  """An Enum class represents JSON Class field's collection nullability. This
   only works for collection types.
-  '''
+  """
 
   UNDEFINED = 'undefined'
   NULLABLE = 'nullable'
@@ -60,9 +60,9 @@ class CollectionNullability(Enum):
 
 @dataclass
 class FieldDescription():
-  '''The description of a JSON Class field. It is generated as specifying the
+  """The description of a JSON Class field. It is generated as specifying the
   marks.
-  '''
+  """
 
   field_type: Optional[FieldType] = None
   field_storage: FieldStorage = FieldStorage.EMBEDDED
@@ -94,7 +94,7 @@ class FieldDescription():
   has_eager_validator: bool = False
 
   def copy(self) -> FieldDescription:
-    '''This method copies the field description itself and returns a brand new
+    """This method copies the field description itself and returns a brand new
     copy.
-    '''
+    """
     return deepcopy(self)

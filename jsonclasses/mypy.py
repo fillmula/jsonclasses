@@ -1,4 +1,4 @@
-'''JSON Class Mypy plugin for type checking JSON Class classes and objects.'''
+"""JSON Class Mypy plugin for type checking JSON Class classes and objects."""
 from typing import Optional, Callable, Type as TypingType, Any
 from mypy.plugin import Plugin, ClassDefContext
 from mypy.options import Options
@@ -90,6 +90,6 @@ class JSONClassesPlugin(Plugin):
 
 
 def plugin(version: str) -> TypingType[Plugin]:
-  '''Returns the JSON Class Mypy plugin. The version argument is ignored.
-  '''
+  """Returns the JSON Class Mypy plugin. The version argument is ignored.
+  """
   return JSONClassesPlugin

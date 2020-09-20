@@ -1,6 +1,6 @@
-'''
+"""
 This module contains `jsonclass`, the decorator for JSON Classes.
-'''
+"""
 from typing import Type, Optional, Union, TypeVar, overload, Callable
 from dataclasses import dataclass
 from .json_object import JSONObject
@@ -35,14 +35,14 @@ def jsonclass(
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None
 ) -> Union[Callable[[Type[T]], Type[T]], Type[T]]:
-  '''The jsonclass object class decorator. To declare a jsonclass class, use
+  """The jsonclass object class decorator. To declare a jsonclass class, use
   this syntax:
 
     @jsonclass
     class MyObject(JSONObject):
       my_field_one: str
       my_field_two: bool
-  '''
+  """
   if cls is not None:
     if not isinstance(cls, type):
       raise ValueError('@jsonclass should be used to decorate a class.')
