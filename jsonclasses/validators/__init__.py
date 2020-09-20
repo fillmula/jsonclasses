@@ -30,6 +30,7 @@ from .str_validator import StrValidator
 from .match_validator import MatchValidator
 from .oneof_validator import OneOfValidator
 from .truncate_validator import TruncateValidator
+from .trim_validator import TrimValidator
 from .minlength_validator import MinlengthValidator
 from .maxlength_validator import MaxlengthValidator
 from .length_validator import LengthValidator

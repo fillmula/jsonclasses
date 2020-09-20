@@ -13,9 +13,9 @@ from .validators import (BoolValidator, ChainedValidator, DateValidator,
                          NullableValidator, OneOfValidator, RangeValidator,
                          ReadonlyValidator, ReadwriteValidator, RefereeValidator,
                          ReferrerValidator, RequiredValidator, ShapeValidator,
-                         StrValidator, TransformValidator, TruncateValidator,
-                         UniqueValidator, ValidateValidator, Validator,
-                         WriteonceValidator, WriteonlyValidator)
+                         StrValidator, TransformValidator, TrimValidator,
+                         TruncateValidator, UniqueValidator, ValidateValidator,
+                         Validator, WriteonceValidator, WriteonlyValidator)
 
 Str = str
 Int = int
@@ -352,6 +352,16 @@ class Types:
           Types: A new types chained with this marker.
         """
         return Types(self, TruncateValidator(max_length))
+
+    @property
+    def trim(self) -> Types:
+        """This marker will trim string value. Remove leading and trailing
+        whitespaces.
+
+        Returns:
+            Types: A new types chained with this marker.
+        """
+        return Types(self, TrimValidator())
 
     def transform(self, transformer: Callable) -> Types:
         """This mark applies transfromer on the value. When value is None, the

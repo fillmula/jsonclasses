@@ -18,6 +18,7 @@ setup(
     author_email='wiosoftvictor@163.com',
     license='MIT',
     packages=find_packages(exclude=('tests', 'benchmarks', 'examples')),
+    package_data={'jsonclasses': ['py.typed']},
     zip_safe=False,
     url='https://github.com/Wiosoft-Crafts/jsonclasses',
     include_package_data=True,
