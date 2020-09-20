@@ -3,7 +3,7 @@ from typing import Optional, Callable, Type as TypingType, Any
 from mypy.plugin import Plugin, ClassDefContext
 from mypy.options import Options
 from mypy.types import get_proper_type, AnyType, TypeOfAny
-from mypy.nodes import (CallExpr, MemberExpr, TempNode, TypeInfo,
+from mypy.nodes import (CallExpr, LambdaExpr, MemberExpr, TempNode, TypeInfo,
                         AssignmentStmt, NameExpr, PlaceholderNode, Var)
 from mypy.errorcodes import ErrorCode
 
@@ -58,7 +58,7 @@ def transform_json_object_subclass(ctx: ClassDefContext) -> None:
     assert isinstance(node, Var)
     if node.is_classvar:
       continue
-    node_type = get_proper_type(node.type)
+    # node_type = get_proper_type(node.type)
     if is_json_class_types_expr(stmt.rvalue):
       default_expr = json_class_types_default_arg_expr(stmt.rvalue)
       if default_expr:
@@ -66,7 +66,12 @@ def transform_json_object_subclass(ctx: ClassDefContext) -> None:
           ctx.api.fail('Multiple default values defined.', default_expr[1], code=ERROR_MULTIPLE_DEFAULT_VALUES)
           stmt.rvalue = TempNode(AnyType(TypeOfAny.explicit), False)
           continue
-        stmt.rvalue = default_expr[0]
+        expr = default_expr[0]
+        if not (isinstance(expr, LambdaExpr) or isinstance(expr, MemberExpr)):
+          # TODO: check callable return type
+          stmt.rvalue = expr
+        else:
+          stmt.rvalue = TempNode(AnyType(TypeOfAny.explicit), False)
       else:
         stmt.rvalue = TempNode(AnyType(TypeOfAny.explicit), False)
 
