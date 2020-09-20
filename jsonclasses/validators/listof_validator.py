@@ -50,7 +50,7 @@ class ListOfValidator(Validator):
             return None
         elif isinstance(value, NonnullNote):
             value = []
-        elif type(value) is not list:
+        elif not isinstance(value, list):
             return value
         types = collection_argument_type_to_types(self.types, config.linked_class)
         if types:

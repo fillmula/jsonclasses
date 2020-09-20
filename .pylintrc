@@ -1,7 +1,7 @@
 [FORMAT]
 indent-string='    '
 indent-after-paren=4
-max-line-length=120
+max-line-length=155
 
 [DESIGN]
 max-args=10
