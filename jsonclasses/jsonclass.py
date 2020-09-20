@@ -55,7 +55,7 @@ def jsonclass(
         camelize_db_keys=camelize_db_keys
     )
     config.install_on_class(cls)
-    return register_class(dataclass(cls, init=False), graph=graph)
+    return register_class(dataclass(init=False)(cls), graph=graph)
   else:
     def parametered_jsonclass(cls):
       return jsonclass(

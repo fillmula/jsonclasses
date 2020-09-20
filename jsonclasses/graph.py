@@ -58,7 +58,9 @@ def get_registered_class(
 ) -> Type[T]:
   if sibling is not None:
     graph = sibling.config.graph
-  cls = __graph_table(graph).get(name)
-  if cls is None:
-    raise JSONClassNotFoundError(name=name, graph=graph)
-  return cls
+  graph_table: Dict[str, Type[T]] = __graph_table(graph)
+  if graph_table is not None:
+    cls: Optional[Type[T]] = graph_table.get(name)
+    if cls is None:
+      raise JSONClassNotFoundError(name=name, graph=graph)
+    return cls
