@@ -13,18 +13,24 @@ T = TypeVar('T', bound=Type[JSONObject])
 @overload
 def jsonclass(cls: T) -> T: ...
 
-
 @overload
 def jsonclass(
-    *,
+    cls: None,
     graph: str = 'default',
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None
-) -> Union[Callable[[T], T], T]: ...
+) -> Callable[[T], T]: ...
 
+@overload
+def jsonclass(
+    cls: T,
+    graph: str = 'default',
+    camelize_json_keys: Optional[bool] = None,
+    camelize_db_keys: Optional[bool] = None
+) -> T: ...
 
 def jsonclass(
-    *args: T,
+    cls: Optional[T] = None,
     graph: str = 'default',
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None
@@ -37,8 +43,7 @@ def jsonclass(
       my_field_one: str
       my_field_two: bool
   '''
-  if len(args) == 1:
-    cls = args[0]
+  if cls is not None:
     if not isinstance(cls, type):
       raise ValueError('@jsonclass should be used to decorate a class.')
     if not issubclass(cls, JSONObject):
