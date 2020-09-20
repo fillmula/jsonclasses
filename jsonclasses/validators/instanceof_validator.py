@@ -1,18 +1,17 @@
 """module for instanceof validator."""
 from __future__ import annotations
-from typing import Dict, Any
+from typing import Any
 from ..field_description import FieldDescription, FieldType
 from ..config import Config
-from ..graph import get_registered_class
 from ..exceptions import ValidationException
 from .validator import Validator
-from inflection import underscore, camelize
 from ..utils.keypath import keypath
-from ..fields import collection_argument_type_to_types, fields, dataclass_field_to_types
+from ..fields import collection_argument_type_to_types, fields
 from ..field_description import WriteRule, ReadRule
 
 
 class InstanceOfValidator(Validator):
+    """This validator validates JSON Class instance."""
 
     def __init__(self, types) -> None:
         self.types = types
@@ -40,11 +39,21 @@ class InstanceOfValidator(Validator):
         if len(keypath_messages) > 0:
             raise ValidationException(keypath_messages=keypath_messages, root=root)
 
-    def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config, base: Any = None, fill_blanks: bool = True):
+    # pylint: disable=arguments-differ, too-many-locals, too-many-branches
+    def transform(
+        self,
+        value: Any,
+        key_path: str,
+        root: Any,
+        all_fields: bool,
+        config: Config,
+        base: Any = None,
+        fill_blanks: bool = True
+    ):
         from ..types import Types
         if value is None:
             return None if not base else base
-        if type(value) is not dict:
+        if not isinstance(value, dict):
             return value if not base else base
         types = collection_argument_type_to_types(self.types, config.linked_class)
         cls = types.field_description.instance_types

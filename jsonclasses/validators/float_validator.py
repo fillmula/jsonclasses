@@ -7,6 +7,7 @@ from .validator import Validator
 
 
 class FloatValidator(Validator):
+    """Date validator validate value against float type."""
 
     def define(self, field_description: FieldDescription) -> None:
         field_description.field_type = FieldType.FLOAT

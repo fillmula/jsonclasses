@@ -6,6 +6,7 @@ from .validator import Validator
 
 
 class LinkedThruValidator(Validator):
+    """Linked by validator marks a field linked with a joinning table."""
 
     def __init__(self, foreign_key: str) -> None:
         self.foreign_key = foreign_key

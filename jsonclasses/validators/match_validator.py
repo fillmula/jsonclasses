@@ -1,13 +1,13 @@
 """module for match validator."""
 from typing import Any
 from re import search
-from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 
 
 class MatchValidator(Validator):
+    """Match validator validates value against pattern."""
 
     def __init__(self, pattern: str) -> None:
         self.pattern = pattern

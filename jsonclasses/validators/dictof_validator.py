@@ -13,6 +13,7 @@ from ..field_description import CollectionNullability
 
 
 class DictOfValidator(Validator):
+    """This validator validates dict."""
 
     def __init__(self, types: Any) -> None:
         self.types = types

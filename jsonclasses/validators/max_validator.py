@@ -1,12 +1,12 @@
 """module for max validator."""
 from typing import Any, Union
-from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 
 
 class MaxValidator(Validator):
+    """Match validator validates value against max value."""
 
     def __init__(self, max_value: Union[int, float]) -> None:
         self.max_value = max_value

@@ -7,6 +7,7 @@ from .validator import Validator
 
 
 class IntValidator(Validator):
+    """Int validator validate value against int type."""
 
     def define(self, field_description: FieldDescription) -> None:
         field_description.field_type = FieldType.INT

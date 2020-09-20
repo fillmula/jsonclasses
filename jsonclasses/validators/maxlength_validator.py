@@ -1,12 +1,12 @@
 """module for maxlength validator."""
 from typing import Any
-from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 
 
 class MaxlengthValidator(Validator):
+    """Match validator validates value against max length."""
 
     def __init__(self, maxlength: int) -> None:
         self.maxlength = maxlength

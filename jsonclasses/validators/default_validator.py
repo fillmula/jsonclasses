@@ -5,6 +5,7 @@ from .validator import Validator
 
 
 class DefaultValidator(Validator):
+    """Default validator assigns value a default value if value is `None`."""
 
     def __init__(self, default_value: Any) -> None:
         self.default_value = default_value

@@ -12,8 +12,7 @@ from ..field_description import CollectionNullability
 
 
 class ListOfValidator(Validator):
-    """This validator validates list.
-    """
+    """This validator validates list."""
 
     def __init__(self, types: Any) -> None:
         self.types = types

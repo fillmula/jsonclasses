@@ -1,12 +1,12 @@
 """module for min validator."""
 from typing import Any, Union
-from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 
 
 class MinValidator(Validator):
+    """Match validator validates value against min value."""
 
     def __init__(self, min_value: Union[int, float]):
         self.min_value = min_value

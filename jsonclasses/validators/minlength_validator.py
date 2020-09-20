@@ -1,12 +1,12 @@
 """module for minlength validator."""
 from typing import Any
-from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 
 
 class MinlengthValidator(Validator):
+    """Match validator validates value against min length."""
 
     def __init__(self, minlength: int) -> None:
         self.minlength = minlength

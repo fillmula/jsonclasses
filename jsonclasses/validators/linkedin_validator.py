@@ -6,6 +6,8 @@ from .validator import Validator
 
 
 class LinkedInValidator(Validator):
+    """Linked in validator marks a field linked with a joinning table which is
+    also a JSON Class."""
 
     def __init__(self, cls: Any) -> None:
         self.cls = cls

@@ -8,6 +8,7 @@ from .validator import Validator
 
 
 class DateValidator(Validator):
+    """Date validator validate value against date type."""
 
     def define(self, field_description: FieldDescription) -> None:
         field_description.field_type = FieldType.DATE

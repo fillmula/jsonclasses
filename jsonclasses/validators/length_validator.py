@@ -6,6 +6,7 @@ from .validator import Validator
 
 
 class LengthValidator(Validator):
+    """Length validator validate value against the provided length."""
 
     def __init__(self, minlength: int, maxlength: Optional[int]) -> None:
         self.minlength = minlength
