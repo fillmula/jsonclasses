@@ -2,11 +2,11 @@
 from typing import Any
 from ..field_description import FieldDescription, CollectionNullability
 from ..config import Config
-from ..exceptions import ValidationException
 from .validator import Validator
 
 
 class NullableValidator(Validator):
+    """A nullable validator marks a collection item field to be nullable."""
 
     def define(self, field_description: FieldDescription) -> None:
         field_description.collection_nullability = CollectionNullability.NULLABLE

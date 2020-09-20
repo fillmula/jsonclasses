@@ -1,14 +1,13 @@
 """module for range validator."""
 from typing import Any, Union
-from ..field_description import FieldDescription, FieldType
 from ..config import Config
-from ..exceptions import ValidationException
 from .validator import Validator
 from .min_validator import MinValidator
 from .max_validator import MaxValidator
 
 
 class RangeValidator(Validator):
+    """A range validator validates value against a range."""
 
     def __init__(self, min_value: Union[int, float], max_value: Union[int, float]):
         self.min_value = min_value

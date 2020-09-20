@@ -1,12 +1,12 @@
 """module for oneof validator."""
 from typing import List, Any
-from ..field_description import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 
 
 class OneOfValidator(Validator):
+    """One of validator validates value against a list of available values."""
 
     def __init__(self, str_list: List[str]) -> None:
         self.str_list = str_list
