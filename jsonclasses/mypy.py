@@ -3,7 +3,7 @@
 from typing import Optional, Callable, Type as TypingType, Any
 from mypy.plugin import Plugin, ClassDefContext
 from mypy.options import Options
-from mypy.types import get_proper_type, AnyType, TypeOfAny
+from mypy.types import AnyType, TypeOfAny
 from mypy.nodes import (CallExpr, LambdaExpr, MemberExpr, TempNode, TypeInfo,
                         AssignmentStmt, NameExpr, PlaceholderNode, Var)
 from mypy.errorcodes import ErrorCode

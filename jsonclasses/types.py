@@ -28,7 +28,7 @@ class Types:
     sanitization.
     """
 
-    def __init__( # pylint: disable=keyword-arg-before-vararg
+    def __init__(  # pylint: disable=keyword-arg-before-vararg
         self,
         original: Optional[Types] = None,
         *args: Validator

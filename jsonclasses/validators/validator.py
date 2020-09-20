@@ -18,10 +18,10 @@ class Validator:
             root
         )
 
-    def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> Any: # pylint: disable=unused-argument
+    def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> Any:  # pylint: disable=unused-argument
         """Transform raw input object into JSON Class acceptable object."""
         return value
 
-    def tojson(self, value: Any, config: Config) -> Any: # pylint: disable=unused-argument
+    def tojson(self, value: Any, config: Config) -> Any:  # pylint: disable=unused-argument
         """Transform JSON Class object and fields into JSON dict and values."""
         return value
