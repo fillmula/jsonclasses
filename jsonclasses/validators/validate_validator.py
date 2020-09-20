@@ -7,6 +7,7 @@ from .validator import Validator
 
 
 class ValidateValidator(Validator):
+    """Validate validator takes a arbitrary validator."""
 
     def __init__(self, validate_callable: Callable) -> None:
         self.validate_callable = validate_callable

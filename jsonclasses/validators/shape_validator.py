@@ -11,9 +11,10 @@ from ..fields import collection_argument_type_to_types
 
 
 class ShapeValidator(Validator):
+    """Shape validator validates a dict of values with defined shape."""
 
     def __init__(self, types: Dict[str, Any]) -> None:
-        if type(types) is not dict:
+        if not isinstance(types, dict):
             raise ValueError('argument passed to ShapeValidator should be dict')
         self.types = types
 
@@ -22,7 +23,9 @@ class ShapeValidator(Validator):
         field_description.shape_types = self.types
 
     def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
-        if value is not None and type(value) is not dict:
+        if value is None:
+            return
+        if not isinstance(value, dict):
             raise ValidationException(
                 {key_path: f'Value \'{value}\' at \'{key_path}\' should be a dict.'},
                 root
@@ -45,7 +48,14 @@ class ShapeValidator(Validator):
         if len(keypath_messages) > 0:
             raise ValidationException(keypath_messages=keypath_messages, root=root)
 
-    def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> Optional[Dict[str, Any]]:
+    def transform(
+        self,
+        value: Any,
+        key_path: str,
+        root: Any,
+        all_fields: bool,
+        config: Config
+    ) -> Optional[Dict[str, Any]]:
         if value is None:
             return None
         elif isinstance(value, NonnullNote):

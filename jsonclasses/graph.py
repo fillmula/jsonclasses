@@ -75,3 +75,4 @@ def get_registered_class(
         if cls is None:
             raise JSONClassNotFoundError(name=name, graph=graph)
         return cls
+    raise JSONClassNotFoundError(name=name, graph=graph)

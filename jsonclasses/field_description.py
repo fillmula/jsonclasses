@@ -59,7 +59,7 @@ class CollectionNullability(Enum):
 
 
 @dataclass
-class FieldDescription():
+class FieldDescription(): # pylint: disable=too-many-instance-attributes
     """The description of a JSON Class field. It is generated as specifying the
     marks.
     """

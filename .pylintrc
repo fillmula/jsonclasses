@@ -15,7 +15,7 @@ disable=no-else-return, import-outside-toplevel, too-few-public-methods, too-man
 bad-functions=
 
 # Good variable names which should always be accepted, separated by a comma
-good-names=i,j,k,,v,ex,Run,_
+good-names=i,j,k,t,v,ex,Run,_
 
 # Bad variable names which should always be refused, separated by a comma
 bad-names=foo,bar,baz,toto,tutu,tata

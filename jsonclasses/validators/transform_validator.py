@@ -6,6 +6,7 @@ from .validator import Validator
 
 class TransformValidator(Validator):
     """Transform validator transforms value."""
+
     def __init__(self, transformer: Callable) -> None:
         self.transformer = transformer
 

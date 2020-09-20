@@ -5,6 +5,7 @@ from .validator import Validator
 
 
 class TruncateValidator(Validator):
+    """Truncate validator truncates value."""
 
     def __init__(self, max_length: int) -> None:
         self.max_length = max_length
