@@ -1,4 +1,3 @@
-# type: ignore
 '''
 This module contains `jsonclass`, the decorator for JSON Classes.
 '''
