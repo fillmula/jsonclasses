@@ -76,17 +76,14 @@ def type_to_default_types(argtype: Any,
     elif get_origin(argtype) == Union and len(get_args(argtype)) == 2:
         return type_to_default_types(get_args(argtype)[0], graph_sibling, True)
     elif get_origin(argtype) is list:
-        return (types.listof(get_args(argtype)[0])
-                if optional
-                else types.listof(get_args(argtype)[0]))
+        list_type = types.listof(get_args(argtype)[0])
+        return list_type if optional else list_type.required
     elif get_origin(argtype) is dict:
-        return (types.dictof(get_args(argtype)[1])
-                if optional
-                else types.dictof(get_args(argtype)[1]).required)
+        dict_type = types.dictof(get_args(argtype)[1])
+        return dict_type if optional else dict_type.required
     elif issubclass(argtype, JSONObject):
-        return (types.instanceof(argtype)
-                if optional
-                else types.instanceof(argtype).required)
+        instance_type = types.instanceof(argtype)
+        return instance_type if optional else instance_type.required
     else:
         raise ValueError(f'{argtype} is not a valid JSON Class type.')
 

@@ -1,5 +1,5 @@
 import unittest
-from typing import Optional
+from typing import Optional, List, Dict
 from jsonclasses import jsonclass, JSONObject, ValidationException
 from datetime import datetime, date
 
@@ -172,4 +172,60 @@ class TestJSONObjectAutoTypesMarkersGeneration(unittest.TestCase):
         class TestOptionaldatetimeStrType(JSONObject):
             val: 'Optional[datetime]'
         object = TestOptionaldatetimeStrType()
+        object.validate()
+
+    def test_auto_generates_required_list(self):
+        @jsonclass(graph='test_marker_auto_gen')
+        class Testlist(JSONObject):
+            val: List[str]
+        object = Testlist()
+        self.assertRaises(ValidationException, object.validate)
+
+    def test_auto_generates_optional_list(self):
+        @jsonclass(graph='test_marker_auto_gen')
+        class TestOptionallist(JSONObject):
+            val: Optional[List[str]]
+        object = TestOptionallist()
+        object.validate()
+
+    def test_auto_generates_required_list_with_str_type(self):
+        @jsonclass(graph='test_marker_auto_gen')
+        class TestlistStrType(JSONObject):
+            val: 'List[str]'
+        object = TestlistStrType()
+        self.assertRaises(ValidationException, object.validate)
+
+    def test_auto_generates_optional_list_with_str_type(self):
+        @jsonclass(graph='test_marker_auto_gen')
+        class TestOptionallistStrType(JSONObject):
+            val: 'Optional[List[str]]'
+        object = TestOptionallistStrType()
+        object.validate()
+
+    def test_auto_generates_required_dict(self):
+        @jsonclass(graph='test_marker_auto_gen')
+        class Testdict(JSONObject):
+            val: Dict[str, str]
+        object = Testdict()
+        self.assertRaises(ValidationException, object.validate)
+
+    def test_auto_generates_optional_dict(self):
+        @jsonclass(graph='test_marker_auto_gen')
+        class TestOptionaldict(JSONObject):
+            val: Optional[Dict[str, str]]
+        object = TestOptionaldict()
+        object.validate()
+
+    def test_auto_generates_required_dict_with_str_type(self):
+        @jsonclass(graph='test_marker_auto_gen')
+        class TestdictStrType(JSONObject):
+            val: 'Dict[str, str]'
+        object = TestdictStrType()
+        self.assertRaises(ValidationException, object.validate)
+
+    def test_auto_generates_optional_dict_with_str_type(self):
+        @jsonclass(graph='test_marker_auto_gen')
+        class TestOptionaldictStrType(JSONObject):
+            val: 'Optional[Dict[str, str]]'
+        object = TestOptionaldictStrType()
         object.validate()
