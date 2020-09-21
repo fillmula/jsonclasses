@@ -1,5 +1,5 @@
 import unittest
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Union
 from jsonclasses import jsonclass, JSONObject, ValidationException
 from datetime import datetime, date
 
@@ -272,4 +272,32 @@ class TestJSONObjectAutoTypesMarkersGeneration(unittest.TestCase):
         class TestOptionalInstanceWithStrType(JSONObject):
             val: 'Optional[TestoptionalinstanceReferencedWithStrType]'
         object = TestOptionalInstanceWithStrType()
+        object.validate()
+
+    def test_auto_generates_required_union(self):
+        @jsonclass(graph='test_marker_auto_gen')
+        class TestUnion(JSONObject):
+            val: Union[str, bool]
+        object = TestUnion()
+        self.assertFalse(object.is_valid())
+
+    def test_auto_generates_optional_union(self):
+        @jsonclass(graph='test_marker_auto_gen')
+        class TestOptionalUnion(JSONObject):
+            val: Optional[Union[str, bool]]
+        object = TestOptionalUnion()
+        object.validate()
+
+    def test_auto_generates_required_union_with_str_type(self):
+        @jsonclass(graph='test_marker_auto_gen')
+        class TestUnionStrType(JSONObject):
+            val: 'Union[str, int]'
+        object = TestUnionStrType()
+        self.assertRaises(ValidationException, object.validate)
+
+    def test_auto_generates_optional_union_with_str_type(self):
+        @jsonclass(graph='test_marker_auto_gen')
+        class TestOptionalUnionStrType(JSONObject):
+            val: 'Optional[Union[int, float]]'
+        object = TestOptionalUnionStrType()
         object.validate()

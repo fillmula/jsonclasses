@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import List, Any, Union, Type, get_origin, get_args, TYPE_CHECKING
 from datetime import date, datetime
-from re import match
+from re import match, split
 from dataclasses import fields as dataclass_fields, Field as DataclassField
 from inflection import camelize
 from .config import Config
@@ -30,6 +30,16 @@ def string_type_to_default_types(argtype: str,
         return types.date if optional else types.date.required
     elif argtype == 'datetime':
         return types.datetime if optional else types.datetime.required
+    elif argtype.startswith('Union['):
+        match_data = match('Union\\[(.*)\\]', argtype)
+        assert match_data is not None
+        all_item_types = match_data.group(1)
+        types_to_build_union = split(", *", all_item_types)  # TODO: Dict is not supported this way
+        results = []
+        for t in types_to_build_union:
+            results.append(string_type_to_default_types(t, graph_sibling, True))
+        oneoftype = types.oneoftype(results)
+        return oneoftype if optional else oneoftype.required
     elif argtype.startswith('Optional['):
         match_data = match('Optional\\[(.*)\\]', argtype)
         assert match_data is not None
@@ -55,7 +65,7 @@ def string_type_to_default_types(argtype: str,
 def type_to_default_types(argtype: Any,
                           graph_sibling: Any = None,
                           optional: bool = False) -> Types:
-    """Convert arbitrary type to Types object."""
+    """Convert arbitrary user specified type to Types object."""
     from .json_object import JSONObject
     from .types import types
     if isinstance(argtype, str):
@@ -72,8 +82,23 @@ def type_to_default_types(argtype: Any,
         return types.date if optional else types.date.required
     elif argtype is datetime:
         return types.datetime if optional else types.datetime.required
-    elif get_origin(argtype) == Union and len(get_args(argtype)) == 2:
-        return type_to_default_types(get_args(argtype)[0], graph_sibling, True)
+    elif get_origin(argtype) == Union:
+        required: bool = True
+        types_to_build_union: List[Any] = []
+        args = get_args(argtype)
+        for arg in args:
+            if type(None) == arg:
+                required = False
+            else:
+                types_to_build_union.append(arg)
+        if len(types_to_build_union) == 1:
+            return type_to_default_types(types_to_build_union[0], graph_sibling, not required)
+        else:
+            results = []
+            for t in types_to_build_union:
+                results.append(type_to_default_types(t, graph_sibling, True))
+            oneoftype = types.oneoftype(results)
+            return oneoftype if not required else oneoftype.required
     elif get_origin(argtype) is list:
         list_type = types.listof(get_args(argtype)[0])
         return list_type if optional else list_type.required
