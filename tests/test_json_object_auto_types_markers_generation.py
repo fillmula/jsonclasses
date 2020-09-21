@@ -229,3 +229,47 @@ class TestJSONObjectAutoTypesMarkersGeneration(unittest.TestCase):
             val: 'Optional[Dict[str, str]]'
         object = TestOptionaldictStrType()
         object.validate()
+
+    def test_auto_generates_required_instance(self):
+        @jsonclass(graph='test_marker_auto_gen')
+        class TestinstanceReferenced(JSONObject):
+            val: Optional[str]
+
+        @jsonclass(graph='test_marker_auto_gen')
+        class Testinstance(JSONObject):
+            val: TestinstanceReferenced
+        object = Testinstance()
+        self.assertRaises(ValidationException, object.validate)
+
+    def test_auto_generates_optional_instance(self):
+        @jsonclass(graph='test_marker_auto_gen')
+        class TestoptionalinstanceReferenced(JSONObject):
+            val: Optional[str]
+
+        @jsonclass(graph='test_marker_auto_gen')
+        class TestOptionalInstance(JSONObject):
+            val: Optional[TestoptionalinstanceReferenced]
+        object = TestOptionalInstance()
+        object.validate()
+
+    def test_auto_generates_required_instance_with_str_type(self):
+        @jsonclass(graph='test_marker_auto_gen')
+        class TestinstanceReferencedWithStrType(JSONObject):
+            val: Optional[str]
+
+        @jsonclass(graph='test_marker_auto_gen')
+        class TestinstanceWithStrType(JSONObject):
+            val: 'TestinstanceReferencedWithStrType'
+        object = TestinstanceWithStrType()
+        self.assertRaises(ValidationException, object.validate)
+
+    def test_auto_generates_optional_instance_with_str_type(self):
+        @jsonclass(graph='test_marker_auto_gen')
+        class TestoptionalinstanceReferencedWithStrType(JSONObject):
+            val: Optional[str]
+
+        @jsonclass(graph='test_marker_auto_gen')
+        class TestOptionalInstanceWithStrType(JSONObject):
+            val: 'Optional[TestoptionalinstanceReferencedWithStrType]'
+        object = TestOptionalInstanceWithStrType()
+        object.validate()
