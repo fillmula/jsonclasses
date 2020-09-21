@@ -21,6 +21,21 @@ class TestPersistableJSONObject(unittest.TestCase):
         o = PersistableJSONObject()
         self.assertTrue(o.id is None)
 
+    def test_persistable_json_object_id_can_be_int(self):
+        o = PersistableJSONObject()
+        o.id = 5
+        self.assertTrue(o.is_valid())
+
+    def test_persistable_json_object_id_can_be_str(self):
+        o = PersistableJSONObject()
+        o.id = "sbd"
+        self.assertTrue(o.is_valid())
+
+    def test_persistable_json_object_id_can_be_none(self):
+        o = PersistableJSONObject()
+        o.id = None
+        self.assertTrue(o.is_valid())
+
     def test_persistable_json_object_has_timestamps_in_nested_instances(self):
         @jsonclass(graph='test_persistable_json_01')
         class TestAuthor(PersistableJSONObject):

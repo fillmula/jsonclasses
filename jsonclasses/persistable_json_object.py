@@ -3,7 +3,7 @@ This module contains `PersistableJSONObject`, the abstract base class for
 interacting with ORMs.
 """
 from __future__ import annotations
-from typing import Any, TypeVar
+from typing import Any, TypeVar, Union, Optional
 from datetime import datetime
 from .jsonclass import jsonclass
 from .json_object import JSONObject
@@ -18,7 +18,7 @@ class PersistableJSONObject(JSONObject):
     and updated_at.
     """
 
-    id: str = types.str.readonly
+    id: Optional[Union[str, int]] = types.oneoftype([str, int]).readonly
     """The id string of the object. This field is readonly. A user must not set
   an object's id through web request bodies.
   """

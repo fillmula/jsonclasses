@@ -1,6 +1,6 @@
 """This modules contains the JSON Class types marker."""
 from __future__ import annotations
-from typing import Callable, Any, Optional
+from typing import Callable, Any, List, Dict, Optional
 from .field_description import FieldDescription
 from .validators import (BoolValidator, ChainedValidator, DateValidator,
                          DatetimeValidator, DefaultValidator, DictOfValidator,
@@ -10,12 +10,13 @@ from .validators import (BoolValidator, ChainedValidator, DateValidator,
                          LinkedThruValidator, LinkToValidator, ListOfValidator,
                          MatchValidator, MaxValidator, MaxlengthValidator,
                          MinValidator, MinlengthValidator, NonnullValidator,
-                         NullableValidator, OneOfValidator, RangeValidator,
-                         ReadonlyValidator, ReadwriteValidator, RefereeValidator,
-                         ReferrerValidator, RequiredValidator, ShapeValidator,
-                         StrValidator, TransformValidator, TrimValidator,
-                         TruncateValidator, UniqueValidator, ValidateValidator,
-                         Validator, WriteonceValidator, WriteonlyValidator)
+                         NullableValidator, OneOfValidator, OneOfTypeValidator,
+                         RangeValidator, ReadonlyValidator, ReadwriteValidator,
+                         RefereeValidator, ReferrerValidator,
+                         RequiredValidator, ShapeValidator, StrValidator,
+                         TransformValidator, TrimValidator, TruncateValidator,
+                         UniqueValidator, ValidateValidator, Validator,
+                         WriteonceValidator, WriteonlyValidator)
 
 Str = str
 Int = int
@@ -174,7 +175,7 @@ class Types:
         """
         return Types(self, MatchValidator(pattern))
 
-    def oneof(self, str_list) -> Types:
+    def oneof(self, str_list: List[Str]) -> Types:
         """This is the enum equivalent for jsonclasses. Values in the provided list
         are considered valid values.
         """
@@ -279,16 +280,21 @@ class Types:
         """
         return Types(self, DictOfValidator(item_types))
 
-    def shape(self, item_types_map) -> Types:
+    def shape(self, item_types_map: Dict[Str, Any]) -> Types:
         """Fields marked with shape are objects shaped with given shape. This is a
         type marker.
         """
         return Types(self, ShapeValidator(item_types_map))
 
-    def instanceof(self, json_object_class) -> Types:
+    def instanceof(self, json_object_class: Any) -> Types:
         """Fields marked with instance of are objects of given class.
         """
         return Types(self, InstanceOfValidator(json_object_class))
+
+    def oneoftype(self, type_list: List[Any]) -> Types:
+        """Fields marked with oneoftype accepts value from these types.
+        """
+        return Types(self, OneOfTypeValidator(type_list))
 
     @property
     def required(self) -> Types:
