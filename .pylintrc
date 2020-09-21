@@ -1,3 +1,6 @@
+[MASTER]
+ignore=tests
+
 [FORMAT]
 indent-string='    '
 indent-after-paren=4

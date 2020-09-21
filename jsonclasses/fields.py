@@ -1,6 +1,7 @@
 """This is an internal module."""
 from __future__ import annotations
-from typing import List, Any, Union, Type, get_origin, get_args, TYPE_CHECKING
+from typing import (List, Any, Union, Type, Optional, get_origin, get_args,
+                    TYPE_CHECKING)
 from datetime import date, datetime
 from re import match
 from dataclasses import fields as dataclass_fields, Field as DataclassField
@@ -13,61 +14,79 @@ if TYPE_CHECKING:
     from .json_object import JSONObject
 
 
-def string_type_to_default_types(
-    argtype: str, graph_sibling: Any = None
-) -> Types:
+def string_type_to_default_types(argtype: str,
+                                 graph_sibling: Any = None,
+                                 optional: bool = False) -> Types:
     """Convert string type to Types object."""
     from .types import types
     if argtype == 'str':
-        return types.str
+        return types.str if optional else types.str.required
     elif argtype == 'int':
-        return types.int
+        return types.int if optional else types.int.required
     elif argtype == 'float':
-        return types.float
+        return types.float if optional else types.float.required
     elif argtype == 'bool':
-        return types.bool
+        return types.bool if optional else types.bool.required
     elif argtype == 'date':
-        return types.date
+        return types.date if optional else types.date.required
     elif argtype == 'datetime':
-        return types.datetime
+        return types.datetime if optional else types.datetime.required
+    elif argtype.startswith('Optional['):
+        match_data = match('Optional\\[(.*)\\]', argtype)
+        assert match_data is not None
+        item_type = match_data.group(1)
+        return string_type_to_default_types(item_type, graph_sibling, True)
     elif argtype.startswith('List['):
         match_data = match('List\\[(.*)\\]', argtype)
         assert match_data is not None
         item_type = match_data.group(1)
-        return types.listof(string_type_to_default_types(item_type, graph_sibling))
+        list_type = types.listof(string_type_to_default_types(item_type, graph_sibling))
+        return list_type if optional else list_type.required
     elif argtype.startswith('Dict['):
         match_data = match('Dict\\[.+, ?(.*)\\]', argtype)
         assert match_data is not None
         item_type = match_data.group(1)
-        return types.dictof(string_type_to_default_types(item_type, graph_sibling))
+        dict_type = types.dictof(string_type_to_default_types(item_type, graph_sibling))
+        return dict_type if optional else dict_type.required
     else:
-        return types.instanceof(get_registered_class(argtype, sibling=graph_sibling))
+        instance_type = types.instanceof(get_registered_class(argtype, sibling=graph_sibling))
+        return instance_type if optional else instance_type.required
 
 
-def type_to_default_types(argtype: Any, graph_sibling: Any = None) -> Types:
+def type_to_default_types(argtype: Any,
+                          graph_sibling: Any = None,
+                          optional: bool = False) -> Types:
     """Convert arbitrary type to Types object."""
     from .json_object import JSONObject
     from .types import types
     if isinstance(argtype, str):
         return string_type_to_default_types(argtype, graph_sibling)
     elif argtype is str:
-        return types.str
+        return types.str if optional else types.str.required
     elif argtype is int:
-        return types.int
+        return types.int if optional else types.int.required
     elif argtype is float:
-        return types.float
+        return types.float if optional else types.float.required
     elif argtype is bool:
-        return types.bool
+        return types.bool if optional else types.bool.required
     elif argtype is date:
-        return types.date
+        return types.date if optional else types.date.required
     elif argtype is datetime:
-        return types.datetime
+        return types.datetime if optional else types.datetime.required
+    elif get_origin(argtype) == Union and len(get_args(argtype)) == 2:
+        return type_to_default_types(get_args(argtype)[0], graph_sibling, True)
     elif get_origin(argtype) is list:
-        return types.listof(get_args(argtype)[0])
+        return (types.listof(get_args(argtype)[0])
+                if optional
+                else types.listof(get_args(argtype)[0]))
     elif get_origin(argtype) is dict:
-        return types.dictof(get_args(argtype)[1])
+        return (types.dictof(get_args(argtype)[1])
+                if optional
+                else types.dictof(get_args(argtype)[1]).required)
     elif issubclass(argtype, JSONObject):
-        return types.instanceof(argtype)
+        return (types.instanceof(argtype)
+                if optional
+                else types.instanceof(argtype).required)
     else:
         raise ValueError(f'{argtype} is not a valid JSON Class type.')
 

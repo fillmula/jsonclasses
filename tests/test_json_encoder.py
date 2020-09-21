@@ -1,6 +1,5 @@
 import unittest
 from jsonclasses import jsonclass, JSONObject, JSONEncoder
-from datetime import datetime, date
 from json import dumps
 
 
