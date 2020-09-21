@@ -1,7 +1,6 @@
 """This is an internal module."""
 from __future__ import annotations
-from typing import (List, Any, Union, Type, Optional, get_origin, get_args,
-                    TYPE_CHECKING)
+from typing import List, Any, Union, Type, get_origin, get_args, TYPE_CHECKING
 from datetime import date, datetime
 from re import match
 from dataclasses import fields as dataclass_fields, Field as DataclassField
