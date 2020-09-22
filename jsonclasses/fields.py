@@ -58,13 +58,14 @@ class WriteRule(Enum):
     WRITE_NONNULL = 'write_nonnull'
 
 
-class CollectionNullability(Enum):
-    """An Enum class represents JSON Class field's collection nullability. This
-    only works for collection types.
+class Nullability(Enum):
+    """An Enum class represents JSON Class field's nullability. This only works
+    for collection types and their inner item types.
     """
 
     UNDEFINED = 'undefined'
     NULLABLE = 'nullable'
+    NONNULL = 'nonnull'
 
 
 @dataclass
@@ -98,7 +99,9 @@ class FieldDescription():  # pylint: disable=too-many-instance-attributes
     read_rule: ReadRule = ReadRule.UNLIMITED
     write_rule: WriteRule = WriteRule.UNLIMITED
 
-    collection_nullability: CollectionNullability = CollectionNullability.UNDEFINED
+    # collection and collection items null rules
+    collection_nullability: Nullability = Nullability.NULLABLE
+    item_nullability: Nullability = Nullability.UNDEFINED
 
     has_eager_validator: bool = False
 

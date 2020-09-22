@@ -34,7 +34,8 @@ class InstanceOfValidator(Validator):
                         keypath=concat_keypath(context.keypath, field_name),
                         root=context.root,
                         all_fields=context.all_fields,
-                        config=context.config)
+                        config=context.config,
+                        field_description=field.field_description)
                     field_types.validator.validate(field_context)
                 except ValidationException as exception:
                     if context.all_fields:
@@ -65,7 +66,8 @@ class InstanceOfValidator(Validator):
                     keypath=concat_keypath(context.keypath, field.field_name),
                     root=context.root,
                     all_fields=context.all_fields,
-                    config=context.config)
+                    config=context.config,
+                    field_description=field.field_description)
                 transformed = field.field_types.validator.transform(
                     transform_context)
                 setattr(dest, field.field_name, transformed)
@@ -85,7 +87,8 @@ class InstanceOfValidator(Validator):
                             keypath=concat_keypath(context.keypath, field.field_name),
                             root=context.root,
                             all_fields=context.all_fields,
-                            config=context.config)
+                            config=context.config,
+                            field_description=field.field_description)
                         transformed = field.field_types.validator.transform(
                             field_context)
                         setattr(dest, field.field_name, transformed)
@@ -98,7 +101,8 @@ class InstanceOfValidator(Validator):
                         keypath=concat_keypath(context.keypath, field.field_name),
                         root=context.root,
                         all_fields=context.all_fields,
-                        config=context.config)
+                        config=context.config,
+                        field_description=field.field_description)
                     transformed = field.field_types.validator.transform(
                         field_context)
                     setattr(dest, field.field_name, transformed)

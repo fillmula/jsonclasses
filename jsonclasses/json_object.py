@@ -58,6 +58,7 @@ class JSONObject:
             root=self,
             all_fields=True,
             config=config,
+            field_description=None,
             dest=self,
             fill_dest_blanks=fill_blanks
         )
@@ -118,7 +119,8 @@ class JSONObject:
             keypath='',
             root=self,
             all_fields=all_fields,
-            config=config)
+            config=config,
+            field_description=None)
         InstanceOfValidator(self.__class__).validate(context)
         return self
 

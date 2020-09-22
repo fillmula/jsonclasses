@@ -2,11 +2,10 @@
 from __future__ import annotations
 from typing import Any
 from inflection import underscore, camelize
-from ..fields import FieldDescription, FieldType, CollectionNullability
+from ..fields import FieldDescription, FieldType, Nullability
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.concat_keypath import concat_keypath
-from ..utils.nonnull_note import NonnullNote
 from ..types_resolver import resolve_types
 from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 
@@ -31,7 +30,7 @@ class DictOfValidator(Validator):
             )
         types = resolve_types(self.types, context.config.linked_class)
         if types:
-            if types.field_description.collection_nullability == CollectionNullability.UNDEFINED:
+            if types.field_description.item_nullability == Nullability.UNDEFINED:
                 types = types.required
             keypath_messages = {}
             for k, v in context.value.items():
@@ -41,7 +40,8 @@ class DictOfValidator(Validator):
                         keypath=concat_keypath(context.keypath, k),
                         root=context.root,
                         all_fields=context.all_fields,
-                        config=context.config)
+                        config=context.config,
+                        field_description=types.field_description)
                     types.validator.validate(item_context)
                 except ValidationException as exception:
                     if context.all_fields:
@@ -52,9 +52,13 @@ class DictOfValidator(Validator):
                 raise ValidationException(keypath_messages=keypath_messages, root=context.root)
 
     def transform(self, context: TransformingContext) -> Any:
-        if context.value is None:
+        value = context.value
+        fd = context.field_description
+        if fd.collection_nullability == Nullability.NONNULL:
+            if value is None:
+                value = {}
+        if value is None:
             return None
-        value = {} if isinstance(context.value, NonnullNote) else context.value
         if not isinstance(value, dict):
             return value
         types = resolve_types(self.types, context.config.linked_class)
@@ -67,7 +71,8 @@ class DictOfValidator(Validator):
                     keypath=concat_keypath(context.keypath, new_key),
                     root=context.root,
                     all_fields=context.all_fields,
-                    config=context.config)
+                    config=context.config,
+                    field_description=types.field_description)
                 new_value = types.validator.transform(item_context)
                 retval[new_key] = new_value
             return retval

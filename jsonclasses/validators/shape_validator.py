@@ -1,11 +1,10 @@
 """module for shape validator."""
 from typing import Dict, Any
 from inflection import underscore, camelize
-from ..fields import FieldDescription, FieldType
+from ..fields import FieldDescription, FieldType, Nullability
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.concat_keypath import concat_keypath
-from ..utils.nonnull_note import NonnullNote
 from ..types_resolver import resolve_types
 from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 
@@ -44,7 +43,8 @@ class ShapeValidator(Validator):
                         keypath=concat_keypath(context.keypath, k),
                         root=context.root,
                         all_fields=context.all_fields,
-                        config=context.config)
+                        config=context.config,
+                        field_description=types.field_description)
                     types.validator.validate(item_context)
                 except ValidationException as exception:
                     if context.all_fields:
@@ -55,9 +55,13 @@ class ShapeValidator(Validator):
             raise ValidationException(keypath_messages=keypath_messages, root=context.root)
 
     def transform(self, context: TransformingContext) -> Any:
-        if context.value is None:
+        value = context.value
+        fd = context.field_description
+        if fd.collection_nullability == Nullability.NONNULL:
+            if value is None:
+                value = {}
+        if value is None:
             return None
-        value = {} if isinstance(context.value, NonnullNote) else context.value
         if not isinstance(value, dict):
             return value
         unused_keys = list(self.types.keys())
@@ -73,7 +77,8 @@ class ShapeValidator(Validator):
                         keypath=concat_keypath(context.keypath, new_key),
                         root=context.root,
                         all_fields=context.all_fields,
-                        config=context.config)
+                        config=context.config,
+                        field_description=types.field_description)
                     retval[new_key] = types.validator.transform(item_context)
                 else:
                     retval[new_key] = field_value
