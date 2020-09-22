@@ -74,7 +74,7 @@ class Strictness(Enum):
 
     UNDEFINED = 'undefined'
     STRICT = 'strict'
-    UNLIMITED = 'unlimited'
+    UNSTRICT = 'unstrict'
 
 
 @dataclass

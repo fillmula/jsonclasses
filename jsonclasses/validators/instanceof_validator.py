@@ -80,7 +80,7 @@ class InstanceOfValidator(Validator):
         if context.field_description is not None:
             if context.field_description.strictness == Strictness.STRICT:
                 strictness = True
-            elif context.field_description.strictness == Strictness.UNLIMITED:
+            elif context.field_description.strictness == Strictness.UNSTRICT:
                 strictness = False
             else:
                 strictness = cls.config.strict_input
