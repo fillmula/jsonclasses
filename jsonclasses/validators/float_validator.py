@@ -1,6 +1,6 @@
 """module for float validator."""
 from typing import Any
-from ..field_description import FieldDescription, FieldType
+from ..field import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator

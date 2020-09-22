@@ -1,7 +1,7 @@
 """module for eager validator."""
 from typing import Any
 from .validator import Validator
-from ..field_description import FieldDescription
+from ..field import FieldDescription
 from ..config import Config
 
 

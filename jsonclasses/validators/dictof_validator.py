@@ -1,7 +1,7 @@
 """module for dictof validator."""
 from __future__ import annotations
 from typing import Any
-from ..field_description import FieldDescription, FieldType
+from ..field import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
@@ -9,7 +9,7 @@ from ..utils.keypath import keypath
 from inflection import underscore, camelize
 from ..utils.nonnull_note import NonnullNote
 from ..fields import collection_argument_type_to_types
-from ..field_description import CollectionNullability
+from ..field import CollectionNullability
 
 
 class DictOfValidator(Validator):

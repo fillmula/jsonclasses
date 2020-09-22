@@ -1,6 +1,6 @@
 """module for validator validator."""
 from typing import Any
-from ..field_description import FieldDescription
+from ..field import FieldDescription
 from ..config import Config
 from ..exceptions import ValidationException
 

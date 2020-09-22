@@ -156,12 +156,11 @@ def fields(
         if field.default == field.default_factory:  # type: ignore
             assigned_default_value = None
         retval.append(
-            Field(
-                field_name=field_name,
-                json_field_name=json_field_name,
-                db_field_name=db_field_name,
-                field_types=field_types,
-                assigned_default_value=assigned_default_value
-            )
-        )
+            Field(field_name=field_name,
+                  json_field_name=json_field_name,
+                  db_field_name=db_field_name,
+                  field_types=field_types,
+                  assigned_default_value=assigned_default_value,
+                  field_description=field_types.field_description,
+                  field_validator=field_types.validator))
     return retval

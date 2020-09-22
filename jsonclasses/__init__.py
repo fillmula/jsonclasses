@@ -17,6 +17,5 @@ from .persistable_json_object import PersistableJSONObject
 from .json_encoder import JSONEncoder
 from .exceptions import ObjectNotFoundException, UniqueFieldException, ValidationException
 from .config import Config
-from .field import Field
-from .field_description import FieldDescription, FieldType, FieldStorage
+from .field import Field, FieldDescription, FieldType, FieldStorage
 from .fields import fields, collection_argument_type_to_types

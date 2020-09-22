@@ -1,7 +1,8 @@
 """This modules contains the JSON Class types marker."""
 from __future__ import annotations
 from typing import Callable, Any, List, Dict, Optional
-from .field_description import FieldDescription
+from copy import deepcopy
+from .field import FieldDescription
 from .validators import (BoolValidator, ChainedValidator, DateValidator,
                          DatetimeValidator, DefaultValidator, DictOfValidator,
                          EagerValidator, EmbeddedValidator, FloatValidator,
@@ -38,7 +39,7 @@ class Types:
             self.field_description = FieldDescription()
             self.validator = ChainedValidator()
         else:
-            self.field_description = original.field_description.copy()
+            self.field_description = deepcopy(original.field_description)
             validator = original.validator
             for arg in args:
                 validator = validator.append(arg)
