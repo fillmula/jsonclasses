@@ -1,5 +1,5 @@
 import unittest
-from jsonclasses import jsonclass, JSONObject
+from jsonclasses import jsonclass, JSONObject, ValidationException
 from datetime import datetime, date
 
 
@@ -146,3 +146,11 @@ class TestJSONObjectInitialize(unittest.TestCase):
         expired_at = datetime.fromisoformat('2020-10-10T05:03:02.999888')
         timer = Timer(**{'expiredAt': expired_at})
         self.assertEqual(timer.expired_at, expired_at)
+
+    def test_initialize_strict_raises_on_unallowed_keys(self):
+        @jsonclass(graph='test_initialize_16', strict_input=True)
+        class Timer(JSONObject):
+            expired_at: datetime
+        expired_at = datetime.fromisoformat('2020-10-10T05:03:02.999888')
+        with self.assertRaises(ValidationException) as context:
+            timer = Timer(**{'expiredAt': expired_at, 'boom': True})

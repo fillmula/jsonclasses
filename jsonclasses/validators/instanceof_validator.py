@@ -1,12 +1,15 @@
 """module for instanceof validator."""
 from __future__ import annotations
-from typing import Any
-from ..fields import FieldDescription, FieldType, WriteRule, ReadRule, fields
+from typing import Any, TYPE_CHECKING
+from ..fields import (FieldDescription, FieldType, WriteRule, ReadRule,
+                      Strictness, fields)
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.concat_keypath import concat_keypath
 from ..types_resolver import resolve_types
 from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
+if TYPE_CHECKING:
+    from ..json_object import JSONObject
 
 
 class InstanceOfValidator(Validator):
@@ -45,6 +48,21 @@ class InstanceOfValidator(Validator):
         if len(keypath_messages) > 0:
             raise ValidationException(keypath_messages=keypath_messages, root=context.root)
 
+    def _strictness_check(self,
+                          context: TransformingContext,
+                          dest: JSONObject) -> None:
+        if context.config.camelize_json_keys:
+            available_name_pairs = [(field.field_name, field.json_field_name)
+                                    for field in fields(dest)]
+            available_names = [e for pair in available_name_pairs for e in pair]
+        else:
+            available_names = [field.field_name for field in fields(dest)]
+        for k in context.value.keys():
+            if k not in available_names:
+                raise ValidationException(
+                    {context.keypath: f'Key \'{k}\' at \'{context.keypath}\' is now allowed.'},
+                    context.root)
+
     # pylint: disable=arguments-differ, too-many-locals, too-many-branches
     def transform(self, context: TransformingContext) -> Any:
         from ..types import Types
@@ -56,6 +74,20 @@ class InstanceOfValidator(Validator):
         cls = types.field_description.instance_types
         assert cls is not None
         dest = context.dest if context.dest is not None else cls(__empty__=True)
+
+        # strictness check
+        strictness = False
+        if context.field_description is not None:
+            if context.field_description.strictness == Strictness.STRICT:
+                strictness = True
+            elif context.field_description.strictness == Strictness.UNLIMITED:
+                strictness = False
+            else:
+                strictness = context.config.strict_input
+        else:
+            strictness = context.config.strict_input
+        if strictness:
+            self._strictness_check(context, dest)
 
         def fill_blank_with_default_value(field):
             if field.assigned_default_value is not None:

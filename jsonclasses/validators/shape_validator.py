@@ -1,7 +1,7 @@
 """module for shape validator."""
 from typing import Dict, Any
 from inflection import underscore, camelize
-from ..fields import FieldDescription, FieldType, Nullability
+from ..fields import FieldDescription, FieldType, Nullability, Strictness
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.concat_keypath import concat_keypath
@@ -69,7 +69,7 @@ class ShapeValidator(Validator):
         for k, field_value in value.items():
             new_key = underscore(k) if context.config.camelize_json_keys else k
             if new_key not in unused_keys:
-                if fd.is_strict_shape:
+                if fd.strictness == Strictness.STRICT:
                     raise ValidationException(
                         {context.keypath: f'Unallowed key \'{k}\' at \'{context.keypath}\'.'},
                         context.root)

@@ -68,6 +68,15 @@ class Nullability(Enum):
     NONNULL = 'nonnull'
 
 
+class Strictness(Enum):
+    """Instance and shape's strictness.
+    """
+
+    UNDEFINED = 'undefined'
+    STRICT = 'strict'
+    UNLIMITED = 'unlimited'
+
+
 @dataclass
 class FieldDescription():  # pylint: disable=too-many-instance-attributes
     """The description of a JSON Class field. It is generated as specifying the
@@ -103,7 +112,7 @@ class FieldDescription():  # pylint: disable=too-many-instance-attributes
     collection_nullability: Nullability = Nullability.NULLABLE
     item_nullability: Nullability = Nullability.UNDEFINED
 
-    is_strict_shape: bool = False
+    strictness: Strictness = Strictness.UNDEFINED
 
     has_eager_validator: bool = False
 

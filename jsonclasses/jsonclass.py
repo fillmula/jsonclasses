@@ -19,7 +19,8 @@ def jsonclass(
     cls: None,
     graph: str = 'default',
     camelize_json_keys: Optional[bool] = None,
-    camelize_db_keys: Optional[bool] = None
+    camelize_db_keys: Optional[bool] = None,
+    strict_input: Optional[bool] = None
 ) -> Callable[[Type[T]], Type[T]]: ...
 
 
@@ -28,7 +29,8 @@ def jsonclass(
     cls: Type[T],
     graph: str = 'default',
     camelize_json_keys: Optional[bool] = None,
-    camelize_db_keys: Optional[bool] = None
+    camelize_db_keys: Optional[bool] = None,
+    strict_input: Optional[bool] = None
 ) -> Type[T]: ...
 
 
@@ -36,7 +38,8 @@ def jsonclass(
     cls: Optional[Type[T]] = None,
     graph: str = 'default',
     camelize_json_keys: Optional[bool] = None,
-    camelize_db_keys: Optional[bool] = None
+    camelize_db_keys: Optional[bool] = None,
+    strict_input: Optional[bool] = None
 ) -> Union[Callable[[Type[T]], Type[T]], Type[T]]:
     """The jsonclass object class decorator. To declare a jsonclass class, use
     this syntax:
@@ -55,7 +58,8 @@ def jsonclass(
         config = Config(
             graph=graph,
             camelize_json_keys=camelize_json_keys,
-            camelize_db_keys=camelize_db_keys
+            camelize_db_keys=camelize_db_keys,
+            strict_input=strict_input
         )
         config.install_on_class(cls)
         return register_class(dataclass(init=False)(cls), graph=graph)
@@ -65,6 +69,7 @@ def jsonclass(
                 cls,
                 graph=graph,
                 camelize_json_keys=camelize_json_keys,
-                camelize_db_keys=camelize_db_keys
+                camelize_db_keys=camelize_db_keys,
+                strict_input=strict_input
             )
         return parametered_jsonclass

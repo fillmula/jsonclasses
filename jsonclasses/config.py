@@ -20,6 +20,11 @@ is automatically on by default. Use `config.CAMELIZE_DB_KEYS = False` to
 disable this behavior globally.
 """
 
+STRICT_INPUT = False
+"""When initializing JSON Class objects and set values, strict input classes
+raises if invalid key value pairs are received.
+"""
+
 
 @dataclass
 class Config:
@@ -29,6 +34,7 @@ class Config:
     graph: str = 'default'
     camelize_json_keys: Optional[bool] = None
     camelize_db_keys: Optional[bool] = None
+    strict_input: Optional[bool] = None
     linked_class: Optional[Type[JSONObject]] = None
 
     def __post_init__(self):
@@ -36,6 +42,8 @@ class Config:
             self.camelize_json_keys = CAMELIZE_JSON_KEYS
         if self.camelize_db_keys is None:
             self.camelize_db_keys = CAMELIZE_DB_KEYS
+        if self.strict_input is None:
+            self.strict_input = STRICT_INPUT
 
     def install_on_class(self, cls: Type[JSONObject]):
         """Install config object onto a JSONObject class.
