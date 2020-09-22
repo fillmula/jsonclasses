@@ -14,7 +14,7 @@ class IntValidator(Validator):
     def validate(self, context: ValidatingContext) -> None:
         if context.value is None:
             return
-        if isinstance(context.value, int):
+        if type(context.value) is int:  # bool will test True for isinstance
             return
         raise ValidationException(
             {context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should be int.'},
