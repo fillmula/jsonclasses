@@ -8,6 +8,7 @@ from .validator import Validator
 from ..utils.concat_keypath import concat_keypath
 from ..utils.nonnull_note import NonnullNote
 from ..types_resolver import resolve_types
+from ..contexts import ValidatingContext, TransformingContext
 
 
 class ShapeValidator(Validator):
@@ -22,56 +23,59 @@ class ShapeValidator(Validator):
         field_description.field_type = FieldType.SHAPE
         field_description.shape_types = self.types
 
-    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
-        if value is None:
+    def validate(self, context: ValidatingContext) -> None:
+        if context.value is None:
             return
-        if not isinstance(value, dict):
+        if not isinstance(context.value, dict):
             raise ValidationException(
-                {key_path: f'Value \'{value}\' at \'{key_path}\' should be a dict.'},
-                root
+                {context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should be a dict.'},
+                context.root
             )
         keypath_messages = {}
         for k, t in self.types.items():
             try:
-                value_at_key = value[k]
+                value_at_key = context.value[k]
             except KeyError:
                 value_at_key = None
-            types = resolve_types(t, config.linked_class)
+            types = resolve_types(t, context.config.linked_class)
             if types:
                 try:
-                    types.validator.validate(value_at_key, concat_keypath(key_path, k), root, all_fields, config)
+                    item_context = ValidatingContext(
+                        value=value_at_key,
+                        keypath=concat_keypath(context.keypath, k),
+                        root=context.root,
+                        all_fields=context.all_fields,
+                        config=context.config)
+                    types.validator.validate(item_context)
                 except ValidationException as exception:
-                    if all_fields:
+                    if context.all_fields:
                         keypath_messages.update(exception.keypath_messages)
                     else:
                         raise exception
         if len(keypath_messages) > 0:
-            raise ValidationException(keypath_messages=keypath_messages, root=root)
+            raise ValidationException(keypath_messages=keypath_messages, root=context.root)
 
-    def transform(
-        self,
-        value: Any,
-        key_path: str,
-        root: Any,
-        all_fields: bool,
-        config: Config
-    ) -> Optional[Dict[str, Any]]:
-        if value is None:
+    def transform(self, context: TransformingContext) -> Any:
+        if context.value is None:
             return None
-        elif isinstance(value, NonnullNote):
-            value = {}
-        elif type(value) is not dict:
+        value = {} if isinstance(context.value, NonnullNote) else context.value
+        if not isinstance(value, dict):
             return value
         unused_keys = list(self.types.keys())
         retval = {}
         for k, field_value in value.items():
-            new_key = underscore(k) if config.camelize_json_keys else k
+            new_key = underscore(k) if context.config.camelize_json_keys else k
             if new_key in unused_keys:
                 t = self.types[new_key]
-                types = resolve_types(t, config.linked_class)
+                types = resolve_types(t, context.config.linked_class)
                 if types:
-                    retval[new_key] = types.validator.transform(
-                        field_value, concat_keypath(key_path, new_key), root, all_fields, config)
+                    item_context = TransformingContext(
+                        value=field_value,
+                        keypath=concat_keypath(context.keypath, new_key),
+                        root=context.root,
+                        all_fields=context.all_fields,
+                        config=context.config)
+                    retval[new_key] = types.validator.transform(item_context)
                 else:
                     retval[new_key] = field_value
                 unused_keys.remove(new_key)

@@ -1,9 +1,8 @@
 """module for required validator."""
-from typing import Any
 from ..fields import FieldDescription
-from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
+from ..contexts import ValidatingContext
 
 
 class RequiredValidator(Validator):
@@ -12,9 +11,10 @@ class RequiredValidator(Validator):
     def define(self, field_description: FieldDescription) -> None:
         field_description.required = True
 
-    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
-        if value is None:
-            raise ValidationException(
-                {key_path: f'Value at \'{key_path}\' should not be None.'},
-                root
-            )
+    def validate(self, context: ValidatingContext) -> None:
+        if context.value is not None:
+            return
+        raise ValidationException(
+            {context.keypath: f'Value at \'{context.keypath}\' should not be None.'},
+            context.root
+        )

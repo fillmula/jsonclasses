@@ -1,9 +1,9 @@
 """module for range validator."""
-from typing import Any, Union
-from ..config import Config
+from typing import Union
 from .validator import Validator
 from .min_validator import MinValidator
 from .max_validator import MaxValidator
+from ..contexts import ValidatingContext
 
 
 class RangeValidator(Validator):
@@ -13,7 +13,8 @@ class RangeValidator(Validator):
         self.min_value = min_value
         self.max_value = max_value
 
-    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
-        if value is not None:
-            MinValidator(self.min_value).validate(value, key_path, root, all_fields, config)
-            MaxValidator(self.max_value).validate(value, key_path, root, all_fields, config)
+    def validate(self, context: ValidatingContext) -> None:
+        if context.value is None:
+            return
+        MinValidator(self.min_value).validate(context)
+        MaxValidator(self.max_value).validate(context)

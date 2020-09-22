@@ -1,8 +1,8 @@
 """module for length validator."""
-from typing import Any, Optional
-from ..config import Config
+from typing import Optional
 from ..exceptions import ValidationException
 from .validator import Validator
+from ..contexts import ValidatingContext
 
 
 class LengthValidator(Validator):
@@ -12,13 +12,17 @@ class LengthValidator(Validator):
         self.minlength = minlength
         self.maxlength = maxlength if maxlength is not None else minlength
 
-    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
-        if value is not None and len(value) > self.maxlength or len(value) < self.minlength:
+    def validate(self, context: ValidatingContext) -> None:
+        if context.value is None:
+            return
+        value = context.value
+        kp = context.keypath
+        if len(value) > self.maxlength or len(value) < self.minlength:
             if self.minlength != self.maxlength:
-                message = f'Length of value \'{value}\' at \'{key_path}\' should not be greater than {self.maxlength} or less than {self.minlength}.'
+                message = f'Length of value \'{value}\' at \'{kp}\' should not be greater than {self.maxlength} or less than {self.minlength}.'
             else:
-                message = f'Length of value \'{value}\' at \'{key_path}\' should be {self.minlength}.'
+                message = f'Length of value \'{value}\' at \'{kp}\' should be {self.minlength}.'
             raise ValidationException(
-                {key_path: message},
-                root
+                {kp: message},
+                context.root
             )

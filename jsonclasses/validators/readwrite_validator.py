@@ -1,8 +1,7 @@
 """module for readwrite validator."""
-from typing import Any
 from ..fields import FieldDescription, WriteRule, ReadRule
-from ..config import Config
 from .validator import Validator
+from ..contexts import ValidatingContext
 
 
 class ReadwriteValidator(Validator):
@@ -12,5 +11,5 @@ class ReadwriteValidator(Validator):
         field_description.write_rule = WriteRule.UNLIMITED
         field_description.read_rule = ReadRule.UNLIMITED
 
-    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
+    def validate(self, context: ValidatingContext) -> None:
         pass

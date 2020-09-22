@@ -7,6 +7,7 @@ from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.concat_keypath import concat_keypath
 from ..types_resolver import resolve_types
+from ..contexts import ValidatingContext, TransformingContext
 
 
 class InstanceOfValidator(Validator):
@@ -19,79 +20,93 @@ class InstanceOfValidator(Validator):
         field_description.field_type = FieldType.INSTANCE
         field_description.instance_types = self.types
 
-    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
-        if value is None:
+    def validate(self, context: ValidatingContext) -> None:
+        if context.value is None:
             return
         keypath_messages = {}
-        for field in fields(value):
+        for field in fields(context.value):
             if field.field_types:
                 field_types = field.field_types
                 field_name = field.field_name
-                field_value = getattr(value, field_name)
+                field_value = getattr(context.value, field_name)
                 try:
-                    field_types.validator.validate(field_value, concat_keypath(key_path, field_name), root, all_fields, config)
+                    field_context = ValidatingContext(
+                        value=field_value,
+                        keypath=concat_keypath(context.keypath, field_name),
+                        root=context.root,
+                        all_fields=context.all_fields,
+                        config=context.config)
+                    field_types.validator.validate(field_context)
                 except ValidationException as exception:
-                    if all_fields:
+                    if context.all_fields:
                         keypath_messages.update(exception.keypath_messages)
                     else:
                         raise exception
         if len(keypath_messages) > 0:
-            raise ValidationException(keypath_messages=keypath_messages, root=root)
+            raise ValidationException(keypath_messages=keypath_messages, root=context.root)
 
     # pylint: disable=arguments-differ, too-many-locals, too-many-branches
-    def transform(
-        self,
-        value: Any,
-        key_path: str,
-        root: Any,
-        all_fields: bool,
-        config: Config,
-        base: Any = None,
-        fill_blanks: bool = True
-    ):
+    def transform(self, context: TransformingContext) -> Any:
         from ..types import Types
-        if value is None:
-            return None if not base else base
-        if not isinstance(value, dict):
-            return value if not base else base
-        types = resolve_types(self.types, config.linked_class)
+        if context.value is None:
+            return context.dest if context.dest is not None else None
+        if not isinstance(context.value, dict):
+            return context.value if not context.dest else context.dest
+        types = resolve_types(self.types, context.config.linked_class)
         cls = types.field_description.instance_types
         assert cls is not None
-        if not base:
-            base = cls(__empty__=True)
+        dest = context.dest if context.dest is not None else cls(__empty__=True)
 
         def fill_blank_with_default_value(field):
             if field.assigned_default_value is not None:
-                setattr(base, field.field_name, field.assigned_default_value)
+                setattr(dest, field.field_name, field.assigned_default_value)
             else:
-                transformed_field_value = field.field_types.validator.transform(
-                    None, concat_keypath(key_path, field.field_name), root, all_fields, config)
-                setattr(base, field.field_name, transformed_field_value)
-        for field in fields(base):
-            if field.json_field_name in value.keys() or field.field_name in value.keys():
-                field_value = value.get(field.json_field_name)
-                if field_value is None and config.camelize_json_keys:
-                    field_value = value.get(field.field_name)
+                transform_context = TransformingContext(
+                    value=None,
+                    keypath=concat_keypath(context.keypath, field.field_name),
+                    root=context.root,
+                    all_fields=context.all_fields,
+                    config=context.config)
+                transformed = field.field_types.validator.transform(
+                    transform_context)
+                setattr(dest, field.field_name, transformed)
+        for field in fields(dest):
+            if field.json_field_name in context.value.keys() or field.field_name in context.value.keys():
+                field_value = context.value.get(field.json_field_name)
+                if field_value is None and context.config.camelize_json_keys:
+                    field_value = context.value.get(field.field_name)
                 if field.field_types.field_description.write_rule == WriteRule.NO_WRITE:
-                    if fill_blanks:
+                    if context.fill_dest_blanks:
                         fill_blank_with_default_value(field)
                 elif field.field_types.field_description.write_rule == WriteRule.WRITE_ONCE:
-                    current_field_value = getattr(base, field.field_name)
+                    current_field_value = getattr(dest, field.field_name)
                     if current_field_value is None or isinstance(current_field_value, Types):
-                        transformed_field_value = field.field_types.validator.transform(
-                            field_value, concat_keypath(key_path, field.field_name), root, all_fields, config)
-                        setattr(base, field.field_name, transformed_field_value)
+                        field_context = TransformingContext(
+                            value=field_value,
+                            keypath=concat_keypath(context.keypath, field.field_name),
+                            root=context.root,
+                            all_fields=context.all_fields,
+                            config=context.config)
+                        transformed = field.field_types.validator.transform(
+                            field_context)
+                        setattr(dest, field.field_name, transformed)
                     else:
-                        if fill_blanks:
+                        if context.fill_dest_blanks:
                             fill_blank_with_default_value(field)
                 else:
-                    transformed_field_value = field.field_types.validator.transform(
-                        field_value, concat_keypath(key_path, field.field_name), root, all_fields, config)
-                    setattr(base, field.field_name, transformed_field_value)
+                    field_context = TransformingContext(
+                        value=field_value,
+                        keypath=concat_keypath(context.keypath, field.field_name),
+                        root=context.root,
+                        all_fields=context.all_fields,
+                        config=context.config)
+                    transformed = field.field_types.validator.transform(
+                        field_context)
+                    setattr(dest, field.field_name, transformed)
             else:
-                if fill_blanks:
+                if context.fill_dest_blanks:
                     fill_blank_with_default_value(field)
-        return base
+        return dest
 
     def tojson(self, value, config: Config, ignore_writeonly: bool = False):
         if value is None:

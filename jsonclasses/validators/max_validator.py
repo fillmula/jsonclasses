@@ -1,8 +1,8 @@
 """module for max validator."""
-from typing import Any, Union
-from ..config import Config
+from typing import Union
 from ..exceptions import ValidationException
 from .validator import Validator
+from ..contexts import ValidatingContext
 
 
 class MaxValidator(Validator):
@@ -11,9 +11,11 @@ class MaxValidator(Validator):
     def __init__(self, max_value: Union[int, float]) -> None:
         self.max_value = max_value
 
-    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
-        if value is not None and value > self.max_value:
+    def validate(self, context: ValidatingContext) -> None:
+        if context.value is None:
+            return context.value
+        if context.value > self.max_value:
             raise ValidationException(
-                {key_path: f'Value \'{value}\' at \'{key_path}\' should not be greater than {self.max_value}.'},
-                root
+                {context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should not be greater than {self.max_value}.'},
+                context.root
             )

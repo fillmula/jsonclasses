@@ -1,8 +1,7 @@
 """module for writeonly validator."""
-from typing import Any
 from ..fields import FieldDescription, ReadRule
-from ..config import Config
 from .validator import Validator
+from ..contexts import ValidatingContext
 
 
 class WriteonlyValidator(Validator):
@@ -11,5 +10,5 @@ class WriteonlyValidator(Validator):
     def define(self, field_description: FieldDescription) -> None:
         field_description.read_rule = ReadRule.NO_READ
 
-    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
+    def validate(self, context: ValidatingContext) -> None:
         pass

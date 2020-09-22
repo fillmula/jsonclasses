@@ -1,11 +1,14 @@
 """module for index validator."""
-from typing import Any
-from ..config import Config
 from .validator import Validator
+from ..contexts import ValidatingContext
+from ..fields import FieldDescription
 
 
 class IndexValidator(Validator):
     """Index validator implies this column should be indexed in database."""
 
-    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
+    def define(self, field_description: FieldDescription) -> None:
+        field_description.index = True
+
+    def validate(self, context: ValidatingContext) -> None:
         pass

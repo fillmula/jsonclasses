@@ -1,10 +1,8 @@
 """module for str validator."""
-from __future__ import annotations
-from typing import Any
 from ..fields import FieldDescription, FieldType
-from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
+from ..contexts import ValidatingContext
 
 
 class StrValidator(Validator):
@@ -13,9 +11,12 @@ class StrValidator(Validator):
     def define(self, field_description: FieldDescription) -> None:
         field_description.field_type = FieldType.STR
 
-    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
-        if value is not None and not isinstance(value, str):
-            raise ValidationException(
-                {key_path: f'Value \'{value}\' at \'{key_path}\' should be str.'},
-                root
-            )
+    def validate(self, context: ValidatingContext) -> None:
+        if context.value is None:
+            return
+        if isinstance(context.value, str):
+            return
+        raise ValidationException(
+            {context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should be str.'},
+            context.root
+        )

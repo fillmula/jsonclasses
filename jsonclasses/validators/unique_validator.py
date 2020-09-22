@@ -1,8 +1,7 @@
 """module for unique validator."""
-from typing import Any
 from ..fields import FieldDescription
-from ..config import Config
 from .validator import Validator
+from ..contexts import ValidatingContext
 
 
 class UniqueValidator(Validator):
@@ -11,5 +10,5 @@ class UniqueValidator(Validator):
     def define(self, field_description: FieldDescription) -> None:
         field_description.unique = True
 
-    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
+    def validate(self, context: ValidatingContext) -> None:
         pass

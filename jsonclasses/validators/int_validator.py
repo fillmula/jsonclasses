@@ -1,9 +1,8 @@
 """module for int validator."""
-from typing import Any
 from ..fields import FieldDescription, FieldType
-from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
+from ..contexts import ValidatingContext
 
 
 class IntValidator(Validator):
@@ -12,9 +11,12 @@ class IntValidator(Validator):
     def define(self, field_description: FieldDescription) -> None:
         field_description.field_type = FieldType.INT
 
-    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
-        if value is not None and type(value) is not int:
-            raise ValidationException(
-                {key_path: f'Value \'{value}\' at \'{key_path}\' should be int.'},
-                root
-            )
+    def validate(self, context: ValidatingContext) -> None:
+        if context.value is None:
+            return
+        if isinstance(context.value, int):
+            return
+        raise ValidationException(
+            {context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should be int.'},
+            context.root
+        )

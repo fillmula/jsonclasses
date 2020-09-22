@@ -1,13 +1,13 @@
 """This module defines JSON Class context objects."""
 from __future__ import annotations
-from typing import Any, NamedTuple, TypeVar, Optional, Generic, TYPE_CHECKING
+from typing import Any, NamedTuple, TypeVar, Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from .config import Config
     from .json_object import JSONObject
     T = TypeVar('T', bound=JSONObject)
 
 
-class TransformingContext(NamedTuple, Generic[T]):
+class TransformingContext(NamedTuple):
     """The context on which transforming is performing. It contains necessary
     information for validators to transform the field values correctly.
 
@@ -19,7 +19,7 @@ class TransformingContext(NamedTuple, Generic[T]):
     root: Any
     all_fields: bool
     config: Config
-    dest: Optional[T] = None
+    dest: Optional[JSONObject] = None
     fill_dest_blanks: bool = True
 
 

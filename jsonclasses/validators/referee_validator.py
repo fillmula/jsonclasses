@@ -1,8 +1,7 @@
 """module for referee validator."""
-from typing import Any
 from ..fields import FieldDescription
-from ..config import Config
 from .validator import Validator
+from ..contexts import ValidatingContext
 
 
 class RefereeValidator(Validator):
@@ -14,5 +13,5 @@ class RefereeValidator(Validator):
     def define(self, field_description: FieldDescription) -> None:
         field_description.join_table_referee_key = self.referee_key
 
-    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
+    def validate(self, context: ValidatingContext) -> None:
         pass

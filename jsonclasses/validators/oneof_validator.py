@@ -1,8 +1,8 @@
 """module for oneof validator."""
-from typing import List, Any
-from ..config import Config
+from typing import List
 from ..exceptions import ValidationException
 from .validator import Validator
+from ..contexts import ValidatingContext
 
 
 class OneOfValidator(Validator):
@@ -11,9 +11,11 @@ class OneOfValidator(Validator):
     def __init__(self, str_list: List[str]) -> None:
         self.str_list = str_list
 
-    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
-        if value is not None and value not in self.str_list:
+    def validate(self, context: ValidatingContext) -> None:
+        if context.value is None:
+            return None
+        if context.value not in self.str_list:
             raise ValidationException(
-                {key_path: f'Value \'{value}\' at \'{key_path}\' should be one of {self.str_list}.'},
-                root
+                {context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should be one of {self.str_list}.'},
+                context.root
             )

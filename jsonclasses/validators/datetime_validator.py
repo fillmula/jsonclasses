@@ -5,6 +5,7 @@ from ..fields import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
+from ..contexts import ValidatingContext, TransformingContext
 
 
 class DatetimeValidator(Validator):
@@ -13,22 +14,25 @@ class DatetimeValidator(Validator):
     def define(self, field_description: FieldDescription) -> None:
         field_description.field_type = FieldType.DATETIME
 
-    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
-        if value is not None and type(value) is not datetime:
-            raise ValidationException(
-                {
-                    key_path: f'Value \'{value}\' at \'{key_path}\' should be datetime.'
-                },
-                root
-            )
+    def validate(self, context: ValidatingContext) -> None:
+        if context.value is None:
+            return
+        if isinstance(context.value, datetime):
+            return
+        raise ValidationException(
+            {
+                context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should be datetime.'
+            },
+            context.root
+        )
 
-    def transform(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> Any:
-        if value is None:
+    def transform(self, context: TransformingContext) -> Any:
+        if context.value is None:
             return None
-        elif type(value) is str:
-            return datetime.fromisoformat(value.replace('Z', ''))
+        elif isinstance(context.value, str):
+            return datetime.fromisoformat(context.value.replace('Z', ''))
         else:
-            return value
+            return context.value
 
     def tojson(self, value: Any, config: Config) -> Any:
         if value is not None:

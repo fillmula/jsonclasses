@@ -1,8 +1,8 @@
 """module for linkedin validator."""
 from typing import Any
 from ..fields import FieldDescription, FieldStorage
-from ..config import Config
 from .validator import Validator
+from ..contexts import ValidatingContext
 
 
 class LinkedInValidator(Validator):
@@ -17,5 +17,5 @@ class LinkedInValidator(Validator):
         field_description.join_table_cls = self.cls
         field_description.use_join_table = True
 
-    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
+    def validate(self, context: ValidatingContext) -> None:
         pass

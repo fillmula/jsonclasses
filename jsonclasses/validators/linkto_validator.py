@@ -1,8 +1,7 @@
 """module for linkto validator."""
-from typing import Any
 from ..fields import FieldDescription, FieldStorage
-from ..config import Config
 from .validator import Validator
+from ..contexts import ValidatingContext
 
 
 class LinkToValidator(Validator):
@@ -11,5 +10,5 @@ class LinkToValidator(Validator):
     def define(self, field_description: FieldDescription) -> None:
         field_description.field_storage = FieldStorage.LOCAL_KEY
 
-    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
+    def validate(self, context: ValidatingContext) -> None:
         pass

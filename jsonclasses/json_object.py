@@ -7,6 +7,7 @@ from dataclasses import dataclass, fields
 from jsonclasses.config import Config
 from jsonclasses.exceptions import ValidationException
 from .validators.instanceof_validator import InstanceOfValidator
+from .contexts import TransformingContext, ValidatingContext
 
 
 @dataclass(init=False)
@@ -51,7 +52,16 @@ class JSONObject:
         """Set values of a JSON Class object internally."""
         validator = InstanceOfValidator(self.__class__)
         config = Config.on(self.__class__)
-        validator.transform(kwargs, '', self, True, config, self, fill_blanks)
+        context = TransformingContext(
+            value=kwargs,
+            keypath='',
+            root=self,
+            all_fields=True,
+            config=config,
+            dest=self,
+            fill_dest_blanks=fill_blanks
+        )
+        validator.transform(context)
 
     def update(self: T, **kwargs: Any) -> T:
         """Update object values in a batch. This method is suitable for internal
@@ -100,9 +110,13 @@ class JSONObject:
           None: upon successful validation, returns nothing.
         """
         config = Config.on(self.__class__)
-        InstanceOfValidator(self.__class__).validate(
-            self, '', self, all_fields, config
-        )
+        context = ValidatingContext(
+            value=self,
+            keypath='',
+            root=self,
+            all_fields=all_fields,
+            config=config)
+        InstanceOfValidator(self.__class__).validate(context)
         return self
 
     def is_valid(self: T) -> bool:

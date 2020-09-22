@@ -1,9 +1,8 @@
 """module for bool validator."""
-from typing import Any
 from ..fields import FieldDescription, FieldType
-from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
+from ..contexts import ValidatingContext
 
 
 class BoolValidator(Validator):
@@ -12,11 +11,14 @@ class BoolValidator(Validator):
     def define(self, field_description: FieldDescription) -> None:
         field_description.field_type = FieldType.BOOL
 
-    def validate(self, value: Any, key_path: str, root: Any, all_fields: bool, config: Config) -> None:
-        if value is not None and isinstance(value, bool):
-            raise ValidationException(
-                {
-                    key_path: f'Value \'{value}\' at \'{key_path}\' should be bool.'
-                },
-                root
-            )
+    def validate(self, context: ValidatingContext) -> None:
+        if context.value is None:
+            return
+        if isinstance(context.value, bool):
+            return
+        raise ValidationException(
+            {
+                context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should be bool.'
+            },
+            context.root
+        )
