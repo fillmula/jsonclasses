@@ -207,3 +207,29 @@ class TestInstanceOfValidator(unittest.TestCase):
         user = User(**{'name': 'John', 'staffs': {'a': {'position': 'CEO'}, 'b': None, 'c': {'position': 'CSO'}}})
         with self.assertRaisesRegex(ValidationException, 'Value at \'staffs\\.b\' should not be None\\.'):
             user.validate()
+
+    def test_instanceof_raises_if_strict_specified(self):
+        @jsonclass(graph='test_instanceof_13')
+        class Staff(JSONObject):
+            position: str
+            user: User = types.instanceof('User').required
+
+        @jsonclass(graph='test_instanceof_13')
+        class User(JSONObject):
+            name: str
+            staff: Staff = types.instanceof('Staff').strict.required
+        with self.assertRaisesRegex(ValidationException, "Key 'boom' at 'staff' is now allowed\\."):
+            User(**{'name': 'John', 'staff': {'position': 'CEO', 'boom': True}})
+
+    def test_instanceof_raises_if_strict_instance(self):
+        @jsonclass(graph='test_instanceof_14', strict_input=True)
+        class Staff(JSONObject):
+            position: str
+            user: User = types.instanceof('User').required
+
+        @jsonclass(graph='test_instanceof_14')
+        class User(JSONObject):
+            name: str
+            staff: Staff = types.instanceof('Staff').required
+        with self.assertRaisesRegex(ValidationException, "Key 'boom' at 'staff' is now allowed\\."):
+            User(**{'name': 'John', 'staff': {'position': 'CEO', 'boom': True}})

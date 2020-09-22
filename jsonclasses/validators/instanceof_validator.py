@@ -83,7 +83,7 @@ class InstanceOfValidator(Validator):
             elif context.field_description.strictness == Strictness.UNLIMITED:
                 strictness = False
             else:
-                strictness = context.config.strict_input
+                strictness = cls.config.strict_input
         else:
             strictness = context.config.strict_input
         if strictness:

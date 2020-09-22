@@ -152,5 +152,5 @@ class TestJSONObjectInitialize(unittest.TestCase):
         class Timer(JSONObject):
             expired_at: datetime
         expired_at = datetime.fromisoformat('2020-10-10T05:03:02.999888')
-        with self.assertRaises(ValidationException) as context:
-            timer = Timer(**{'expiredAt': expired_at, 'boom': True})
+        with self.assertRaises(ValidationException):
+            Timer(**{'expiredAt': expired_at, 'boom': True})
