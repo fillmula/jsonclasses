@@ -8,7 +8,7 @@ from .validator import Validator
 from ..utils.keypath import keypath
 from inflection import underscore, camelize
 from ..utils.nonnull_note import NonnullNote
-from ..fields import collection_argument_type_to_types
+from ..types_resolver import resolve_types
 from ..field import CollectionNullability
 
 
@@ -30,7 +30,7 @@ class DictOfValidator(Validator):
                 {key_path: f'Value \'{value}\' at \'{key_path}\' should be a dict.'},
                 root
             )
-        types = collection_argument_type_to_types(self.types, config.linked_class)
+        types = resolve_types(self.types, config.linked_class)
         if types:
             if types.field_description.collection_nullability == CollectionNullability.UNDEFINED:
                 types = types.required
@@ -53,7 +53,7 @@ class DictOfValidator(Validator):
             value = {}
         elif type(value) is not dict:
             return value
-        types = collection_argument_type_to_types(self.types, config.linked_class)
+        types = resolve_types(self.types, config.linked_class)
         if types:
             retval = {}
             for k, v in value.items():
@@ -69,7 +69,7 @@ class DictOfValidator(Validator):
             return None
         if type(value) is not dict:
             return value
-        types = collection_argument_type_to_types(self.types, config.linked_class)
+        types = resolve_types(self.types, config.linked_class)
         if types:
             # flake8: noqa
             return {camelize(k, False) if config.camelize_json_keys else k: types.validator.tojson(v, config) for k, v in value.items()}

@@ -7,7 +7,7 @@ from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.keypath import keypath
 from ..utils.nonnull_note import NonnullNote
-from ..fields import collection_argument_type_to_types
+from ..types_resolver import resolve_types
 from ..field import CollectionNullability
 
 
@@ -29,7 +29,7 @@ class ListOfValidator(Validator):
                 {key_path: f'Value \'{value}\' at \'{key_path}\' should be a list.'},
                 root
             )
-        types = collection_argument_type_to_types(self.types, config.linked_class)
+        types = resolve_types(self.types, config.linked_class)
         if types:
             if types.field_description.collection_nullability == CollectionNullability.UNDEFINED:
                 types = types.required
@@ -52,7 +52,7 @@ class ListOfValidator(Validator):
             value = []
         elif not isinstance(value, list):
             return value
-        types = collection_argument_type_to_types(self.types, config.linked_class)
+        types = resolve_types(self.types, config.linked_class)
         if types:
             return [types.validator.transform(v, keypath(key_path, i), root, all_fields, config) for i, v in enumerate(value)]
         else:
@@ -63,7 +63,7 @@ class ListOfValidator(Validator):
             return None
         if type(value) is not list:
             return value
-        types = collection_argument_type_to_types(self.types, config.linked_class)
+        types = resolve_types(self.types, config.linked_class)
         if types:
             return [types.validator.tojson(v, config) for v in value]
         else:

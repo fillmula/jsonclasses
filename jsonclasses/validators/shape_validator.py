@@ -7,7 +7,7 @@ from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.keypath import keypath
 from ..utils.nonnull_note import NonnullNote
-from ..fields import collection_argument_type_to_types
+from ..types_resolver import resolve_types
 
 
 class ShapeValidator(Validator):
@@ -36,7 +36,7 @@ class ShapeValidator(Validator):
                 value_at_key = value[k]
             except KeyError:
                 value_at_key = None
-            types = collection_argument_type_to_types(t, config.linked_class)
+            types = resolve_types(t, config.linked_class)
             if types:
                 try:
                     types.validator.validate(value_at_key, keypath(key_path, k), root, all_fields, config)
@@ -68,7 +68,7 @@ class ShapeValidator(Validator):
             new_key = underscore(k) if config.camelize_json_keys else k
             if new_key in unused_keys:
                 t = self.types[new_key]
-                types = collection_argument_type_to_types(t, config.linked_class)
+                types = resolve_types(t, config.linked_class)
                 if types:
                     retval[new_key] = types.validator.transform(
                         field_value, keypath(key_path, new_key), root, all_fields, config)
@@ -91,7 +91,7 @@ class ShapeValidator(Validator):
                 value_at_key = value[k]
             except KeyError:
                 value_at_key = None
-            types = collection_argument_type_to_types(t, config.linked_class)
+            types = resolve_types(t, config.linked_class)
             if types:
                 retval[key] = types.validator.tojson(value_at_key, config)
             else:

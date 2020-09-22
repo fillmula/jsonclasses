@@ -6,7 +6,8 @@ from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.keypath import keypath
-from ..fields import collection_argument_type_to_types, fields
+from ..types_resolver import resolve_types
+from ..fields import fields
 from ..field import WriteRule, ReadRule
 
 
@@ -55,7 +56,7 @@ class InstanceOfValidator(Validator):
             return None if not base else base
         if not isinstance(value, dict):
             return value if not base else base
-        types = collection_argument_type_to_types(self.types, config.linked_class)
+        types = resolve_types(self.types, config.linked_class)
         cls = types.field_description.instance_types
         assert cls is not None
         if not base:
