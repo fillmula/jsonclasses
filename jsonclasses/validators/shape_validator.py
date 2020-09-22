@@ -5,7 +5,7 @@ from ..fields import FieldDescription, FieldType
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..utils.keypath import keypath
+from ..utils.concat_keypath import concat_keypath
 from ..utils.nonnull_note import NonnullNote
 from ..types_resolver import resolve_types
 
@@ -39,7 +39,7 @@ class ShapeValidator(Validator):
             types = resolve_types(t, config.linked_class)
             if types:
                 try:
-                    types.validator.validate(value_at_key, keypath(key_path, k), root, all_fields, config)
+                    types.validator.validate(value_at_key, concat_keypath(key_path, k), root, all_fields, config)
                 except ValidationException as exception:
                     if all_fields:
                         keypath_messages.update(exception.keypath_messages)
@@ -71,7 +71,7 @@ class ShapeValidator(Validator):
                 types = resolve_types(t, config.linked_class)
                 if types:
                     retval[new_key] = types.validator.transform(
-                        field_value, keypath(key_path, new_key), root, all_fields, config)
+                        field_value, concat_keypath(key_path, new_key), root, all_fields, config)
                 else:
                     retval[new_key] = field_value
                 unused_keys.remove(new_key)

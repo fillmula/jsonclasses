@@ -2,7 +2,7 @@
 from typing import Union
 
 
-def keypath(*args: Union[str, int]):
+def concat_keypath(*args: Union[str, int]):
     """Keypath concatenation."""
     retval = ''
     for arg in args:

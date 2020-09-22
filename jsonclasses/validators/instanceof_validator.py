@@ -5,7 +5,7 @@ from ..fields import FieldDescription, FieldType, WriteRule, ReadRule, fields
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..utils.keypath import keypath
+from ..utils.concat_keypath import concat_keypath
 from ..types_resolver import resolve_types
 
 
@@ -29,7 +29,7 @@ class InstanceOfValidator(Validator):
                 field_name = field.field_name
                 field_value = getattr(value, field_name)
                 try:
-                    field_types.validator.validate(field_value, keypath(key_path, field_name), root, all_fields, config)
+                    field_types.validator.validate(field_value, concat_keypath(key_path, field_name), root, all_fields, config)
                 except ValidationException as exception:
                     if all_fields:
                         keypath_messages.update(exception.keypath_messages)
@@ -65,7 +65,7 @@ class InstanceOfValidator(Validator):
                 setattr(base, field.field_name, field.assigned_default_value)
             else:
                 transformed_field_value = field.field_types.validator.transform(
-                    None, keypath(key_path, field.field_name), root, all_fields, config)
+                    None, concat_keypath(key_path, field.field_name), root, all_fields, config)
                 setattr(base, field.field_name, transformed_field_value)
         for field in fields(base):
             if field.json_field_name in value.keys() or field.field_name in value.keys():
@@ -79,14 +79,14 @@ class InstanceOfValidator(Validator):
                     current_field_value = getattr(base, field.field_name)
                     if current_field_value is None or isinstance(current_field_value, Types):
                         transformed_field_value = field.field_types.validator.transform(
-                            field_value, keypath(key_path, field.field_name), root, all_fields, config)
+                            field_value, concat_keypath(key_path, field.field_name), root, all_fields, config)
                         setattr(base, field.field_name, transformed_field_value)
                     else:
                         if fill_blanks:
                             fill_blank_with_default_value(field)
                 else:
                     transformed_field_value = field.field_types.validator.transform(
-                        field_value, keypath(key_path, field.field_name), root, all_fields, config)
+                        field_value, concat_keypath(key_path, field.field_name), root, all_fields, config)
                     setattr(base, field.field_name, transformed_field_value)
             else:
                 if fill_blanks:

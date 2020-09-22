@@ -5,7 +5,7 @@ from ..fields import FieldDescription, FieldType, CollectionNullability
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..utils.keypath import keypath
+from ..utils.concat_keypath import concat_keypath
 from ..utils.nonnull_note import NonnullNote
 from ..types_resolver import resolve_types
 
@@ -35,7 +35,7 @@ class ListOfValidator(Validator):
             keypath_messages = {}
             for i, v in enumerate(value):
                 try:
-                    types.validator.validate(v, keypath(key_path, i), root, all_fields, config)
+                    types.validator.validate(v, concat_keypath(key_path, i), root, all_fields, config)
                 except ValidationException as exception:
                     if all_fields:
                         keypath_messages.update(exception.keypath_messages)
@@ -53,7 +53,7 @@ class ListOfValidator(Validator):
             return value
         types = resolve_types(self.types, config.linked_class)
         if types:
-            return [types.validator.transform(v, keypath(key_path, i), root, all_fields, config) for i, v in enumerate(value)]
+            return [types.validator.transform(v, concat_keypath(key_path, i), root, all_fields, config) for i, v in enumerate(value)]
         else:
             return value
 

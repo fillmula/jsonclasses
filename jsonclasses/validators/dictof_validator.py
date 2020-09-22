@@ -6,7 +6,7 @@ from ..fields import FieldDescription, FieldType, CollectionNullability
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..utils.keypath import keypath
+from ..utils.concat_keypath import concat_keypath
 from ..utils.nonnull_note import NonnullNote
 from ..types_resolver import resolve_types
 
@@ -36,7 +36,7 @@ class DictOfValidator(Validator):
             keypath_messages = {}
             for k, v in value.items():
                 try:
-                    types.validator.validate(v, keypath(key_path, k), root, all_fields, config)
+                    types.validator.validate(v, concat_keypath(key_path, k), root, all_fields, config)
                 except ValidationException as exception:
                     if all_fields:
                         keypath_messages.update(exception.keypath_messages)
@@ -57,7 +57,7 @@ class DictOfValidator(Validator):
             retval = {}
             for k, v in value.items():
                 new_key = underscore(k) if config.camelize_json_keys else k
-                new_value = types.validator.transform(v, keypath(key_path, new_key), root, all_fields, config)
+                new_value = types.validator.transform(v, concat_keypath(key_path, new_key), root, all_fields, config)
                 retval[new_key] = new_value
             return retval
         else:
