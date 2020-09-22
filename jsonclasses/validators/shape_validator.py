@@ -1,14 +1,13 @@
 """module for shape validator."""
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from inflection import underscore, camelize
 from ..fields import FieldDescription, FieldType
-from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.concat_keypath import concat_keypath
 from ..utils.nonnull_note import NonnullNote
 from ..types_resolver import resolve_types
-from ..contexts import ValidatingContext, TransformingContext
+from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 
 
 class ShapeValidator(Validator):
@@ -83,21 +82,25 @@ class ShapeValidator(Validator):
             retval[k] = None
         return retval
 
-    def tojson(self, value: Any, config: Config) -> Optional[Dict[str, Any]]:
-        if value is None:
+    def tojson(self, context: ToJSONContext) -> Any:
+        if context.value is None:
             return None
-        if type(value) is not dict:
-            return value
+        if type(context.value) is not dict:
+            return context.value
         retval = {}
         for k, t in self.types.items():
-            key = camelize(k, False) if config.camelize_json_keys else k
+            key = camelize(k, False) if context.config.camelize_json_keys else k
             try:
-                value_at_key = value[k]
+                value_at_key = context.value[k]
             except KeyError:
                 value_at_key = None
-            types = resolve_types(t, config.linked_class)
+            types = resolve_types(t, context.config.linked_class)
             if types:
-                retval[key] = types.validator.tojson(value_at_key, config)
+                item_context = ToJSONContext(
+                    value=value_at_key,
+                    config=context.config,
+                    ignore_writeonly=context.ignore_writeonly)
+                retval[key] = types.validator.tojson(item_context)
             else:
                 retval[key] = value_at_key
         return retval

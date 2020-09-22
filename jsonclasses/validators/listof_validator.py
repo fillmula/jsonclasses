@@ -2,13 +2,12 @@
 from __future__ import annotations
 from typing import Any
 from ..fields import FieldDescription, FieldType, CollectionNullability
-from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.concat_keypath import concat_keypath
 from ..utils.nonnull_note import NonnullNote
 from ..types_resolver import resolve_types
-from ..contexts import ValidatingContext, TransformingContext
+from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 
 
 class ListOfValidator(Validator):
@@ -73,13 +72,20 @@ class ListOfValidator(Validator):
         else:
             return value
 
-    def tojson(self, value: Any, config: Config) -> Any:
-        if value is None:
+    def tojson(self, context: ToJSONContext) -> Any:
+        if context.value is None:
             return None
-        if type(value) is not list:
-            return value
-        types = resolve_types(self.types, config.linked_class)
+        if type(context.value) is not list:
+            return context.value
+        types = resolve_types(self.types, context.config.linked_class)
         if types:
-            return [types.validator.tojson(v, config) for v in value]
+            retval = []
+            for v in context.value:
+                item_context = ToJSONContext(
+                    value=v,
+                    config=context.config,
+                    ignore_writeonly=context.ignore_writeonly)
+                retval.append(types.validator.tojson(item_context))
+            return retval
         else:
-            return value
+            return context.value

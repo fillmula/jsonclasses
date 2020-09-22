@@ -2,12 +2,11 @@
 from __future__ import annotations
 from typing import Any
 from ..fields import FieldDescription, FieldType, WriteRule, ReadRule, fields
-from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.concat_keypath import concat_keypath
 from ..types_resolver import resolve_types
-from ..contexts import ValidatingContext, TransformingContext
+from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 
 
 class InstanceOfValidator(Validator):
@@ -108,14 +107,18 @@ class InstanceOfValidator(Validator):
                     fill_blank_with_default_value(field)
         return dest
 
-    def tojson(self, value, config: Config, ignore_writeonly: bool = False):
-        if value is None:
+    def tojson(self, context: ToJSONContext) -> Any:
+        if context.value is None:
             return None
         retval = {}
-        for field in fields(value):
-            field_value = getattr(value, field.field_name)
+        for field in fields(context.value):
+            field_value = getattr(context.value, field.field_name)
             json_field_name = field.json_field_name
-            if field.field_types.field_description.read_rule == ReadRule.NO_READ and not ignore_writeonly:
+            if field.field_types.field_description.read_rule == ReadRule.NO_READ and not context.ignore_writeonly:
                 continue
-            retval[json_field_name] = field.field_types.validator.tojson(field_value, config)
+            item_context = ToJSONContext(
+                value=field_value,
+                config=context.config,
+                ignore_writeonly=context.ignore_writeonly)
+            retval[json_field_name] = field.field_types.validator.tojson(item_context)
         return retval

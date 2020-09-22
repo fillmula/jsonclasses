@@ -7,7 +7,7 @@ from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.eager_validator_index_after_index import eager_validator_index_after_index
 from ..utils.last_eager_validator_index import last_eager_validator_index
-from ..contexts import ValidatingContext, TransformingContext
+from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 
 
 class ChainedValidator(Validator):
@@ -92,5 +92,13 @@ class ChainedValidator(Validator):
             self._build_t_context(v, context.keypath, context.root, context.all_fields, context.config)), self.validators[index:], curvalue)
         return curvalue
 
-    def tojson(self, value: Any, config: Config) -> Any:
-        return reduce(lambda v, validator: validator.tojson(v, config), self.validators, value)
+    def _build_tojson_context(self,
+                              value: Any,
+                              config: Config,
+                              ignore_writeonly: bool) -> ToJSONContext:
+        return ToJSONContext(value=value, config=config, ignore_writeonly=ignore_writeonly)
+
+    def tojson(self, context: ToJSONContext) -> Any:
+        return reduce(lambda v, validator: (
+            validator.tojson(self._build_tojson_context(v, context.config,
+            context.ignore_writeonly))), self.validators, context.value)

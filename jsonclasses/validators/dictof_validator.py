@@ -3,13 +3,12 @@ from __future__ import annotations
 from typing import Any
 from inflection import underscore, camelize
 from ..fields import FieldDescription, FieldType, CollectionNullability
-from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.concat_keypath import concat_keypath
 from ..utils.nonnull_note import NonnullNote
 from ..types_resolver import resolve_types
-from ..contexts import ValidatingContext, TransformingContext
+from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 
 
 class DictOfValidator(Validator):
@@ -75,14 +74,23 @@ class DictOfValidator(Validator):
         else:
             return value
 
-    def tojson(self, value: Any, config: Config) -> Any:
-        if value is None:
+    def tojson(self, context: ToJSONContext) -> Any:
+        if context.value is None:
             return None
-        if type(value) is not dict:
-            return value
-        types = resolve_types(self.types, config.linked_class)
+        if type(context.value) is not dict:
+            return context.value
+        types = resolve_types(self.types, context.config.linked_class)
         if types:
-            # flake8: noqa
-            return {camelize(k, False) if config.camelize_json_keys else k: types.validator.tojson(v, config) for k, v in value.items()}
+            retval = {}
+            for k, v in context.value.items():
+                key = (camelize(k, False) if context.config.camelize_json_keys
+                       else k)
+                item_context = ToJSONContext(
+                    value=v,
+                    config=context.config,
+                    ignore_writeonly=context.ignore_writeonly)
+                val = types.validator.tojson(item_context)
+                retval[key] = val
+            return retval
         else:
-            return value
+            return context.value

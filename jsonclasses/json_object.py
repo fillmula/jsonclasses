@@ -7,7 +7,7 @@ from dataclasses import dataclass, fields
 from jsonclasses.config import Config
 from jsonclasses.exceptions import ValidationException
 from .validators.instanceof_validator import InstanceOfValidator
-from .contexts import TransformingContext, ValidatingContext
+from .contexts import TransformingContext, ValidatingContext, ToJSONContext
 
 
 @dataclass(init=False)
@@ -95,7 +95,10 @@ class JSONObject:
         """
         validator = InstanceOfValidator(self.__class__)
         config = Config.on(self.__class__)
-        return validator.tojson(self, config, ignore_writeonly=ignore_writeonly)
+        context = ToJSONContext(value=self,
+                                config=config,
+                                ignore_writeonly=ignore_writeonly)
+        return validator.tojson(context)
 
     def validate(self: T, all_fields: bool = True) -> T:
         """Validate the jsonclass object's validity. Raises ValidationException on

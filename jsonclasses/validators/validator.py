@@ -1,9 +1,8 @@
 """module for validator validator."""
 from typing import Any
 from ..fields import FieldDescription
-from ..config import Config
 from ..exceptions import ValidationException
-from ..contexts import ValidatingContext, TransformingContext
+from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 
 
 class Validator:
@@ -19,10 +18,10 @@ class Validator:
             context.root
         )
 
-    def transform(self, context: TransformingContext) -> Any:  # pylint: disable=unused-argument
+    def transform(self, context: TransformingContext) -> Any:
         """Transform raw input object into JSON Class acceptable object."""
         return context.value
 
-    def tojson(self, value: Any, config: Config) -> Any:  # pylint: disable=unused-argument
+    def tojson(self, context: ToJSONContext) -> Any:
         """Transform JSON Class object and fields into JSON dict and values."""
-        return value
+        return context.value

@@ -2,10 +2,9 @@
 from typing import Any
 from datetime import date
 from ..fields import FieldDescription, FieldType
-from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..contexts import ValidatingContext, TransformingContext
+from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 
 
 class DateValidator(Validator):
@@ -34,6 +33,6 @@ class DateValidator(Validator):
         else:
             return context.value
 
-    def tojson(self, value: Any, config: Config) -> Any:
-        if value is not None:
-            return value.isoformat() + 'T00:00:00.000Z'
+    def tojson(self, context: ToJSONContext) -> Any:
+        if context.value is not None:
+            return context.value.isoformat() + 'T00:00:00.000Z'
