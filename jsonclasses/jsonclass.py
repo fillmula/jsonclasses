@@ -50,8 +50,8 @@ def jsonclass(
         if not isinstance(cls, type):
             raise ValueError('@jsonclass should be used to decorate a class.')
         if not issubclass(cls, JSONObject):
-            raise ValueError('@jsonclass should be used to decorate subclasses of '
-                             'JSONObject.')
+            raise ValueError('@jsonclass should be used to decorate subclasses'
+                             ' of JSONObject.')
         config = Config(
             graph=graph,
             camelize_json_keys=camelize_json_keys,
