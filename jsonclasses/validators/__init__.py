@@ -55,6 +55,7 @@ from .dictof_validator import DictOfValidator
 
 # object validators
 from .shape_validator import ShapeValidator
+from .strict_validator import StrictValidator
 from .instanceof_validator import InstanceOfValidator
 
 # mixed type validator

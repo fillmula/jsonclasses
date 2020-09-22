@@ -103,6 +103,8 @@ class FieldDescription():  # pylint: disable=too-many-instance-attributes
     collection_nullability: Nullability = Nullability.NULLABLE
     item_nullability: Nullability = Nullability.UNDEFINED
 
+    is_strict_shape: bool = False
+
     has_eager_validator: bool = False
 
 

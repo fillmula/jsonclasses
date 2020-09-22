@@ -15,9 +15,9 @@ from .validators import (BoolValidator, ChainedValidator, DateValidator,
                          RangeValidator, ReadonlyValidator, ReadwriteValidator,
                          RefereeValidator, ReferrerValidator,
                          RequiredValidator, ShapeValidator, StrValidator,
-                         TransformValidator, TrimValidator, TruncateValidator,
-                         UniqueValidator, ValidateValidator, Validator,
-                         WriteonceValidator, WriteonlyValidator)
+                         StrictValidator, TransformValidator, TrimValidator,
+                         TruncateValidator, UniqueValidator, ValidateValidator,
+                         Validator, WriteonceValidator, WriteonlyValidator)
 
 Str = str
 Int = int
@@ -286,6 +286,12 @@ class Types:
         type marker.
         """
         return Types(self, ShapeValidator(item_types_map))
+
+    @property
+    def strict(self) -> Types:
+        """Shape fields marked with strict disallow undefined keys.
+        """
+        return Types(self, StrictValidator())
 
     def instanceof(self, json_object_class: Any) -> Types:
         """Fields marked with instance of are objects of given class.

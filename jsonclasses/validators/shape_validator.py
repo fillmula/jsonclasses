@@ -68,21 +68,26 @@ class ShapeValidator(Validator):
         retval = {}
         for k, field_value in value.items():
             new_key = underscore(k) if context.config.camelize_json_keys else k
-            if new_key in unused_keys:
-                t = self.types[new_key]
-                types = resolve_types(t, context.config.linked_class)
-                if types:
-                    item_context = TransformingContext(
-                        value=field_value,
-                        keypath=concat_keypath(context.keypath, new_key),
-                        root=context.root,
-                        all_fields=context.all_fields,
-                        config=context.config,
-                        field_description=types.field_description)
-                    retval[new_key] = types.validator.transform(item_context)
-                else:
-                    retval[new_key] = field_value
-                unused_keys.remove(new_key)
+            if new_key not in unused_keys:
+                if fd.is_strict_shape:
+                    raise ValidationException(
+                        {context.keypath: f'Unallowed key \'{k}\' at \'{context.keypath}\'.'},
+                        context.root)
+                continue
+            t = self.types[new_key]
+            types = resolve_types(t, context.config.linked_class)
+            if types:
+                item_context = TransformingContext(
+                    value=field_value,
+                    keypath=concat_keypath(context.keypath, new_key),
+                    root=context.root,
+                    all_fields=context.all_fields,
+                    config=context.config,
+                    field_description=types.field_description)
+                retval[new_key] = types.validator.transform(item_context)
+            else:
+                retval[new_key] = field_value
+            unused_keys.remove(new_key)
         for k in unused_keys:
             retval[k] = None
         return retval

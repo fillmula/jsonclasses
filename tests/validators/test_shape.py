@@ -1,6 +1,5 @@
 import unittest
-from typing import Dict
-from datetime import datetime, date
+from typing import Dict, Any
 from jsonclasses import jsonclass, JSONObject, types
 from jsonclasses.exceptions import ValidationException
 
@@ -96,7 +95,7 @@ class TestShapeValidator(unittest.TestCase):
         score = Score(scores={'student_a': 2, 'student_b': 4})
         self.assertEqual(score.__dict__, {'scores': {'student_a': 2, 'student_b': 4}})
 
-    def test_dictof_produce_error_messages_for_all_items(self):
+    def test_shape_produce_error_messages_for_all_items(self):
         @jsonclass(graph='test_shape_9')
         class Quiz(JSONObject):
             numbers: Dict[str, int] = types.shape({
@@ -105,3 +104,22 @@ class TestShapeValidator(unittest.TestCase):
             })
         quiz = Quiz(numbers={'a': 1, 'b': 2, })
         self.assertRaisesRegex(ValidationException, 'numbers\\.b', quiz.validate)
+
+    def test_strict_shape_raises_if_key_is_not_allowed(self):
+        @jsonclass(graph='test_shape_10')
+        class Setting(JSONObject):
+            info: Dict[str, Any] = types.strict.shape({
+                'ios': types.bool.required,
+                'android': types.bool.required
+            })
+        with self.assertRaisesRegex(ValidationException, "Unallowed key 'email' at 'info'\\."):
+            Setting(info={'ios': True, 'android': False, 'email': True})
+
+    def test_strict_shape_doesnt_raise_if_keys_are_ok(self):
+        @jsonclass(graph='test_shape_11')
+        class Setting(JSONObject):
+            info: Dict[str, Any] = types.strict.shape({
+                'ios': types.bool.required,
+                'android': types.bool.required
+            })
+        Setting(info={'ios': True, 'android': False})
