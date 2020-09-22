@@ -1,14 +1,13 @@
 """module for listof validator."""
 from __future__ import annotations
 from typing import Any
-from ..field import FieldDescription, FieldType
+from ..fields import FieldDescription, FieldType, CollectionNullability
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.keypath import keypath
 from ..utils.nonnull_note import NonnullNote
 from ..types_resolver import resolve_types
-from ..field import CollectionNullability
 
 
 class ListOfValidator(Validator):

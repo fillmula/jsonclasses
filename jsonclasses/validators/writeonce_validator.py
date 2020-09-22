@@ -1,6 +1,6 @@
 """module for writeonce validator."""
 from typing import Any
-from ..field import FieldDescription, WriteRule
+from ..fields import FieldDescription, WriteRule
 from ..config import Config
 from .validator import Validator
 

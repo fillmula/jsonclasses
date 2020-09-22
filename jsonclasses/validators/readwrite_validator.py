@@ -1,6 +1,6 @@
 """module for readwrite validator."""
 from typing import Any
-from ..field import FieldDescription, WriteRule, ReadRule
+from ..fields import FieldDescription, WriteRule, ReadRule
 from ..config import Config
 from .validator import Validator
 

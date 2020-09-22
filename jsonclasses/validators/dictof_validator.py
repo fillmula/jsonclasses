@@ -1,15 +1,14 @@
 """module for dictof validator."""
 from __future__ import annotations
 from typing import Any
-from ..field import FieldDescription, FieldType
+from inflection import underscore, camelize
+from ..fields import FieldDescription, FieldType, CollectionNullability
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.keypath import keypath
-from inflection import underscore, camelize
 from ..utils.nonnull_note import NonnullNote
 from ..types_resolver import resolve_types
-from ..field import CollectionNullability
 
 
 class DictOfValidator(Validator):

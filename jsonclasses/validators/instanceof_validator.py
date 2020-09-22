@@ -1,14 +1,12 @@
 """module for instanceof validator."""
 from __future__ import annotations
 from typing import Any
-from ..field import FieldDescription, FieldType
+from ..fields import FieldDescription, FieldType, WriteRule, ReadRule, fields
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.keypath import keypath
 from ..types_resolver import resolve_types
-from ..fields import fields
-from ..field import WriteRule, ReadRule
 
 
 class InstanceOfValidator(Validator):

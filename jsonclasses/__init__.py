@@ -16,8 +16,7 @@ from .types_resolver import resolve_types
 from .exceptions import (ObjectNotFoundException, UniqueFieldException,
                          ValidationException)
 from .config import Config
-from .field import Field, FieldDescription, FieldType, FieldStorage
-from .fields import fields
+from .fields import Field, FieldDescription, FieldType, FieldStorage, fields
 from .json_object import JSONObject
 from .persistable_json_object import PersistableJSONObject
 from .json_encoder import JSONEncoder

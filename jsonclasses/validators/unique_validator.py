@@ -1,6 +1,6 @@
 """module for unique validator."""
 from typing import Any
-from ..field import FieldDescription
+from ..fields import FieldDescription
 from ..config import Config
 from .validator import Validator
 
