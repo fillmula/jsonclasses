@@ -1,5 +1,5 @@
 import unittest
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from jsonclasses import jsonclass, JSONObject, types
 from jsonclasses.exceptions import ValidationException
 
@@ -123,3 +123,22 @@ class TestShapeValidator(unittest.TestCase):
                 'android': types.bool.required
             })
         Setting(info={'ios': True, 'android': False})
+
+    def test_shape_accepts_shorthand_types(self):
+        @jsonclass(graph='test_shape_12')
+        class User(JSONObject):
+            address: dict = types.nonnull.shape({
+                'line1': str,
+                'line2': int
+            })
+        user = User()
+        self.assertRaisesRegex(ValidationException, '\'address\\.line1\' should not be None', user.validate)
+
+    def test_shape_accepts_optional_shorthand_types(self):
+        @jsonclass(graph='test_shape_13')
+        class User(JSONObject):
+            address: dict = types.nonnull.shape({
+                'line1': Optional[str],
+                'line2': Optional[int]
+            })
+        User().validate()
