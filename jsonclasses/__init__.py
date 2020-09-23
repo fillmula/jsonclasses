@@ -18,5 +18,4 @@ from .exceptions import (ObjectNotFoundException, UniqueFieldException,
 from .config import Config
 from .fields import Field, FieldDescription, FieldType, FieldStorage, fields
 from .json_object import JSONObject
-from .persistable_json_object import PersistableJSONObject
 from .json_encoder import JSONEncoder
