@@ -30,13 +30,20 @@ class RequiredValidator(Validator):
                     FieldType.LIST if list_field else FieldType.INSTANCE)
                 from ..json_object import JSONObject
                 if isinstance(context.parent, dict):
-                    if context.parent[local_key] is None:
+                    if context.parent.get(local_key) is None:
                         raise ValidationException(
                             {context.keypath: f'Value at \'{context.keypath}\' should not be None.'},
                             context.root
                         )
                 elif isinstance(context.parent, JSONObject):
-                    if getattr(context.parent, local_key) is None:
+                    try:
+                        local_key_value = getattr(context.parent, local_key)
+                    except AttributeError:
+                        raise ValidationException(
+                            {context.keypath: f'Value at \'{context.keypath}\' should not be None.'},
+                            context.root
+                        )
+                    if local_key_value is None:
                         raise ValidationException(
                             {context.keypath: f'Value at \'{context.keypath}\' should not be None.'},
                             context.root
