@@ -1,7 +1,8 @@
 """This module contains JSON Class `config` aka configuration object."""
 from __future__ import annotations
-from typing import Optional, Type, TYPE_CHECKING
+from typing import Optional, Type, Callable, TYPE_CHECKING
 from dataclasses import dataclass
+from .fields import FieldType
 if TYPE_CHECKING:
     from .json_object import JSONObject
 
@@ -25,6 +26,19 @@ STRICT_INPUT = False
 raises if invalid key value pairs are received.
 """
 
+PRIMARY_KEY = 'id'
+"""Instruct on how to find the primary key to this JSON Class objects.
+"""
+
+LocalKey = Callable[[str, FieldType], str]
+
+
+def LOCAL_KEY(field_name: str, field_type: FieldType) -> str:
+    """The default local_key resolve function."""
+    if field_type == FieldType.LIST:
+        return field_name + '_ids'
+    return field_name + '_id'
+
 
 @dataclass
 class Config:
@@ -35,6 +49,9 @@ class Config:
     camelize_json_keys: Optional[bool] = None
     camelize_db_keys: Optional[bool] = None
     strict_input: Optional[bool] = None
+    primary_key: Optional[str] = None
+    local_key: Optional[LocalKey] = None
+
     linked_class: Optional[Type[JSONObject]] = None
 
     def __post_init__(self):
@@ -44,6 +61,10 @@ class Config:
             self.camelize_db_keys = CAMELIZE_DB_KEYS
         if self.strict_input is None:
             self.strict_input = STRICT_INPUT
+        if self.primary_key is None:
+            self.primary_key = PRIMARY_KEY
+        if self.local_key is None:
+            self.local_key = LOCAL_KEY
 
     def install_on_class(self, cls: Type[JSONObject]):
         """Install config object onto a JSONObject class.

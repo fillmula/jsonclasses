@@ -5,7 +5,7 @@ from typing import Type, Optional, Union, TypeVar, overload, Callable
 from dataclasses import dataclass
 from .json_object import JSONObject
 from .graph import register_class
-from .config import Config
+from .config import Config, LocalKey
 
 T = TypeVar('T', bound=JSONObject)
 
@@ -20,7 +20,9 @@ def jsonclass(
     graph: str = 'default',
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None,
-    strict_input: Optional[bool] = None
+    strict_input: Optional[bool] = None,
+    primary_key: Optional[str] = None,
+    local_key: Optional[LocalKey] = None
 ) -> Callable[[Type[T]], Type[T]]: ...
 
 
@@ -30,7 +32,9 @@ def jsonclass(
     graph: str = 'default',
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None,
-    strict_input: Optional[bool] = None
+    strict_input: Optional[bool] = None,
+    primary_key: Optional[str] = None,
+    local_key: Optional[LocalKey] = None
 ) -> Type[T]: ...
 
 
@@ -39,7 +43,9 @@ def jsonclass(
     graph: str = 'default',
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None,
-    strict_input: Optional[bool] = None
+    strict_input: Optional[bool] = None,
+    primary_key: Optional[str] = None,
+    local_key: Optional[LocalKey] = None
 ) -> Union[Callable[[Type[T]], Type[T]], Type[T]]:
     """The jsonclass object class decorator. To declare a jsonclass class, use
     this syntax:
@@ -59,7 +65,9 @@ def jsonclass(
             graph=graph,
             camelize_json_keys=camelize_json_keys,
             camelize_db_keys=camelize_db_keys,
-            strict_input=strict_input
+            strict_input=strict_input,
+            primary_key=primary_key,
+            local_key=local_key
         )
         config.install_on_class(cls)
         return register_class(dataclass(init=False)(cls), graph=graph)
@@ -70,6 +78,8 @@ def jsonclass(
                 graph=graph,
                 camelize_json_keys=camelize_json_keys,
                 camelize_db_keys=camelize_db_keys,
-                strict_input=strict_input
+                strict_input=strict_input,
+                primary_key=primary_key,
+                local_key=local_key
             )
         return parametered_jsonclass

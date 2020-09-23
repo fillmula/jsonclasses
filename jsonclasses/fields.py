@@ -6,7 +6,6 @@ from dataclasses import (dataclass,
                          fields as dataclass_fields,
                          Field as DataclassField)
 from inflection import camelize
-from .config import Config
 from .types_resolver import to_types
 if TYPE_CHECKING:
     from .types import Types
@@ -147,6 +146,7 @@ def fields(
     """Iterate through a JSON Class or JSON Class instance's fields."""
     from .types import Types
     from .json_object import JSONObject
+    from .config import Config
     if isinstance(class_or_instance, JSONObject):
         config = class_or_instance.__class__.config
     elif issubclass(class_or_instance, JSONObject):

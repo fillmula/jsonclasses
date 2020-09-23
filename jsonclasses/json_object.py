@@ -1,5 +1,4 @@
-"""
-This module contains `JSONObject`, the main base class of JSON Classes.
+"""This module contains `JSONObject`, the main base class of JSON Classes.
 """
 from __future__ import annotations
 from typing import Dict, Any, ClassVar, TypeVar
