@@ -73,7 +73,7 @@ class InstanceOfValidator(Validator):
         types = resolve_types(self.types, context.config.linked_class)
         cls = types.field_description.instance_types
         assert cls is not None
-        dest = context.dest if context.dest is not None else cls(__empty__=True)
+        dest = context.dest if context.dest is not None else cls(_empty=True)
 
         # strictness check
         strictness = False

@@ -27,14 +27,14 @@ class JSONObject:
 
     config: ClassVar[Config]
 
-    def __init__(self: T, __empty__: bool = False, **kwargs: Any) -> None:
+    def __init__(self: T, _empty: bool = False, **kwargs: Any) -> None:
         """Initialize a new jsonclass object from keyed arguments or a dict. This
         method is suitable for accepting web and malformed inputs. Eager validation
         and transformation are applied during the initialization process.
         """
         for field in fields(self):
             setattr(self, field.name, None)
-        if not __empty__:
+        if not _empty:
             self.__set(fill_blanks=True, **kwargs)
 
     def set(self: T, **kwargs: Any) -> T:
