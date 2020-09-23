@@ -42,9 +42,14 @@ class ShapeValidator(Validator):
                         value=value_at_key,
                         keypath=concat_keypath(context.keypath, k),
                         root=context.root,
-                        all_fields=context.all_fields,
                         config=context.config,
-                        field_description=types.field_description)
+                        keypath_owner=concat_keypath(context.keypath_owner, k),
+                        owner=context.owner,
+                        config_owner=context.config_owner,
+                        keypath_parent=k,
+                        parent=context.value,
+                        field_description=types.field_description,
+                        all_fields=context.all_fields)
                     types.validator.validate(item_context)
                 except ValidationException as exception:
                     if context.all_fields:
@@ -81,9 +86,14 @@ class ShapeValidator(Validator):
                     value=field_value,
                     keypath=concat_keypath(context.keypath, new_key),
                     root=context.root,
-                    all_fields=context.all_fields,
                     config=context.config,
-                    field_description=types.field_description)
+                    keypath_owner=concat_keypath(context.keypath_owner, new_key),
+                    owner=context.owner,
+                    config_owner=context.config_owner,
+                    keypath_parent=new_key,
+                    parent=value,
+                    field_description=types.field_description,
+                    all_fields=context.all_fields)
                 retval[new_key] = types.validator.transform(item_context)
             else:
                 retval[new_key] = field_value

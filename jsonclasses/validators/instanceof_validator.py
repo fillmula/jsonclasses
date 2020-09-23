@@ -36,9 +36,14 @@ class InstanceOfValidator(Validator):
                         value=field_value,
                         keypath=concat_keypath(context.keypath, field_name),
                         root=context.root,
-                        all_fields=context.all_fields,
                         config=context.config,
-                        field_description=field.field_description)
+                        keypath_owner=field_name,
+                        owner=context.value,
+                        config_owner=context.value.__class__.config,
+                        keypath_parent=field_name,
+                        parent=context.value,
+                        field_description=field.field_description,
+                        all_fields=context.all_fields)
                     field_types.validator.validate(field_context)
                 except ValidationException as exception:
                     if context.all_fields:
@@ -97,9 +102,14 @@ class InstanceOfValidator(Validator):
                     value=None,
                     keypath=concat_keypath(context.keypath, field.field_name),
                     root=context.root,
-                    all_fields=context.all_fields,
                     config=context.config,
-                    field_description=field.field_description)
+                    keypath_owner=field.field_name,
+                    owner=context.value,
+                    config_owner=cls.config,
+                    keypath_parent=field.field_name,
+                    parent=context.value,
+                    field_description=field.field_description,
+                    all_fields=context.all_fields)
                 transformed = field.field_types.validator.transform(
                     transform_context)
                 setattr(dest, field.field_name, transformed)
@@ -118,9 +128,14 @@ class InstanceOfValidator(Validator):
                             value=field_value,
                             keypath=concat_keypath(context.keypath, field.field_name),
                             root=context.root,
-                            all_fields=context.all_fields,
                             config=context.config,
-                            field_description=field.field_description)
+                            keypath_owner=field.field_name,
+                            owner=context.value,
+                            config_owner=cls.config,
+                            keypath_parent=field.field_name,
+                            parent=context.value,
+                            field_description=field.field_description,
+                            all_fields=context.all_fields)
                         transformed = field.field_types.validator.transform(
                             field_context)
                         setattr(dest, field.field_name, transformed)
@@ -132,9 +147,14 @@ class InstanceOfValidator(Validator):
                         value=field_value,
                         keypath=concat_keypath(context.keypath, field.field_name),
                         root=context.root,
-                        all_fields=context.all_fields,
                         config=context.config,
-                        field_description=field.field_description)
+                        keypath_owner=field.field_name,
+                        owner=context.value,
+                        config_owner=cls.config,
+                        keypath_parent=field.field_name,
+                        parent=context.value,
+                        field_description=field.field_description,
+                        all_fields=context.all_fields)
                     transformed = field.field_types.validator.transform(
                         field_context)
                     setattr(dest, field.field_name, transformed)

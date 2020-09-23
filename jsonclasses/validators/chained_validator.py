@@ -1,7 +1,7 @@
 """module for chained validator."""
 from __future__ import annotations
+from dataclasses import field
 from typing import List, Dict, Any, Optional
-from functools import reduce
 from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
@@ -31,9 +31,14 @@ class ChainedValidator(Validator):
                     value=context.value,
                     keypath=context.keypath,
                     root=root,
-                    all_fields=context.all_fields,
                     config=context.config,
-                    field_description=context.field_description)
+                    keypath_owner=context.keypath_owner,
+                    owner=context.owner,
+                    config_owner=context.config_owner,
+                    keypath_parent=context.keypath_parent,
+                    parent=context.parent,
+                    field_description=context.field_description,
+                    all_fields=context.all_fields)
                 validator.validate(validator_context)
             except ValidationException as exception:
                 keypath_messages.update(exception.keypath_messages)
@@ -51,39 +56,15 @@ class ChainedValidator(Validator):
             value=context.value,
             keypath=context.keypath,
             root=context.root,
-            all_fields=context.all_fields,
-            config=context.config)
+            config=context.config,
+            keypath_owner=context.keypath_owner,
+            owner=context.owner,
+            config_owner=context.config_owner,
+            keypath_parent=context.keypath_parent,
+            parent=context.parent,
+            field_description=context.field_description,
+            all_fields=context.all_fields)
         return validator.transform(transforming_context)
-
-    def _build_context(
-            self,
-            value: Any,
-            keypath: str,
-            root: Any,
-            all_fields: bool,
-            config: Config,
-            field_description: FieldDescription) -> ValidatingContext:
-        return ValidatingContext(value=value,
-                                 keypath=keypath,
-                                 root=root,
-                                 all_fields=all_fields,
-                                 config=config,
-                                 field_description=field_description)
-
-    def _build_t_context(
-            self,
-            value: Any,
-            keypath: str,
-            root: Any,
-            all_fields: bool,
-            config: Config,
-            field_description: FieldDescription) -> TransformingContext:
-        return TransformingContext(value=value,
-                                 keypath=keypath,
-                                 root=root,
-                                 all_fields=all_fields,
-                                 config=config,
-                                 field_description=field_description)
 
     # flake8: noqa: E501
     def transform(self, context: TransformingContext) -> Any:
@@ -92,21 +73,45 @@ class ChainedValidator(Validator):
         next_index = eager_validator_index_after_index(self.validators, index)
         while next_index is not None:
             validators = self.validators[index:next_index]
-            curvalue = reduce(lambda v, validator: self._validate_and_transform(
-                validator, self._build_context(v, context.keypath, context.root, context.all_fields, context.config, context.field_description)), validators, curvalue)
+            for validator in validators:
+                next_vt_context = ValidatingContext(
+                    value=curvalue,
+                    keypath=context.keypath,
+                    root=context.root,
+                    config=context.config,
+                    keypath_owner=context.keypath_owner,
+                    owner=context.owner,
+                    config_owner=context.config_owner,
+                    keypath_parent=context.keypath_parent,
+                    parent=context.parent,
+                    field_description=context.field_description,
+                    all_fields=context.all_fields)
+                curvalue = self._validate_and_transform(validator, next_vt_context)
             index = next_index + 1
             next_index = eager_validator_index_after_index(self.validators, index)
-        curvalue = reduce(lambda v, validator: validator.transform(
-            self._build_t_context(v, context.keypath, context.root, context.all_fields, context.config, context.field_description)), self.validators[index:], curvalue)
+        validators = self.validators[index:]
+        for validator in validators:
+            next_t_context = TransformingContext(
+                value=curvalue,
+                keypath=context.keypath,
+                root=context.root,
+                config=context.config,
+                keypath_owner=context.keypath_owner,
+                owner=context.owner,
+                config_owner=context.config_owner,
+                keypath_parent=context.keypath_parent,
+                parent=context.parent,
+                field_description=context.field_description,
+                all_fields=context.all_fields)
+            curvalue = validator.transform(next_t_context)
         return curvalue
 
-    def _build_tojson_context(self,
-                              value: Any,
-                              config: Config,
-                              ignore_writeonly: bool) -> ToJSONContext:
-        return ToJSONContext(value=value, config=config, ignore_writeonly=ignore_writeonly)
-
     def tojson(self, context: ToJSONContext) -> Any:
-        return reduce(lambda v, validator: (
-            validator.tojson(self._build_tojson_context(v, context.config,
-            context.ignore_writeonly))), self.validators, context.value)
+        value = context.value
+        for validator in self.validators:
+            next_context = ToJSONContext(
+                value=value,
+                config=context.config,
+                ignore_writeonly=context.ignore_writeonly)
+            value = validator.tojson(next_context)
+        return value

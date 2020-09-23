@@ -55,9 +55,14 @@ class JSONObject:
             value=kwargs,
             keypath='',
             root=self,
-            all_fields=True,
             config=config,
+            keypath_owner='',
+            owner=self,
+            config_owner=config,
+            keypath_parent='',
+            parent=self,
             field_description=None,
+            all_fields=True,
             dest=self,
             fill_dest_blanks=fill_blanks
         )
@@ -117,9 +122,14 @@ class JSONObject:
             value=self,
             keypath='',
             root=self,
-            all_fields=all_fields,
             config=config,
-            field_description=None)
+            keypath_owner='',
+            owner=self,
+            config_owner=config,
+            keypath_parent='',
+            parent=self,
+            field_description=None,
+            all_fields=all_fields)
         InstanceOfValidator(self.__class__).validate(context)
         return self
 

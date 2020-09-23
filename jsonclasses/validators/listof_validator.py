@@ -38,9 +38,14 @@ class ListOfValidator(Validator):
                         value=v,
                         keypath=concat_keypath(context.keypath, i),
                         root=context.root,
-                        all_fields=context.all_fields,
                         config=context.config,
-                        field_description=types.field_description)
+                        keypath_owner=concat_keypath(context.keypath_owner, i),
+                        owner=context.owner,
+                        config_owner=context.config_owner,
+                        keypath_parent=i,
+                        parent=context.value,
+                        field_description=types.field_description,
+                        all_fields=context.all_fields)
                     types.validator.validate(item_context)
                 except ValidationException as exception:
                     if context.all_fields:
@@ -68,9 +73,14 @@ class ListOfValidator(Validator):
                     value=v,
                     keypath=concat_keypath(context.keypath, i),
                     root=context.root,
-                    all_fields=context.all_fields,
                     config=context.config,
-                    field_description=types.field_description)
+                    keypath_owner=concat_keypath(context.keypath_owner, i),
+                    owner=context.owner,
+                    config_owner=context.config_owner,
+                    keypath_parent=i,
+                    parent=value,
+                    field_description=types.field_description,
+                    all_fields=context.all_fields)
                 transformed = types.validator.transform(item_context)
                 retval.append(transformed)
             return retval
