@@ -1,7 +1,6 @@
 """module for embedded validator."""
 from ..fields import FieldDescription, FieldStorage
 from .validator import Validator
-from ..contexts import ValidatingContext
 
 
 class EmbeddedValidator(Validator):
@@ -9,6 +8,3 @@ class EmbeddedValidator(Validator):
 
     def define(self, field_description: FieldDescription) -> None:
         field_description.field_storage = FieldStorage.EMBEDDED
-
-    def validate(self, context: ValidatingContext) -> None:
-        pass

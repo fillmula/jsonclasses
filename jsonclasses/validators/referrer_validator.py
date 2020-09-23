@@ -1,7 +1,6 @@
 """module for referrer validator."""
 from ..fields import FieldDescription
 from .validator import Validator
-from ..contexts import ValidatingContext
 
 
 class ReferrerValidator(Validator):
@@ -12,6 +11,3 @@ class ReferrerValidator(Validator):
 
     def define(self, field_description: FieldDescription) -> None:
         field_description.join_table_referrer_key = self.referrer_key
-
-    def validate(self, context: ValidatingContext) -> None:
-        pass

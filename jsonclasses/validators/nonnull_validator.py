@@ -1,7 +1,6 @@
 """module for nonnull validator."""
 from .validator import Validator
 from ..fields import FieldDescription, Nullability
-from ..contexts import ValidatingContext
 
 
 class NonnullValidator(Validator):
@@ -9,6 +8,3 @@ class NonnullValidator(Validator):
 
     def define(self, field_description: FieldDescription) -> None:
         field_description.collection_nullability = Nullability.NONNULL
-
-    def validate(self, context: ValidatingContext) -> None:
-        pass

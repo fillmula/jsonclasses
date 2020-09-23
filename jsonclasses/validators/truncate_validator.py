@@ -1,7 +1,7 @@
 """module for truncate validator."""
 from typing import Any
 from .validator import Validator
-from ..contexts import ValidatingContext, TransformingContext
+from ..contexts import TransformingContext
 
 
 class TruncateValidator(Validator):
@@ -9,9 +9,6 @@ class TruncateValidator(Validator):
 
     def __init__(self, max_length: int) -> None:
         self.max_length = max_length
-
-    def validate(self, context: ValidatingContext) -> None:
-        pass
 
     def transform(self, context: TransformingContext) -> Any:
         if context.value is None:

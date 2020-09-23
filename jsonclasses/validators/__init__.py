@@ -1,6 +1,7 @@
 """This module contains all validator markers."""
 # flake8: noqa: F401
 from .validator import Validator
+from .invalid_validator import InvalidValidator
 
 # access markers
 from .writeonly_validator import WriteonlyValidator

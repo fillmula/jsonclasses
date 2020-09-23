@@ -7,10 +7,11 @@ from .validators import (BoolValidator, ChainedValidator, DateValidator,
                          DatetimeValidator, DefaultValidator, DictOfValidator,
                          EagerValidator, EmbeddedValidator, FloatValidator,
                          IndexValidator, InstanceOfValidator, IntValidator,
-                         LengthValidator, LinkedByValidator, LinkedInValidator,
-                         LinkedThruValidator, LinkToValidator, ListOfValidator,
-                         MatchValidator, MaxValidator, MaxlengthValidator,
-                         MinValidator, MinlengthValidator, NonnullValidator,
+                         InvalidValidator, LengthValidator, LinkedByValidator,
+                         LinkedInValidator, LinkedThruValidator,
+                         LinkToValidator, ListOfValidator, MatchValidator,
+                         MaxValidator, MaxlengthValidator, MinValidator,
+                         MinlengthValidator, NonnullValidator,
                          NullableValidator, OneOfValidator, OneOfTypeValidator,
                          RangeValidator, ReadonlyValidator, ReadwriteValidator,
                          RefereeValidator, ReferrerValidator,
@@ -51,7 +52,7 @@ class Types:
         """Fields marked with invalid will never be valid, thus these fields
         will never pass validation.
         """
-        return Types(self, Validator())
+        return Types(self, InvalidValidator())
 
     @property
     def readonly(self) -> Types:

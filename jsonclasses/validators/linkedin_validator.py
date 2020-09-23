@@ -2,7 +2,6 @@
 from typing import Any
 from ..fields import FieldDescription, FieldStorage
 from .validator import Validator
-from ..contexts import ValidatingContext
 
 
 class LinkedInValidator(Validator):
@@ -16,6 +15,3 @@ class LinkedInValidator(Validator):
         field_description.field_storage = FieldStorage.FOREIGN_KEY
         field_description.join_table_cls = self.cls
         field_description.use_join_table = True
-
-    def validate(self, context: ValidatingContext) -> None:
-        pass

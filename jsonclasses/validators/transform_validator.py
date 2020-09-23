@@ -1,7 +1,7 @@
 """module for transform validator."""
 from typing import Callable, Any
 from .validator import Validator
-from ..contexts import ValidatingContext, TransformingContext
+from ..contexts import TransformingContext
 
 
 class TransformValidator(Validator):
@@ -9,9 +9,6 @@ class TransformValidator(Validator):
 
     def __init__(self, transformer: Callable) -> None:
         self.transformer = transformer
-
-    def validate(self, context: ValidatingContext) -> None:
-        pass
 
     def transform(self, context: TransformingContext) -> Any:
         if context.value is None:

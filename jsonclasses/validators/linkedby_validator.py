@@ -1,7 +1,6 @@
 """module for linkedby validator."""
 from ..fields import FieldDescription, FieldStorage
 from .validator import Validator
-from ..contexts import ValidatingContext
 
 
 class LinkedByValidator(Validator):
@@ -14,6 +13,3 @@ class LinkedByValidator(Validator):
         field_description.field_storage = FieldStorage.FOREIGN_KEY
         field_description.foreign_key = self.foreign_key
         field_description.use_join_table = False
-
-    def validate(self, context: ValidatingContext) -> None:
-        pass

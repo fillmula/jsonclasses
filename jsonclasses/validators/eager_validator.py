@@ -1,7 +1,6 @@
 """module for eager validator."""
 from .validator import Validator
 from ..fields import FieldDescription
-from ..contexts import ValidatingContext
 
 
 class EagerValidator(Validator):
@@ -11,6 +10,3 @@ class EagerValidator(Validator):
 
     def define(self, field_description: FieldDescription) -> None:
         field_description.has_eager_validator = True
-
-    def validate(self, context: ValidatingContext) -> None:
-        pass

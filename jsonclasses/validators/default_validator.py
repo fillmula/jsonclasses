@@ -1,7 +1,7 @@
 """module for default validator."""
 from typing import Any
 from .validator import Validator
-from ..contexts import ValidatingContext, TransformingContext
+from ..contexts import TransformingContext
 
 
 class DefaultValidator(Validator):
@@ -9,9 +9,6 @@ class DefaultValidator(Validator):
 
     def __init__(self, default_value: Any) -> None:
         self.default_value = default_value
-
-    def validate(self, context: ValidatingContext) -> None:
-        pass
 
     def transform(self, context: TransformingContext) -> Any:
         if context.value is not None:
