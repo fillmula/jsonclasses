@@ -3,7 +3,7 @@ This module contains `PersistableJSONObject`, the abstract base class for
 interacting with ORMs.
 """
 from __future__ import annotations
-from typing import Any, TypeVar, Union, Optional
+from typing import TypeVar, Union, Optional
 from datetime import datetime
 from .jsonclass import jsonclass
 from .json_object import JSONObject
@@ -33,11 +33,6 @@ class PersistableJSONObject(JSONObject):
   field is managed internally thus cannot be updated externally with web
   request bodies.
   """
-
-    def set(self: T, **kwargs: Any) -> T:
-        super().set(**kwargs)
-        self.updated_at = datetime.now()
-        return self
 
 
 T = TypeVar('T', bound=PersistableJSONObject)
