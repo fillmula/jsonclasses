@@ -85,7 +85,7 @@ class InstanceOfValidator(Validator):
             else:
                 strictness = cls.config.strict_input
         else:
-            strictness = context.config.strict_input
+            strictness = context.config.strict_input or False
         if strictness:
             self._strictness_check(context, dest)
 
