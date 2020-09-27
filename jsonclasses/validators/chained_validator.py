@@ -1,14 +1,11 @@
 """module for chained validator."""
 from __future__ import annotations
-from dataclasses import field
 from typing import List, Dict, Any, Optional
-from ..config import Config
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.eager_validator_index_after_index import eager_validator_index_after_index
 from ..utils.last_eager_validator_index import last_eager_validator_index
 from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
-from ..fields import FieldDescription
 
 
 class ChainedValidator(Validator):
