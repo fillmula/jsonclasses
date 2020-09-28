@@ -32,19 +32,15 @@ class InstanceOfValidator(Validator):
                 field_name = field.field_name
                 field_value = getattr(context.value, field_name)
                 try:
-                    field_context = ValidatingContext(
+                    field_types.validator.validate(context.new(
                         value=field_value,
                         keypath=concat_keypath(context.keypath, field_name),
-                        root=context.root,
-                        config=context.config,
                         keypath_owner=field_name,
                         owner=context.value,
                         config_owner=context.value.__class__.config,
                         keypath_parent=field_name,
                         parent=context.value,
-                        field_description=field.field_description,
-                        all_fields=context.all_fields)
-                    field_types.validator.validate(field_context)
+                        field_description=field.field_description))
                 except ValidationException as exception:
                     if context.all_fields:
                         keypath_messages.update(exception.keypath_messages)
