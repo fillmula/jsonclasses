@@ -1,6 +1,5 @@
 import unittest
 from jsonclasses import jsonclass, JSONObject, types
-from datetime import datetime, date
 
 
 class TestInternalValidator(unittest.TestCase):

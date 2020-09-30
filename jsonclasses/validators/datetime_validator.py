@@ -1,35 +1,29 @@
 """module for datetime validator."""
 from typing import Any
 from datetime import datetime
-from ..fields import FieldDescription, FieldType
+from ..fields import FieldType
 from ..exceptions import ValidationException
-from .validator import Validator
-from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
+from .type_validator import TypeValidator
+from ..contexts import TransformingContext, ToJSONContext
 
 
-class DatetimeValidator(Validator):
+class DatetimeValidator(TypeValidator):
     """Datetime validator validate value against datetime type."""
 
-    def define(self, field_description: FieldDescription) -> None:
-        field_description.field_type = FieldType.DATETIME
-
-    def validate(self, context: ValidatingContext) -> None:
-        if context.value is None:
-            return
-        if isinstance(context.value, datetime):
-            return
-        raise ValidationException(
-            {
-                context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should be datetime.'
-            },
-            context.root
-        )
+    def __init__(self):
+        self.cls = datetime
+        self.field_type = FieldType.DATETIME
 
     def transform(self, context: TransformingContext) -> Any:
         if context.value is None:
             return None
         elif isinstance(context.value, str):
-            return datetime.fromisoformat(context.value.replace('Z', ''))
+            try:
+                return datetime.fromisoformat(context.value.replace('Z', ''))
+            except ValueError:
+                raise ValidationException({
+                    context.keypath: 'Datetime string format error.'
+                }, context.root)
         else:
             return context.value
 

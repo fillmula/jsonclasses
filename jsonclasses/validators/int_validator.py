@@ -1,22 +1,11 @@
 """module for int validator."""
-from ..fields import FieldDescription, FieldType
-from ..exceptions import ValidationException
-from .validator import Validator
-from ..contexts import ValidatingContext
+from ..fields import FieldType
+from .type_validator import TypeValidator
 
 
-class IntValidator(Validator):
-    """Int validator validate value against int type."""
+class IntValidator(TypeValidator):
+    """Int validator validates value against int type."""
 
-    def define(self, field_description: FieldDescription) -> None:
-        field_description.field_type = FieldType.INT
-
-    def validate(self, context: ValidatingContext) -> None:
-        if context.value is None:
-            return
-        if type(context.value) is int:  # bool will test True for isinstance
-            return
-        raise ValidationException(
-            {context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should be int.'},
-            context.root
-        )
+    def __init__(self):
+        self.cls = int
+        self.field_type = FieldType.INT

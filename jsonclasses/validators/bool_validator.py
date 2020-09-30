@@ -1,24 +1,11 @@
 """module for bool validator."""
-from ..fields import FieldDescription, FieldType
-from ..exceptions import ValidationException
-from .validator import Validator
-from ..contexts import ValidatingContext
+from ..fields import FieldType
+from .type_validator import TypeValidator
 
 
-class BoolValidator(Validator):
+class BoolValidator(TypeValidator):
     """Bool validator validate value against bool."""
 
-    def define(self, field_description: FieldDescription) -> None:
-        field_description.field_type = FieldType.BOOL
-
-    def validate(self, context: ValidatingContext) -> None:
-        if context.value is None:
-            return
-        if isinstance(context.value, bool):
-            return
-        raise ValidationException(
-            {
-                context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should be bool.'
-            },
-            context.root
-        )
+    def __init__(self):
+        self.cls = bool
+        self.field_type = FieldType.BOOL

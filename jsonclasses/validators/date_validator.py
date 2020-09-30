@@ -1,35 +1,29 @@
 """module for date validator."""
 from typing import Any
 from datetime import date
-from ..fields import FieldDescription, FieldType
+from ..fields import FieldType
 from ..exceptions import ValidationException
-from .validator import Validator
-from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
+from .type_validator import TypeValidator
+from ..contexts import TransformingContext, ToJSONContext
 
 
-class DateValidator(Validator):
+class DateValidator(TypeValidator):
     """Date validator validate value against date type."""
 
-    def define(self, field_description: FieldDescription) -> None:
-        field_description.field_type = FieldType.DATE
-
-    def validate(self, context: ValidatingContext) -> None:
-        if context.value is None:
-            return
-        if isinstance(context.value, date):
-            return
-        raise ValidationException(
-            {
-                context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should be date.'
-            },
-            context.root
-        )
+    def __init__(self):
+        self.cls = date
+        self.field_type = FieldType.DATE
 
     def transform(self, context: TransformingContext) -> Any:
         if context.value is None:
             return None
         elif isinstance(context.value, str):
-            return date.fromisoformat(context.value[:10])
+            try:
+                return date.fromisoformat(context.value[:10])
+            except ValueError:
+                raise ValidationException({
+                    context.keypath: 'Date string format error.'
+                }, context.root)
         else:
             return context.value
 

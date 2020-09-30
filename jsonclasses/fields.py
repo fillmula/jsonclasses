@@ -28,6 +28,7 @@ class FieldType(Enum):
     DICT = 'dict'
     SHAPE = 'shape'
     INSTANCE = 'instance'
+    ANY = 'any'
 
 
 class FieldStorage(Enum):
