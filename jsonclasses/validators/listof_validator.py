@@ -26,32 +26,25 @@ class ListOfValidator(TypeValidator):
             return
         super().validate(context)
         types = resolve_types(self.types, context.config.linked_class)
-        if types:
-            if types.field_description.item_nullability == Nullability.UNDEFINED:
-                types = types.required
-            keypath_messages = {}
-            for i, v in enumerate(context.value):
-                try:
-                    item_context = ValidatingContext(
-                        value=v,
-                        keypath=concat_keypath(context.keypath, i),
-                        root=context.root,
-                        config=context.config,
-                        keypath_owner=concat_keypath(context.keypath_owner, i),
-                        owner=context.owner,
-                        config_owner=context.config_owner,
-                        keypath_parent=i,
-                        parent=context.value,
-                        field_description=types.field_description,
-                        all_fields=context.all_fields)
-                    types.validator.validate(item_context)
-                except ValidationException as exception:
-                    if context.all_fields:
-                        keypath_messages.update(exception.keypath_messages)
-                    else:
-                        raise exception
-            if len(keypath_messages) > 0:
-                raise ValidationException(keypath_messages=keypath_messages, root=context.root)
+        if types.field_description.item_nullability == Nullability.UNDEFINED:
+            types = types.required
+        keypath_messages = {}
+        for i, v in enumerate(context.value):
+            try:
+                types.validator.validate(context.new(
+                    value=v,
+                    keypath=concat_keypath(context.keypath, i),
+                    keypath_owner=concat_keypath(context.keypath_owner, i),
+                    keypath_parent=i,
+                    parent=context.value,
+                    field_description=types.field_description))
+            except ValidationException as exception:
+                if context.all_fields:
+                    keypath_messages.update(exception.keypath_messages)
+                else:
+                    raise exception
+        if len(keypath_messages) > 0:
+            raise ValidationException(keypath_messages=keypath_messages, root=context.root)
 
     def transform(self, context: TransformingContext) -> Any:
         value = context.value
@@ -68,19 +61,13 @@ class ListOfValidator(TypeValidator):
         if types:
             retval = []
             for i, v in enumerate(value):
-                item_context = TransformingContext(
+                transformed = types.validator.transform(context.new(
                     value=v,
                     keypath=concat_keypath(context.keypath, i),
-                    root=context.root,
-                    config=context.config,
                     keypath_owner=concat_keypath(context.keypath_owner, i),
-                    owner=context.owner,
-                    config_owner=context.config_owner,
                     keypath_parent=i,
                     parent=value,
-                    field_description=types.field_description,
-                    all_fields=context.all_fields)
-                transformed = types.validator.transform(item_context)
+                    field_description=types.field_description))
                 retval.append(transformed)
             return retval
         else:
@@ -95,11 +82,7 @@ class ListOfValidator(TypeValidator):
         if types:
             retval = []
             for v in context.value:
-                item_context = ToJSONContext(
-                    value=v,
-                    config=context.config,
-                    ignore_writeonly=context.ignore_writeonly)
-                retval.append(types.validator.tojson(item_context))
+                retval.append(types.validator.tojson(context.new(value=v)))
             return retval
         else:
             return context.value

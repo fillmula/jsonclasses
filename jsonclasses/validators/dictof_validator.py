@@ -37,7 +37,8 @@ class DictOfValidator(TypeValidator):
                     keypath=concat_keypath(context.keypath, k),
                     keypath_owner=concat_keypath(context.keypath_owner, k),
                     keypath_parent=k,
-                    parent=context.value))
+                    parent=context.value,
+                    field_description=types.field_description))
             except ValidationException as exception:
                 if context.all_fields:
                     keypath_messages.update(exception.keypath_messages)
@@ -66,7 +67,8 @@ class DictOfValidator(TypeValidator):
                 keypath=concat_keypath(context.keypath, new_key),
                 keypath_owner=concat_keypath(context.keypath_owner, new_key),
                 keypath_parent=new_key,
-                parent=value))
+                parent=value,
+                field_description=types.field_description))
         return retval
 
     def tojson(self, context: ToJSONContext) -> Any:
