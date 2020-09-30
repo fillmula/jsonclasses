@@ -77,7 +77,7 @@ class TestJSONObjectSet(unittest.TestCase):
         )
 
     def test_set_ignores_redundant_keys(self):
-        @jsonclass(graph='test_set_7')
+        @jsonclass(graph='test_set_7', strict_input=False)
         class Size(JSONObject):
             width: float
             height: float

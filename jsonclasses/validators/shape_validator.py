@@ -34,19 +34,13 @@ class ShapeValidator(TypeValidator):
             types = resolve_types(t, context.config.linked_class)
             if types:
                 try:
-                    item_context = ValidatingContext(
+                    types.validator.validate(context.new(
                         value=value_at_key,
                         keypath=concat_keypath(context.keypath, k),
-                        root=context.root,
-                        config=context.config,
                         keypath_owner=concat_keypath(context.keypath_owner, k),
-                        owner=context.owner,
-                        config_owner=context.config_owner,
                         keypath_parent=k,
                         parent=context.value,
-                        field_description=types.field_description,
-                        all_fields=context.all_fields)
-                    types.validator.validate(item_context)
+                        field_description=types.field_description))
                 except ValidationException as exception:
                     if context.all_fields:
                         keypath_messages.update(exception.keypath_messages)
@@ -79,19 +73,13 @@ class ShapeValidator(TypeValidator):
             t = self.types[new_key]
             types = resolve_types(t, context.config.linked_class)
             if types:
-                item_context = TransformingContext(
+                retval[new_key] = types.validator.transform(context.new(
                     value=field_value,
                     keypath=concat_keypath(context.keypath, new_key),
-                    root=context.root,
-                    config=context.config,
                     keypath_owner=concat_keypath(context.keypath_owner, new_key),
-                    owner=context.owner,
-                    config_owner=context.config_owner,
                     keypath_parent=new_key,
                     parent=value,
-                    field_description=types.field_description,
-                    all_fields=context.all_fields)
-                retval[new_key] = types.validator.transform(item_context)
+                    field_description=types.field_description))
             else:
                 retval[new_key] = field_value
             unused_keys.remove(new_key)
@@ -113,11 +101,7 @@ class ShapeValidator(TypeValidator):
                 value_at_key = None
             types = resolve_types(t, context.config.linked_class)
             if types:
-                item_context = ToJSONContext(
-                    value=value_at_key,
-                    config=context.config,
-                    ignore_writeonly=context.ignore_writeonly)
-                retval[key] = types.validator.tojson(item_context)
+                retval[key] = types.validator.tojson(context.new(value=value_at_key))
             else:
                 retval[key] = value_at_key
         return retval

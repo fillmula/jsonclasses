@@ -30,7 +30,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
         self.assertEqual(point.__dict__, {'x': 50, 'y': None})
 
     def test_initialize_with_keyed_arguments_remove_redundant_keys(self):
-        @jsonclass(graph='test_initialize_4')
+        @jsonclass(graph='test_initialize_4', strict_input=False)
         class Size(JSONObject):
             width: float
             height: float
@@ -55,7 +55,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
         self.assertEqual(point.__dict__, {'x': 50, 'y': None})
 
     def test_initialize_with_dict_remove_redundant_keys(self):
-        @jsonclass(graph='test_initialize_7')
+        @jsonclass(graph='test_initialize_7', strict_input=False)
         class Size(JSONObject):
             width: float
             height: float

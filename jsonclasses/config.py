@@ -21,7 +21,7 @@ is automatically on by default. Use `config.CAMELIZE_DB_KEYS = False` to
 disable this behavior globally.
 """
 
-STRICT_INPUT = False
+STRICT_INPUT = True
 """When initializing JSON Class objects and set values, strict input classes
 raises if invalid key value pairs are received.
 """
