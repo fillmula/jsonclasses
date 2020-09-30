@@ -3,32 +3,28 @@ from typing import Dict, Any
 from inflection import underscore, camelize
 from ..fields import FieldDescription, FieldType, Nullability, Strictness
 from ..exceptions import ValidationException
-from .validator import Validator
+from .type_validator import TypeValidator
 from ..utils.concat_keypath import concat_keypath
 from ..types_resolver import resolve_types
 from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 
 
-class ShapeValidator(Validator):
+class ShapeValidator(TypeValidator):
     """Shape validator validates a dict of values with defined shape."""
 
     def __init__(self, types: Dict[str, Any]) -> None:
-        if not isinstance(types, dict):
-            raise ValueError('argument passed to ShapeValidator should be dict')
+        self.cls = dict
+        self.field_type = FieldType.SHAPE
         self.types = types
 
     def define(self, field_description: FieldDescription) -> None:
-        field_description.field_type = FieldType.SHAPE
+        super().define(field_description)
         field_description.shape_types = self.types
 
     def validate(self, context: ValidatingContext) -> None:
         if context.value is None:
             return
-        if not isinstance(context.value, dict):
-            raise ValidationException(
-                {context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should be a dict.'},
-                context.root
-            )
+        super().validate(context)
         keypath_messages = {}
         for k, t in self.types.items():
             try:
@@ -62,6 +58,7 @@ class ShapeValidator(Validator):
     def transform(self, context: TransformingContext) -> Any:
         value = context.value
         fd = context.field_description
+        assert fd is not None
         if fd.collection_nullability == Nullability.NONNULL:
             if value is None:
                 value = {}

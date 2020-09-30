@@ -4,30 +4,28 @@ from typing import Any
 from inflection import underscore, camelize
 from ..fields import FieldDescription, FieldType, Nullability
 from ..exceptions import ValidationException
-from .validator import Validator
+from .type_validator import TypeValidator
 from ..utils.concat_keypath import concat_keypath
 from ..types_resolver import resolve_types
 from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 
 
-class DictOfValidator(Validator):
+class DictOfValidator(TypeValidator):
     """This validator validates dict."""
 
     def __init__(self, types: Any) -> None:
+        self.cls = dict
+        self.field_type = FieldType.DICT
         self.types = types
 
     def define(self, field_description: FieldDescription) -> None:
-        field_description.field_type = FieldType.DICT
+        super().define(field_description)
         field_description.dict_item_types = self.types
 
     def validate(self, context: ValidatingContext) -> None:
         if context.value is None:
             return
-        if not isinstance(context.value, dict):
-            raise ValidationException(
-                {context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should be a dict.'},
-                context.root
-            )
+        super().validate(context)
         types = resolve_types(self.types, context.config.linked_class)
         if types:
             if types.field_description.item_nullability == Nullability.UNDEFINED:
@@ -59,6 +57,7 @@ class DictOfValidator(Validator):
     def transform(self, context: TransformingContext) -> Any:
         value = context.value
         fd = context.field_description
+        assert fd is not None
         if fd.collection_nullability == Nullability.NONNULL:
             if value is None:
                 value = {}
