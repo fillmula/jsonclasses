@@ -1,6 +1,5 @@
 """module for listof validator."""
 from __future__ import annotations
-from dataclasses import field
 from typing import Any
 from ..fields import FieldDescription, FieldType, Nullability
 from ..exceptions import ValidationException

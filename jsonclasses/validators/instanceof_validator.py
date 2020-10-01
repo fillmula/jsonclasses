@@ -1,8 +1,8 @@
 """module for instanceof validator."""
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-from ..fields import (FieldDescription, FieldStorage, FieldType, WriteRule, ReadRule,
-                      Strictness, fields)
+from ..fields import (FieldDescription, FieldStorage, FieldType, WriteRule,
+                      ReadRule, Strictness, fields)
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.concat_keypath import concat_keypath
@@ -152,10 +152,29 @@ class InstanceOfValidator(Validator):
                         fk = field.field_description.foreign_key
                         assert fk is not None
                         if field.field_description.field_type == FieldType.LIST:
+                            object_fields = fields(transformed[0])
+                            try:
+                                object_field = next(f for f in object_fields
+                                                    if f.field_name == fk)
+                            except StopIteration:
+                                raise ValueError('Unmatched link reference.')
                             for t_item in transformed:
-                                setattr(t_item, fk, dest)
+                                if object_field.field_description.field_type == FieldType.LIST:
+                                    setattr(t_item, fk, [dest])
+                                else:
+                                    setattr(t_item, fk, dest)
                         else:
-                            setattr(transformed, fk, dest)
+                            object_fields = fields(transformed)
+                            try:
+                                object_field = next(f for f in object_fields
+                                                    if f.field_name == fk)
+                            except StopIteration:
+                                raise ValueError('Unmatched link reference.')
+                            if object_field.field_description.field_type == FieldType.LIST:
+                                setattr(transformed, fk, [dest])
+                            else:
+                                setattr(transformed, fk, dest)
+
                     elif field.field_description.field_storage == FieldStorage.LOCAL_KEY:
                         if field.field_description.field_type == FieldType.LIST:
                             if len(transformed) > 0:
@@ -164,7 +183,10 @@ class InstanceOfValidator(Validator):
                                     object_field = next(f for f in object_fields
                                                         if f.field_description.foreign_key == field.field_name)
                                     for i_item in transformed:
-                                        setattr(i_item, object_field.field_name, dest)
+                                        if object_field.field_description.field_type == FieldType.LIST:
+                                            setattr(i_item, object_field.field_name, [dest])
+                                        else:
+                                            setattr(i_item, object_field.field_name, dest)
                                 except StopIteration:
                                     pass
                         else:
@@ -175,7 +197,10 @@ class InstanceOfValidator(Validator):
                                 val = getattr(transformed, object_field.field_name)
                                 if val is not None and val != context.value:
                                     raise ValueError('Reference value not match.')
-                                setattr(transformed, object_field.field_name, dest)
+                                if object_field.field_description.field_type == FieldType.LIST:
+                                    setattr(transformed, object_field.field_name, [dest])
+                                else:
+                                    setattr(transformed, object_field.field_name, dest)
                             except StopIteration:
                                 pass
                     setattr(dest, field.field_name, transformed)
@@ -193,9 +218,6 @@ class InstanceOfValidator(Validator):
             json_field_name = field.json_field_name
             if field.field_types.field_description.read_rule == ReadRule.NO_READ and not context.ignore_writeonly:
                 continue
-            item_context = ToJSONContext(
-                value=field_value,
-                config=context.config,
-                ignore_writeonly=context.ignore_writeonly)
+            item_context = context.new(value=field_value)
             retval[json_field_name] = field.field_types.validator.tojson(item_context)
         return retval

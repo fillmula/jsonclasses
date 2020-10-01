@@ -294,3 +294,48 @@ class TestInstanceOfValidator(unittest.TestCase):
         user = User(**{'name': 'John', 'posts': [{'title': 'A'}, {'title': 'B'}]})
         self.assertEqual(user.posts[0].user, user)
         self.assertEqual(user.posts[1].user, user)
+
+    def test_instanceof_create_circular_ref_for_foreign_item_and_local_list_binding(self):
+
+        @jsonclass(graph='test_instanceof_19')
+        class Post(JSONObject):
+            title: str
+            user: User = types.linkto.instanceof('User').required
+
+        @jsonclass(graph='test_instanceof_19')
+        class User(JSONObject):
+            name: str
+            posts: List[Post] = types.listof('Post').linkedby('user').required
+        post = Post(**{'title': 'A', 'user': {'name': 'B'}})
+        self.assertEqual(post.user.posts[0], post)
+
+    def test_instanceof_create_circular_ref_for_local_list_and_foreign_binding(self):
+
+        @jsonclass(graph='test_instanceof_20')
+        class Post(JSONObject):
+            title: str
+            user: User = types.instanceof('User').linkedby('posts').required
+
+        @jsonclass(graph='test_instanceof_20')
+        class User(JSONObject):
+            name: str
+            posts: List[Post] = types.linkto.listof('Post').required
+
+        post = Post(**{'title': 'A', 'user': {'name': 'B'}})
+        self.assertEqual(post.user.posts[0], post)
+
+    def test_instance_of_accepts_object(self):
+
+        @jsonclass(graph='test_instanceof_21')
+        class Staff(JSONObject):
+            position: str
+            user: User = types.linkto.instanceof('User').required
+
+        @jsonclass(graph='test_instanceof_21')
+        class User(JSONObject):
+            name: str
+            staff: Staff = types.instanceof('Staff').linkedby('user').required
+
+        staff = Staff(position='CFO')
+        user = User(name='John', staff=staff)
+        self.assertEqual(user.staff.user, user)
