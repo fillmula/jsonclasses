@@ -1,7 +1,7 @@
 """module for instanceof validator."""
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-from ..fields import (FieldDescription, FieldType, WriteRule, ReadRule,
+from ..fields import (FieldDescription, FieldStorage, FieldType, WriteRule, ReadRule,
                       Strictness, fields)
 from ..exceptions import ValidationException
 from .validator import Validator
@@ -94,30 +94,25 @@ class InstanceOfValidator(Validator):
             if field.assigned_default_value is not None:
                 setattr(dest, field.field_name, field.assigned_default_value)
             else:
-                transform_context = TransformingContext(
+                tsfmd = field.field_types.validator.transform(context.new(
                     value=None,
                     keypath=concat_keypath(context.keypath, field.field_name),
-                    root=context.root,
-                    config=context.config,
                     keypath_owner=field.field_name,
                     owner=context.value,
                     config_owner=cls.config,
                     keypath_parent=field.field_name,
                     parent=context.value,
-                    field_description=field.field_description,
-                    all_fields=context.all_fields)
-                transformed = field.field_types.validator.transform(
-                    transform_context)
-                setattr(dest, field.field_name, transformed)
+                    field_description=field.field_description))
+                setattr(dest, field.field_name, tsfmd)
         for field in fields(dest):
             if field.json_field_name in context.value.keys() or field.field_name in context.value.keys():
                 field_value = context.value.get(field.json_field_name)
                 if field_value is None and context.config.camelize_json_keys:
                     field_value = context.value.get(field.field_name)
-                if field.field_types.field_description.write_rule == WriteRule.NO_WRITE:
+                if field.field_description.write_rule == WriteRule.NO_WRITE:
                     if context.fill_dest_blanks:
                         fill_blank_with_default_value(field)
-                elif field.field_types.field_description.write_rule == WriteRule.WRITE_ONCE:
+                elif field.field_description.write_rule == WriteRule.WRITE_ONCE:
                     current_field_value = getattr(dest, field.field_name)
                     if current_field_value is None or isinstance(current_field_value, Types):
                         field_context = TransformingContext(
@@ -153,6 +148,24 @@ class InstanceOfValidator(Validator):
                         all_fields=context.all_fields)
                     transformed = field.field_types.validator.transform(
                         field_context)
+                    if field.field_types.field_description.field_storage == FieldStorage.FOREIGN_KEY:
+                        fk = field.field_description.foreign_key
+                        assert fk is not None
+                        val = getattr(transformed, fk)
+                        if val is not None and val != context.value:
+                            raise ValueError('Reference value not match.')
+                        setattr(transformed, fk, dest)
+                    elif field.field_description.field_storage == FieldStorage.LOCAL_KEY:
+                        object_fields = fields(transformed)
+                        try:
+                            object_field = next(f for f in object_fields
+                                                if f.field_description.foreign_key == field.field_name)
+                            val = getattr(transformed, object_field.field_name)
+                            if val is not None and val != context.value:
+                                raise ValueError('Reference value not match.')
+                            setattr(transformed, object_field.field_name, dest)
+                        except StopIteration:
+                            pass
                     setattr(dest, field.field_name, transformed)
             else:
                 if context.fill_dest_blanks:

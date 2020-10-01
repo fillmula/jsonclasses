@@ -1,7 +1,6 @@
 from __future__ import annotations
 import unittest
 from typing import List, Dict
-from datetime import datetime, date
 from jsonclasses import jsonclass, JSONObject, types
 from jsonclasses.exceptions import ValidationException
 
@@ -233,3 +232,33 @@ class TestInstanceOfValidator(unittest.TestCase):
             staff: Staff = types.instanceof('Staff').required
         with self.assertRaisesRegex(ValidationException, "Key 'boom' at 'staff' is now allowed\\."):
             User(**{'name': 'John', 'staff': {'position': 'CEO', 'boom': True}})
+
+    def test_instanceof_create_circular_ref_for_local_and_foreign_binding(self):
+
+        @jsonclass(graph='test_instanceof_15')
+        class Staff(JSONObject):
+            position: str
+            user: User = types.linkto.instanceof('User').required
+
+        @jsonclass(graph='test_instanceof_15')
+        class User(JSONObject):
+            name: str
+            staff: Staff = types.instanceof('Staff').linkedby('user').required
+
+        user = User(**{'name': 'John', 'staff': {'position': 'CEO'}})
+        self.assertEqual(user.staff.user, user)
+
+    def test_instanceof_create_circular_ref_for_foreign_and_local_binding(self):
+
+        @jsonclass(graph='test_instanceof_16')
+        class Staff(JSONObject):
+            position: str
+            user: User = types.instanceof('User').linkedby('staff').required
+
+        @jsonclass(graph='test_instanceof_16')
+        class User(JSONObject):
+            name: str
+            staff: Staff = types.linkto.instanceof('Staff').required
+
+        user = User(**{'name': 'John', 'staff': {'position': 'CEO'}})
+        self.assertEqual(user.staff.user, user)
