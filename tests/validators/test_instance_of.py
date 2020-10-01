@@ -324,14 +324,30 @@ class TestInstanceOfValidator(unittest.TestCase):
         post = Post(**{'title': 'A', 'user': {'name': 'B'}})
         self.assertEqual(post.user.posts[0], post)
 
-    def test_instance_of_accepts_object(self):
+    def test_instanceof_create_circular_ref_for_many_to_many(self):
 
         @jsonclass(graph='test_instanceof_21')
+        class Book(JSONObject):
+            title: str
+            users: List[User] = types.listof('User').linkedthru('books').required
+
+        @jsonclass(graph='test_instanceof_21')
+        class User(JSONObject):
+            name: str
+            books: List[Book] = types.listof('Book').linkedthru('users').required
+
+        book = Book(**{'title': 'A', 'users': [{'name': 'A'}, {'name': 'B'}]})
+        self.assertEqual(book.users[0].books[0], book)
+        self.assertEqual(book.users[1].books[0], book)
+
+    def test_instance_of_accepts_object(self):
+
+        @jsonclass(graph='test_instanceof_22')
         class Staff(JSONObject):
             position: str
             user: User = types.linkto.instanceof('User').required
 
-        @jsonclass(graph='test_instanceof_21')
+        @jsonclass(graph='test_instanceof_22')
         class User(JSONObject):
             name: str
             staff: Staff = types.instanceof('Staff').linkedby('user').required
