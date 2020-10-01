@@ -13,7 +13,7 @@ class TypeValidator(Validator):
         self.field_type: FieldType = FieldType.ANY
 
     def define(self, field_description: FieldDescription) -> None:
-        field_description.field_type = FieldType.STR
+        field_description.field_type = self.field_type
 
     def validate(self, context: ValidatingContext) -> None:
         if context.value is None:

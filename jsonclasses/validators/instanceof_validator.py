@@ -148,24 +148,36 @@ class InstanceOfValidator(Validator):
                         all_fields=context.all_fields)
                     transformed = field.field_types.validator.transform(
                         field_context)
-                    if field.field_types.field_description.field_storage == FieldStorage.FOREIGN_KEY:
+                    if field.field_description.field_storage == FieldStorage.FOREIGN_KEY:
                         fk = field.field_description.foreign_key
                         assert fk is not None
-                        val = getattr(transformed, fk)
-                        if val is not None and val != context.value:
-                            raise ValueError('Reference value not match.')
-                        setattr(transformed, fk, dest)
+                        if field.field_description.field_type == FieldType.LIST:
+                            for t_item in transformed:
+                                setattr(t_item, fk, dest)
+                        else:
+                            setattr(transformed, fk, dest)
                     elif field.field_description.field_storage == FieldStorage.LOCAL_KEY:
-                        object_fields = fields(transformed)
-                        try:
-                            object_field = next(f for f in object_fields
-                                                if f.field_description.foreign_key == field.field_name)
-                            val = getattr(transformed, object_field.field_name)
-                            if val is not None and val != context.value:
-                                raise ValueError('Reference value not match.')
-                            setattr(transformed, object_field.field_name, dest)
-                        except StopIteration:
-                            pass
+                        if field.field_description.field_type == FieldType.LIST:
+                            if len(transformed) > 0:
+                                object_fields = fields(transformed[0])
+                                try:
+                                    object_field = next(f for f in object_fields
+                                                        if f.field_description.foreign_key == field.field_name)
+                                    for i_item in transformed:
+                                        setattr(i_item, object_field.field_name, dest)
+                                except StopIteration:
+                                    pass
+                        else:
+                            object_fields = fields(transformed)
+                            try:
+                                object_field = next(f for f in object_fields
+                                                    if f.field_description.foreign_key == field.field_name)
+                                val = getattr(transformed, object_field.field_name)
+                                if val is not None and val != context.value:
+                                    raise ValueError('Reference value not match.')
+                                setattr(transformed, object_field.field_name, dest)
+                            except StopIteration:
+                                pass
                     setattr(dest, field.field_name, transformed)
             else:
                 if context.fill_dest_blanks:
