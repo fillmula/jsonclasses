@@ -309,7 +309,7 @@ class TestInstanceOfValidator(unittest.TestCase):
         post = Post(**{'title': 'A', 'user': {'name': 'B'}})
         self.assertEqual(post.user.posts[0], post)
 
-    def test_instanceof_create_circular_ref_for_local_list_and_foreign_binding(self):
+    def test_instanceof_create_circular_ref_for_local_list_and_foreign_item_binding(self):
 
         @jsonclass(graph='test_instanceof_20')
         class Post(JSONObject):
