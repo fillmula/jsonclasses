@@ -20,6 +20,28 @@ class TestInstanceOfValidator(unittest.TestCase):
         user = User(**{'name': 'John', 'address': {'line1': 'London', 'line2': 'Road'}})
         self.assertIsInstance(user.address, Address)
 
+    def test_instanceof_validator_raises_if_type_doesnt_match(self):
+        @jsonclass(graph='test_instanceof_1_2')
+        class Address(JSONObject):
+            line1: str = types.str.required
+            line2: str = types.str.required
+
+        @jsonclass(graph='test_instanceof_1_2')
+        class NewAddress(JSONObject):
+            line3: str = types.str.required
+            line4: str = types.str.required
+
+        @jsonclass(graph='test_instanceof_1_2')
+        class User(JSONObject):
+            name: str = types.str.required
+            address: Address = types.instanceof(Address).required
+        user = User(name='John')
+        user.address = NewAddress(line3='1', line4='2')
+        self.assertRaisesRegex(
+            ValidationException,
+            "Value at 'address' should be instance of 'Address'\\.",
+            user.validate)
+
     def test_instanceof_validator_validates_using_validator_inside(self):
         @jsonclass(graph='test_instanceof_2')
         class Address(JSONObject):

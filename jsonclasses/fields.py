@@ -1,6 +1,7 @@
 """This is an internal module."""
 from __future__ import annotations
-from typing import Any, NamedTuple, Optional, Dict, Union, TypeVar, List, Type, TYPE_CHECKING
+from typing import (Any, NamedTuple, Optional, Dict, Union, TypeVar, List,
+                    Type, TYPE_CHECKING)
 from enum import Enum
 from dataclasses import (dataclass,
                          fields as dataclass_fields,
@@ -96,7 +97,7 @@ class FieldDescription():  # pylint: disable=too-many-instance-attributes
     shape_types: Optional[Dict[str, Any]] = None
 
     # instance mark
-    instance_types: Optional[Any] = None
+    instance_types: Optional[Union[Types, str, Type[JSONObject]]] = None
 
     # relationship
     foreign_key: Optional[str] = None

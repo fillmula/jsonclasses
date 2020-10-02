@@ -1,6 +1,6 @@
 """module for instanceof validator."""
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import Any, Type, Union, cast, TYPE_CHECKING
 from ..fields import (FieldDescription, FieldStorage, FieldType, WriteRule,
                       ReadRule, Strictness, fields)
 from ..exceptions import ValidationException
@@ -10,42 +10,51 @@ from ..types_resolver import resolve_types
 from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 if TYPE_CHECKING:
     from ..json_object import JSONObject
+    from ..types import Types
+    InstanceOfType = Union[Types, str, Type[JSONObject]]
 
 
 class InstanceOfValidator(Validator):
-    """This validator validates JSON Class instance."""
+    """InstanceOf validator validates and transforms JSON Class instance."""
 
-    def __init__(self, types) -> None:
-        self.types = types
+    def __init__(self, raw_type: InstanceOfType) -> None:
+        self.raw_type = raw_type
 
     def define(self, field_description: FieldDescription) -> None:
         field_description.field_type = FieldType.INSTANCE
-        field_description.instance_types = self.types
+        field_description.instance_types = self.raw_type
 
     def validate(self, context: ValidatingContext) -> None:
+        from ..json_object import JSONObject
         if context.value is None:
             return
+        types = resolve_types(self.raw_type, context.config_owner.linked_class)
+        cls = cast(Type[JSONObject], types.field_description.instance_types)
+        if not isinstance(context.value, cls):
+            raise ValidationException({
+                context.keypath_root: (f"Value at '{context.keypath_root}' "
+                                       f"should be instance of "
+                                       f"'{cls.__name__}'.")
+            }, context.root)
         keypath_messages = {}
         for field in fields(context.value):
-            if field.field_types:
-                field_types = field.field_types
-                field_name = field.field_name
-                field_value = getattr(context.value, field_name)
-                try:
-                    field_types.validator.validate(context.new(
-                        value=field_value,
-                        keypath_root=concat_keypath(context.keypath_root, field_name),
-                        keypath_owner=field_name,
-                        owner=context.value,
-                        config_owner=context.value.__class__.config,
-                        keypath_parent=field_name,
-                        parent=context.value,
-                        field_description=field.field_description))
-                except ValidationException as exception:
-                    if context.all_fields:
-                        keypath_messages.update(exception.keypath_messages)
-                    else:
-                        raise exception
+            field_name = field.field_name
+            try:
+                field.field_types.validator.validate(context.new(
+                    value=getattr(context.value, field_name),
+                    keypath_root=concat_keypath(context.keypath_root,
+                                                field_name),
+                    keypath_owner=field_name,
+                    owner=context.value,
+                    config_owner=context.value.__class__.config,
+                    keypath_parent=field_name,
+                    parent=context.value,
+                    field_description=field.field_description))
+            except ValidationException as exception:
+                if context.all_fields:
+                    keypath_messages.update(exception.keypath_messages)
+                else:
+                    raise exception
         if len(keypath_messages) > 0:
             raise ValidationException(keypath_messages=keypath_messages, root=context.root)
 
@@ -67,13 +76,13 @@ class InstanceOfValidator(Validator):
     # pylint: disable=arguments-differ, too-many-locals, too-many-branches
     def transform(self, context: TransformingContext) -> Any:
         from ..types import Types
+        from ..json_object import JSONObject
         if context.value is None:
             return context.dest if context.dest is not None else None
         if not isinstance(context.value, dict):
             return context.value if not context.dest else context.dest
-        types = resolve_types(self.types, context.config_owner.linked_class)
-        cls = types.field_description.instance_types
-        assert cls is not None
+        types = resolve_types(self.raw_type, context.config_owner.linked_class)
+        cls = cast(Type[JSONObject], types.field_description.instance_types)
         dest = context.dest if context.dest is not None else cls(_empty=True)
 
         # strictness check
@@ -84,7 +93,7 @@ class InstanceOfValidator(Validator):
             elif context.field_description.strictness == Strictness.UNSTRICT:
                 strictness = False
             else:
-                strictness = cls.config.strict_input
+                strictness = cast(bool, cls.config.strict_input)
         else:
             strictness = context.config_owner.strict_input or False
         if strictness:
