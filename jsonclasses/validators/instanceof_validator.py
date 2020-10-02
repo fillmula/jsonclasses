@@ -1,6 +1,6 @@
 """module for instanceof validator."""
 from __future__ import annotations
-from typing import Any, Type, Union, cast, TYPE_CHECKING
+from typing import Any, Dict, Sequence, Type, Union, cast, TYPE_CHECKING
 from ..fields import (Field, FieldDescription, FieldStorage, FieldType,
                       WriteRule, ReadRule, Strictness, fields)
 from ..exceptions import ValidationException
@@ -75,11 +75,11 @@ class InstanceOfValidator(Validator):
                     {context.keypath_root: f'Key \'{k}\' at \'{context.keypath_root}\' is not allowed.'},
                     context.root)
 
-    def _fill_blank_with_default_value(self,
-                                       field: Field,
-                                       dest: JSONObject,
-                                       context: TransformingContext,
-                                       cls: Type[JSONObject]):
+    def _fill_default_value(self,
+                            field: Field,
+                            dest: JSONObject,
+                            context: TransformingContext,
+                            cls: Type[JSONObject]):
         if field.assigned_default_value is not None:
             setattr(dest, field.field_name, field.assigned_default_value)
         else:
@@ -94,131 +94,126 @@ class InstanceOfValidator(Validator):
                 field_description=field.field_description))
             setattr(dest, field.field_name, tsfmd)
 
+    def _has_field_value(self, field: Field, keys: Sequence[str]) -> bool:
+        return field.json_field_name in keys or field.field_name in keys
+
+    def _get_field_value(self,
+                         field: Field,
+                         context: TransformingContext) -> Any:
+        field_value = context.value.get(field.json_field_name)
+        if field_value is None and context.config_owner.camelize_json_keys:
+            field_value = context.value.get(field.field_name)
+        return field_value
+
     # pylint: disable=arguments-differ, too-many-locals, too-many-branches
     def transform(self, context: TransformingContext) -> Any:
         from ..types import Types
         from ..json_object import JSONObject
+        # handle non normal value
         if context.value is None:
-            return context.dest if context.dest is not None else None
+            return context.dest
         if not isinstance(context.value, dict):
-            return context.value if not context.dest else context.dest
+            return context.dest if context.dest is not None else context.value
+        # figure out types, cls and dest
         types = resolve_types(self.raw_type, context.config_owner.linked_class)
         cls = cast(Type[JSONObject], types.field_description.instance_types)
         dest = context.dest if context.dest is not None else cls(_empty=True)
-
         # strictness check
-        strictness = False
+        strictness = cast(bool, cls.config.strict_input)
         if context.field_description is not None:
             if context.field_description.strictness == Strictness.STRICT:
                 strictness = True
             elif context.field_description.strictness == Strictness.UNSTRICT:
                 strictness = False
-            else:
-                strictness = cast(bool, cls.config.strict_input)
-        else:
-            strictness = context.config_owner.strict_input or False
         if strictness:
             self._strictness_check(context, dest)
-
+        # fill values
+        dict_keys = list(context.value.keys())
         for field in fields(dest):
-            if field.json_field_name in context.value.keys() or field.field_name in context.value.keys():
-                field_value = context.value.get(field.json_field_name)
-                if field_value is None and context.config_owner.camelize_json_keys:
-                    field_value = context.value.get(field.field_name)
-                if field.field_description.write_rule == WriteRule.NO_WRITE:
-                    if context.fill_dest_blanks:
-                        self._fill_blank_with_default_value(field, dest, context, cls)
-                elif field.field_description.write_rule == WriteRule.WRITE_ONCE:
-                    current_field_value = getattr(dest, field.field_name)
-                    if current_field_value is None or isinstance(current_field_value, Types):
-                        field_context = context.new(
-                            value=field_value,
-                            keypath_root=concat_keypath(context.keypath_root,
-                                                        field.field_name),
-                            keypath_owner=field.field_name,
-                            owner=context.value,
-                            config_owner=cls.config,
-                            keypath_parent=field.field_name,
-                            parent=context.value,
-                            field_description=field.field_description)
-                        transformed = field.field_types.validator.transform(
-                            field_context)
-                        setattr(dest, field.field_name, transformed)
-                    else:
-                        if context.fill_dest_blanks:
-                            self._fill_blank_with_default_value(field, dest, context, cls)
-                else:
-                    field_context = context.new(
-                        value=field_value,
-                        keypath_root=concat_keypath(context.keypath_root,
-                                                    field.field_name),
-                        keypath_owner=field.field_name,
-                        owner=context.value,
-                        config_owner=cls.config,
-                        keypath_parent=field.field_name,
-                        parent=context.value,
-                        field_description=field.field_description)
-                    transformed = field.field_types.validator.transform(
-                        field_context)
-                    if field.field_description.field_storage == FieldStorage.FOREIGN_KEY:
-                        fk = field.field_description.foreign_key
-                        assert fk is not None
-                        if field.field_description.field_type == FieldType.LIST:
-                            object_fields = fields(transformed[0])
-                            try:
-                                object_field = next(f for f in object_fields
-                                                    if f.field_name == fk)
-                            except StopIteration:
-                                raise ValueError('Unmatched link reference.')
-                            for t_item in transformed:
-                                if object_field.field_description.field_type == FieldType.LIST:
-                                    setattr(t_item, fk, [dest])
-                                else:
-                                    setattr(t_item, fk, dest)
-                        else:
-                            object_fields = fields(transformed)
-                            try:
-                                object_field = next(f for f in object_fields
-                                                    if f.field_name == fk)
-                            except StopIteration:
-                                raise ValueError('Unmatched link reference.')
-                            if object_field.field_description.field_type == FieldType.LIST:
-                                setattr(transformed, fk, [dest])
-                            else:
-                                setattr(transformed, fk, dest)
-
-                    elif field.field_description.field_storage == FieldStorage.LOCAL_KEY:
-                        if field.field_description.field_type == FieldType.LIST:
-                            if len(transformed) > 0:
-                                object_fields = fields(transformed[0])
-                                try:
-                                    object_field = next(f for f in object_fields
-                                                        if f.field_description.foreign_key == field.field_name)
-                                    for i_item in transformed:
-                                        if object_field.field_description.field_type == FieldType.LIST:
-                                            setattr(i_item, object_field.field_name, [dest])
-                                        else:
-                                            setattr(i_item, object_field.field_name, dest)
-                                except StopIteration:
-                                    pass
-                        else:
-                            object_fields = fields(transformed)
-                            try:
-                                object_field = next(f for f in object_fields
-                                                    if f.field_description.foreign_key == field.field_name)
-                                val = getattr(transformed, object_field.field_name)
-                                if val is not None and val != context.value:
-                                    raise ValueError('Reference value not match.')
-                                if object_field.field_description.field_type == FieldType.LIST:
-                                    setattr(transformed, object_field.field_name, [dest])
-                                else:
-                                    setattr(transformed, object_field.field_name, dest)
-                            except StopIteration:
-                                pass
-                    setattr(dest, field.field_name, transformed)
-            else:
+            if not self._has_field_value(field, dict_keys):
                 if context.fill_dest_blanks:
-                    self._fill_blank_with_default_value(field, dest, context, cls)
+                    self._fill_default_value(field, dest, context, cls)
+                continue
+            field_value = self._get_field_value(field, context)
+            allow_write_field = True
+            if field.field_description.write_rule == WriteRule.NO_WRITE:
+                allow_write_field = False
+            if field.field_description.write_rule == WriteRule.WRITE_ONCE:
+                cfv = getattr(dest, field.field_name)
+                if (cfv is not None) and (not isinstance(cfv, Types)):
+                    allow_write_field = False
+            if not allow_write_field:
+                if context.fill_dest_blanks:
+                    self._fill_default_value(field, dest, context, cls)
+                continue
+            field_context = context.new(
+                value=field_value,
+                keypath_root=concat_keypath(context.keypath_root,
+                                            field.field_name),
+                keypath_owner=field.field_name,
+                owner=context.value,
+                config_owner=cls.config,
+                keypath_parent=field.field_name,
+                parent=context.value,
+                field_description=field.field_description)
+            transformed = field.field_types.validator.transform(
+                field_context)
+            if field.field_description.field_storage == FieldStorage.FOREIGN_KEY:
+                fk = field.field_description.foreign_key
+                assert fk is not None
+                if field.field_description.field_type == FieldType.LIST:
+                    object_fields = fields(transformed[0])
+                    try:
+                        object_field = next(f for f in object_fields
+                                            if f.field_name == fk)
+                    except StopIteration:
+                        raise ValueError('Unmatched link reference.')
+                    for t_item in transformed:
+                        if object_field.field_description.field_type == FieldType.LIST:
+                            setattr(t_item, fk, [dest])
+                        else:
+                            setattr(t_item, fk, dest)
+                else:
+                    object_fields = fields(transformed)
+                    try:
+                        object_field = next(f for f in object_fields
+                                            if f.field_name == fk)
+                    except StopIteration:
+                        raise ValueError('Unmatched link reference.')
+                    if object_field.field_description.field_type == FieldType.LIST:
+                        setattr(transformed, fk, [dest])
+                    else:
+                        setattr(transformed, fk, dest)
+
+            elif field.field_description.field_storage == FieldStorage.LOCAL_KEY:
+                if field.field_description.field_type == FieldType.LIST:
+                    if len(transformed) > 0:
+                        object_fields = fields(transformed[0])
+                        try:
+                            object_field = next(f for f in object_fields
+                                                if f.field_description.foreign_key == field.field_name)
+                            for i_item in transformed:
+                                if object_field.field_description.field_type == FieldType.LIST:
+                                    setattr(i_item, object_field.field_name, [dest])
+                                else:
+                                    setattr(i_item, object_field.field_name, dest)
+                        except StopIteration:
+                            pass
+                else:
+                    object_fields = fields(transformed)
+                    try:
+                        object_field = next(f for f in object_fields
+                                            if f.field_description.foreign_key == field.field_name)
+                        val = getattr(transformed, object_field.field_name)
+                        if val is not None and val != context.value:
+                            raise ValueError('Reference value not match.')
+                        if object_field.field_description.field_type == FieldType.LIST:
+                            setattr(transformed, object_field.field_name, [dest])
+                        else:
+                            setattr(transformed, object_field.field_name, dest)
+                    except StopIteration:
+                        pass
+            setattr(dest, field.field_name, transformed)
         return dest
 
     def tojson(self, context: ToJSONContext) -> Any:
