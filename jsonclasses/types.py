@@ -62,7 +62,8 @@ class Types:
         directly or through update method. This prevents client side to post data
         directly into these fields.
 
-        `readonly` and `writeonce` cannot be presented together.
+        `writeonce`, `readonly` and `writenonnull` cannot be presented
+        together.
         """
         return Types(self, ReadonlyValidator())
 
@@ -87,22 +88,35 @@ class Types:
         update method. This is suitable for e.g. dating app user gender. Gender
         should not be changed once set.
 
-        `writeonce` and `readonly` cannot be presented together.
+        `writeonce`, `readonly` and `writenonnull` cannot be presented
+        together.
+        """
+        return Types(self, WriteonceValidator())
+
+    @property
+    def writenonnull(self) -> Types:
+        """Fields marked with writenonnull can only be set to a nonnull value.
+        The update method doesn't have this limitation. This prevents user from
+        setting present value back into None.
+
+        `writeonce`, `readonly` and `writenonnull` cannot be presented
+        together.
         """
         return Types(self, WriteonceValidator())
 
     @property
     def internal(self) -> Types:
-        """Fields marked with internal will not be accepted as input, and it will
-        not be present in output. These fields are internal and hidden from users.
+        """Fields marked with internal will not be accepted as input, and it
+        will not be present in output. These fields are internal and hidden
+        from users.
         """
         return Types(self, ReadonlyValidator(), WriteonlyValidator())
 
     @property
     def index(self) -> Types:
         """Fields marked with index are picked up by ORM integrations to setup
-        database column index for you. This marker doesn't have any effect around
-        transforming and validating.
+        database column index for you. This marker doesn't have any effect
+        around transforming and validating.
         """
         return Types(self, IndexValidator())
 
