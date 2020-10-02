@@ -1,9 +1,95 @@
 from __future__ import annotations
 import unittest
-from typing import List, Dict
+from typing import List, Dict, Optional
 from jsonclasses import jsonclass, JSONObject, types
 from jsonclasses.exceptions import ValidationException
 
+
+@jsonclass(graph='test_instanceof_22')
+class User(JSONObject):
+    id: int
+    name: str
+    posts: List[Post] = types.listof('Post').linkedby('user').required
+    comments: List[Comment] = types.listof('Comment').linkedby('commenter').required
+
+@jsonclass(graph='test_instanceof_22')
+class Post(JSONObject):
+    id: int
+    name: str
+    user: User = types.linkto.instanceof('User').required
+    comments: List[Comment] = types.listof('Comment').linkedby('post').required
+
+@jsonclass(graph='test_instanceof_22')
+class Comment(JSONObject):
+    id: int
+    content: str
+    post: Post = types.linkto.instanceof('Post').required
+    parent: Optional[Comment] = types.linkto.instanceof('Comment')
+    children: List[Comment] = types.listof('Comment').linkedby('parent').required
+    commenter: User = types.linkto.instanceof('User').required
+
+input = {
+    'id': 1,
+    'name': 'U1',
+    'posts': [
+        {
+            'id': 1,
+            'name': 'P1',
+            'comments': [
+                {
+                    'id': 1,
+                    'content': 'C1',
+                    'commenter': {
+                        'id': 2,
+                        'name': 'U2'
+                    }
+                },
+                {
+                    'id': 2,
+                    'content': 'C2',
+                    'parent': {
+                        'id': 1,
+                        'content': 'C1'
+                    },
+                    'commenter': {
+                        'id': 1,
+                        'name': 'U1'
+                    }
+                },
+                {
+                    'id': 3,
+                    'content': 'C3',
+                    'commenter': {
+                        'id': 2,
+                        'name': 'U2'
+                    }
+                }
+            ]
+        },
+        {
+            'id': 2,
+            'name': 'P2',
+            'comments': [
+                {
+                    'id': 4,
+                    'content': 'C4',
+                    'commenter': {
+                        'id': 2,
+                        'name': 'U2'
+                    }
+                },
+                {
+                    'id': 5,
+                    'content': 'C5',
+                    'commenter': {
+                        'id': 3,
+                        'name': 'U3'
+                    }
+                }
+            ]
+        }
+    ]
+}
 
 class TestInstanceOfValidator(unittest.TestCase):
 
@@ -392,90 +478,34 @@ class TestInstanceOfValidator(unittest.TestCase):
         self.assertEqual(book.users[0].books[0], book)
         self.assertEqual(book.users[1].books[0], book)
 
-    # def test_instanceof_circular_refs_create_refs_for_same_object(self):
-
-    #     @jsonclass(graph='test_instanceof_22')
-    #     class User(JSONObject):
-    #         id: int
-    #         name: str
-    #         posts: List[Post] = types.listof('Post').linkedby('user').required
-    #         comments: List[Comment] = types.listof('Comment').linkedby('commenter').required
-
-    #     @jsonclass(graph='test_instanceof_22')
-    #     class Post(JSONObject):
-    #         id: int
-    #         name: str
-    #         user: User = types.linkto.instanceof('User').required
-    #         comments: List[Comment] = types.listof('Comment').linkedby('post').required
-
-    #     @jsonclass(graph='test_instanceof_22')
-    #     class Comment(JSONObject):
-    #         id: int
-    #         content: str
-    #         post: Post = types.linkto.instanceof('Post').required
-    #         parent: Optional[Comment] = types.linkto.instanceof('Comment')
-    #         children: List[Comment] = types.listof('Comment').linkedby('parent').required
-    #         commenter: User = types.linkto.instanceof('User').required
-
-    #     input = {
-    #         'id': 1,
-    #         'name': 'U1',
-    #         'posts': [
-    #             {
-    #                 'id': 1,
-    #                 'name': 'P1',
-    #                 'comments': [
-    #                     {
-    #                         'id': 1,
-    #                         'content': 'C1',
-    #                         'commenter': {
-    #                             'id': 2,
-    #                             'name': 'U2'
-    #                         }
-    #                     },
-    #                     {
-    #                         'id': 2,
-    #                         'content': 'C2',
-    #                         'parent': {
-    #                             'id': 1,
-    #                             'content': 'C1'
-    #                         },
-    #                         'commenter': {
-    #                             'id': 1,
-    #                             'name': 'U1'
-    #                         }
-    #                     },
-    #                     {
-    #                         'id': 3,
-    #                         'content': 'C3',
-    #                         'commenter': {
-    #                             'id': 2,
-    #                             'name': 'U2'
-    #                         }
-    #                     }
-    #                 ]
-    #             },
-    #             {
-    #                 'id': 2,
-    #                 'name': 'P2',
-    #                 'comments': [
-    #                     {
-    #                         'id': 4,
-    #                         'content': 'C4',
-    #                         'commenter': {
-    #                             'id': 2,
-    #                             'name': 'U2'
-    #                         }
-    #                     },
-    #                     {
-    #                         'id': 5,
-    #                         'content': 'C5',
-    #                         'commenter': {
-    #                             'id': 3,
-    #                             'name': 'U3'
-    #                         }
-    #                     }
-    #                 ]
-    #             }
-    #         ]
-    #     }
+    def test_instanceof_circular_refs_create_refs_for_same_object(self):
+        root_user = User(**input)
+        self.assertEqual(root_user.name, 'U1')
+        self.assertEqual(root_user.posts[0].name, 'P1')
+        self.assertEqual(root_user.posts[1].name, 'P2')
+        self.assertEqual(root_user.posts[0].comments[0].content, 'C1')
+        self.assertEqual(root_user.posts[0].comments[1].content, 'C2')
+        self.assertEqual(root_user.posts[0].comments[2].content, 'C3')
+        self.assertEqual(root_user.posts[1].comments[0].content, 'C4')
+        self.assertEqual(root_user.posts[1].comments[1].content, 'C5')
+        self.assertIs(root_user.posts[0].user, root_user)
+        self.assertIs(root_user.posts[1].user, root_user)
+        self.assertIs(root_user.posts[0].comments[1].commenter, root_user)
+        self.assertIs(root_user.posts[0].comments[1].parent,
+                      root_user.posts[0].comments[0])
+        self.assertIs(root_user.posts[0].comments[1],
+                      root_user.posts[0].comments[0].children[0])
+        commenter_u2_0 = root_user.posts[0].comments[0].commenter
+        commenter_u2_1 = root_user.posts[0].comments[2].commenter
+        commenter_u2_2 = root_user.posts[1].comments[0].commenter
+        self.assertIs(commenter_u2_0, commenter_u2_1)
+        self.assertIs(commenter_u2_1, commenter_u2_2)
+        self.assertEqual(len(commenter_u2_1.comments), 3)
+        self.assertIs(commenter_u2_1.comments[0],
+                      root_user.posts[0].comments[0])
+        self.assertIs(commenter_u2_1.comments[1],
+                      root_user.posts[0].comments[2])
+        self.assertIs(commenter_u2_1.comments[2],
+                      root_user.posts[1].comments[0])
+        commenter_u3 = root_user.posts[1].comments[1].commenter
+        self.assertIs(root_user.posts[1].comments[1], commenter_u3.comments[0])

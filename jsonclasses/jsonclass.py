@@ -1,7 +1,7 @@
 """
 This module contains `jsonclass`, the decorator for JSON Classes.
 """
-from typing import Type, Optional, Union, TypeVar, overload, Callable
+from typing import Type, Optional, Union, TypeVar, overload, Callable, cast
 from dataclasses import dataclass
 from .json_object import JSONObject
 from .graph import register_class
@@ -17,7 +17,7 @@ def jsonclass(cls: Type[T]) -> Type[T]: ...
 @overload
 def jsonclass(
     cls: None,
-    graph: str = 'default',
+    graph: Optional[str] = 'default',
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
@@ -29,7 +29,7 @@ def jsonclass(
 @overload
 def jsonclass(
     cls: Type[T],
-    graph: str = 'default',
+    graph: Optional[str] = 'default',
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
@@ -40,7 +40,7 @@ def jsonclass(
 
 def jsonclass(
     cls: Optional[Type[T]] = None,
-    graph: str = 'default',
+    graph: Optional[str] = 'default',
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
@@ -62,7 +62,7 @@ def jsonclass(
             raise ValueError('@jsonclass should be used to decorate subclasses'
                              ' of JSONObject.')
         config = Config(
-            graph=graph,
+            graph=cast(str, graph),
             camelize_json_keys=camelize_json_keys,
             camelize_db_keys=camelize_db_keys,
             strict_input=strict_input,
@@ -70,7 +70,8 @@ def jsonclass(
             local_key=local_key
         )
         config.install_on_class(cls)
-        return register_class(dataclass(init=False)(cls), graph=graph)
+        return register_class(dataclass(init=False)(cls),
+                              graph=cast(str, graph))
     else:
         def parametered_jsonclass(cls):
             return jsonclass(

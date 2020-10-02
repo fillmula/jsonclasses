@@ -185,12 +185,16 @@ class InstanceOfValidator(Validator):
         cls = cast(Type[JSONObject], types.field_description.instance_types)
         primary_key = cls.config.primary_key
         id = cast(Union[str, int], context.value.get(primary_key))
+        soft_apply_mode = False
         if context.dest is not None:
             dest = context.dest
+            if id is not None:
+                context.lookup_map.put(cls.__name__, id, dest)
         elif id is not None:
             exist_item = context.lookup_map.fetch(cls.__name__, id)
             if exist_item is not None:
                 dest = exist_item
+                soft_apply_mode = True
             else:
                 dest = cls(_empty=True)
                 context.lookup_map.put(cls.__name__, id, dest)
@@ -209,7 +213,7 @@ class InstanceOfValidator(Validator):
         dict_keys = list(context.value.keys())
         for field in fields(dest):
             if not self._has_field_value(field, dict_keys):
-                if context.fill_dest_blanks:
+                if context.fill_dest_blanks and not soft_apply_mode:
                     self._fill_default_value(field, dest, context, cls)
                 continue
             field_value = self._get_field_value(field, context)
