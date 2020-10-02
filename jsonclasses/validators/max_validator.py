@@ -6,7 +6,7 @@ from ..contexts import ValidatingContext
 
 
 class MaxValidator(Validator):
-    """Match validator validates value against max value."""
+    """Max validator validates value against max value."""
 
     def __init__(self, max_value: Union[int, float]) -> None:
         self.max_value = max_value

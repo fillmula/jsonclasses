@@ -5,7 +5,7 @@ from ..contexts import ValidatingContext
 
 
 class MinlengthValidator(Validator):
-    """Match validator validates value against min length."""
+    """Minlength validator validates value against min length."""
 
     def __init__(self, minlength: int) -> None:
         self.minlength = minlength

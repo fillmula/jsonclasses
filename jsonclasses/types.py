@@ -11,9 +11,10 @@ from .validators import (BoolValidator, ChainedValidator, DateValidator,
                          LinkedInValidator, LinkedThruValidator,
                          LinkToValidator, ListOfValidator, MatchValidator,
                          MaxValidator, MaxlengthValidator, MinValidator,
-                         MinlengthValidator, NonnullValidator,
-                         NullableValidator, OneOfValidator, OneOfTypeValidator,
-                         RangeValidator, ReadonlyValidator, ReadwriteValidator,
+                         MinlengthValidator, NegativeValidator,
+                         NonnullValidator, NullableValidator, OneOfValidator,
+                         OneOfTypeValidator, PositiveValidator, RangeValidator,
+                         ReadonlyValidator, ReadwriteValidator,
                          RefereeValidator, ReferrerValidator,
                          RequiredValidator, ShapeValidator, StrValidator,
                          StrictValidator, TransformValidator, TrimValidator,
@@ -250,6 +251,18 @@ class Types:
         between the arguments range are considered valid.
         """
         return Types(self, RangeValidator(min_value, max_value))
+
+    @property
+    def negative(self) -> Types:
+        """Fields marked with negative should have a value less than zero.
+        """
+        return Types(self, NegativeValidator())
+
+    @property
+    def positive(self) -> Types:
+        """Fields marked with negative should have a value greater than zero.
+        """
+        return Types(self, PositiveValidator())
 
     @property
     def bool(self) -> Types:

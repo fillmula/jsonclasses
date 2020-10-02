@@ -5,7 +5,7 @@ from ..contexts import ValidatingContext
 
 
 class MaxlengthValidator(Validator):
-    """Match validator validates value against max length."""
+    """Maxlength validator validates value against max length."""
 
     def __init__(self, maxlength: int) -> None:
         self.maxlength = maxlength

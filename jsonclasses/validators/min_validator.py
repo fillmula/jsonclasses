@@ -6,7 +6,7 @@ from ..contexts import ValidatingContext
 
 
 class MinValidator(Validator):
-    """Match validator validates value against min value."""
+    """Min validator validates value against min value."""
 
     def __init__(self, min_value: Union[int, float]):
         self.min_value = min_value
