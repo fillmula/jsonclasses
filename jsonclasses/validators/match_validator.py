@@ -16,7 +16,7 @@ class MatchValidator(Validator):
             return
         value = context.value
         if search(self.pattern, value) is None:
-            kp = context.keypath
+            kp = context.keypath_root
             raise ValidationException(
                 {kp: f'Value \'{value}\' at \'{kp}\' should match \'{self.pattern}\'.'},
                 context.root

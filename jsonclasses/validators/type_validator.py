@@ -21,6 +21,6 @@ class TypeValidator(Validator):
         if type(context.value) is self.cls:
             return
         raise ValidationException(
-            {context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should be {self.cls.__name__}.'},
+            {context.keypath_root: f'Value \'{context.value}\' at \'{context.keypath_root}\' should be {self.cls.__name__}.'},
             context.root
         )

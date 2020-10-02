@@ -1,6 +1,6 @@
 from __future__ import annotations
 import unittest
-from typing import List, Dict
+from typing import List, Dict, Optional
 from jsonclasses import jsonclass, JSONObject, types
 from jsonclasses.exceptions import ValidationException
 
@@ -207,6 +207,22 @@ class TestInstanceOfValidator(unittest.TestCase):
         with self.assertRaisesRegex(ValidationException, 'Value at \'staffs\\.b\' should not be None\\.'):
             user.validate()
 
+    def test_instance_of_accepts_object(self):
+
+        @jsonclass(graph='test_instanceof__1')
+        class Staff(JSONObject):
+            position: str
+            user: User = types.linkto.instanceof('User').required
+
+        @jsonclass(graph='test_instanceof__1')
+        class User(JSONObject):
+            name: str
+            staff: Staff = types.instanceof('Staff').linkedby('user').required
+
+        staff = Staff(position='CFO')
+        user = User(name='John', staff=staff)
+        self.assertEqual(user.staff.user, user)
+
     def test_instanceof_raises_if_strict_specified(self):
         @jsonclass(graph='test_instanceof_13')
         class Staff(JSONObject):
@@ -340,18 +356,90 @@ class TestInstanceOfValidator(unittest.TestCase):
         self.assertEqual(book.users[0].books[0], book)
         self.assertEqual(book.users[1].books[0], book)
 
-    def test_instance_of_accepts_object(self):
+    # def test_instanceof_circular_refs_create_refs_for_same_object(self):
 
-        @jsonclass(graph='test_instanceof_22')
-        class Staff(JSONObject):
-            position: str
-            user: User = types.linkto.instanceof('User').required
+    #     @jsonclass(graph='test_instanceof_22')
+    #     class User(JSONObject):
+    #         id: int
+    #         name: str
+    #         posts: List[Post] = types.listof('Post').linkedby('user').required
+    #         comments: List[Comment] = types.listof('Comment').linkedby('commenter').required
 
-        @jsonclass(graph='test_instanceof_22')
-        class User(JSONObject):
-            name: str
-            staff: Staff = types.instanceof('Staff').linkedby('user').required
+    #     @jsonclass(graph='test_instanceof_22')
+    #     class Post(JSONObject):
+    #         id: int
+    #         name: str
+    #         user: User = types.linkto.instanceof('User').required
+    #         comments: List[Comment] = types.listof('Comment').linkedby('post').required
 
-        staff = Staff(position='CFO')
-        user = User(name='John', staff=staff)
-        self.assertEqual(user.staff.user, user)
+    #     @jsonclass(graph='test_instanceof_22')
+    #     class Comment(JSONObject):
+    #         id: int
+    #         content: str
+    #         post: Post = types.linkto.instanceof('Post').required
+    #         parent: Optional[Comment] = types.linkto.instanceof('Comment')
+    #         children: List[Comment] = types.listof('Comment').linkedby('parent').required
+    #         commenter: User = types.linkto.instanceof('User').required
+
+    #     input = {
+    #         'id': 1,
+    #         'name': 'U1',
+    #         'posts': [
+    #             {
+    #                 'id': 1,
+    #                 'name': 'P1',
+    #                 'comments': [
+    #                     {
+    #                         'id': 1,
+    #                         'content': 'C1',
+    #                         'commenter': {
+    #                             'id': 2,
+    #                             'name': 'U2'
+    #                         }
+    #                     },
+    #                     {
+    #                         'id': 2,
+    #                         'content': 'C2',
+    #                         'parent': {
+    #                             'id': 1,
+    #                             'content': 'C1'
+    #                         },
+    #                         'commenter': {
+    #                             'id': 1,
+    #                             'name': 'U1'
+    #                         }
+    #                     },
+    #                     {
+    #                         'id': 3,
+    #                         'content': 'C3',
+    #                         'commenter': {
+    #                             'id': 2,
+    #                             'name': 'U2'
+    #                         }
+    #                     }
+    #                 ]
+    #             },
+    #             {
+    #                 'id': 2,
+    #                 'name': 'P2',
+    #                 'comments': [
+    #                     {
+    #                         'id': 4,
+    #                         'content': 'C4',
+    #                         'commenter': {
+    #                             'id': 2,
+    #                             'name': 'U2'
+    #                         }
+    #                     },
+    #                     {
+    #                         'id': 5,
+    #                         'content': 'C5',
+    #                         'commenter': {
+    #                             'id': 3,
+    #                             'name': 'U3'
+    #                         }
+    #                     }
+    #                 ]
+    #             }
+    #         ]
+    #     }

@@ -26,7 +26,7 @@ class DictOfValidator(TypeValidator):
         if context.value is None:
             return
         super().validate(context)
-        types = resolve_types(self.types, context.config.linked_class)
+        types = resolve_types(self.types, context.config_owner.linked_class)
         if types.field_description.item_nullability == Nullability.UNDEFINED:
             types = types.required
         keypath_messages = {}
@@ -34,7 +34,7 @@ class DictOfValidator(TypeValidator):
             try:
                 types.validator.validate(context.new(
                     value=v,
-                    keypath=concat_keypath(context.keypath, k),
+                    keypath_root=concat_keypath(context.keypath_root, k),
                     keypath_owner=concat_keypath(context.keypath_owner, k),
                     keypath_parent=k,
                     parent=context.value,
@@ -58,13 +58,13 @@ class DictOfValidator(TypeValidator):
             return None
         if not isinstance(value, dict):
             return value
-        types = resolve_types(self.types, context.config.linked_class)
+        types = resolve_types(self.types, context.config_owner.linked_class)
         retval = {}
         for k, v in value.items():
-            new_key = underscore(k) if context.config.camelize_json_keys else k
+            new_key = underscore(k) if context.config_owner.camelize_json_keys else k
             retval[new_key] = types.validator.transform(context.new(
                 value=v,
-                keypath=concat_keypath(context.keypath, new_key),
+                keypath_root=concat_keypath(context.keypath_root, new_key),
                 keypath_owner=concat_keypath(context.keypath_owner, new_key),
                 keypath_parent=new_key,
                 parent=value,

@@ -16,6 +16,6 @@ class MaxValidator(Validator):
             return context.value
         if context.value > self.max_value:
             raise ValidationException(
-                {context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should not be greater than {self.max_value}.'},
+                {context.keypath_root: f'Value \'{context.value}\' at \'{context.keypath_root}\' should not be greater than {self.max_value}.'},
                 context.root
             )

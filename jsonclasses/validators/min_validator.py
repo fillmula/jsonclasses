@@ -16,6 +16,6 @@ class MinValidator(Validator):
             return
         if context.value < self.min_value:
             raise ValidationException(
-                {context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should not be less than {self.min_value}.'},
+                {context.keypath_root: f'Value \'{context.value}\' at \'{context.keypath_root}\' should not be less than {self.min_value}.'},
                 context.root
             )

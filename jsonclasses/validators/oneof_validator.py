@@ -16,6 +16,6 @@ class OneOfValidator(Validator):
             return None
         if context.value not in self.str_list:
             raise ValidationException(
-                {context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should be one of {self.str_list}.'},
+                {context.keypath_root: f'Value \'{context.value}\' at \'{context.keypath_root}\' should be one of {self.str_list}.'},
                 context.root
             )

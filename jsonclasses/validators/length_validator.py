@@ -16,7 +16,7 @@ class LengthValidator(Validator):
         if context.value is None:
             return
         value = context.value
-        kp = context.keypath
+        kp = context.keypath_root
         if len(value) > self.maxlength or len(value) < self.minlength:
             if self.minlength != self.maxlength:
                 message = f'Length of value \'{value}\' at \'{kp}\' should not be greater than {self.maxlength} or less than {self.minlength}.'

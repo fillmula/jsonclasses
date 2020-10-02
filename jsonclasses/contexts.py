@@ -13,9 +13,9 @@ class ValidatingContext(NamedTuple):
     information for validators to validate the field values correctly.
     """
     value: Any
-    keypath: str
+    keypath_root: str
     root: Any
-    config: Config
+    config_root: Config
     keypath_owner: str  # keypath relative to owner
     owner: Any  # the nearest json class instance or eager validation dict on which this value is defined
     config_owner: Config
@@ -28,9 +28,9 @@ class ValidatingContext(NamedTuple):
         keys = kwargs.keys()
         return ValidatingContext(
             value=kwargs['value'] if 'value' in keys else self.value,
-            keypath=kwargs['keypath'] if 'keypath' in keys else self.keypath,
+            keypath_root=kwargs['keypath_root'] if 'keypath_root' in keys else self.keypath_root,
             root=kwargs['root'] if 'root' in keys else self.root,
-            config=kwargs['config'] if 'config' in keys else self.config,
+            config_root=kwargs['config_root'] if 'config_root' in keys else self.config_root,
             keypath_owner=kwargs['keypath_owner'] if 'keypath_owner' in keys else self.keypath_owner,
             owner=kwargs['owner'] if 'owner' in keys else self.owner,
             config_owner=kwargs['config_owner'] if 'config_owner' in keys else self.config_owner,
@@ -42,9 +42,9 @@ class ValidatingContext(NamedTuple):
     def transforming_context(self):
         return TransformingContext(
             value=self.value,
-            keypath=self.keypath,
+            keypath_root=self.keypath_root,
             root=self.root,
-            config=self.config,
+            config_root=self.config_root,
             keypath_owner=self.keypath_owner,
             owner=self.owner,
             config_owner=self.config_owner,
@@ -62,9 +62,9 @@ class TransformingContext(NamedTuple):
     items from validating context are required for transforming.
     """
     value: Any
-    keypath: str
+    keypath_root: str
     root: Any
-    config: Config
+    config_root: Config
     keypath_owner: str  # keypath relative to owner
     owner: Any  # the nearest json class instance on which this value is defined
     config_owner: Config
@@ -79,9 +79,9 @@ class TransformingContext(NamedTuple):
         keys = kwargs.keys()
         return TransformingContext(
             value=kwargs['value'] if 'value' in keys else self.value,
-            keypath=kwargs['keypath'] if 'keypath' in keys else self.keypath,
+            keypath_root=kwargs['keypath_root'] if 'keypath_root' in keys else self.keypath_root,
             root=kwargs['root'] if 'root' in keys else self.root,
-            config=kwargs['config'] if 'config' in keys else self.config,
+            config_root=kwargs['config_root'] if 'config_root' in keys else self.config_root,
             keypath_owner=kwargs['keypath_owner'] if 'keypath_owner' in keys else self.keypath_owner,
             owner=kwargs['owner'] if 'owner' in keys else self.owner,
             config_owner=kwargs['config_owner'] if 'config_owner' in keys else self.config_owner,
@@ -93,9 +93,9 @@ class TransformingContext(NamedTuple):
     def validating_context(self):
         return ValidatingContext(
             value=self.value,
-            keypath=self.keypath,
+            keypath_root=self.keypath_root,
             root=self.root,
-            config=self.config,
+            config_root=self.config_root,
             keypath_owner=self.keypath_owner,
             owner=self.owner,
             config_owner=self.config_owner,

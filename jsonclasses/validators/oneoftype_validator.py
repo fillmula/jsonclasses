@@ -24,6 +24,6 @@ class OneOfTypeValidator(Validator):
             except ValidationException:
                 continue
         raise ValidationException(
-            {context.keypath: f'Value \'{context.value}\' at \'{context.keypath}\' should be one of type {self.type_list}.'},
+            {context.keypath_root: f'Value \'{context.value}\' at \'{context.keypath_root}\' should be one of type {self.type_list}.'},
             context.root
         )

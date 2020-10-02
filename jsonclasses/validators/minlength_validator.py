@@ -15,6 +15,6 @@ class MinlengthValidator(Validator):
             return
         if len(context.value) < self.minlength:
             raise ValidationException(
-                {context.keypath: f'Length of value \'{context.value}\' at \'{context.keypath}\' should not be less than {self.minlength}.'},
+                {context.keypath_root: f'Length of value \'{context.value}\' at \'{context.keypath_root}\' should not be less than {self.minlength}.'},
                 context.root
             )

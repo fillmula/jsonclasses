@@ -22,7 +22,7 @@ class DatetimeValidator(TypeValidator):
                 return datetime.fromisoformat(context.value.replace('Z', ''))
             except ValueError:
                 raise ValidationException({
-                    context.keypath: 'Datetime string format error.'
+                    context.keypath_root: 'Datetime string format error.'
                 }, context.root)
         else:
             return context.value

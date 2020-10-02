@@ -34,7 +34,7 @@ class InstanceOfValidator(Validator):
                 try:
                     field_types.validator.validate(context.new(
                         value=field_value,
-                        keypath=concat_keypath(context.keypath, field_name),
+                        keypath_root=concat_keypath(context.keypath_root, field_name),
                         keypath_owner=field_name,
                         owner=context.value,
                         config_owner=context.value.__class__.config,
@@ -52,7 +52,7 @@ class InstanceOfValidator(Validator):
     def _strictness_check(self,
                           context: TransformingContext,
                           dest: JSONObject) -> None:
-        if context.config.camelize_json_keys:
+        if context.config_owner.camelize_json_keys:
             available_name_pairs = [(field.field_name, field.json_field_name)
                                     for field in fields(dest)]
             available_names = [e for pair in available_name_pairs for e in pair]
@@ -61,7 +61,7 @@ class InstanceOfValidator(Validator):
         for k in context.value.keys():
             if k not in available_names:
                 raise ValidationException(
-                    {context.keypath: f'Key \'{k}\' at \'{context.keypath}\' is now allowed.'},
+                    {context.keypath_root: f'Key \'{k}\' at \'{context.keypath_root}\' is now allowed.'},
                     context.root)
 
     # pylint: disable=arguments-differ, too-many-locals, too-many-branches
@@ -71,7 +71,7 @@ class InstanceOfValidator(Validator):
             return context.dest if context.dest is not None else None
         if not isinstance(context.value, dict):
             return context.value if not context.dest else context.dest
-        types = resolve_types(self.types, context.config.linked_class)
+        types = resolve_types(self.types, context.config_owner.linked_class)
         cls = types.field_description.instance_types
         assert cls is not None
         dest = context.dest if context.dest is not None else cls(_empty=True)
@@ -86,7 +86,7 @@ class InstanceOfValidator(Validator):
             else:
                 strictness = cls.config.strict_input
         else:
-            strictness = context.config.strict_input or False
+            strictness = context.config_owner.strict_input or False
         if strictness:
             self._strictness_check(context, dest)
 
@@ -96,7 +96,7 @@ class InstanceOfValidator(Validator):
             else:
                 tsfmd = field.field_types.validator.transform(context.new(
                     value=None,
-                    keypath=concat_keypath(context.keypath, field.field_name),
+                    keypath_root=concat_keypath(context.keypath_root, field.field_name),
                     keypath_owner=field.field_name,
                     owner=context.value,
                     config_owner=cls.config,
@@ -107,7 +107,7 @@ class InstanceOfValidator(Validator):
         for field in fields(dest):
             if field.json_field_name in context.value.keys() or field.field_name in context.value.keys():
                 field_value = context.value.get(field.json_field_name)
-                if field_value is None and context.config.camelize_json_keys:
+                if field_value is None and context.config_owner.camelize_json_keys:
                     field_value = context.value.get(field.field_name)
                 if field.field_description.write_rule == WriteRule.NO_WRITE:
                     if context.fill_dest_blanks:
@@ -117,9 +117,9 @@ class InstanceOfValidator(Validator):
                     if current_field_value is None or isinstance(current_field_value, Types):
                         field_context = TransformingContext(
                             value=field_value,
-                            keypath=concat_keypath(context.keypath, field.field_name),
+                            keypath_root=concat_keypath(context.keypath_root, field.field_name),
                             root=context.root,
-                            config=context.config,
+                            config_root=context.config_root,
                             keypath_owner=field.field_name,
                             owner=context.value,
                             config_owner=cls.config,
@@ -136,9 +136,9 @@ class InstanceOfValidator(Validator):
                 else:
                     field_context = TransformingContext(
                         value=field_value,
-                        keypath=concat_keypath(context.keypath, field.field_name),
+                        keypath_root=concat_keypath(context.keypath_root, field.field_name),
                         root=context.root,
-                        config=context.config,
+                        config_root=context.config_root,
                         keypath_owner=field.field_name,
                         owner=context.value,
                         config_owner=cls.config,

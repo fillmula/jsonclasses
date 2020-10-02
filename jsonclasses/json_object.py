@@ -54,9 +54,9 @@ class JSONObject:
         config = Config.on(self.__class__)
         context = TransformingContext(
             value=kwargs,
-            keypath='',
+            keypath_root='',
             root=self,
-            config=config,
+            config_root=config,
             keypath_owner='',
             owner=self,
             config_owner=config,
@@ -121,9 +121,9 @@ class JSONObject:
         config = Config.on(self.__class__)
         context = ValidatingContext(
             value=self,
-            keypath='',
+            keypath_root='',
             root=self,
-            config=config,
+            config_root=config,
             keypath_owner='',
             owner=self,
             config_owner=config,

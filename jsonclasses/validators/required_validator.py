@@ -26,13 +26,13 @@ class RequiredValidator(Validator):
                 config: Config = context.root.__class__.config
                 assert config.local_key is not None
                 local_key = config.local_key(
-                    context.keypath,
+                    context.keypath_root,
                     FieldType.LIST if list_field else FieldType.INSTANCE)
                 from ..json_object import JSONObject
                 if isinstance(context.parent, dict):
                     if context.parent.get(local_key) is None:
                         raise ValidationException(
-                            {context.keypath: f'Value at \'{context.keypath}\' should not be None.'},
+                            {context.keypath_root: f'Value at \'{context.keypath_root}\' should not be None.'},
                             context.root
                         )
                 elif isinstance(context.parent, JSONObject):
@@ -40,17 +40,17 @@ class RequiredValidator(Validator):
                         local_key_value = getattr(context.parent, local_key)
                     except AttributeError:
                         raise ValidationException(
-                            {context.keypath: f'Value at \'{context.keypath}\' should not be None.'},
+                            {context.keypath_root: f'Value at \'{context.keypath_root}\' should not be None.'},
                             context.root
                         )
                     if local_key_value is None:
                         raise ValidationException(
-                            {context.keypath: f'Value at \'{context.keypath}\' should not be None.'},
+                            {context.keypath_root: f'Value at \'{context.keypath_root}\' should not be None.'},
                             context.root
                         )
             return
         if context.value is None:
             raise ValidationException(
-                {context.keypath: f'Value at \'{context.keypath}\' should not be None.'},
+                {context.keypath_root: f'Value at \'{context.keypath_root}\' should not be None.'},
                 context.root
             )

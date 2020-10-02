@@ -31,12 +31,12 @@ class ShapeValidator(TypeValidator):
                 value_at_key = context.value[k]
             except KeyError:
                 value_at_key = None
-            types = resolve_types(t, context.config.linked_class)
+            types = resolve_types(t, context.config_owner.linked_class)
             if types:
                 try:
                     types.validator.validate(context.new(
                         value=value_at_key,
-                        keypath=concat_keypath(context.keypath, k),
+                        keypath_root=concat_keypath(context.keypath_root, k),
                         keypath_owner=concat_keypath(context.keypath_owner, k),
                         keypath_parent=k,
                         parent=context.value,
@@ -63,19 +63,19 @@ class ShapeValidator(TypeValidator):
         unused_keys = list(self.types.keys())
         retval = {}
         for k, field_value in value.items():
-            new_key = underscore(k) if context.config.camelize_json_keys else k
+            new_key = underscore(k) if context.config_owner.camelize_json_keys else k
             if new_key not in unused_keys:
                 if fd.strictness == Strictness.STRICT:
                     raise ValidationException(
-                        {context.keypath: f'Unallowed key \'{k}\' at \'{context.keypath}\'.'},
+                        {context.keypath_root: f'Unallowed key \'{k}\' at \'{context.keypath_root}\'.'},
                         context.root)
                 continue
             t = self.types[new_key]
-            types = resolve_types(t, context.config.linked_class)
+            types = resolve_types(t, context.config_owner.linked_class)
             if types:
                 retval[new_key] = types.validator.transform(context.new(
                     value=field_value,
-                    keypath=concat_keypath(context.keypath, new_key),
+                    keypath_root=concat_keypath(context.keypath_root, new_key),
                     keypath_owner=concat_keypath(context.keypath_owner, new_key),
                     keypath_parent=new_key,
                     parent=value,

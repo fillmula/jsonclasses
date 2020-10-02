@@ -22,7 +22,7 @@ class DateValidator(TypeValidator):
                 return date.fromisoformat(context.value[:10])
             except ValueError:
                 raise ValidationException({
-                    context.keypath: 'Date string format error.'
+                    context.keypath_root: 'Date string format error.'
                 }, context.root)
         else:
             return context.value
