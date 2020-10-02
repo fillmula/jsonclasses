@@ -142,6 +142,9 @@ class InstanceOfValidator(Validator):
                 cfv = getattr(dest, field.field_name)
                 if (cfv is not None) and (not isinstance(cfv, Types)):
                     allow_write_field = False
+            if field.field_description.write_rule == WriteRule.WRITE_NONNULL:
+                if field_value is None:
+                    allow_write_field = False
             if not allow_write_field:
                 if context.fill_dest_blanks:
                     self._fill_default_value(field, dest, context, cls)

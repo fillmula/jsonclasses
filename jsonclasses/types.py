@@ -19,7 +19,8 @@ from .validators import (BoolValidator, ChainedValidator, DateValidator,
                          RequiredValidator, ShapeValidator, StrValidator,
                          StrictValidator, TransformValidator, TrimValidator,
                          TruncateValidator, UniqueValidator, ValidateValidator,
-                         Validator, WriteonceValidator, WriteonlyValidator)
+                         Validator, WriteNonnullValidator, WriteonceValidator,
+                         WriteonlyValidator)
 
 Str = str
 Int = int
@@ -102,7 +103,7 @@ class Types:
         `writeonce`, `readonly` and `writenonnull` cannot be presented
         together.
         """
-        return Types(self, WriteonceValidator())
+        return Types(self, WriteNonnullValidator())
 
     @property
     def internal(self) -> Types:
