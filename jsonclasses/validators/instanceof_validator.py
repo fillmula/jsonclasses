@@ -1,8 +1,8 @@
 """module for instanceof validator."""
 from __future__ import annotations
 from typing import Any, Type, Union, cast, TYPE_CHECKING
-from ..fields import (FieldDescription, FieldStorage, FieldType, WriteRule,
-                      ReadRule, Strictness, fields)
+from ..fields import (Field, FieldDescription, FieldStorage, FieldType,
+                      WriteRule, ReadRule, Strictness, fields)
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..utils.concat_keypath import concat_keypath
@@ -56,7 +56,9 @@ class InstanceOfValidator(Validator):
                 else:
                     raise exception
         if len(keypath_messages) > 0:
-            raise ValidationException(keypath_messages=keypath_messages, root=context.root)
+            raise ValidationException(
+                keypath_messages=keypath_messages,
+                root=context.root)
 
     def _strictness_check(self,
                           context: TransformingContext,
@@ -70,8 +72,27 @@ class InstanceOfValidator(Validator):
         for k in context.value.keys():
             if k not in available_names:
                 raise ValidationException(
-                    {context.keypath_root: f'Key \'{k}\' at \'{context.keypath_root}\' is now allowed.'},
+                    {context.keypath_root: f'Key \'{k}\' at \'{context.keypath_root}\' is not allowed.'},
                     context.root)
+
+    def _fill_blank_with_default_value(self,
+                                       field: Field,
+                                       dest: JSONObject,
+                                       context: TransformingContext,
+                                       cls: Type[JSONObject]):
+        if field.assigned_default_value is not None:
+            setattr(dest, field.field_name, field.assigned_default_value)
+        else:
+            tsfmd = field.field_types.validator.transform(context.new(
+                value=None,
+                keypath_root=concat_keypath(context.keypath_root, field.field_name),
+                keypath_owner=field.field_name,
+                owner=context.value,
+                config_owner=cls.config,
+                keypath_parent=field.field_name,
+                parent=context.value,
+                field_description=field.field_description))
+            setattr(dest, field.field_name, tsfmd)
 
     # pylint: disable=arguments-differ, too-many-locals, too-many-branches
     def transform(self, context: TransformingContext) -> Any:
@@ -99,20 +120,6 @@ class InstanceOfValidator(Validator):
         if strictness:
             self._strictness_check(context, dest)
 
-        def fill_blank_with_default_value(field):
-            if field.assigned_default_value is not None:
-                setattr(dest, field.field_name, field.assigned_default_value)
-            else:
-                tsfmd = field.field_types.validator.transform(context.new(
-                    value=None,
-                    keypath_root=concat_keypath(context.keypath_root, field.field_name),
-                    keypath_owner=field.field_name,
-                    owner=context.value,
-                    config_owner=cls.config,
-                    keypath_parent=field.field_name,
-                    parent=context.value,
-                    field_description=field.field_description))
-                setattr(dest, field.field_name, tsfmd)
         for field in fields(dest):
             if field.json_field_name in context.value.keys() or field.field_name in context.value.keys():
                 field_value = context.value.get(field.json_field_name)
@@ -120,7 +127,7 @@ class InstanceOfValidator(Validator):
                     field_value = context.value.get(field.field_name)
                 if field.field_description.write_rule == WriteRule.NO_WRITE:
                     if context.fill_dest_blanks:
-                        fill_blank_with_default_value(field)
+                        self._fill_blank_with_default_value(field, dest, context, cls)
                 elif field.field_description.write_rule == WriteRule.WRITE_ONCE:
                     current_field_value = getattr(dest, field.field_name)
                     if current_field_value is None or isinstance(current_field_value, Types):
@@ -139,7 +146,7 @@ class InstanceOfValidator(Validator):
                         setattr(dest, field.field_name, transformed)
                     else:
                         if context.fill_dest_blanks:
-                            fill_blank_with_default_value(field)
+                            self._fill_blank_with_default_value(field, dest, context, cls)
                 else:
                     field_context = context.new(
                         value=field_value,
@@ -211,7 +218,7 @@ class InstanceOfValidator(Validator):
                     setattr(dest, field.field_name, transformed)
             else:
                 if context.fill_dest_blanks:
-                    fill_blank_with_default_value(field)
+                    self._fill_blank_with_default_value(field, dest, context, cls)
         return dest
 
     def tojson(self, context: ToJSONContext) -> Any:
