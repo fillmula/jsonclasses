@@ -1,6 +1,6 @@
 from __future__ import annotations
 import unittest
-from typing import List, Dict, Optional
+from typing import List, Dict
 from jsonclasses import jsonclass, JSONObject, types
 from jsonclasses.exceptions import ValidationException
 
@@ -19,6 +19,20 @@ class TestInstanceOfValidator(unittest.TestCase):
             address: Address = types.instanceof(Address)
         user = User(**{'name': 'John', 'address': {'line1': 'London', 'line2': 'Road'}})
         self.assertIsInstance(user.address, Address)
+
+    def test_instanceof_validator_fill_children_defaults(self):
+        @jsonclass(graph='test_instanceof_1_0')
+        class Address(JSONObject):
+            line1: str = types.str.default('Line1').required
+            line2: str = types.str.default('Line2').required
+
+        @jsonclass(graph='test_instanceof_1_0')
+        class User(JSONObject):
+            name: str = types.str.required
+            address: Address = types.instanceof(Address).required
+        user = User(**{'name': 'John', 'address': {}})
+        self.assertEqual(user.address.line1, 'Line1')
+        self.assertEqual(user.address.line2, 'Line2')
 
     def test_instanceof_validator_raises_if_type_doesnt_match(self):
         @jsonclass(graph='test_instanceof_1_2')
