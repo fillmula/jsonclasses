@@ -115,18 +115,16 @@ class InstanceOfValidator(Validator):
                 elif field.field_description.write_rule == WriteRule.WRITE_ONCE:
                     current_field_value = getattr(dest, field.field_name)
                     if current_field_value is None or isinstance(current_field_value, Types):
-                        field_context = TransformingContext(
+                        field_context = context.new(
                             value=field_value,
-                            keypath_root=concat_keypath(context.keypath_root, field.field_name),
-                            root=context.root,
-                            config_root=context.config_root,
+                            keypath_root=concat_keypath(context.keypath_root,
+                                                        field.field_name),
                             keypath_owner=field.field_name,
                             owner=context.value,
                             config_owner=cls.config,
                             keypath_parent=field.field_name,
                             parent=context.value,
-                            field_description=field.field_description,
-                            all_fields=context.all_fields)
+                            field_description=field.field_description)
                         transformed = field.field_types.validator.transform(
                             field_context)
                         setattr(dest, field.field_name, transformed)
@@ -134,18 +132,16 @@ class InstanceOfValidator(Validator):
                         if context.fill_dest_blanks:
                             fill_blank_with_default_value(field)
                 else:
-                    field_context = TransformingContext(
+                    field_context = context.new(
                         value=field_value,
-                        keypath_root=concat_keypath(context.keypath_root, field.field_name),
-                        root=context.root,
-                        config_root=context.config_root,
+                        keypath_root=concat_keypath(context.keypath_root,
+                                                    field.field_name),
                         keypath_owner=field.field_name,
                         owner=context.value,
                         config_owner=cls.config,
                         keypath_parent=field.field_name,
                         parent=context.value,
-                        field_description=field.field_description,
-                        all_fields=context.all_fields)
+                        field_description=field.field_description)
                     transformed = field.field_types.validator.transform(
                         field_context)
                     if field.field_description.field_storage == FieldStorage.FOREIGN_KEY:

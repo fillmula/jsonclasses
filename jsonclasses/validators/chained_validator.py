@@ -33,10 +33,10 @@ class ChainedValidator(Validator):
 
     def _validate_and_transform(self,
                                 validator: Validator,
-                                context: ValidatingContext) -> Any:
+                                context: TransformingContext) -> Any:
         """Validate as transform."""
-        validator.validate(context)
-        return validator.transform(context.transforming_context())
+        validator.validate(context.validating_context())
+        return validator.transform(context)
 
     # flake8: noqa: E501
     def transform(self, context: TransformingContext) -> Any:
@@ -48,7 +48,7 @@ class ChainedValidator(Validator):
             for validator in validators:
                 curvalue = self._validate_and_transform(
                     validator,
-                    context.new(value=curvalue).validating_context())
+                    context.new(value=curvalue))
             index = next_index + 1
             next_index = eager_validator_index_after_index(self.validators, index)
         validators = self.validators[index:]

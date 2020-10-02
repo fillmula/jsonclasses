@@ -1,6 +1,7 @@
 """This module defines JSON Class context objects."""
 from __future__ import annotations
 from typing import Any, NamedTuple, TypeVar, Optional, Union, TYPE_CHECKING
+from .lookup_map import TransformingLookupMap
 if TYPE_CHECKING:
     from .config import Config
     from .fields import FieldDescription
@@ -87,6 +88,7 @@ class TransformingContext(NamedTuple):
     all_fields: bool = True
     dest: Optional[JSONObject] = None
     fill_dest_blanks: bool = True
+    lookup_map: TransformingLookupMap = TransformingLookupMap()
 
     def new(self, **kwargs):
         keys = kwargs.keys()
@@ -110,7 +112,9 @@ class TransformingContext(NamedTuple):
                                if 'field_description' in keys
                                else self.field_description),
             all_fields=(kwargs['all_fields']
-                        if 'all_fields' in keys else self.all_fields))
+                        if 'all_fields' in keys else self.all_fields),
+            lookup_map=(kwargs['lookup_map']
+                        if 'lookup_map' in keys else self.lookup_map))
 
     def validating_context(self):
         return ValidatingContext(
