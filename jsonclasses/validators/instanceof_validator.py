@@ -37,6 +37,15 @@ class InstanceOfValidator(Validator):
                                        f"should be instance of "
                                        f"'{cls.__name__}'.")
             }, context.root)
+        primary_key = cast(str, cls.config.primary_key)
+        try:
+            id = cast(Union[str, int], getattr(context.value, primary_key))
+            if id is not None:
+                if context.lookup_map.fetch(cls.__name__, id):
+                    return
+                context.lookup_map.put(cls.__name__, id, context.value)
+        except AttributeError:
+            pass
         keypath_messages = {}
         for field in fields(context.value):
             field_name = field.field_name

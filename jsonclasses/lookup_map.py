@@ -8,11 +8,14 @@ if TYPE_CHECKING:
     ClassMap = Dict[str, ItemMap]
 
 
-class TransformingLookupMap:
-    """The lookup map provides defined objects query functionalities. When
-    transforming from raw input to JSON Class object, data referenced to same
-    object are fetched from this lookup map and reused. In a object graph, only
-    one object can represent one entity.
+class LookupMap:
+    """The lookup map provides defined objects query functionalities.
+
+    When transforming from raw input to JSON Class object, data referenced to
+    same object are fetched from this lookup map and reused. In a object graph,
+    only one object can represent one entity.
+
+    When validating an object graph, same object is not validated twice.
     """
 
     def __init__(self) -> None:

@@ -1,7 +1,7 @@
 """This module defines JSON Class context objects."""
 from __future__ import annotations
 from typing import Any, NamedTuple, TypeVar, Optional, Union, TYPE_CHECKING
-from .lookup_map import TransformingLookupMap
+from .lookup_map import LookupMap
 if TYPE_CHECKING:
     from .config import Config
     from .fields import FieldDescription
@@ -26,6 +26,7 @@ class ValidatingContext(NamedTuple):
     parent: Any  # the direct parent of this field
     field_description: Optional[FieldDescription] = None
     all_fields: bool = True
+    lookup_map: LookupMap = LookupMap()
 
     def new(self, **kwargs):
         keys = kwargs.keys()
@@ -49,7 +50,9 @@ class ValidatingContext(NamedTuple):
                                if 'field_description' in keys
                                else self.field_description),
             all_fields=(kwargs['all_fields']
-                        if 'all_fields' in keys else self.all_fields))
+                        if 'all_fields' in keys else self.all_fields),
+            lookup_map=(kwargs['lookup_map']
+                        if 'lookup_map' in keys else self.lookup_map))
 
     def transforming_context(self):
         return TransformingContext(
@@ -63,7 +66,8 @@ class ValidatingContext(NamedTuple):
             keypath_parent=self.keypath_parent,
             parent=self.parent,
             field_description=self.field_description,
-            all_fields=self.all_fields)
+            all_fields=self.all_fields,
+            lookup_map=self.lookup_map)
 
 
 class TransformingContext(NamedTuple):
@@ -88,7 +92,7 @@ class TransformingContext(NamedTuple):
     all_fields: bool = True
     dest: Optional[JSONObject] = None
     fill_dest_blanks: bool = True
-    lookup_map: TransformingLookupMap = TransformingLookupMap()
+    lookup_map: LookupMap = LookupMap()
 
     def new(self, **kwargs):
         keys = kwargs.keys()
@@ -128,7 +132,8 @@ class TransformingContext(NamedTuple):
             keypath_parent=self.keypath_parent,
             parent=self.parent,
             field_description=self.field_description,
-            all_fields=self.all_fields)
+            all_fields=self.all_fields,
+            lookup_map=self.lookup_map)
 
 
 class ToJSONContext(NamedTuple):

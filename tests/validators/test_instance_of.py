@@ -12,12 +12,14 @@ class User(JSONObject):
     posts: List[Post] = types.listof('Post').linkedby('user').required
     comments: List[Comment] = types.listof('Comment').linkedby('commenter').required
 
+
 @jsonclass(graph='test_instanceof_22')
 class Post(JSONObject):
     id: int
     name: str
     user: User = types.linkto.instanceof('User').required
     comments: List[Comment] = types.listof('Comment').linkedby('post').required
+
 
 @jsonclass(graph='test_instanceof_22')
 class Comment(JSONObject):
@@ -27,6 +29,7 @@ class Comment(JSONObject):
     parent: Optional[Comment] = types.linkto.instanceof('Comment')
     children: List[Comment] = types.listof('Comment').linkedby('parent').required
     commenter: User = types.linkto.instanceof('User').required
+
 
 input = {
     'id': 1,
@@ -90,6 +93,7 @@ input = {
         }
     ]
 }
+
 
 class TestInstanceOfValidator(unittest.TestCase):
 
@@ -509,3 +513,10 @@ class TestInstanceOfValidator(unittest.TestCase):
                       root_user.posts[1].comments[0])
         commenter_u3 = root_user.posts[1].comments[1].commenter
         self.assertIs(root_user.posts[1].comments[1], commenter_u3.comments[0])
+
+    def test_instanceof_circular_refs_validate_do_not_infinite_loop(self):
+        root_user = User(**input)
+        root_user.validate()
+
+    def test_instanceof_circular_refs_tojson_do_not_infinite_loop(self):
+        pass
