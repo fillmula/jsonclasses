@@ -1,6 +1,7 @@
 """This module defines JSON Class context objects."""
 from __future__ import annotations
-from typing import Any, NamedTuple, TypeVar, Optional, Union, TYPE_CHECKING
+from typing import (Any, NamedTuple, TypeVar, Optional, Union, List,
+                    TYPE_CHECKING)
 from .lookup_map import LookupMap
 if TYPE_CHECKING:
     from .config import Config
@@ -143,6 +144,7 @@ class ToJSONContext(NamedTuple):
     value: Any
     config: Config
     ignore_writeonly: bool = False
+    entity_chain: List[str] = []  # for circular tojson strip duplicated refs
 
     def new(self, **kwargs):
         keys = kwargs.keys()
@@ -151,4 +153,6 @@ class ToJSONContext(NamedTuple):
             config=kwargs['config'] if 'config' in keys else self.config,
             ignore_writeonly=(kwargs['ignore_writeonly']
                               if 'ignore_writeonly' in keys
-                              else self.ignore_writeonly))
+                              else self.ignore_writeonly),
+            entity_chain=(kwargs['entity_chain']
+                          if 'entity_chain' in keys else self.entity_chain))

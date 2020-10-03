@@ -7,6 +7,7 @@ from jsonclasses.config import Config
 from jsonclasses.exceptions import ValidationException
 from .validators.instanceof_validator import InstanceOfValidator
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
+from .lookup_map import LookupMap
 
 
 @dataclass(init=False)
@@ -65,7 +66,8 @@ class JSONObject:
             field_description=None,
             all_fields=True,
             dest=self,
-            fill_dest_blanks=fill_blanks)
+            fill_dest_blanks=fill_blanks,
+            lookup_map=LookupMap())
         validator.transform(context)
 
     def update(self: T, **kwargs: Any) -> T:
@@ -90,7 +92,7 @@ class JSONObject:
         return self
 
     def tojson(self: T, ignore_writeonly: bool = False) -> Dict[str, Any]:
-        """Serialize this jsonclass object to JSON dict.
+        """Serialize this JSON Class object to JSON dict.
 
         Args:
           ignore_writeonly (Optional[bool]): Whether ignore writeonly marks on
@@ -130,7 +132,8 @@ class JSONObject:
             keypath_parent='',
             parent=self,
             field_description=None,
-            all_fields=all_fields)
+            all_fields=all_fields,
+            lookup_map=LookupMap())
         InstanceOfValidator(self.__class__).validate(context)
         return self
 

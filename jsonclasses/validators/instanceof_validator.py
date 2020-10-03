@@ -265,13 +265,22 @@ class InstanceOfValidator(Validator):
         if context.value is None:
             return None
         retval = {}
+        entity_chain = context.entity_chain
+        cls_name = context.value.__class__.__name__
+        no_key_refs = cls_name in entity_chain
         for field in fields(context.value):
             field_value = getattr(context.value, field.field_name)
             fd = field.field_types.field_description
             jf_name = field.json_field_name
             ignore_writeonly = context.ignore_writeonly
+            if fd.field_storage == FieldStorage.LOCAL_KEY and no_key_refs:
+                continue
+            if fd.field_storage == FieldStorage.FOREIGN_KEY and no_key_refs:
+                continue
             if fd.read_rule == ReadRule.NO_READ and not ignore_writeonly:
                 continue
-            item_context = context.new(value=field_value)
+            item_context = context.new(
+                value=field_value,
+                entity_chain=[*entity_chain, cls_name])
             retval[jf_name] = field.field_types.validator.tojson(item_context)
         return retval

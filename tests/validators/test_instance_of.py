@@ -3,7 +3,7 @@ import unittest
 from typing import List, Dict, Optional
 from jsonclasses import jsonclass, JSONObject, types
 from jsonclasses.exceptions import ValidationException
-
+import pprint
 
 @jsonclass(graph='test_instanceof_22')
 class User(JSONObject):
@@ -519,4 +519,11 @@ class TestInstanceOfValidator(unittest.TestCase):
         root_user.validate()
 
     def test_instanceof_circular_refs_tojson_do_not_infinite_loop(self):
-        pass
+        root_user = User(**input)
+        root_user = User(**input)
+        root_user = User(**input)
+        root_user = User(**input)
+        root_user = User(**input)
+        printer = pprint.PrettyPrinter(indent=4)
+        json = root_user.tojson()
+        printer.pprint(json)
