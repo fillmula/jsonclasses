@@ -222,7 +222,12 @@ class InstanceOfValidator(Validator):
         dict_keys = list(context.value.keys())
         for field in fields(dest):
             if not self._has_field_value(field, dict_keys):
-                if context.fill_dest_blanks and not soft_apply_mode:
+                field_storage = field.field_description.field_storage
+                if field_storage == FieldStorage.FOREIGN_KEY:
+                    pass
+                elif field_storage == FieldStorage.LOCAL_KEY:
+                    pass
+                elif context.fill_dest_blanks and not soft_apply_mode:
                     self._fill_default_value(field, dest, context, cls)
                 continue
             field_value = self._get_field_value(field, context)

@@ -3,7 +3,7 @@ import unittest
 from typing import List, Dict, Optional
 from jsonclasses import jsonclass, JSONObject, types
 from jsonclasses.exceptions import ValidationException
-import pprint
+
 
 @jsonclass(graph='test_instanceof_22')
 class User(JSONObject):
@@ -513,6 +513,8 @@ class TestInstanceOfValidator(unittest.TestCase):
                       root_user.posts[1].comments[0])
         commenter_u3 = root_user.posts[1].comments[1].commenter
         self.assertIs(root_user.posts[1].comments[1], commenter_u3.comments[0])
+        self.assertEqual(1, len(root_user.comments))
+        self.assertIs(root_user.comments[0], root_user.posts[0].comments[1])
 
     def test_instanceof_circular_refs_validate_do_not_infinite_loop(self):
         root_user = User(**input)
@@ -520,10 +522,55 @@ class TestInstanceOfValidator(unittest.TestCase):
 
     def test_instanceof_circular_refs_tojson_do_not_infinite_loop(self):
         root_user = User(**input)
-        root_user = User(**input)
-        root_user = User(**input)
-        root_user = User(**input)
-        root_user = User(**input)
-        printer = pprint.PrettyPrinter(indent=4)
         json = root_user.tojson()
-        printer.pprint(json)
+        result = {'comments': [{'children': None,
+                                'commenter': {'id': 1, 'name': 'U1'},
+                                'content': 'C2',
+                                'id': 2,
+                                'parent': {'content': 'C1', 'id': 1},
+                                'post': {'comments': [{'content': 'C1', 'id': 1},
+                                                      {'content': 'C2', 'id': 2},
+                                                      {'content': 'C3', 'id': 3}],
+                                         'id': 1,
+                                         'name': 'P1',
+                                         'user': {'id': 1, 'name': 'U1'}}}],
+                  'id': 1,
+                  'name': 'U1',
+                  'posts': [{'comments': [{'children': [{'content': 'C2',
+                                                         'id': 2}],
+                                           'commenter': {'id': 2, 'name': 'U2'},
+                                           'content': 'C1',
+                                           'id': 1,
+                                           'parent': None,
+                                           'post': {'id': 1, 'name': 'P1'}},
+                                          {'children': None,
+                                           'commenter': {'id': 1, 'name': 'U1'},
+                                           'content': 'C2',
+                                           'id': 2,
+                                           'parent': {'content': 'C1', 'id': 1},
+                                           'post': {'id': 1, 'name': 'P1'}},
+                                          {'children': None,
+                                           'commenter': {'id': 2, 'name': 'U2'},
+                                           'content': 'C3',
+                                           'id': 3,
+                                           'parent': None,
+                                           'post': {'id': 1, 'name': 'P1'}}],
+                             'id': 1,
+                             'name': 'P1',
+                             'user': {'id': 1, 'name': 'U1'}},
+                            {'comments': [{'children': None,
+                                           'commenter': {'id': 2, 'name': 'U2'},
+                                           'content': 'C4',
+                                           'id': 4,
+                                           'parent': None,
+                                           'post': {'id': 2, 'name': 'P2'}},
+                                          {'children': None,
+                                           'commenter': {'id': 3, 'name': 'U3'},
+                                           'content': 'C5',
+                                           'id': 5,
+                                           'parent': None,
+                                           'post': {'id': 2, 'name': 'P2'}}],
+                             'id': 2,
+                             'name': 'P2',
+                             'user': {'id': 1, 'name': 'U1'}}]}
+        self.assertEqual(json, result)

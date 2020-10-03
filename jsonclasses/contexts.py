@@ -27,7 +27,7 @@ class ValidatingContext(NamedTuple):
     parent: Any  # the direct parent of this field
     field_description: Optional[FieldDescription] = None
     all_fields: bool = True
-    lookup_map: LookupMap = LookupMap()
+    lookup_map: LookupMap = LookupMap()  # Override this, this is a placeholder
 
     def new(self, **kwargs):
         keys = kwargs.keys()
@@ -93,7 +93,7 @@ class TransformingContext(NamedTuple):
     all_fields: bool = True
     dest: Optional[JSONObject] = None
     fill_dest_blanks: bool = True
-    lookup_map: LookupMap = LookupMap()
+    lookup_map: LookupMap = LookupMap()  # Override this, this is a placeholder
 
     def new(self, **kwargs):
         keys = kwargs.keys()
