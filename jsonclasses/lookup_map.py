@@ -22,12 +22,14 @@ class LookupMap:
         self.cls_map: ClassMap = {}
 
     def fetch(self, cls_name: str, id: Union[str, int]) -> Optional[T]:
+        """Get an item on map by `cls_name` and `id`."""
         item_map = self.cls_map.get(cls_name)
         if item_map is None:
             return None
         return item_map.get(str(id))
 
     def put(self, cls_name: str, id: Union[str, int], item: T) -> None:
+        """Put an item on map."""
         if self.cls_map.get(cls_name) is None:
             self.cls_map[cls_name] = {}
         item_map = self.cls_map.get(cls_name)
