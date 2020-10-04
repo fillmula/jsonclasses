@@ -27,12 +27,12 @@ class TestORMObject(unittest.TestCase):
 
     def test_orm_object_has_modified_fields_and_defaults_to_empty_list(self):
         object = ORMObject()
-        self.assertEqual(object.modified_fields, [])
+        self.assertEqual(object.modified_fields, set())
 
     def test_orm_object_has_modified_fields_and_can_be_set(self):
         object = ORMObject()
-        setattr(object, '_modified_fields', ['id'])
-        self.assertEqual(object.modified_fields, ['id'])
+        setattr(object, '_modified_fields', {'id'})
+        self.assertEqual(object.modified_fields, {'id'})
 
     def test_orm_object_triggers_is_modified_on_field_change(self):
         @jsonclass(graph='test_orm_1')
@@ -43,13 +43,13 @@ class TestORMObject(unittest.TestCase):
         self.assertEqual(product.is_modified, False)
         product.name = 'r'
         self.assertEqual(product.is_modified, True)
-        self.assertEqual(product.modified_fields, ['name'])
+        self.assertEqual(product.modified_fields, {'name'})
         product.stock = 2
         self.assertEqual(product.is_modified, True)
-        self.assertEqual(product.modified_fields, ['name', 'stock'])
+        self.assertEqual(product.modified_fields, {'name', 'stock'})
         product.name = 'a'
         self.assertEqual(product.is_modified, True)
-        self.assertEqual(product.modified_fields, ['name', 'stock'])
+        self.assertEqual(product.modified_fields, {'name', 'stock'})
 
     def test_orm_object_triggers_is_modified_on_set_change(self):
         @jsonclass(graph='test_orm_2')
@@ -60,13 +60,13 @@ class TestORMObject(unittest.TestCase):
         self.assertEqual(product.is_modified, False)
         product.set(name='h')
         self.assertEqual(product.is_modified, True)
-        self.assertEqual(product.modified_fields, ['name'])
+        self.assertEqual(product.modified_fields, {'name'})
         product.set(stock=7)
         self.assertEqual(product.is_modified, True)
-        self.assertEqual(product.modified_fields, ['name', 'stock'])
+        self.assertEqual(product.modified_fields, {'name', 'stock'})
         product.set(name='c')
         self.assertEqual(product.is_modified, True)
-        self.assertEqual(product.modified_fields, ['name', 'stock'])
+        self.assertEqual(product.modified_fields, {'name', 'stock'})
 
     def test_orm_object_triggers_is_modified_on_update_change(self):
         @jsonclass(graph='test_orm_3')
@@ -77,14 +77,26 @@ class TestORMObject(unittest.TestCase):
         self.assertEqual(product.is_modified, False)
         product.update(name='h')
         self.assertEqual(product.is_modified, True)
-        self.assertEqual(product.modified_fields, ['name'])
+        self.assertEqual(product.modified_fields, {'name'})
         product.update(stock=7)
         self.assertEqual(product.is_modified, True)
-        self.assertEqual(product.modified_fields, ['name', 'stock'])
+        self.assertEqual(product.modified_fields, {'name', 'stock'})
         product.update(name='c')
         self.assertEqual(product.is_modified, True)
-        self.assertEqual(product.modified_fields, ['name', 'stock'])
+        self.assertEqual(product.modified_fields, {'name', 'stock'})
 
+    def test_orm_object_triggers_is_modified_on_mark_list_update(self):
+        @jsonclass(graph='test_orm_4')
+        class Product(ORMObject):
+            name: str
+            variants: List[str]
+        product = Product(name='p', variants=['xs', 's'])
+        self.assertEqual(product.is_modified, False)
+        product.variants.append('m')
+        self.assertEqual(product.is_modified, False)
+        product.mark_modified('variants')
+        self.assertEqual(product.is_modified, True)
+        self.assertEqual(product.modified_fields, {'variants'})
 
     # def test_persistable_json_object_has_created_at_on_initializing(self):
     #     o = ORMObject()
