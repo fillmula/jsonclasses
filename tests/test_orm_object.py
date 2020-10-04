@@ -34,6 +34,58 @@ class TestORMObject(unittest.TestCase):
         setattr(object, '_modified_fields', ['id'])
         self.assertEqual(object.modified_fields, ['id'])
 
+    def test_orm_object_triggers_is_modified_on_field_change(self):
+        @jsonclass(graph='test_orm_1')
+        class Product(ORMObject):
+            name: str
+            stock: int
+        product = Product(name='p', stock=1)
+        self.assertEqual(product.is_modified, False)
+        product.name = 'r'
+        self.assertEqual(product.is_modified, True)
+        self.assertEqual(product.modified_fields, ['name'])
+        product.stock = 2
+        self.assertEqual(product.is_modified, True)
+        self.assertEqual(product.modified_fields, ['name', 'stock'])
+        product.name = 'a'
+        self.assertEqual(product.is_modified, True)
+        self.assertEqual(product.modified_fields, ['name', 'stock'])
+
+    def test_orm_object_triggers_is_modified_on_set_change(self):
+        @jsonclass(graph='test_orm_2')
+        class Product(ORMObject):
+            name: str
+            stock: int
+        product = Product(name='p', stock=1)
+        self.assertEqual(product.is_modified, False)
+        product.set(name='h')
+        self.assertEqual(product.is_modified, True)
+        self.assertEqual(product.modified_fields, ['name'])
+        product.set(stock=7)
+        self.assertEqual(product.is_modified, True)
+        self.assertEqual(product.modified_fields, ['name', 'stock'])
+        product.set(name='c')
+        self.assertEqual(product.is_modified, True)
+        self.assertEqual(product.modified_fields, ['name', 'stock'])
+
+    def test_orm_object_triggers_is_modified_on_update_change(self):
+        @jsonclass(graph='test_orm_3')
+        class Product(ORMObject):
+            name: str
+            stock: int
+        product = Product(name='p', stock=1)
+        self.assertEqual(product.is_modified, False)
+        product.update(name='h')
+        self.assertEqual(product.is_modified, True)
+        self.assertEqual(product.modified_fields, ['name'])
+        product.update(stock=7)
+        self.assertEqual(product.is_modified, True)
+        self.assertEqual(product.modified_fields, ['name', 'stock'])
+        product.update(name='c')
+        self.assertEqual(product.is_modified, True)
+        self.assertEqual(product.modified_fields, ['name', 'stock'])
+
+
     # def test_persistable_json_object_has_created_at_on_initializing(self):
     #     o = ORMObject()
     #     self.assertTrue(type(o.created_at) is datetime)

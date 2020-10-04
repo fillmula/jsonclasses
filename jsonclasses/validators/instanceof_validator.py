@@ -205,10 +205,10 @@ class InstanceOfValidator(Validator):
                 dest = exist_item
                 soft_apply_mode = True
             else:
-                dest = cls(_empty=True)
+                dest = cls()
                 context.lookup_map.put(cls.__name__, id, dest)
         else:
-            dest = cls(_empty=True)
+            dest = cls()
         # strictness check
         strictness = cast(bool, cls.config.strict_input)
         if context.field_description is not None:

@@ -27,7 +27,7 @@ class JSONObject:
 
     config: ClassVar[Config]
 
-    def __init__(self: T, _empty: bool = False, **kwargs: Any) -> None:
+    def __init__(self: T, **kwargs: Any) -> None:
         """Initialize a new jsonclass object from keyed arguments or a dict.
         This method is suitable for accepting web and malformed inputs. Eager
         validation and transformation are applied during the initialization
@@ -35,8 +35,7 @@ class JSONObject:
         """
         for field in fields(self):
             setattr(self, field.name, None)
-        if not _empty:
-            self.__set(fill_blanks=True, **kwargs)
+        self.__set(fill_blanks=True, **kwargs)
 
     def set(self: T, **kwargs: Any) -> T:
         """Set object values in a batch. This method is suitable for web and
@@ -82,12 +81,12 @@ class JSONObject:
         """
         unallowed_keys = set(kwargs.keys()) - set(self.__dict__.keys())
         unallowed_keys_length = len(unallowed_keys)
-        if unallowed_keys_length:
-            keys = 'Keys' if unallowed_keys_length != 1 else 'Key'
-            are = 'are' if unallowed_keys_length != 1 else 'is'
+        if unallowed_keys_length > 0:
             keys_list = ', '.join(list(unallowed_keys))
-            raise ValueError(f'{keys} {keys_list} {are} not allowed when '
-                             f'updating {self.__class__.__name__}.')
+            raise ValueError(f'`{keys_list}` not allowed in '
+                             f'{self.__class__.__name__}.')
+        for key, item in kwargs.items():
+            setattr(self, key, item)
         self.__dict__.update(kwargs)
         return self
 

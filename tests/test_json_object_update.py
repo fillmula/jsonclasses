@@ -29,7 +29,7 @@ class TestJSONObjectUpdate(unittest.TestCase):
             name: str
             address: str
         contact = Contact(name='John', address='Balk')
-        with self.assertRaisesRegex(ValueError, 'Key nama is not allowed when updating Contact\\.'):
+        with self.assertRaisesRegex(ValueError, '`nama` not allowed in Contact\\.'):
             contact.update(**{'nama': 'Peter', 'address': 'Light'})
 
     def test_update_raises_if_given_keys_are_not_allowed(self):
@@ -38,5 +38,5 @@ class TestJSONObjectUpdate(unittest.TestCase):
             name: str
             address: str
         contact = Contact(name='John', address='Balk')
-        with self.assertRaisesRegex(ValueError, 'Keys .* are not allowed when updating Contact\\.'):
+        with self.assertRaisesRegex(ValueError, '`appress, nama` not allowed in Contact\\.'):
             contact.update(**{'nama': 'Peter', 'appress': 'Light'})
