@@ -87,7 +87,6 @@ class JSONObject:
                              f'{self.__class__.__name__}.')
         for key, item in kwargs.items():
             setattr(self, key, item)
-        self.__dict__.update(kwargs)
         return self
 
     def tojson(self: T, ignore_writeonly: bool = False) -> Dict[str, Any]:

@@ -1,6 +1,5 @@
 import unittest
 from jsonclasses import jsonclass, JSONObject
-from datetime import datetime, date
 
 
 class TestJSONObjectUpdate(unittest.TestCase):
@@ -38,5 +37,5 @@ class TestJSONObjectUpdate(unittest.TestCase):
             name: str
             address: str
         contact = Contact(name='John', address='Balk')
-        with self.assertRaisesRegex(ValueError, '`appress, nama` not allowed in Contact\\.'):
+        with self.assertRaisesRegex(ValueError, '`.*` not allowed in Contact\\.'):
             contact.update(**{'nama': 'Peter', 'appress': 'Light'})
