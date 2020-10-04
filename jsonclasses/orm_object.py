@@ -49,7 +49,7 @@ class ORMObject(JSONObject):
 
     def __setattr__(self: T, name: str, value: Any) -> None:
         # only mark modified fields for public properties
-        if name[0] != '_':
+        if name[0] != '_' and not self.is_new:
             setattr(self, '_is_modified', True)
             self.modified_fields.add(name)
         super().__setattr__(name, value)
@@ -57,6 +57,8 @@ class ORMObject(JSONObject):
     def mark_modified(self: T, *args: str) -> T:
         """Mark fields as modified.
         """
+        if self.is_new:
+            return self
         self.modified_fields.update(args)
         setattr(self, '_is_modified', True)
         return self

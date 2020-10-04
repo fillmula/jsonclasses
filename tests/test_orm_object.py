@@ -25,7 +25,7 @@ class TestORMObject(unittest.TestCase):
         setattr(object, '_is_modified', True)
         self.assertEqual(object.is_modified, True)
 
-    def test_orm_object_has_modified_fields_and_defaults_to_empty_list(self):
+    def test_orm_object_has_modified_fields_and_defaults_to_empty_set(self):
         object = ORMObject()
         self.assertEqual(object.modified_fields, set())
 
@@ -40,6 +40,7 @@ class TestORMObject(unittest.TestCase):
             name: str
             stock: int
         product = Product(name='p', stock=1)
+        setattr(product, '_is_new', False)
         self.assertEqual(product.is_modified, False)
         product.name = 'r'
         self.assertEqual(product.is_modified, True)
@@ -57,6 +58,7 @@ class TestORMObject(unittest.TestCase):
             name: str
             stock: int
         product = Product(name='p', stock=1)
+        setattr(product, '_is_new', False)
         self.assertEqual(product.is_modified, False)
         product.set(name='h')
         self.assertEqual(product.is_modified, True)
@@ -74,6 +76,7 @@ class TestORMObject(unittest.TestCase):
             name: str
             stock: int
         product = Product(name='p', stock=1)
+        setattr(product, '_is_new', False)
         self.assertEqual(product.is_modified, False)
         product.update(name='h')
         self.assertEqual(product.is_modified, True)
@@ -91,12 +94,30 @@ class TestORMObject(unittest.TestCase):
             name: str
             variants: List[str]
         product = Product(name='p', variants=['xs', 's'])
+        setattr(product, '_is_new', False)
         self.assertEqual(product.is_modified, False)
         product.variants.append('m')
         self.assertEqual(product.is_modified, False)
         product.mark_modified('variants')
         self.assertEqual(product.is_modified, True)
         self.assertEqual(product.modified_fields, {'variants'})
+
+    def test_orm_object_doesnt_track_modified_for_new_objects(self):
+        @jsonclass(graph='test_orm_5')
+        class Product(ORMObject):
+            name: str
+            stock: int
+        product = Product(name='p', stock=1)
+        product.update(name='h')
+        self.assertEqual(product.is_modified, False)
+        self.assertEqual(product.modified_fields, set())
+        product.set(name='q')
+        self.assertEqual(product.is_modified, False)
+        self.assertEqual(product.modified_fields, set())
+        product.name = 'i'
+        self.assertEqual(product.is_modified, False)
+        self.assertEqual(product.modified_fields, set())
+
 
     # def test_persistable_json_object_has_created_at_on_initializing(self):
     #     o = ORMObject()
