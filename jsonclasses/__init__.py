@@ -19,3 +19,4 @@ from .config import Config
 from .fields import Field, FieldDescription, FieldType, FieldStorage, fields
 from .json_object import JSONObject
 from .json_encoder import JSONEncoder
+from .orm_object import ORMObject
