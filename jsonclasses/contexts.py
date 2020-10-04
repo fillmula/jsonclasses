@@ -30,6 +30,7 @@ class ValidatingContext(NamedTuple):
     lookup_map: LookupMap = LookupMap()  # Override this, this is a placeholder
 
     def new(self, **kwargs):
+        """Return a new validating context by replacing provided values."""
         keys = kwargs.keys()
         return ValidatingContext(
             value=kwargs['value'] if 'value' in keys else self.value,
@@ -56,6 +57,7 @@ class ValidatingContext(NamedTuple):
                         if 'lookup_map' in keys else self.lookup_map))
 
     def transforming_context(self):
+        """Return a new transforming context by converting."""
         return TransformingContext(
             value=self.value,
             keypath_root=self.keypath_root,
@@ -96,6 +98,7 @@ class TransformingContext(NamedTuple):
     lookup_map: LookupMap = LookupMap()  # Override this, this is a placeholder
 
     def new(self, **kwargs):
+        """Return a new transforming context by replacing provided values."""
         keys = kwargs.keys()
         return TransformingContext(
             value=kwargs['value'] if 'value' in keys else self.value,
@@ -122,6 +125,7 @@ class TransformingContext(NamedTuple):
                         if 'lookup_map' in keys else self.lookup_map))
 
     def validating_context(self):
+        """Return a new validating context by converting."""
         return ValidatingContext(
             value=self.value,
             keypath_root=self.keypath_root,
@@ -147,6 +151,7 @@ class ToJSONContext(NamedTuple):
     entity_chain: List[str] = []  # for circular tojson strip duplicated refs
 
     def new(self, **kwargs):
+        """Return a new tojson context by replacing provided values."""
         keys = kwargs.keys()
         return ToJSONContext(
             value=kwargs['value'] if 'value' in keys else self.value,
