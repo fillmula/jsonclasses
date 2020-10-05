@@ -1,4 +1,5 @@
 from __future__ import annotations
+from jsonclasses.exceptions import ValidationException
 from typing import List
 import unittest
 from jsonclasses import jsonclass, ORMObject, types
@@ -117,6 +118,62 @@ class TestORMObject(unittest.TestCase):
         product.name = 'i'
         self.assertEqual(product.is_modified, False)
         self.assertEqual(product.modified_fields, set())
+
+    def test_existing_orm_object_only_validate_modified_fields(self):
+        @jsonclass(graph='test_orm_6')
+        class Product(ORMObject):
+            name: str
+            stock: int
+        product = Product(name='p', stock=1)
+        setattr(product, '_is_new', False)
+        product.stock = 5
+        product.name = None
+        setattr(product, '_modified_fields', {'stock'})
+        product.validate()
+
+    def test_new_orm_object_validate_all_fields(self):
+        @jsonclass(graph='test_orm_7')
+        class Product(ORMObject):
+            name: str
+            stock: int
+        product = Product(name='p', stock=1)
+        product.stock = None
+        product.name = None
+        try:
+            product.validate()
+        except ValidationException as e:
+            self.assertEqual(e.keypath_messages['name'], "Value at 'name' should not be None.")
+            self.assertEqual(e.keypath_messages['stock'], "Value at 'stock' should not be None.")
+
+    def test_orm_object_reference_fields_on_root_are_validated_anyway(self):
+
+        @jsonclass(graph='test_orm_8')
+        class User(ORMObject):
+            id: int
+            name: str
+            product: Product = types.instanceof('Product').linkedby('user')
+
+        @jsonclass(graph='test_orm_8')
+        class Product(ORMObject):
+            id: int
+            name: str
+            stock: int
+            user: User = types.linkto.instanceof('User').required
+
+        product = Product(**{
+            'id': 1,
+            'name': '2',
+            'stock': 5,
+            'user': {
+                'id': 1,
+                'name': 'u'
+            }
+        })
+        setattr(product, '_is_new', False)
+        product.user.name = None
+        self.assertEqual(product.is_modified, False)
+        self.assertEqual(product.modified_fields, set())
+        self.assertRaisesRegex(ValidationException, "Value at 'user\\.name' should not be None\\.", product.validate)
 
 
     # def test_persistable_json_object_has_created_at_on_initializing(self):

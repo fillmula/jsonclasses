@@ -27,6 +27,7 @@ class InstanceOfValidator(Validator):
 
     def validate(self, context: ValidatingContext) -> None:
         from ..json_object import JSONObject
+        from ..orm_object import ORMObject
         if context.value is None:
             return
         types = resolve_types(self.raw_type, context.config_owner.linked_class)
@@ -46,18 +47,29 @@ class InstanceOfValidator(Validator):
                 context.lookup_map.put(cls.__name__, id, context.value)
         except AttributeError:
             pass
+        only_validate_modified = False
+        modified_fields = []
+        if isinstance(context.value, ORMObject) and not context.value.is_new:
+            only_validate_modified = True
+            modified_fields = list(context.value.modified_fields)
         keypath_messages = {}
         for field in fields(context.value):
-            field_name = field.field_name
+            fname = field.field_name
+            fd = field.field_description
+            bypass = False
+            if fd.field_storage == FieldStorage.EMBEDDED:
+                if only_validate_modified and fname not in modified_fields:
+                    bypass = True
+            if bypass:
+                continue
             try:
                 field.field_types.validator.validate(context.new(
-                    value=getattr(context.value, field_name),
-                    keypath_root=concat_keypath(context.keypath_root,
-                                                field_name),
-                    keypath_owner=field_name,
+                    value=getattr(context.value, fname),
+                    keypath_root=concat_keypath(context.keypath_root, fname),
+                    keypath_owner=fname,
                     owner=context.value,
                     config_owner=context.value.__class__.config,
-                    keypath_parent=field_name,
+                    keypath_parent=fname,
                     parent=context.value,
                     field_description=field.field_description))
             except ValidationException as exception:
