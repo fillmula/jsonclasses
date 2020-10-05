@@ -2,7 +2,7 @@
 field types object.
 """
 from __future__ import annotations
-from typing import (Type, Any, TypeVar, Optional, Union, List, get_args,
+from typing import (Type, Any, TypeVar, Optional, Union, List, Dict, get_args,
                     get_origin, TYPE_CHECKING)
 from datetime import date, datetime
 from re import match, split
@@ -111,6 +111,13 @@ def to_types(argtype: Any,
     elif issubclass(argtype, JSONObject):
         instance_type = types.instanceof(argtype)
         return instance_type if optional else instance_type.required
+    elif issubclass(argtype, dict):
+        anno_dict: Dict[str, Any] = argtype.__annotations__
+        item_types: Dict[str, Types] = {}
+        for k, t in anno_dict.items():
+            item_types[k] = to_types(t, graph_sibling)
+        shape_types = types.shape(item_types)
+        return shape_types if optional else shape_types.required
     else:
         raise ValueError(f'{argtype} is not a valid JSON Class type.')
 

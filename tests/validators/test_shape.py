@@ -175,3 +175,18 @@ class TestShapeValidator(unittest.TestCase):
         self.assertEqual(user.settings['ios'], True)
         self.assertEqual(user.settings['android'], False)
         self.assertEqual(user.settings['name'], 'unnamed')
+
+    def test_shape_generates_validator_from_typed_dict_type(self):
+        class Settings(TypedDict):
+            ios: bool
+            android: Optional[bool]
+            name: str
+
+        @jsonclass(graph='test_shape_16')
+        class User(JSONObject):
+            settings: Settings
+
+        user = User(settings={'ios': True})
+        self.assertRaisesRegex(ValidationException,
+                               "'settings\\.name' should not be None",
+                               user.validate)
