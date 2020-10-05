@@ -24,10 +24,7 @@ class TestShapeValidator(unittest.TestCase):
                 'line2': types.str
             }).required
         user = User(address={'line1': 'Shanghai'})
-        try:
-            user.validate()
-        except:
-            self.fail('shape validator should not throw if subfields are ok')
+        user.validate()
 
     def test_shape_validator_assigns_none_for_accessing(self):
         @jsonclass(graph='test_shape_3')
