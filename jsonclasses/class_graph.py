@@ -1,4 +1,4 @@
-"""This module defineds the internal JSON Class mapping graph."""
+"""This module defineds the JSON Class class mapping graph."""
 from __future__ import annotations
 from typing import Dict, Type, TypeVar, TYPE_CHECKING
 from inspect import getmodule
@@ -38,17 +38,6 @@ class JSONClassNotFoundError(Exception):
         super().__init__(message)
 
 
-class ClassGraphMap:
-
-    def __init__(self):
-        self._map: Dict[str, ClassGraph] = {}
-
-    def graph(self, graph_name: str) -> ClassGraph:
-        if self._map.get(graph_name) is None:
-            self._map[graph_name] = ClassGraph(graph_name=graph_name)
-        return self._map[graph_name]
-
-
 class ClassGraph:
 
     def __init__(self, graph_name: str):
@@ -67,6 +56,17 @@ class ClassGraph:
             return self._map[cls_name]
         except KeyError:
             raise JSONClassNotFoundError(name=cls_name, graph=self._graph_name)
+
+
+class ClassGraphMap:
+
+    def __init__(self):
+        self._map: Dict[str, ClassGraph] = {}
+
+    def graph(self, graph_name: str) -> ClassGraph:
+        if self._map.get(graph_name) is None:
+            self._map[graph_name] = ClassGraph(graph_name=graph_name)
+        return self._map[graph_name]
 
 
 class_graph_map = ClassGraphMap()
