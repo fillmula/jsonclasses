@@ -1,7 +1,7 @@
 """This module contains `JSONObject`, the main base class of JSON Classes.
 """
 from __future__ import annotations
-from typing import Dict, Any, ClassVar, TypeVar
+from typing import Dict, Any, Optional, ClassVar, TypeVar
 from dataclasses import dataclass, fields
 from jsonclasses.config import Config
 from jsonclasses.exceptions import ValidationException
@@ -106,7 +106,7 @@ class JSONObject:
                                 ignore_writeonly=ignore_writeonly)
         return validator.tojson(context)
 
-    def validate(self: T, all_fields: bool = True) -> T:
+    def validate(self: T, all_fields: Optional[bool] = None) -> T:
         """Validate the jsonclass object's validity. Raises ValidationException
         on validation failed.
 

@@ -26,7 +26,7 @@ class ValidatingContext(NamedTuple):
     keypath_parent: Union[str, int]  # key relative to parent
     parent: Any  # the direct parent of this field
     field_description: Optional[FieldDescription] = None
-    all_fields: bool = True
+    all_fields: Optional[bool] = None
     lookup_map: LookupMap = LookupMap()  # Override this, this is a placeholder
 
     def new(self, **kwargs):
@@ -92,7 +92,7 @@ class TransformingContext(NamedTuple):
     keypath_parent: Union[str, int]  # key relative to parent
     parent: Any  # the direct parent of this field
     field_description: Optional[FieldDescription] = None
-    all_fields: bool = True
+    all_fields: Optional[bool] = None
     dest: Optional[JSONObject] = None
     fill_dest_blanks: bool = True
     lookup_map: LookupMap = LookupMap()  # Override this, this is a placeholder

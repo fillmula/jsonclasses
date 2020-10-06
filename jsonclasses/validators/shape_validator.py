@@ -26,6 +26,9 @@ class ShapeValidator(TypeValidator):
         if context.value is None:
             return
         super().validate(context)
+        all_fields = context.all_fields
+        if all_fields is None:
+            all_fields = context.config_owner.validate_all_fields
         keypath_messages = {}
         for k, t in self.shape_types.items():
             try:
@@ -43,7 +46,7 @@ class ShapeValidator(TypeValidator):
                         parent=context.value,
                         field_description=types.field_description))
                 except ValidationException as exception:
-                    if context.all_fields:
+                    if all_fields:
                         keypath_messages.update(exception.keypath_messages)
                     else:
                         raise exception

@@ -29,6 +29,9 @@ class DictOfValidator(TypeValidator):
         types = resolve_types(self.types, context.config_owner.linked_class)
         if types.field_description.item_nullability == Nullability.UNDEFINED:
             types = types.required
+        all_fields = context.all_fields
+        if all_fields is None:
+            all_fields = context.config_owner.validate_all_fields
         keypath_messages = {}
         for k, v in context.value.items():
             try:
@@ -40,7 +43,7 @@ class DictOfValidator(TypeValidator):
                     parent=context.value,
                     field_description=types.field_description))
             except ValidationException as exception:
-                if context.all_fields:
+                if all_fields:
                     keypath_messages.update(exception.keypath_messages)
                 else:
                     raise exception

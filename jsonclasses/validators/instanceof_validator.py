@@ -32,6 +32,9 @@ class InstanceOfValidator(Validator):
             return
         types = resolve_types(self.raw_type, context.config_owner.linked_class)
         cls = cast(Type[JSONObject], types.field_description.instance_types)
+        all_fields = context.all_fields
+        if all_fields is None:
+            all_fields = cls.config.validate_all_fields
         if not isinstance(context.value, cls):
             raise ValidationException({
                 context.keypath_root: (f"Value at '{context.keypath_root}' "
@@ -73,7 +76,7 @@ class InstanceOfValidator(Validator):
                     parent=context.value,
                     field_description=field.field_description))
             except ValidationException as exception:
-                if context.all_fields:
+                if all_fields:
                     keypath_messages.update(exception.keypath_messages)
                 else:
                     raise exception

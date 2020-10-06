@@ -45,6 +45,10 @@ TIMESTAMPS = ['created_at', 'updated_at', 'deleted_at']
 tell JSON Class that this class doesn't have that timestamp field.
 """
 
+VALIDATE_ALL_FIELDS = True
+"""When validating, if no validate rule specified, default to all fields.
+"""
+
 SOFT_DELETE = False
 """When deleting, if no delete rule specified, default to hard delete.
 """
@@ -62,6 +66,7 @@ class Config:
     primary_key: Optional[str] = None
     local_key: Optional[LocalKey] = None
     timestamps: Optional[List[str]] = None
+    validate_all_fields: Optional[bool] = None
     soft_delete: Optional[bool] = None
 
     linked_class: Optional[Type[JSONObject]] = None
@@ -79,6 +84,8 @@ class Config:
             self.local_key = LOCAL_KEY
         if self.timestamps is None:
             self.timestamps = TIMESTAMPS
+        if self.validate_all_fields is None:
+            self.validate_all_fields = VALIDATE_ALL_FIELDS
         if self.soft_delete is None:
             self.soft_delete = SOFT_DELETE
 
