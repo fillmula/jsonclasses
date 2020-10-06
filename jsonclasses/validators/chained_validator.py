@@ -3,8 +3,7 @@ from __future__ import annotations
 from typing import List, Dict, Any, Optional
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..utils.eager_validator_index_after_index import eager_validator_index_after_index
-from ..utils.last_eager_validator_index import last_eager_validator_index
+from .eager_validator import EagerValidator
 from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 
 
@@ -18,9 +17,47 @@ class ChainedValidator(Validator):
         """Append validators to this chained validator chain."""
         return ChainedValidator([*self.validators, *args])
 
+    def _eager_validator_index_after_index(self,
+                                           vs: List[Validator],
+                                           index: int) -> Optional[int]:
+        """This function returns the first eager validator index after given
+        index.
+
+        Args:
+        vs (List[Validator]): A list of validators usually from chained
+        validator.
+        index (int): The starting index to begin search with.
+
+        Returns:
+        Optional[int]: The found index or None.
+        """
+        try:
+            return vs.index(next(v for v in vs[index:]
+                        if isinstance(v, EagerValidator)))
+        except StopIteration:
+            return None
+
+    def _last_eager_validator_index(self,
+                                    vs: List[Validator]) -> Optional[int]:
+        """This function returns the last eager validator index.
+
+        Args:
+        vs (List[Validator]): A list of validators usually from chained
+        validator.
+
+        Returns:
+        Optional[int]: The found index or None.
+        """
+        try:
+            return max([i for (i, v) in enumerate(vs)
+                    if isinstance(v, EagerValidator)])
+        except ValueError:
+            return None
+
     def validate(self, context: ValidatingContext) -> None:
         keypath_messages: Dict[str, str] = {}
-        start_validator_index = last_eager_validator_index(self.validators)
+        start_validator_index = self._last_eager_validator_index(
+                self.validators)
         for validator in self.validators[start_validator_index:]:
             try:
                 validator.validate(context)
@@ -42,7 +79,8 @@ class ChainedValidator(Validator):
     def transform(self, context: TransformingContext) -> Any:
         curvalue = context.value
         index = 0
-        next_index = eager_validator_index_after_index(self.validators, index)
+        next_index = self._eager_validator_index_after_index(
+                self.validators, index)
         while next_index is not None:
             validators = self.validators[index:next_index]
             for validator in validators:
@@ -50,7 +88,8 @@ class ChainedValidator(Validator):
                     validator,
                     context.new(value=curvalue))
             index = next_index + 1
-            next_index = eager_validator_index_after_index(self.validators, index)
+            next_index = self._eager_validator_index_after_index(
+                    self.validators, index)
         validators = self.validators[index:]
         for validator in validators:
             curvalue = validator.transform(context.new(value=curvalue))

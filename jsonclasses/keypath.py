@@ -1,9 +1,11 @@
-"""Keypath concatenation."""
+"""This module contains keypath manipulation utilities."""
 from typing import Union
 
 
 def concat_keypath(*args: Union[str, int]):
-    """Keypath concatenation."""
+    """Concatenate partial keypaths and keypath components into a concatenated
+    keypath.
+    """
     retval = ''
     for arg in args:
         if retval != '':

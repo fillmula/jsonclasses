@@ -21,5 +21,5 @@ from .lookup_map import LookupMap
 from .json_object import JSONObject
 from .json_encoder import JSONEncoder
 from .orm_object import ORMObject
-from .utils.concat_keypath import concat_keypath
+from .keypath import concat_keypath
 from .class_graph import ClassGraph, ClassGraphMap, class_graph_map

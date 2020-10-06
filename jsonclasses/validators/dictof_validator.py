@@ -5,7 +5,7 @@ from inflection import underscore, camelize
 from ..fields import FieldDescription, FieldType, Nullability
 from ..exceptions import ValidationException
 from .type_validator import TypeValidator
-from ..utils.concat_keypath import concat_keypath
+from ..keypath import concat_keypath
 from ..types_resolver import resolve_types
 from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 

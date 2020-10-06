@@ -6,7 +6,7 @@ from ..fields import (Field, FieldDescription, FieldStorage, FieldType,
                       WriteRule, ReadRule, Strictness, fields)
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..utils.concat_keypath import concat_keypath
+from ..keypath import concat_keypath
 from ..types_resolver import resolve_types
 from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 if TYPE_CHECKING:
