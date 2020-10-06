@@ -1,7 +1,8 @@
 """
 This module contains `jsonclass`, the decorator for JSON Classes.
 """
-from typing import Type, Optional, Union, TypeVar, overload, Callable, cast
+from typing import (List, Type, Optional, Union, TypeVar, overload, Callable,
+                    cast)
 from dataclasses import dataclass
 from .json_object import JSONObject
 from .graph import register_class
@@ -22,7 +23,8 @@ def jsonclass(
     camelize_db_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
     primary_key: Optional[str] = None,
-    local_key: Optional[LocalKey] = None
+    local_key: Optional[LocalKey] = None,
+    timestamps: Optional[List[str]] = None
 ) -> Callable[[Type[T]], Type[T]]: ...
 
 
@@ -34,7 +36,8 @@ def jsonclass(
     camelize_db_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
     primary_key: Optional[str] = None,
-    local_key: Optional[LocalKey] = None
+    local_key: Optional[LocalKey] = None,
+    timestamps: Optional[List[str]] = None
 ) -> Type[T]: ...
 
 
@@ -45,7 +48,8 @@ def jsonclass(
     camelize_db_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
     primary_key: Optional[str] = None,
-    local_key: Optional[LocalKey] = None
+    local_key: Optional[LocalKey] = None,
+    timestamps: Optional[List[str]] = None
 ) -> Union[Callable[[Type[T]], Type[T]], Type[T]]:
     """The jsonclass object class decorator. To declare a jsonclass class, use
     this syntax:
@@ -67,7 +71,8 @@ def jsonclass(
             camelize_db_keys=camelize_db_keys,
             strict_input=strict_input,
             primary_key=primary_key,
-            local_key=local_key
+            local_key=local_key,
+            timestamps=timestamps
         )
         config.install_on_class(cls)
         return register_class(dataclass(init=False)(cls),
@@ -81,6 +86,7 @@ def jsonclass(
                 camelize_db_keys=camelize_db_keys,
                 strict_input=strict_input,
                 primary_key=primary_key,
-                local_key=local_key
+                local_key=local_key,
+                timestamps=timestamps
             )
         return parametered_jsonclass

@@ -1,6 +1,6 @@
 """This module contains JSON Class `config` aka configuration object."""
 from __future__ import annotations
-from typing import Optional, Type, Callable, TYPE_CHECKING
+from typing import Optional, Type, List, Callable, TYPE_CHECKING
 from dataclasses import dataclass
 from .fields import FieldType
 if TYPE_CHECKING:
@@ -40,6 +40,12 @@ def LOCAL_KEY(field_name: str, field_type: FieldType) -> str:
     return field_name + '_id'
 
 
+TIMESTAMPS = ['created_at', 'updated_at', 'deleted_at']
+"""The field names for timestamp fields. Specify None at specified position to
+tell JSON Class that this class doesn't have that timestamp field.
+"""
+
+
 @dataclass
 class Config:
     """The Config class contains user's settings for a JSON Class.
@@ -51,6 +57,7 @@ class Config:
     strict_input: Optional[bool] = None
     primary_key: Optional[str] = None
     local_key: Optional[LocalKey] = None
+    timestamps: Optional[List[str]] = None
 
     linked_class: Optional[Type[JSONObject]] = None
 
@@ -65,6 +72,8 @@ class Config:
             self.primary_key = PRIMARY_KEY
         if self.local_key is None:
             self.local_key = LOCAL_KEY
+        if self.timestamps is None:
+            self.timestamps = TIMESTAMPS
 
     def install_on_class(self, cls: Type[JSONObject]):
         """Install config object onto a JSONObject class.
