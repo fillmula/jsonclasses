@@ -185,3 +185,73 @@ class TestJSONObjectValidate(unittest.TestCase):
         exception = context.exception
         self.assertTrue(len(exception.keypath_messages) == 1)
         self.assertRegex(exception.keypath_messages['posts.0.title'], 'Value at \'posts\\.0\\.title\' should not be None\\.')
+
+    def test_validate_validates_only_one_field_if_its_default(self):
+        @jsonclass(graph='test_validate_13', validate_all_fields=False)
+        class Post(JSONObject):
+            title: str = types.str.required
+            content: str = types.str.required
+        post = Post()
+        with self.assertRaises(ValidationException) as context:
+            post.validate()
+        exception = context.exception
+        self.assertTrue(len(exception.keypath_messages) == 1)
+        self.assertRegex(exception.keypath_messages['title'], "Value at 'title' should not be None\\.")
+
+    def test_validate_validates_only_one_field_inside_list_if_its_default(self):
+        @jsonclass(graph='test_validate_14', validate_all_fields=False)
+        class TestNumber(JSONObject):
+            numbers: List[int] = types.listof(types.int.min(100))
+        number = TestNumber(numbers=[1, 2, 3, 4, 5])
+        with self.assertRaises(ValidationException) as context:
+            number.validate()
+        exception = context.exception
+        self.assertTrue(len(exception.keypath_messages) == 1)
+        self.assertRegex(exception.keypath_messages['numbers.0'], 'Value \'1\' at \'numbers\\.0\' should not be less than 100\\.')
+
+    def test_validate_validates_only_one_field_inside_dict_if_its_default(self):
+        @jsonclass(graph='test_validate_15', validate_all_fields=False)
+        class TestNumber(JSONObject):
+            numbers: Dict[str, int] = types.dictof(types.int.min(100))
+        number = TestNumber(numbers={'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5})
+        with self.assertRaises(ValidationException) as context:
+            number.validate()
+        exception = context.exception
+        self.assertTrue(len(exception.keypath_messages) == 1)
+        self.assertRegex(exception.keypath_messages['numbers.a'], 'Value \'1\' at \'numbers\\.a\' should not be less than 100\\.')
+
+    def test_validate_validates_only_one_field_inside_shape_if_its_default(self):
+        @jsonclass(graph='test_validate_16', validate_all_fields=False)
+        class TestNumber(JSONObject):
+            numbers: Dict[str, int] = types.shape({
+                'a': types.int.min(100),
+                'b': types.int.min(100),
+                'c': types.int.min(100),
+                'd': types.int.min(100),
+                'e': types.int.min(100)
+            })
+        number = TestNumber(numbers={'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5})
+        with self.assertRaises(ValidationException) as context:
+            number.validate()
+        exception = context.exception
+        self.assertTrue(len(exception.keypath_messages) == 1)
+        self.assertRegex(exception.keypath_messages['numbers.a'], 'Value \'1\' at \'numbers\\.a\' should not be less than 100\\.')
+
+    def test_validate_validates_depends_on_class_config_inside_nested_json_objects(self):
+        @jsonclass(graph='test_validate_17', validate_all_fields=False)
+        class Post(JSONObject):
+            title: str = types.str.required
+            content: str = types.str.required
+
+        @jsonclass(graph='test_validate_17', validate_all_fields=True)
+        class User(JSONObject):
+            posts: List[Post] = types.listof(types.instanceof(Post)).required
+        user = User(posts=[{}, {}, {}, {}])
+        with self.assertRaises(ValidationException) as context:
+            user.validate()
+        exception = context.exception
+        self.assertTrue(len(exception.keypath_messages) == 4)
+        self.assertRegex(exception.keypath_messages['posts.0.title'], 'Value at \'posts\\.0\\.title\' should not be None\\.')
+        self.assertRegex(exception.keypath_messages['posts.1.title'], 'Value at \'posts\\.1\\.title\' should not be None\\.')
+        self.assertRegex(exception.keypath_messages['posts.2.title'], 'Value at \'posts\\.2\\.title\' should not be None\\.')
+        self.assertRegex(exception.keypath_messages['posts.3.title'], 'Value at \'posts\\.3\\.title\' should not be None\\.')
