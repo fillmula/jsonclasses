@@ -3,10 +3,10 @@ field types object.
 """
 from __future__ import annotations
 from typing import (Type, Any, TypeVar, Optional, Union, List, Dict, get_args,
-                    get_origin, TYPE_CHECKING)
+                    get_origin, cast, TYPE_CHECKING)
 from datetime import date, datetime
 from re import match, split
-from .graph import get_registered_class
+from .class_graph import class_graph_map
 if TYPE_CHECKING:
     from .types import Types
     from .json_object import JSONObject
@@ -18,6 +18,7 @@ def str_to_types(argtype: str,
                  optional: bool = False) -> Types:
     """Convert user specified string type to Types object."""
     from .types import types
+    from .json_object import JSONObject
     if argtype == 'str':
         return types.str if optional else types.str.required
     elif argtype == 'int':
@@ -58,8 +59,9 @@ def str_to_types(argtype: str,
         dict_type = types.dictof(str_to_types(item_type, graph_sibling))
         return dict_type if optional else dict_type.required
     else:
-        instance_type = types.instanceof(
-            get_registered_class(argtype, sibling=graph_sibling))
+        graph_name = cast(Type[JSONObject], graph_sibling).config.graph
+        cls = class_graph_map.graph(graph_name).get(argtype)
+        instance_type = types.instanceof(cls)
         return instance_type if optional else instance_type.required
 
 

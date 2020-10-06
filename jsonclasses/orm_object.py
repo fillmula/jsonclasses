@@ -22,6 +22,13 @@ class ORMObject(JSONObject):
         setattr(self, '_is_modified', False)
         setattr(self, '_modified_fields', set())
 
+    def __setattr__(self: T, name: str, value: Any) -> None:
+        # only mark modified fields for public properties
+        if name[0] != '_' and not self.is_new:
+            setattr(self, '_is_modified', True)
+            self.modified_fields.add(name)
+        super().__setattr__(name, value)
+
     @property
     def is_new(self: T) -> bool:
         """This property marks if the object is newly created.
@@ -46,13 +53,6 @@ class ORMObject(JSONObject):
         if not hasattr(self, '_modified_fields'):
             self._modified_fields: Set[str] = set()
         return self._modified_fields
-
-    def __setattr__(self: T, name: str, value: Any) -> None:
-        # only mark modified fields for public properties
-        if name[0] != '_' and not self.is_new:
-            setattr(self, '_is_modified', True)
-            self.modified_fields.add(name)
-        super().__setattr__(name, value)
 
     def mark_modified(self: T, *args: str) -> T:
         """Mark fields as modified.

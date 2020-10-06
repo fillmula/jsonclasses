@@ -5,7 +5,7 @@ from typing import (List, Type, Optional, Union, TypeVar, overload, Callable,
                     cast)
 from dataclasses import dataclass
 from .json_object import JSONObject
-from .graph import register_class
+from .class_graph import class_graph_map
 from .config import Config, LocalKey
 
 T = TypeVar('T', bound=JSONObject)
@@ -82,8 +82,8 @@ def jsonclass(
             validate_all_fields=validate_all_fields,
             soft_delete=soft_delete)
         config.install_on_class(cls)
-        return register_class(dataclass(init=False)(cls),
-                              graph=cast(str, graph))
+        dataclass_cls = dataclass(init=False)(cls)
+        return class_graph_map.graph(cast(str, graph)).add(dataclass_cls)
     else:
         def parametered_jsonclass(cls):
             return jsonclass(

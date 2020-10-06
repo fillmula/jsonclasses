@@ -1,6 +1,6 @@
 import unittest
 from jsonclasses import jsonclass, JSONObject
-from jsonclasses.graph import get_registered_class, JSONClassRedefinitionError
+from jsonclasses.class_graph import class_graph_map, JSONClassRedefinitionError
 from jsonclasses.config import Config
 
 
@@ -49,7 +49,7 @@ class TestJsonClassDecorator(unittest.TestCase):
         class MyJSONClassDecoratorTestObjectInDefaultGraph(JSONObject):
             str_field: str
             int_field: str
-        class_from_map = get_registered_class('MyJSONClassDecoratorTestObjectInDefaultGraph', 'default')
+        class_from_map = class_graph_map.graph('default').get('MyJSONClassDecoratorTestObjectInDefaultGraph')
         self.assertTrue(MyJSONClassDecoratorTestObjectInDefaultGraph is class_from_map)
 
     def test_json_class_decorator_with_graph_registers_class_in_designated_graph(self):
@@ -57,7 +57,7 @@ class TestJsonClassDecorator(unittest.TestCase):
         class MyJSONClassDecoratorTestObjectInDefaultGraph(JSONObject):
             str_field: str
             int_field: str
-        class_from_map = get_registered_class('MyJSONClassDecoratorTestObjectInDefaultGraph', 'my-secret-graph-087')
+        class_from_map = class_graph_map.graph('my-secret-graph-087').get('MyJSONClassDecoratorTestObjectInDefaultGraph')
         self.assertTrue(MyJSONClassDecoratorTestObjectInDefaultGraph is class_from_map)
 
     def test_json_class_decorator_installs_config_on_class(self):
