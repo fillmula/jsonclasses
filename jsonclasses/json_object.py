@@ -51,7 +51,7 @@ class JSONObject:
     def __set(self: T, fill_blanks: bool = False, **kwargs: Any) -> None:
         """Set values of a JSON Class object internally."""
         validator = InstanceOfValidator(self.__class__)
-        config = Config.on(self.__class__)
+        config = self.__class__.config
         context = TransformingContext(
             value=kwargs,
             keypath_root='',
@@ -100,7 +100,7 @@ class JSONObject:
           dict: A dict represents this object's JSON object.
         """
         validator = InstanceOfValidator(self.__class__)
-        config = Config.on(self.__class__)
+        config = self.__class__.config
         context = ToJSONContext(value=self,
                                 config=config,
                                 ignore_writeonly=ignore_writeonly)
@@ -118,7 +118,7 @@ class JSONObject:
         Returns:
           None: upon successful validation, returns nothing.
         """
-        config = Config.on(self.__class__)
+        config = self.__class__.config
         context = ValidatingContext(
             value=self,
             keypath_root='',

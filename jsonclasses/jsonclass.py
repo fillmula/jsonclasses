@@ -24,7 +24,8 @@ def jsonclass(
     strict_input: Optional[bool] = None,
     primary_key: Optional[str] = None,
     local_key: Optional[LocalKey] = None,
-    timestamps: Optional[List[str]] = None
+    timestamps: Optional[List[str]] = None,
+    soft_delete: Optional[bool] = None
 ) -> Callable[[Type[T]], Type[T]]: ...
 
 
@@ -37,7 +38,8 @@ def jsonclass(
     strict_input: Optional[bool] = None,
     primary_key: Optional[str] = None,
     local_key: Optional[LocalKey] = None,
-    timestamps: Optional[List[str]] = None
+    timestamps: Optional[List[str]] = None,
+    soft_delete: Optional[bool] = None
 ) -> Type[T]: ...
 
 
@@ -49,7 +51,8 @@ def jsonclass(
     strict_input: Optional[bool] = None,
     primary_key: Optional[str] = None,
     local_key: Optional[LocalKey] = None,
-    timestamps: Optional[List[str]] = None
+    timestamps: Optional[List[str]] = None,
+    soft_delete: Optional[bool] = None
 ) -> Union[Callable[[Type[T]], Type[T]], Type[T]]:
     """The jsonclass object class decorator. To declare a jsonclass class, use
     this syntax:
@@ -72,8 +75,8 @@ def jsonclass(
             strict_input=strict_input,
             primary_key=primary_key,
             local_key=local_key,
-            timestamps=timestamps
-        )
+            timestamps=timestamps,
+            soft_delete=soft_delete)
         config.install_on_class(cls)
         return register_class(dataclass(init=False)(cls),
                               graph=cast(str, graph))
@@ -87,6 +90,6 @@ def jsonclass(
                 strict_input=strict_input,
                 primary_key=primary_key,
                 local_key=local_key,
-                timestamps=timestamps
-            )
+                timestamps=timestamps,
+                soft_delete=soft_delete)
         return parametered_jsonclass

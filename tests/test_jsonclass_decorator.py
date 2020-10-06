@@ -65,7 +65,7 @@ class TestJsonClassDecorator(unittest.TestCase):
         class MyClassThatHasConfig(JSONObject):
             str_field: str
             int_field: str
-        config = Config.on(MyClassThatHasConfig)
+        config = MyClassThatHasConfig.config
         self.assertTrue(isinstance(config, Config))
         del config.linked_class
         self.assertEqual(config, Config(graph='my-secret-graph-087', camelize_json_keys=True, camelize_db_keys=True))
@@ -75,7 +75,7 @@ class TestJsonClassDecorator(unittest.TestCase):
         class MyClassThatHasConfigWithJSONKey(JSONObject):
             str_field: str
             int_field: str
-        config = Config.on(MyClassThatHasConfigWithJSONKey)
+        config = MyClassThatHasConfigWithJSONKey.config
         self.assertTrue(isinstance(config, Config))
         del config.linked_class
         self.assertEqual(config, Config(graph='my-secret-graph-087', camelize_json_keys=False, camelize_db_keys=True))
@@ -85,7 +85,7 @@ class TestJsonClassDecorator(unittest.TestCase):
         class MyClassThatHasConfigWithDBKey(JSONObject):
             str_field: str
             int_field: str
-        config = Config.on(MyClassThatHasConfigWithDBKey)
+        config = MyClassThatHasConfigWithDBKey.config
         self.assertTrue(isinstance(config, Config))
         del config.linked_class
         self.assertEqual(config, Config(graph='my-secret-graph-087', camelize_json_keys=True, camelize_db_keys=False))
@@ -103,6 +103,6 @@ class TestJsonClassDecorator(unittest.TestCase):
         class MyClassThatConfigLinks(JSONObject):
             str_field: str
             int_field: str
-        config = Config.on(MyClassThatConfigLinks)
+        config = MyClassThatConfigLinks.config
         self.assertTrue(isinstance(config, Config))
         self.assertIs(config.linked_class, MyClassThatConfigLinks)

@@ -45,6 +45,10 @@ TIMESTAMPS = ['created_at', 'updated_at', 'deleted_at']
 tell JSON Class that this class doesn't have that timestamp field.
 """
 
+SOFT_DELETE = False
+"""When deleting, if no delete rule specified, default to hard delete.
+"""
+
 
 @dataclass
 class Config:
@@ -58,6 +62,7 @@ class Config:
     primary_key: Optional[str] = None
     local_key: Optional[LocalKey] = None
     timestamps: Optional[List[str]] = None
+    soft_delete: Optional[bool] = None
 
     linked_class: Optional[Type[JSONObject]] = None
 
@@ -74,15 +79,11 @@ class Config:
             self.local_key = LOCAL_KEY
         if self.timestamps is None:
             self.timestamps = TIMESTAMPS
+        if self.soft_delete is None:
+            self.soft_delete = SOFT_DELETE
 
     def install_on_class(self, cls: Type[JSONObject]):
         """Install config object onto a JSONObject class.
         """
         cls.config = self
         self.linked_class = cls
-
-    @classmethod
-    def on(cls, klass: Type[JSONObject]) -> Config:
-        """Returns the config object attached to the class object.
-        """
-        return klass.config
