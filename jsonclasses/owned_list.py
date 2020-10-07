@@ -1,6 +1,6 @@
 """The owner observable list."""
 from __future__ import annotations
-from typing import (Generic, Iterable, Any, Optional, Protocol, TypeVar,
+from typing import (Generic, Iterable, Any, List, Optional, Protocol, TypeVar,
                     MutableSequence, overload, cast)
 
 T_contra = TypeVar('T_contra', contravariant=True)
@@ -84,3 +84,16 @@ class OwnedList(list, MutableSequence[_T], Generic[_T]):
     def reverse(self) -> None:
         super().reverse()
         self.owner.__olist_sor__(self)
+
+    def __add__(self, x: List[_T]) -> List[_T]:
+        return super().__add__(x)
+
+    def __iadd__(self, x: Iterable[_T]) -> OwnedList[_T]:
+        curlen = len(self)
+        retval = super().__iadd__(x)
+        for v in x:
+            self.owner.__olist_add__(self, curlen, v)
+            curlen += 1
+        return retval
+
+    # def __delitem__(self, i: slice) -> None:

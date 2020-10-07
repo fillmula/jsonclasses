@@ -140,3 +140,12 @@ class TestOwnedList(TestCase):
         owned_list.reverse()
         self.assertEqual(owned_list, [3, 5, 1])
         self.assertEqual(owner.sor_records, [SorRecord(owned_list)])
+
+    def test_owned_list_get_notified_thru_plus_equal_sign(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2, 3], owner)
+        owned_list += [4, 5]
+        self.assertEqual(owned_list, [1, 2, 3, 4, 5])
+        self.assertEqual(owner.add_records, [
+            AddRecord(owned_list, 3, 4),
+            AddRecord(owned_list, 4, 5)])
