@@ -1,40 +1,39 @@
 """The owner observable list."""
 from __future__ import annotations
 from typing import (Generic, Iterable, Any, Optional, Protocol, TypeVar,
-                    overload)
+                    MutableSequence, overload, cast)
 
 T_contra = TypeVar('T_contra', contravariant=True)
-T = TypeVar('T')
+_T = TypeVar('_T')
 
 
 class ListOwner(Protocol[T_contra]):
 
     def __olist_add__(self,
                       olist: OwnedList,
-                      val: T_contra,
-                      index: int) -> None: ...
+                      index: int,
+                      val: T_contra) -> None: ...
 
-    def __olist_del__(self,
-                      olist: OwnedList,
-                      val: T_contra,
-                      index: int) -> None: ...
+    def __olist_del__(self, olist: OwnedList, val: T_contra) -> None: ...
+
+    def __olist_sor__(self, olist: OwnedList) -> None: ...
 
 
 def is_list_owner(obj: Any):
     return hasattr(obj, '__olist_add__') and hasattr(obj, '__olist_del__')
 
 
-class OwnedList(list, Generic[T]):
+class OwnedList(list, MutableSequence[_T], Generic[_T]):
 
     @overload
     def __init__(self, owner: ListOwner) -> None: ...
 
     @overload
-    def __init__(self, iterable: Iterable[T], owner: ListOwner) -> None: ...
+    def __init__(self, iterable: Iterable[_T], owner: ListOwner) -> None: ...
 
     def __init__(self, *args, **kwargs) -> None:
-        owner: Optional[ListOwner[T]] = kwargs.get('owner')
-        iterable: Optional[Iterable[T]] = kwargs.get('iterable')
+        owner: Optional[ListOwner[_T]] = kwargs.get('owner')
+        iterable: Optional[Iterable[_T]] = kwargs.get('iterable')
         for arg in args:
             if is_list_owner(arg):
                 owner = arg
@@ -44,7 +43,44 @@ class OwnedList(list, Generic[T]):
             super().__init__(iterable)
         else:
             super().__init__()
-        self.owner = owner
+        self.owner = cast(ListOwner[_T], owner)
 
-# owner: list did add object at index
-# owner: list did remove object at index
+    def append(self, value: _T) -> None:
+        super().append(value)
+        self.owner.__olist_add__(self, len(self) - 1, value)
+
+    def extend(self, values: Iterable[_T]) -> None:
+        curlen = len(self)
+        super().extend(values)
+        for v in values:
+            self.owner.__olist_add__(self, curlen, v)
+            curlen += 1
+
+    def insert(self, index: int, value: _T) -> None:
+        curlen = len(self)
+        super().insert(index, value)
+        idx = min(curlen, index)
+        self.owner.__olist_add__(self, idx, value)
+
+    def remove(self, value: _T) -> None:
+        super().remove(value)
+        self.owner.__olist_del__(self, value)
+
+    def sort(self, **kwargs) -> None:  # TODO: fix argument type hint
+        super().sort(**kwargs)
+        self.owner.__olist_sor__(self)
+
+    def clear(self) -> None:
+        items = [item for item in self]
+        super().clear()
+        for item in items:
+            self.owner.__olist_del__(self, item)
+
+    def pop(self, *args) -> _T:  # TODO: fix argument type hint
+        retval = super().pop(*args)
+        self.owner.__olist_del__(self, retval)
+        return retval
+
+    def reverse(self) -> None:
+        super().reverse()
+        self.owner.__olist_sor__(self)
