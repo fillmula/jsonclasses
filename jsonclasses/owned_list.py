@@ -126,4 +126,20 @@ class OwnedList(list, MutableSequence[_T], Generic[_T]):
         else:
             super().__setitem__(*args)
 
-    # # def __delitem__(self, i: slice) -> None:
+    def __delitem__(self, *args) -> None:
+        if isinstance(args[0], int):
+            len_self = len(self)
+            idx: int = args[0]
+            if idx < 0:
+                idx = len_self + idx
+            val = self[idx] if 0 <= idx < len_self else None
+            super().__delitem__(*args)
+            self.owner.__olist_del__(self, val)
+        elif isinstance(args[0], slice):
+            slc: slice = args[0]
+            remove_list = self[slc]
+            super().__delitem__(*args)
+            for item in remove_list:
+                self.owner.__olist_del__(self, item)
+        else:
+            super().__delitem__(*args)

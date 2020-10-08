@@ -284,3 +284,112 @@ class TestOwnedList(TestCase):
             AddRecord(owned_list, 0, 7),
             AddRecord(owned_list, 2, 8),
             AddRecord(owned_list, 4, 9)])
+
+    def test_owned_list_get_notified_thru_subscript_del(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2, 3], owner)
+        del owned_list[0]
+        self.assertEqual(owned_list, [2, 3])
+        self.assertEqual(owner.del_records, [DelRecord(owned_list, 1)])
+        self.assertEqual(owner.add_records, [])
+
+    def test_owned_list_get_notified_thru_subscript_del_negative(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2, 3], owner)
+        del owned_list[-1]
+        self.assertEqual(owned_list, [1, 2])
+        self.assertEqual(owner.del_records, [DelRecord(owned_list, 3)])
+        self.assertEqual(owner.add_records, [])
+
+    def test_owned_list_raises_if_subscript_del_out_of_index_range(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2, 3], owner)
+        with self.assertRaisesRegex(IndexError,
+                                    'list assignment index out of range'):
+            del owned_list[10]
+
+    def test_owned_list_raises_if_subscript_del_neg_out_of_index_range(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2, 3], owner)
+        with self.assertRaisesRegex(IndexError,
+                                    'list assignment index out of range'):
+            del owned_list[-10]
+
+    def test_owned_list_get_notified_thru_subscript_slice_del(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2, 3, 4, 5], owner)
+        del owned_list[1:3]
+        self.assertEqual(owned_list, [1, 4, 5])
+        self.assertEqual(owner.del_records, [
+            DelRecord(owned_list, 2),
+            DelRecord(owned_list, 3)])
+        self.assertEqual(owner.add_records, [])
+
+    def test_owned_list_get_notified_thru_subscript_slice_del_overflow(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2, 3, 4, 5], owner)
+        del owned_list[100:1]
+        self.assertEqual(owned_list, [1, 2, 3, 4, 5])
+        self.assertEqual(owner.del_records, [])
+        self.assertEqual(owner.add_records, [])
+
+    def test_owned_list_get_notified_thru_subscript_slice_del_neg(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2, 3, 4, 5], owner)
+        del owned_list[-3:]
+        self.assertEqual(owned_list, [1, 2])
+        self.assertEqual(owner.del_records, [
+            DelRecord(owned_list, 3),
+            DelRecord(owned_list, 4),
+            DelRecord(owned_list, 5)])
+        self.assertEqual(owner.add_records, [])
+
+    def test_owned_list_get_notified_thru_subscript_slice_del_neg_ovfl(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2, 3, 4, 5], owner)
+        del owned_list[-999:1]
+        self.assertEqual(owned_list, [2, 3, 4, 5])
+        self.assertEqual(owner.del_records, [
+            DelRecord(owned_list, 1)])
+        self.assertEqual(owner.add_records, [])
+
+    def test_owned_list_get_notified_thru_subscript_slice_del_step(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2, 3, 4, 5], owner)
+        del owned_list[0::2]
+        self.assertEqual(owned_list, [2, 4])
+        self.assertEqual(owner.del_records, [
+            DelRecord(owned_list, 1),
+            DelRecord(owned_list, 3),
+            DelRecord(owned_list, 5)])
+        self.assertEqual(owner.add_records, [])
+
+    def test_owned_list_get_notified_thru_subscript_slice_del_step_neg(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2, 3, 4, 5], owner)
+        del owned_list[-5::2]
+        self.assertEqual(owned_list, [2, 4])
+        self.assertEqual(owner.del_records, [
+            DelRecord(owned_list, 1),
+            DelRecord(owned_list, 3),
+            DelRecord(owned_list, 5)])
+        self.assertEqual(owner.add_records, [])
+
+    def test_owned_list_get_notified_thru_subscript_slice_del_step_ovfl(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2, 3, 4, 5], owner)
+        del owned_list[10::2]
+        self.assertEqual(owned_list, [1, 2, 3, 4, 5])
+        self.assertEqual(owner.del_records, [])
+        self.assertEqual(owner.add_records, [])
+
+    def test_owned_list_get_notified_thru_sub_slice_del_step_neg_ovfl(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2, 3, 4, 5], owner)
+        del owned_list[-100::2]
+        self.assertEqual(owned_list, [2, 4])
+        self.assertEqual(owner.del_records, [
+            DelRecord(owned_list, 1),
+            DelRecord(owned_list, 3),
+            DelRecord(owned_list, 5)])
+        self.assertEqual(owner.add_records, [])
