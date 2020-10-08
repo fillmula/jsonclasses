@@ -11,6 +11,7 @@ class TypeValidator(Validator):
     def __init__(self) -> None:
         self.cls: type = object
         self.field_type: FieldType = FieldType.ANY
+        self.exact_type: bool = False
 
     def define(self, field_description: FieldDescription) -> None:
         field_description.field_type = self.field_type
@@ -18,8 +19,12 @@ class TypeValidator(Validator):
     def validate(self, context: ValidatingContext) -> None:
         if context.value is None:
             return
-        if type(context.value) is self.cls:
-            return
+        if self.exact_type:
+            if type(context.value) is self.cls:
+                return
+        else:
+            if isinstance(context.value, self.cls):
+                return
         raise ValidationException(
             {context.keypath_root: f'Value \'{context.value}\' at \'{context.keypath_root}\' should be {self.cls.__name__}.'},
             context.root

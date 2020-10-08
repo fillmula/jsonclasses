@@ -13,9 +13,11 @@ class ListOfValidator(TypeValidator):
     """This validator validates list."""
 
     def __init__(self, types: Any) -> None:
+        super().__init__()
         self.cls = list
         self.field_type = FieldType.LIST
         self.types = types
+        self.exact_type = False
 
     def define(self, field_description: FieldDescription) -> None:
         super().define(field_description)
@@ -79,7 +81,7 @@ class ListOfValidator(TypeValidator):
     def tojson(self, context: ToJSONContext) -> Any:
         if context.value is None:
             return None
-        if type(context.value) is not list:
+        if not isinstance(context.value, list):
             return context.value
         types = resolve_types(self.types, context.config.linked_class)
         if types:

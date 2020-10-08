@@ -9,6 +9,7 @@ class FloatValidator(TypeValidator):
     """Date validator validate value against float type."""
 
     def __init__(self):
+        super().__init__()
         self.cls = float
         self.field_type = FieldType.FLOAT
 

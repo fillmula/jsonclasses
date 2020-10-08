@@ -7,5 +7,7 @@ class IntValidator(TypeValidator):
     """Int validator validates value against int type."""
 
     def __init__(self):
+        super().__init__()
         self.cls = int
         self.field_type = FieldType.INT
+        self.exact_type = True

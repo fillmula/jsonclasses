@@ -11,6 +11,7 @@ class DateValidator(TypeValidator):
     """Date validator validate value against date type."""
 
     def __init__(self):
+        super().__init__()
         self.cls = date
         self.field_type = FieldType.DATE
 

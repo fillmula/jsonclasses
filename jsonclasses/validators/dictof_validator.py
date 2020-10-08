@@ -14,9 +14,11 @@ class DictOfValidator(TypeValidator):
     """This validator validates dict."""
 
     def __init__(self, types: Any) -> None:
+        super().__init__()
         self.cls = dict
         self.field_type = FieldType.DICT
         self.types = types
+        self.exact_type = False
 
     def define(self, field_description: FieldDescription) -> None:
         super().define(field_description)
@@ -77,7 +79,7 @@ class DictOfValidator(TypeValidator):
     def tojson(self, context: ToJSONContext) -> Any:
         if context.value is None:
             return None
-        if type(context.value) is not dict:
+        if not isinstance(context.value, dict):
             return context.value
         types = resolve_types(self.types, context.config.linked_class)
         retval = {}

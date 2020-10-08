@@ -150,6 +150,18 @@ class JSONObject:
             return False
         return True
 
+    def __setattr__(self: T, name: str, value: Any) -> None:
+        if isinstance(value, list):
+            owned_list = OwnedList[Any](value)
+            owned_list.owner = self
+            super().__setattr__(name, owned_list)
+        elif isinstance(value, dict):
+            owned_dict = OwnedDict[str, Any](value)
+            owned_dict.owner = self
+            super().__setattr__(name, owned_dict)
+        else:
+            super().__setattr__(name, value)
+
     def __odict_add__(self, odict: OwnedDict, key: str, val: Any) -> None:
         pass
 

@@ -14,9 +14,11 @@ class ShapeValidator(TypeValidator):
     """Shape validator validates a dict of values with defined shape."""
 
     def __init__(self, shape_types: Dict[str, Any]) -> None:
+        super().__init__()
         self.cls = dict
         self.field_type = FieldType.SHAPE
         self.shape_types = shape_types
+        self.exact_type = False
 
     def define(self, field_description: FieldDescription) -> None:
         super().define(field_description)
@@ -117,7 +119,7 @@ class ShapeValidator(TypeValidator):
     def tojson(self, context: ToJSONContext) -> Any:
         if context.value is None:
             return None
-        if type(context.value) is not dict:
+        if not isinstance(context.value, dict):
             return context.value
         retval = {}
         for k, t in self.shape_types.items():
