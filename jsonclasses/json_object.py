@@ -8,6 +8,8 @@ from jsonclasses.exceptions import ValidationException
 from .validators.instanceof_validator import InstanceOfValidator
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
 from .lookup_map import LookupMap
+from .owned_dict import OwnedDict
+from .owned_list import OwnedList
 
 
 @dataclass(init=False)
@@ -147,6 +149,21 @@ class JSONObject:
         except ValidationException:
             return False
         return True
+
+    def __odict_add__(self, odict: OwnedDict, key: str, val: Any) -> None:
+        pass
+
+    def __odict_del__(self, odict: OwnedDict, val: Any) -> None:
+        pass
+
+    def __olist_add__(self, olist: OwnedList, idx: int, val: Any) -> None:
+        pass
+
+    def __olist_del__(self, olist: OwnedList, val: Any) -> None:
+        pass
+
+    def __olist_sor__(self, olist: OwnedList) -> None:
+        pass
 
 
 T = TypeVar('T', bound=JSONObject)

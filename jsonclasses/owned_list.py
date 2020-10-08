@@ -11,7 +11,7 @@ class ListOwner(Protocol[T_contra]):
 
     def __olist_add__(self,
                       olist: OwnedList,
-                      index: int,
+                      idx: int,
                       val: T_contra) -> None: ...
 
     def __olist_del__(self, olist: OwnedList, val: T_contra) -> None: ...

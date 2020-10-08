@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, Generic, NamedTuple, List, TypeVar
+from typing import Generic, NamedTuple, List, TypeVar
 from unittest import TestCase
 from jsonclasses.owned_dict import OwnedDict
 
