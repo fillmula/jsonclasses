@@ -1,10 +1,10 @@
-import unittest
+from unittest import TestCase
 from typing import Optional, List, Dict, Union
 from jsonclasses import jsonclass, JSONObject, ValidationException
 from datetime import datetime, date
 
 
-class TestJSONObjectAutoTypesMarkersGeneration(unittest.TestCase):
+class TestJSONObjectTypesSynthesis(TestCase):
 
     def test_auto_generates_required_str(self):
         @jsonclass(graph='test_marker_auto_gen')

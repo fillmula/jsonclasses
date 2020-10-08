@@ -1,10 +1,9 @@
 """This is an internal module."""
 from __future__ import annotations
 from typing import (Any, NamedTuple, Optional, Dict, Union, TypeVar, List,
-                    Type, TYPE_CHECKING)
+                    Type, cast, TYPE_CHECKING)
 from enum import Enum
-from dataclasses import (dataclass,
-                         fields as dataclass_fields,
+from dataclasses import (dataclass, fields as dataclass_fields,
                          Field as DataclassField)
 from inflection import camelize
 from .types_resolver import to_types
@@ -173,3 +172,39 @@ def fields(
                   field_description=field_types.field_description,
                   field_validator=field_types.validator))
     return retval
+
+
+def fdesc_match_class(fdesc: FieldDescription, cls: Type[JSONObject]) -> bool:
+    if fdesc.field_type == FieldType.LIST:
+        item_types = to_types(fdesc.list_item_types, cls)
+        return fdesc_match_class(item_types.field_description, cls)
+    if fdesc.field_type == FieldType.INSTANCE:
+        instance_types = to_types(fdesc.instance_types, cls)
+        return instance_types.field_description.instance_types == cls
+    return False
+
+
+def field_match_class(field: Field, cls: Type[JSONObject]) -> bool:
+    return fdesc_match_class(field.field_description, cls)
+
+
+def other_field(this: Union[JSONObject, Type[JSONObject]],
+                other: Union[JSONObject, Type[JSONObject]],
+                field: Union[str, Field]) -> Optional[Field]:
+    tclass = cast(Any, this if type(this) is type else this.__class__)
+    if isinstance(field, str):
+        field = next(f for f in fields(this) if f.field_name == field)
+    field = cast(Field, field)
+    if field.field_description.field_storage == FieldStorage.LOCAL_KEY:
+        return next((f for f in fields(other)
+                    if (f.field_description.foreign_key == field.field_name)
+                    and (field_match_class(f, tclass))), None)
+    if field.field_description.field_storage == FieldStorage.FOREIGN_KEY:
+        if field.field_description.use_join_table:
+            return None
+        else:
+            fk = field.field_description.foreign_key
+            return next((f for f in fields(other)
+                         if (f.field_name == fk)
+                         and field_match_class(f, tclass)), None)
+    return None

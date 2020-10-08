@@ -379,15 +379,17 @@ class TestInstanceOfValidator(unittest.TestCase):
 
         @jsonclass(graph='test_instanceof_15')
         class Staff(JSONObject):
+            id: int
             position: str
             user: User = types.linkto.instanceof('User').required
 
         @jsonclass(graph='test_instanceof_15')
         class User(JSONObject):
+            id: int
             name: str
             staff: Staff = types.instanceof('Staff').linkedby('user').required
 
-        user = User(**{'name': 'John', 'staff': {'position': 'CEO'}})
+        user = User(**{'id': 1, 'name': 'John', 'staff': {'id': 1, 'position': 'CEO'}})
         self.assertEqual(user.staff.user, user)
 
     def test_instanceof_create_circular_ref_for_foreign_and_local_binding(self):

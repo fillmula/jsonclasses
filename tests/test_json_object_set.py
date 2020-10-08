@@ -1,9 +1,9 @@
-import unittest
+from unittest import TestCase
 from jsonclasses import jsonclass, JSONObject
 from datetime import datetime, date
 
 
-class TestJSONObjectSet(unittest.TestCase):
+class TestJSONObjectSet(TestCase):
 
     def test_set_without_arguments_wont_change_anything(self):
         @jsonclass(graph='test_set_1')

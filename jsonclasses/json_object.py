@@ -2,9 +2,10 @@
 """
 from __future__ import annotations
 from typing import Dict, Any, Optional, ClassVar, TypeVar
-from dataclasses import dataclass, fields
-from jsonclasses.config import Config
-from jsonclasses.exceptions import ValidationException
+from dataclasses import dataclass, fields as dataclass_fields
+from .config import Config
+from .exceptions import ValidationException
+from .fields import FieldStorage, FieldType, other_field, fields
 from .validators.instanceof_validator import InstanceOfValidator
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
 from .lookup_map import LookupMap
@@ -35,7 +36,7 @@ class JSONObject:
         validation and transformation are applied during the initialization
         process.
         """
-        for field in fields(self):
+        for field in dataclass_fields(self):
             setattr(self, field.name, None)
         self.__set(fill_blanks=True, **kwargs)
 
@@ -163,6 +164,25 @@ class JSONObject:
             super().__setattr__(name, owned_dict)
         else:
             super().__setattr__(name, value)
+            if not isinstance(value, JSONObject):
+                return
+            sfield = next(f for f in fields(self) if f.field_name == name)
+            fdesc = sfield.field_description
+            fstore = fdesc.field_storage
+            if fstore == FieldStorage.LOCAL_KEY or fstore == FieldStorage.FOREIGN_KEY:
+                ofield = other_field(self, value, sfield)
+                if ofield is not None:
+                    if ofield.field_description.field_type == FieldType.INSTANCE:
+                        if getattr(value, ofield.field_name) != self:
+                            setattr(value, ofield.field_name, self)
+                    elif ofield.field_description.field_type == FieldType.LIST:
+                        if not isinstance(getattr(value, ofield.field_name),
+                                          list):
+                            setattr(value, ofield.field_name, [self])
+                        else:
+                            if self not in getattr(value, ofield.field_name):
+                                getattr(value, ofield.field_name).append(self)
+
 
     def __odict_add__(self, odict: OwnedDict, key: str, val: Any) -> None:
         pass
