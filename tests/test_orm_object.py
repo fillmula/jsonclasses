@@ -1,6 +1,6 @@
 from __future__ import annotations
 from jsonclasses.exceptions import ValidationException
-from typing import List
+from typing import List, Dict
 import unittest
 from jsonclasses import jsonclass, ORMObject, types
 
@@ -88,7 +88,7 @@ class TestORMObject(unittest.TestCase):
         self.assertEqual(product.is_modified, True)
         self.assertEqual(product.modified_fields, {'name', 'stock'})
 
-    def test_orm_object_triggers_is_modified_on_mark_list_update(self):
+    def test_orm_object_triggers_is_modified_on_list_update(self):
         @jsonclass(graph='test_orm_4')
         class Product(ORMObject):
             name: str
@@ -97,8 +97,18 @@ class TestORMObject(unittest.TestCase):
         setattr(product, '_is_new', False)
         self.assertEqual(product.is_modified, False)
         product.variants.append('m')
+        self.assertEqual(product.is_modified, True)
+        self.assertEqual(product.modified_fields, {'variants'})
+
+    def test_orm_object_triggers_is_modified_on_dict_update(self):
+        @jsonclass(graph='test_orm_4_2')
+        class Product(ORMObject):
+            name: str
+            variants: Dict[str, str]
+        product = Product(name='p', variants={'xs': 'xs', 's': 's'})
+        setattr(product, '_is_new', False)
         self.assertEqual(product.is_modified, False)
-        product.mark_modified('variants')
+        product.variants['xs'] = 'xl'
         self.assertEqual(product.is_modified, True)
         self.assertEqual(product.modified_fields, {'variants'})
 

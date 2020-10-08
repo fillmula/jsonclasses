@@ -37,6 +37,14 @@ class OwnedDict(dict, MutableMapping[_KT, _VT], Generic[_KT, _VT]):
     def owner(self, val: DictOwner) -> None:
         self._owner = val
 
+    @property
+    def keypath(self) -> str:
+        return self._keypath
+
+    @keypath.setter
+    def keypath(self, val: str) -> None:
+        self._keypath = val
+
     def clear(self) -> None:
         values = [value for value in self.values()]
         super().clear()

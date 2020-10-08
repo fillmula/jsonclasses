@@ -154,10 +154,12 @@ class JSONObject:
         if isinstance(value, list):
             owned_list = OwnedList[Any](value)
             owned_list.owner = self
+            owned_list.keypath = name
             super().__setattr__(name, owned_list)
         elif isinstance(value, dict):
             owned_dict = OwnedDict[str, Any](value)
             owned_dict.owner = self
+            owned_dict.keypath = name
             super().__setattr__(name, owned_dict)
         else:
             super().__setattr__(name, value)

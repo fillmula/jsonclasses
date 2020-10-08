@@ -36,6 +36,14 @@ class OwnedList(list, MutableSequence[_T], Generic[_T]):
     def owner(self, val: ListOwner) -> None:
         self._owner = val
 
+    @property
+    def keypath(self) -> str:
+        return self._keypath
+
+    @keypath.setter
+    def keypath(self, val: str) -> None:
+        self._keypath = val
+
     def append(self, value: _T) -> None:
         super().append(value)
         self.owner.__olist_add__(self, len(self) - 1, value)
