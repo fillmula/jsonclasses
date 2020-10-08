@@ -99,6 +99,30 @@ class OwnedList(list, MutableSequence[_T], Generic[_T]):
             curlen += 1
         return retval
 
+    def __imul__(self, n: int) -> OwnedList[_T]:
+        len_self = 0
+        if n <= 0:
+            remove_list = list(self)
+            add_list: List[_T] = []
+        elif n == 1:
+            remove_list = []
+            add_list = []
+        else:
+            remove_list = []
+            ran = range(0, n - 1)
+            add_list = []
+            for i in ran:
+                for item in self:
+                    add_list.append(item)
+            len_self = len(self)
+        retval = super().__imul__(n)
+        for item in remove_list:
+            self.owner.__olist_del__(self, item)
+        for item in add_list:
+            self.owner.__olist_add__(self, len_self, item)
+            len_self += 1
+        return retval
+
     def __setitem__(self, *args) -> None:
         len_self = len(self)
         if isinstance(args[0], int):

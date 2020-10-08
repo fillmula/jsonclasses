@@ -150,6 +150,34 @@ class TestOwnedList(TestCase):
             AddRecord(owned_list, 3, 4),
             AddRecord(owned_list, 4, 5)])
 
+    def test_owned_list_get_notified_thru_multiply_equal_sign_gt_1(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2], owner)
+        owned_list *= 2
+        self.assertEqual(owned_list, [1, 2, 1, 2])
+        self.assertEqual(owner.add_records, [
+            AddRecord(owned_list, 2, 1),
+            AddRecord(owned_list, 3, 2)])
+        self.assertEqual(owner.del_records, [])
+
+    def test_owned_list_do_not_get_notified_thru_multiply_equal_sign_1(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2], owner)
+        owned_list *= 1
+        self.assertEqual(owned_list, [1, 2])
+        self.assertEqual(owner.add_records, [])
+        self.assertEqual(owner.del_records, [])
+
+    def test_owned_list_get_notified_thru_multiply_equal_lt_1(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2], owner)
+        owned_list *= 0
+        self.assertEqual(owned_list, [])
+        self.assertEqual(owner.add_records, [])
+        self.assertEqual(owner.del_records, [
+            DelRecord(owned_list, 1),
+            DelRecord(owned_list, 2)])
+
     def test_owned_list_get_notified_thru_subscript_set(self):
         owner = Owner()
         owned_list = OwnedList([1, 2, 3], owner)
