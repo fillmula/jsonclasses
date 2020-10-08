@@ -1,7 +1,7 @@
 """The owner observable list."""
 from __future__ import annotations
-from typing import (Generic, Iterable, Any, List, Optional, Protocol, TypeVar,
-                    MutableSequence, overload, cast)
+from typing import (Generic, Iterable, Any, List, Protocol, TypeVar,
+                    MutableSequence)
 
 T_contra = TypeVar('T_contra', contravariant=True)
 _T = TypeVar('_T')
@@ -28,25 +28,13 @@ def is_list_owner(obj: Any):
 
 class OwnedList(list, MutableSequence[_T], Generic[_T]):
 
-    @overload
-    def __init__(self, owner: ListOwner) -> None: ...
+    @property
+    def owner(self) -> ListOwner:
+        return self._owner
 
-    @overload
-    def __init__(self, iterable: Iterable[_T], owner: ListOwner) -> None: ...
-
-    def __init__(self, *args, **kwargs) -> None:
-        owner: Optional[ListOwner[_T]] = kwargs.get('owner')
-        iterable: Optional[Iterable[_T]] = kwargs.get('iterable')
-        for arg in args:
-            if is_list_owner(arg):
-                owner = arg
-            else:
-                iterable = arg
-        if iterable is not None:
-            super().__init__(iterable)
-        else:
-            super().__init__()
-        self.owner = cast(ListOwner[_T], owner)
+    @owner.setter
+    def owner(self, val: ListOwner) -> None:
+        self._owner = val
 
     def append(self, value: _T) -> None:
         super().append(value)
