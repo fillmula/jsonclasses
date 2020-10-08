@@ -20,7 +20,10 @@ class ListOwner(Protocol[T_contra]):
 
 
 def is_list_owner(obj: Any):
-    return hasattr(obj, '__olist_add__') and hasattr(obj, '__olist_del__')
+    has_add = hasattr(obj, '__olist_add__')
+    has_del = hasattr(obj, '__olist_del__')
+    has_sor = hasattr(obj, '__olist_sor__')
+    return has_add and has_del and has_sor
 
 
 class OwnedList(list, MutableSequence[_T], Generic[_T]):
@@ -107,7 +110,19 @@ class OwnedList(list, MutableSequence[_T], Generic[_T]):
             self.owner.__olist_del__(self, val)
             self.owner.__olist_add__(self, idx, args[1])
         elif isinstance(args[0], slice):
-            pass
+            slc: slice = args[0]
+            remove_list = self[slc]
+            start = slc.start or 0
+            step = slc.step or 1
+            if start < 0:
+                start = len_self + start
+            start = min(max(0, start), len_self)
+            super().__setitem__(*args)
+            for item in remove_list:
+                self.owner.__olist_del__(self, item)
+            for item in args[1]:
+                self.owner.__olist_add__(self, start, item)
+                start += step
         else:
             super().__setitem__(*args)
 
