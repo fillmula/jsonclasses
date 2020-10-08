@@ -149,3 +149,41 @@ class TestOwnedList(TestCase):
         self.assertEqual(owner.add_records, [
             AddRecord(owned_list, 3, 4),
             AddRecord(owned_list, 4, 5)])
+
+    def test_owned_list_get_notified_thru_subscript_set(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2, 3], owner)
+        owned_list[0] = -1
+        self.assertEqual(owned_list, [-1, 2, 3])
+        self.assertEqual(owner.del_records, [DelRecord(owned_list, 1)])
+        self.assertEqual(owner.add_records, [AddRecord(owned_list, 0, -1)])
+
+    def test_owned_list_get_notified_thru_subscript_set_negative(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2, 3], owner)
+        owned_list[-1] = 9
+        self.assertEqual(owned_list, [1, 2, 9])
+        self.assertEqual(owner.del_records, [DelRecord(owned_list, 3)])
+        self.assertEqual(owner.add_records, [AddRecord(owned_list, 2, 9)])
+
+    def test_owned_list_raises_if_subscript_set_out_of_index_range(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2, 3], owner)
+        with self.assertRaisesRegex(IndexError,
+                                    'list assignment index out of range'):
+            owned_list[10] = -1
+
+    def test_owned_list_raises_if_subscript_set_neg_out_of_index_range(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2, 3], owner)
+        with self.assertRaisesRegex(IndexError,
+                                    'list assignment index out of range'):
+            owned_list[-10] = -1
+
+    def test_owned_list_get_notified_thru_subscript_slice_set(self):
+        owner = Owner()
+        owned_list = OwnedList([1, 2, 3], owner)
+        owned_list[0] = -1
+        self.assertEqual(owned_list, [-1, 2, 3])
+        self.assertEqual(owner.del_records, [DelRecord(owned_list, 1)])
+        self.assertEqual(owner.add_records, [AddRecord(owned_list, 0, -1)])

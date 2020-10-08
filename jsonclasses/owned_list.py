@@ -96,4 +96,19 @@ class OwnedList(list, MutableSequence[_T], Generic[_T]):
             curlen += 1
         return retval
 
-    # def __delitem__(self, i: slice) -> None:
+    def __setitem__(self, *args) -> None:
+        len_self = len(self)
+        if isinstance(args[0], int):
+            idx: int = args[0]
+            if idx < 0:
+                idx = len_self + idx
+            val = self[idx] if 0 <= idx < len_self else None
+            super().__setitem__(*args)
+            self.owner.__olist_del__(self, val)
+            self.owner.__olist_add__(self, idx, args[1])
+        elif isinstance(args[0], slice):
+            pass
+        else:
+            super().__setitem__(*args)
+
+    # # def __delitem__(self, i: slice) -> None:
