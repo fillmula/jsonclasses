@@ -1,5 +1,5 @@
 """module for shape validator."""
-from typing import Dict, Any, Sequence, cast
+from typing import Any, Sequence, cast
 from inflection import underscore, camelize
 from ..fields import FieldDescription, FieldType, Nullability, Strictness
 from ..exceptions import ValidationException
@@ -13,7 +13,7 @@ from .type_validator import TypeValidator
 class ShapeValidator(TypeValidator):
     """Shape validator validates a dict of values with defined shape."""
 
-    def __init__(self, shape_types: Dict[str, Any]) -> None:
+    def __init__(self, shape_types: dict[str, Any]) -> None:
         super().__init__()
         self.cls = dict
         self.field_type = FieldType.SHAPE
@@ -67,7 +67,7 @@ class ShapeValidator(TypeValidator):
 
     def _get_field_value(self,
                          field_key: str,
-                         value: Dict[str, Any],
+                         value: dict[str, Any],
                          config: Config) -> Any:
         field_value = value.get(field_key)
         if field_value is None and config.camelize_json_keys:
@@ -75,7 +75,7 @@ class ShapeValidator(TypeValidator):
         return field_value
 
     def _strictness_check(self,
-                          value: Dict[str, Any],
+                          value: dict[str, Any],
                           context: TransformingContext):
         value_keys = list(value.keys())
         if context.config_owner.camelize_json_keys:

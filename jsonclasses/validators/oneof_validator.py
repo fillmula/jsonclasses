@@ -1,5 +1,4 @@
 """module for oneof validator."""
-from typing import List
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..contexts import ValidatingContext
@@ -8,7 +7,7 @@ from ..contexts import ValidatingContext
 class OneOfValidator(Validator):
     """One of validator validates value against a list of available values."""
 
-    def __init__(self, str_list: List[str]) -> None:
+    def __init__(self, str_list: list[str]) -> None:
         self.str_list = str_list
 
     def validate(self, context: ValidatingContext) -> None:

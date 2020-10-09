@@ -1,7 +1,6 @@
 """module for instanceof validator."""
 from __future__ import annotations
-from typing import (Optional, Any, Sequence, Type, Union, List, cast,
-                    TYPE_CHECKING)
+from typing import Optional, Any, Sequence, Type, Union, cast, TYPE_CHECKING
 from ..fields import (Field, FieldDescription, FieldStorage, FieldType,
                       WriteRule, ReadRule, Strictness, fields)
 from ..exceptions import ValidationException
@@ -142,13 +141,13 @@ class InstanceOfValidator(Validator):
             self,
             field: Field,
             this: JSONObject,
-            that: Optional[Union[JSONObject, List[JSONObject]]]):
+            that: Optional[Union[JSONObject, list[JSONObject]]]):
         from ..json_object import JSONObject
-        that_objects: List[JSONObject] = []
+        that_objects: list[JSONObject] = []
         this_fd = field.field_description
         if this_fd.field_type == FieldType.LIST:
             if that is not None:
-                that_objects = cast(List[JSONObject], that)
+                that_objects = cast(list[JSONObject], that)
         else:
             if that is not None:
                 that_objects = [cast(JSONObject, that)]
@@ -170,13 +169,13 @@ class InstanceOfValidator(Validator):
             self,
             field: Field,
             this: JSONObject,
-            that: Optional[Union[JSONObject, List[JSONObject]]]):
+            that: Optional[Union[JSONObject, list[JSONObject]]]):
         from ..json_object import JSONObject
-        that_objects: List[JSONObject] = []
+        that_objects: list[JSONObject] = []
         this_fd = field.field_description
         if this_fd.field_type == FieldType.LIST:
             if that is not None:
-                that_objects = cast(List[JSONObject], that)
+                that_objects = cast(list[JSONObject], that)
         else:
             if that is not None:
                 that_objects = [cast(JSONObject, that)]

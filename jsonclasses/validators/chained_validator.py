@@ -1,6 +1,6 @@
 """module for chained validator."""
 from __future__ import annotations
-from typing import List, Dict, Any, Optional
+from typing import Any, Optional
 from ..exceptions import ValidationException
 from .validator import Validator
 from .eager_validator import EagerValidator
@@ -10,7 +10,7 @@ from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 class ChainedValidator(Validator):
     """Chained validator has a series of validators chained."""
 
-    def __init__(self, validators: Optional[List[Validator]] = None) -> None:
+    def __init__(self, validators: Optional[list[Validator]] = None) -> None:
         self.validators = validators or []
 
     def append(self, *args: Validator) -> ChainedValidator:
@@ -18,13 +18,13 @@ class ChainedValidator(Validator):
         return ChainedValidator([*self.validators, *args])
 
     def _eager_validator_index_after_index(self,
-                                           vs: List[Validator],
+                                           vs: list[Validator],
                                            index: int) -> Optional[int]:
         """This function returns the first eager validator index after given
         index.
 
         Args:
-        vs (List[Validator]): A list of validators usually from chained
+        vs (list[Validator]): A list of validators usually from chained
         validator.
         index (int): The starting index to begin search with.
 
@@ -38,11 +38,11 @@ class ChainedValidator(Validator):
             return None
 
     def _last_eager_validator_index(self,
-                                    vs: List[Validator]) -> Optional[int]:
+                                    vs: list[Validator]) -> Optional[int]:
         """This function returns the last eager validator index.
 
         Args:
-        vs (List[Validator]): A list of validators usually from chained
+        vs (list[Validator]): A list of validators usually from chained
         validator.
 
         Returns:
@@ -55,7 +55,7 @@ class ChainedValidator(Validator):
             return None
 
     def validate(self, context: ValidatingContext) -> None:
-        keypath_messages: Dict[str, str] = {}
+        keypath_messages: dict[str, str] = {}
         start_validator_index = self._last_eager_validator_index(
                 self.validators)
         for validator in self.validators[start_validator_index:]:
