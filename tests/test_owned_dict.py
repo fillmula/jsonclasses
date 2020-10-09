@@ -7,13 +7,13 @@ KT = TypeVar('KT')
 VT = TypeVar('VT')
 
 
-class AddRecord(NamedTuple, Generic[KT, VT]):
+class AddRecord(NamedTuple):
     odict: OwnedDict
     key: KT
     val: VT
 
 
-class DelRecord(NamedTuple, Generic[KT, VT]):
+class DelRecord(NamedTuple):
     odict: OwnedDict
     val: VT
 

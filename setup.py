@@ -23,7 +23,7 @@ setup(
     zip_safe=False,
     url='https://github.com/Wiosoft-Crafts/jsonclasses',
     include_package_data=True,
-    python_requires='>=3.8',
+    python_requires='>=3.9',
     install_requires=[
         'inflection>=0.5.1,<1.0.0'
     ]
