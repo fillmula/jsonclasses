@@ -1,11 +1,11 @@
 """This module defines JSON Class lookup maps."""
 from __future__ import annotations
-from typing import Dict, Optional, TypeVar, Union, TYPE_CHECKING
+from typing import Optional, TypeVar, Union, TYPE_CHECKING
 if TYPE_CHECKING:
     from .json_object import JSONObject
     T = TypeVar('T', bound=JSONObject)
-    ItemMap = Dict[str, T]
-    ClassMap = Dict[str, ItemMap]
+    ItemMap = dict[str, T]
+    ClassMap = dict[str, ItemMap]
 
 
 class LookupMap:

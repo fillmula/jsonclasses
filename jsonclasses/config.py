@@ -1,6 +1,6 @@
 """This module contains JSON Class `config` aka configuration object."""
 from __future__ import annotations
-from typing import Optional, Type, List, Callable, TYPE_CHECKING
+from typing import Optional, Callable, TYPE_CHECKING
 from dataclasses import dataclass
 from .fields import FieldType
 if TYPE_CHECKING:
@@ -65,11 +65,11 @@ class Config:
     strict_input: Optional[bool] = None
     primary_key: Optional[str] = None
     local_key: Optional[LocalKey] = None
-    timestamps: Optional[List[str]] = None
+    timestamps: Optional[list[str]] = None
     validate_all_fields: Optional[bool] = None
     soft_delete: Optional[bool] = None
 
-    linked_class: Optional[Type[JSONObject]] = None
+    linked_class: Optional[type[JSONObject]] = None
 
     def __post_init__(self):
         if self.camelize_json_keys is None:
@@ -89,7 +89,7 @@ class Config:
         if self.soft_delete is None:
             self.soft_delete = SOFT_DELETE
 
-    def install_on_class(self, cls: Type[JSONObject]):
+    def install_on_class(self, cls: type[JSONObject]):
         """Install config object onto a JSONObject class.
         """
         cls.config = self

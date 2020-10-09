@@ -1,9 +1,9 @@
-import unittest
+from unittest import TestCase
 from jsonclasses import jsonclass, JSONObject, JSONEncoder
 from json import dumps
 
 
-class TestJSONObjectInitialize(unittest.TestCase):
+class TestJSONObjectInitialize(TestCase):
 
     def test_json_encoder_encodes_str(self):
         @jsonclass(graph='test_json_encoder_1')

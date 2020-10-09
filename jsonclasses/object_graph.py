@@ -1,6 +1,6 @@
 """This module defineds the JSON Class object mapping graph."""
 from __future__ import annotations
-from typing import Dict, Type, TypeVar, cast, TYPE_CHECKING
+from typing import TypeVar, cast, TYPE_CHECKING
 if TYPE_CHECKING:
     from .json_object import JSONObject
     T = TypeVar('T', bound=JSONObject)
@@ -42,9 +42,9 @@ class ClassTable:
 class ObjectGraph:
 
     def __init__(self):
-        self._class_tables: Dict[str, ClassTable] = {}
+        self._class_tables: dict[str, ClassTable] = {}
 
-    def class_table(self, cls: Type[T]) -> ClassTable[T]:
+    def class_table(self, cls: type[T]) -> ClassTable[T]:
         if self._class_tables.get(cls.__name__) is None:
             self._class_tables[cls.__name__] = ClassTable()
         return self._class_tables[cls.__name__]

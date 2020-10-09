@@ -1,6 +1,6 @@
 """This module defineds the JSON Class class mapping graph."""
 from __future__ import annotations
-from typing import Dict, Type, TypeVar, TYPE_CHECKING
+from typing import TypeVar, TYPE_CHECKING
 from inspect import getmodule
 if TYPE_CHECKING:
     from .json_object import JSONObject
@@ -12,7 +12,7 @@ class JSONClassRedefinitionError(Exception):
     exists before.
     """
 
-    def __init__(self, new_cls: Type[JSONObject], exist_cls: Type[JSONObject]):
+    def __init__(self, new_cls: type[JSONObject], exist_cls: type[JSONObject]):
         name = new_cls.__name__
         original_module = getmodule(exist_cls)
         assert original_module is not None
@@ -42,16 +42,16 @@ class ClassGraph:
 
     def __init__(self, graph_name: str):
         self._graph_name = graph_name
-        self._map: Dict[str, Type[JSONObject]] = {}
+        self._map: dict[str, type[JSONObject]] = {}
 
-    def add(self, cls: Type[T]) -> Type[T]:
+    def add(self, cls: type[T]) -> type[T]:
         """Add a JSON Class to the graph."""
         if self._map.get(cls.__name__) is not None:
             raise JSONClassRedefinitionError(cls, self._map[cls.__name__])
         self._map[cls.__name__] = cls
         return cls
 
-    def get(self, cls_name: str) -> Type[JSONObject]:
+    def get(self, cls_name: str) -> type[JSONObject]:
         try:
             return self._map[cls_name]
         except KeyError:
@@ -61,7 +61,7 @@ class ClassGraph:
 class ClassGraphMap:
 
     def __init__(self):
-        self._map: Dict[str, ClassGraph] = {}
+        self._map: dict[str, ClassGraph] = {}
 
     def graph(self, graph_name: str) -> ClassGraph:
         if self._map.get(graph_name) is None:

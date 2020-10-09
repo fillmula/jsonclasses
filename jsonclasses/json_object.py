@@ -1,7 +1,7 @@
 """This module contains `JSONObject`, the main base class of JSON Classes.
 """
 from __future__ import annotations
-from typing import Dict, Any, Optional, ClassVar, TypeVar
+from typing import Any, Optional, ClassVar, TypeVar
 from dataclasses import dataclass, fields as dataclass_fields
 from .config import Config
 from .exceptions import ValidationException
@@ -92,7 +92,7 @@ class JSONObject:
             setattr(self, key, item)
         return self
 
-    def tojson(self: T, ignore_writeonly: bool = False) -> Dict[str, Any]:
+    def tojson(self: T, ignore_writeonly: bool = False) -> dict[str, Any]:
         """Serialize this JSON Class object to JSON dict.
 
         Args:
@@ -182,7 +182,6 @@ class JSONObject:
                         else:
                             if self not in getattr(value, ofield.field_name):
                                 getattr(value, ofield.field_name).append(self)
-
 
     def __odict_add__(self, odict: OwnedDict, key: str, val: Any) -> None:
         pass

@@ -1,8 +1,7 @@
 """
 This module contains `jsonclass`, the decorator for JSON Classes.
 """
-from typing import (List, Type, Optional, Union, TypeVar, overload, Callable,
-                    cast)
+from typing import Optional, Union, TypeVar, Callable, overload, cast
 from dataclasses import dataclass
 from .json_object import JSONObject
 from .class_graph import class_graph_map
@@ -12,7 +11,7 @@ T = TypeVar('T', bound=JSONObject)
 
 
 @overload
-def jsonclass(cls: Type[T]) -> Type[T]: ...
+def jsonclass(cls: type[T]) -> type[T]: ...
 
 
 @overload
@@ -24,39 +23,39 @@ def jsonclass(
     strict_input: Optional[bool] = None,
     primary_key: Optional[str] = None,
     local_key: Optional[LocalKey] = None,
-    timestamps: Optional[List[str]] = None,
+    timestamps: Optional[list[str]] = None,
     validate_all_fields: Optional[bool] = None,
     soft_delete: Optional[bool] = None
-) -> Callable[[Type[T]], Type[T]]: ...
+) -> Callable[[type[T]], type[T]]: ...
 
 
 @overload
 def jsonclass(
-    cls: Type[T],
+    cls: type[T],
     graph: Optional[str] = 'default',
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
     primary_key: Optional[str] = None,
     local_key: Optional[LocalKey] = None,
-    timestamps: Optional[List[str]] = None,
+    timestamps: Optional[list[str]] = None,
     validate_all_fields: Optional[bool] = None,
     soft_delete: Optional[bool] = None
-) -> Type[T]: ...
+) -> type[T]: ...
 
 
 def jsonclass(
-    cls: Optional[Type[T]] = None,
+    cls: Optional[type[T]] = None,
     graph: Optional[str] = 'default',
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
     primary_key: Optional[str] = None,
     local_key: Optional[LocalKey] = None,
-    timestamps: Optional[List[str]] = None,
+    timestamps: Optional[list[str]] = None,
     validate_all_fields: Optional[bool] = None,
     soft_delete: Optional[bool] = None
-) -> Union[Callable[[Type[T]], Type[T]], Type[T]]:
+) -> Union[Callable[[type[T]], type[T]], type[T]]:
     """The jsonclass object class decorator. To declare a jsonclass class, use
     this syntax:
 

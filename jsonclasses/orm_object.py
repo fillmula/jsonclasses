@@ -3,7 +3,7 @@ This module contains `ORMObject`, the abstract base class for interacting with
 ORMs.
 """
 from __future__ import annotations
-from typing import TypeVar, Set, Any
+from typing import TypeVar, Any
 from .jsonclass import jsonclass
 from .json_object import JSONObject
 from .owned_dict import OwnedDict
@@ -79,11 +79,11 @@ class ORMObject(JSONObject):
         return self._is_modified
 
     @property
-    def modified_fields(self: T) -> Set[str]:
+    def modified_fields(self: T) -> set[str]:
         """The fields need to update the database record.
         """
         if not hasattr(self, '_modified_fields'):
-            self._modified_fields: Set[str] = set()
+            self._modified_fields: set[str] = set()
         return self._modified_fields
 
 

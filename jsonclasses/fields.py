@@ -1,7 +1,7 @@
 """This is an internal module."""
 from __future__ import annotations
-from typing import (Any, NamedTuple, Optional, Dict, Union, TypeVar, List,
-                    Type, cast, TYPE_CHECKING)
+from typing import (Any, NamedTuple, Optional, Union, TypeVar, cast,
+                    TYPE_CHECKING)
 from enum import Enum
 from dataclasses import (dataclass, fields as dataclass_fields,
                          Field as DataclassField)
@@ -93,10 +93,10 @@ class FieldDescription():  # pylint: disable=too-many-instance-attributes
     # collection marks
     list_item_types: Optional[Any] = None
     dict_item_types: Optional[Any] = None
-    shape_types: Optional[Dict[str, Any]] = None
+    shape_types: Optional[dict[str, Any]] = None
 
     # instance mark
-    instance_types: Optional[Union[Types, str, Type[JSONObject]]] = None
+    instance_types: Optional[Union[Types, str, type[JSONObject]]] = None
 
     # relationship
     foreign_key: Optional[str] = None
@@ -142,8 +142,8 @@ def dataclass_field_get_types(
 
 
 def fields(
-    class_or_instance: Union[JSONObject, Type[JSONObject]]
-) -> List[Field]:
+    class_or_instance: Union[JSONObject, type[JSONObject]]
+) -> list[Field]:
     """Iterate through a JSON Class or JSON Class instance's fields."""
     from .types import Types
     from .json_object import JSONObject
@@ -174,7 +174,7 @@ def fields(
     return retval
 
 
-def fdesc_match_class(fdesc: FieldDescription, cls: Type[JSONObject]) -> bool:
+def fdesc_match_class(fdesc: FieldDescription, cls: type[JSONObject]) -> bool:
     if fdesc.field_type == FieldType.LIST:
         item_types = to_types(fdesc.list_item_types, cls)
         return fdesc_match_class(item_types.field_description, cls)
@@ -184,12 +184,12 @@ def fdesc_match_class(fdesc: FieldDescription, cls: Type[JSONObject]) -> bool:
     return False
 
 
-def field_match_class(field: Field, cls: Type[JSONObject]) -> bool:
+def field_match_class(field: Field, cls: type[JSONObject]) -> bool:
     return fdesc_match_class(field.field_description, cls)
 
 
-def other_field(this: Union[JSONObject, Type[JSONObject]],
-                other: Union[JSONObject, Type[JSONObject]],
+def other_field(this: Union[JSONObject, type[JSONObject]],
+                other: Union[JSONObject, type[JSONObject]],
                 field: Union[str, Field]) -> Optional[Field]:
     tclass = cast(Any, this if type(this) is type else this.__class__)
     if isinstance(field, str):

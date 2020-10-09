@@ -1,6 +1,6 @@
 """This modules contains the JSON Class types marker."""
 from __future__ import annotations
-from typing import Callable, Any, List, Dict, Optional
+from typing import Callable, Any, Optional
 from copy import deepcopy
 from .fields import FieldDescription
 from .validators import (BoolValidator, ChainedValidator, DateValidator,
@@ -193,7 +193,7 @@ class Types:
         """
         return Types(self, MatchValidator(pattern))
 
-    def oneof(self, str_list: List[Str]) -> Types:
+    def oneof(self, str_list: list[Str]) -> Types:
         """This is the enum equivalent for jsonclasses. Values in the provided list
         are considered valid values.
         """
@@ -310,7 +310,7 @@ class Types:
         """
         return Types(self, DictOfValidator(item_types))
 
-    def shape(self, item_types_map: Dict[Str, Any]) -> Types:
+    def shape(self, item_types_map: dict[Str, Any]) -> Types:
         """Fields marked with shape are objects shaped with given shape. This is a
         type marker.
         """
@@ -327,7 +327,7 @@ class Types:
         """
         return Types(self, InstanceOfValidator(json_object_class))
 
-    def oneoftype(self, type_list: List[Any]) -> Types:
+    def oneoftype(self, type_list: list[Any]) -> Types:
         """Fields marked with oneoftype accepts value from these types.
         """
         return Types(self, OneOfTypeValidator(type_list))

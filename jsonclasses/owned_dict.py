@@ -1,7 +1,6 @@
 """The owner observable dict."""
 from __future__ import annotations
-from typing import (Generic, Any, Tuple, Protocol, TypeVar, Union,
-                    MutableMapping)
+from typing import Generic, Any, Protocol, TypeVar, Union, MutableMapping
 from collections.abc import Mapping, Iterable
 
 KT_contra = TypeVar('KT_contra', contravariant=True)
@@ -64,7 +63,7 @@ class OwnedDict(dict, MutableMapping[_KT, _VT], Generic[_KT, _VT]):
                 return args[1]
             raise e
 
-    def popitem(self) -> Tuple[_KT, _VT]:
+    def popitem(self) -> tuple[_KT, _VT]:
         result = super().popitem()
         self.owner.__odict_del__(self, result[1])
         return result

@@ -1,5 +1,5 @@
 """JSON Class exceptions."""
-from typing import Dict, Any
+from typing import Any
 
 
 class ObjectNotFoundException(Exception):
@@ -30,7 +30,7 @@ class ValidationException(Exception):
     catch this to present error to frontend clients.
     """
 
-    def __init__(self, keypath_messages: Dict[str, str], root: Any):
+    def __init__(self, keypath_messages: dict[str, str], root: Any):
         self.keypath_messages = keypath_messages
         self.message = self.formatted_keypath_messages()
         self.root = root
