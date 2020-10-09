@@ -1,6 +1,6 @@
 """module for instanceof validator."""
 from __future__ import annotations
-from typing import Optional, Any, Sequence, Type, Union, cast, TYPE_CHECKING
+from typing import Any, Sequence, Type, Union, cast, TYPE_CHECKING
 from ..fields import (Field, FieldDescription, FieldStorage, FieldType,
                       WriteRule, ReadRule, Strictness, fields)
 from ..exceptions import ValidationException
@@ -129,71 +129,6 @@ class InstanceOfValidator(Validator):
             field_value = context.value.get(field.field_name)
         return field_value
 
-    def _should_connect_relationships(self, field: Field) -> bool:
-        storage = field.field_description.field_storage
-        if storage == FieldStorage.LOCAL_KEY:
-            return True
-        if storage == FieldStorage.FOREIGN_KEY:
-            return True
-        return False
-
-    def _set_foreign_key_relationships(
-            self,
-            field: Field,
-            this: JSONObject,
-            that: Optional[Union[JSONObject, list[JSONObject]]]):
-        from ..json_object import JSONObject
-        that_objects: list[JSONObject] = []
-        this_fd = field.field_description
-        if this_fd.field_type == FieldType.LIST:
-            if that is not None:
-                that_objects = cast(list[JSONObject], that)
-        else:
-            if that is not None:
-                that_objects = [cast(JSONObject, that)]
-        fk = cast(str, field.field_description.foreign_key)
-        for object in that_objects:
-            object_fields = fields(object)
-            try:
-                ofield = next(f for f in object_fields if f.field_name == fk)
-            except StopIteration:
-                continue
-            if ofield.field_description.field_type == FieldType.LIST:
-                if getattr(object, fk) is None:
-                    setattr(object, fk, [])
-                cast(list, getattr(object, fk)).append(this)
-            else:
-                setattr(object, fk, this)
-
-    def _set_local_key_relationships(
-            self,
-            field: Field,
-            this: JSONObject,
-            that: Optional[Union[JSONObject, list[JSONObject]]]):
-        from ..json_object import JSONObject
-        that_objects: list[JSONObject] = []
-        this_fd = field.field_description
-        if this_fd.field_type == FieldType.LIST:
-            if that is not None:
-                that_objects = cast(list[JSONObject], that)
-        else:
-            if that is not None:
-                that_objects = [cast(JSONObject, that)]
-        for object in that_objects:
-            object_fields = fields(object)
-            try:
-                ofield = next(
-                    f for f in object_fields
-                    if f.field_description.foreign_key == field.field_name)
-                if ofield.field_description.field_type == FieldType.LIST:
-                    if getattr(object, ofield.field_name) is None:
-                        setattr(object, ofield.field_name, [])
-                    cast(list, getattr(object, ofield.field_name)).append(this)
-                else:
-                    setattr(object, ofield.field_name, this)
-            except StopIteration:
-                continue
-
     # pylint: disable=arguments-differ, too-many-locals, too-many-branches
     def transform(self, context: TransformingContext) -> Any:
         from ..types import Types
@@ -269,14 +204,7 @@ class InstanceOfValidator(Validator):
                 keypath_parent=field.field_name,
                 parent=context.value,
                 field_description=field.field_description)
-            tsfmd = field.field_types.validator.transform(
-                field_context)
-            if self._should_connect_relationships(field):
-                storage = field.field_description.field_storage
-                if storage == FieldStorage.FOREIGN_KEY:
-                    self._set_foreign_key_relationships(field, dest, tsfmd)
-                if storage == FieldStorage.LOCAL_KEY:
-                    self._set_local_key_relationships(field, dest, tsfmd)
+            tsfmd = field.field_types.validator.transform(field_context)
             setattr(dest, field.field_name, tsfmd)
         return dest
 

@@ -110,3 +110,22 @@ class TestJSONObjectAssign(TestCase):
         self.assertEqual(author.posts[0].author, author)
         self.assertEqual(post.author, None)
         self.assertEqual(post2.author, author)
+
+    def test_json_objects_connects_many_1_thru_assign(self):
+        post1 = Post(id=1, name='Zayton City')
+        post2 = Post(id=2, name='Teochew City')
+        author = Author(id=1, name='Victor')
+        author.posts = [post1, post2]
+        self.assertEqual(len(author.posts), 2)
+        self.assertEqual(post1.author, author)
+        self.assertEqual(post2.author, author)
+
+    def test_json_objects_disconnects_many_1_thru_assign_empty_list(self):
+        post1 = Post(id=1, name='Zayton City')
+        post2 = Post(id=2, name='Teochew City')
+        author = Author(id=1, name='Victor')
+        author.posts = [post1, post2]
+        author.posts = []
+        self.assertEqual(len(author.posts), 0)
+        self.assertEqual(post1.author, None)
+        self.assertEqual(post2.author, None)

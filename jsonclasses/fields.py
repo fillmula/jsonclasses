@@ -206,13 +206,10 @@ def other_field(this: Union[JSONObject, type[JSONObject]],
                     if (f.field_description.foreign_key == tfield.field_name)
                     and (field_match_class(f, tclass))), None)
     if tfield.field_description.field_storage == FieldStorage.FOREIGN_KEY:
-        if tfield.field_description.use_join_table:
-            return None
-        else:
-            fk = tfield.field_description.foreign_key
-            return next((f for f in fields(other)
-                         if (f.field_name == fk)
-                         and field_match_class(f, tclass)), None)
+        fk = tfield.field_description.foreign_key
+        return next((f for f in fields(other)
+                     if (f.field_name == fk)
+                     and field_match_class(f, tclass)), None)
     return None
 
 

@@ -152,30 +152,26 @@ class JSONObject:
         return True
 
     def __setattr__(self: T, name: str, value: Any) -> None:
-        if isinstance(value, list):
-            owned_list = OwnedList[Any](value)
-            owned_list.owner = self
-            owned_list.keypath = name
-            super().__setattr__(name, owned_list)
-        elif isinstance(value, dict):
-            owned_dict = OwnedDict[str, Any](value)
-            owned_dict.owner = self
-            owned_dict.keypath = name
-            super().__setattr__(name, owned_dict)
-        else:
-            this_field = field(self, name)
-            if this_field is None:  # not json class field
-                return super().__setattr__(name, value)
-            if is_reference_field(field(self, name)):  # json class ref field
-                old_value = getattr(self, name)
-                should_link = old_value is not value
-                super().__setattr__(name, value)
-                if should_link:
-                    self.__unlink_field__(this_field, old_value)
-                if should_link:
-                    self.__link_field__(this_field)
-                return
-            return super().__setattr__(name, value)  # normal field
+        this_field = field(self, name)
+        if this_field is None:  # not json class field
+            return super().__setattr__(name, value)
+        if isinstance(value, list):  # json class mutable list collection
+            value = OwnedList[Any](value)
+            value.owner = self
+            value.keypath = name
+        if isinstance(value, dict):  # json class mutable dict collection
+            value = OwnedDict[str, Any](value)
+            value.owner = self
+            value.keypath = name
+        if is_reference_field(field(self, name)):  # json class ref field
+            old_value = getattr(self, name)
+            should_link = old_value is not value
+            super().__setattr__(name, value)
+            if should_link:
+                self.__unlink_field__(this_field, old_value)
+                self.__link_field__(this_field, value)
+            return
+        return super().__setattr__(name, value)  # json class normal field
 
     def __odict_add__(self, odict: OwnedDict, key: str, val: Any) -> None:
         pass
@@ -193,34 +189,50 @@ class JSONObject:
         pass
 
     def __unlink_field__(self, field: Field, value: Any) -> None:
-        if not isinstance(value, JSONObject):
-            return
-        ofield = other_field(self, value, field)
-        if ofield is None:
-            return
-        if ofield.field_description.field_type == FieldType.INSTANCE:
-            setattr(value, ofield.field_name, None)
-        elif ofield.field_description.field_type == FieldType.LIST:
-            if isinstance(getattr(value, ofield.field_name), list):
-                if self in getattr(value, ofield.field_name):
-                    getattr(value, ofield.field_name).remove(self)
+        items: list[JSONObject] = []
+        if field.field_description.field_type == FieldType.INSTANCE:
+            if not isinstance(value, JSONObject):
+                return
+            items = [value]
+        if field.field_description.field_type == FieldType.LIST:
+            if not isinstance(value, list):
+                return
+            items = value
+        for item in items:
+            ofield = other_field(self, item, field)
+            if ofield is None:
+                return
+            if ofield.field_description.field_type == FieldType.INSTANCE:
+                setattr(item, ofield.field_name, None)
+            elif ofield.field_description.field_type == FieldType.LIST:
+                that_list = getattr(item, ofield.field_name)
+                if isinstance(that_list, list):
+                    if self in that_list:
+                        that_list.remove(self)
 
-    def __link_field__(self, field: Field) -> None:
-        value = getattr(self, field.field_name)
-        if not isinstance(value, JSONObject):
-            return
-        ofield = other_field(self, value, field)
-        if ofield is None:
-            return
-        if ofield.field_description.field_type == FieldType.INSTANCE:
-            if getattr(value, ofield.field_name) != self:
-                setattr(value, ofield.field_name, self)
-        elif ofield.field_description.field_type == FieldType.LIST:
-            if not isinstance(getattr(value, ofield.field_name), list):
-                setattr(value, ofield.field_name, [self])
-            else:
-                if self not in getattr(value, ofield.field_name):
-                    getattr(value, ofield.field_name).append(self)
+    def __link_field__(self, field: Field, value: Any) -> None:
+        items: list[JSONObject] = []
+        if field.field_description.field_type == FieldType.INSTANCE:
+            if not isinstance(value, JSONObject):
+                return
+            items = [value]
+        if field.field_description.field_type == FieldType.LIST:
+            if not isinstance(value, list):
+                return
+            items = value
+        for item in items:
+            ofield = other_field(self, item, field)
+            if ofield is None:
+                return
+            if ofield.field_description.field_type == FieldType.INSTANCE:
+                if getattr(item, ofield.field_name) != self:
+                    setattr(item, ofield.field_name, self)
+            elif ofield.field_description.field_type == FieldType.LIST:
+                if not isinstance(getattr(item, ofield.field_name), list):
+                    setattr(item, ofield.field_name, [self])
+                else:
+                    if self not in getattr(item, ofield.field_name):
+                        getattr(item, ofield.field_name).append(self)
 
 
 T = TypeVar('T', bound=JSONObject)
