@@ -73,3 +73,40 @@ class TestJSONObjectAssign(TestCase):
         self.assertEqual(len(author.posts), 2)
         self.assertEqual(post.author.posts[1], post2)
         self.assertEqual(author.posts[1].author, author)
+
+    def test_json_objects_disconnects_1k_1l_thru_assign(self):
+        staff = Staff(id=1, position='CEO')
+        user = User(id=1, name='Victor')
+        user.staff = staff
+        user.staff = None
+        self.assertEqual(user.staff, None)
+        self.assertEqual(staff.user, None)
+
+    def test_json_objects_disconnects_1l_1k_thru_assign(self):
+        staff = Staff(id=1, position='CEO')
+        user = User(id=1, name='Victor')
+        staff.user = user
+        staff.user = None
+        self.assertEqual(user.staff, None)
+        self.assertEqual(staff.user, None)
+
+    def test_json_objects_disconnects_1_many_empty_thru_assign(self):
+        post = Post(id=1, name='Zayton City')
+        author = Author(id=1, name='Victor')
+        post.author = author
+        post.author = None
+        self.assertEqual(len(author.posts), 0)
+        self.assertEqual(post.author, None)
+
+    def test_json_objects_disconnects_1_many_one_exist_thru_assign(self):
+        post = Post(id=1, name='Zayton City')
+        author = Author(id=1, name='Victor')
+        post.author = author
+        post2 = Post(id=2, name='Chinkang City')
+        post2.author = author
+        post.author = None
+        self.assertEqual(len(author.posts), 1)
+        self.assertEqual(post2.author.posts[0], post2)
+        self.assertEqual(author.posts[0].author, author)
+        self.assertEqual(post.author, None)
+        self.assertEqual(post2.author, author)

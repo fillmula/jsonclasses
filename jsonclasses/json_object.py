@@ -5,7 +5,7 @@ from typing import Any, Optional, ClassVar, TypeVar
 from dataclasses import dataclass, fields as dataclass_fields
 from .config import Config
 from .exceptions import ValidationException
-from .fields import FieldStorage, FieldType, other_field, fields
+from .fields import FieldType, Field, other_field, field, is_reference_field
 from .validators.instanceof_validator import InstanceOfValidator
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
 from .lookup_map import LookupMap
@@ -36,8 +36,8 @@ class JSONObject:
         validation and transformation are applied during the initialization
         process.
         """
-        for field in dataclass_fields(self):
-            setattr(self, field.name, None)
+        for f in dataclass_fields(self):
+            setattr(self, f.name, None)
         self.__set(fill_blanks=True, **kwargs)
 
     def set(self: T, **kwargs: Any) -> T:
@@ -163,25 +163,19 @@ class JSONObject:
             owned_dict.keypath = name
             super().__setattr__(name, owned_dict)
         else:
-            super().__setattr__(name, value)
-            if not isinstance(value, JSONObject):
+            this_field = field(self, name)
+            if this_field is None:  # not json class field
+                return super().__setattr__(name, value)
+            if is_reference_field(field(self, name)):  # json class ref field
+                old_value = getattr(self, name)
+                should_link = old_value is not value
+                super().__setattr__(name, value)
+                if should_link:
+                    self.__unlink_field__(this_field, old_value)
+                if should_link:
+                    self.__link_field__(this_field)
                 return
-            sfield = next(f for f in fields(self) if f.field_name == name)
-            fdesc = sfield.field_description
-            fstore = fdesc.field_storage
-            if fstore == FieldStorage.LOCAL_KEY or fstore == FieldStorage.FOREIGN_KEY:
-                ofield = other_field(self, value, sfield)
-                if ofield is not None:
-                    if ofield.field_description.field_type == FieldType.INSTANCE:
-                        if getattr(value, ofield.field_name) != self:
-                            setattr(value, ofield.field_name, self)
-                    elif ofield.field_description.field_type == FieldType.LIST:
-                        if not isinstance(getattr(value, ofield.field_name),
-                                          list):
-                            setattr(value, ofield.field_name, [self])
-                        else:
-                            if self not in getattr(value, ofield.field_name):
-                                getattr(value, ofield.field_name).append(self)
+            return super().__setattr__(name, value)  # normal field
 
     def __odict_add__(self, odict: OwnedDict, key: str, val: Any) -> None:
         pass
@@ -197,6 +191,36 @@ class JSONObject:
 
     def __olist_sor__(self, olist: OwnedList) -> None:
         pass
+
+    def __unlink_field__(self, field: Field, value: Any) -> None:
+        if not isinstance(value, JSONObject):
+            return
+        ofield = other_field(self, value, field)
+        if ofield is None:
+            return
+        if ofield.field_description.field_type == FieldType.INSTANCE:
+            setattr(value, ofield.field_name, None)
+        elif ofield.field_description.field_type == FieldType.LIST:
+            if isinstance(getattr(value, ofield.field_name), list):
+                if self in getattr(value, ofield.field_name):
+                    getattr(value, ofield.field_name).remove(self)
+
+    def __link_field__(self, field: Field) -> None:
+        value = getattr(self, field.field_name)
+        if not isinstance(value, JSONObject):
+            return
+        ofield = other_field(self, value, field)
+        if ofield is None:
+            return
+        if ofield.field_description.field_type == FieldType.INSTANCE:
+            if getattr(value, ofield.field_name) != self:
+                setattr(value, ofield.field_name, self)
+        elif ofield.field_description.field_type == FieldType.LIST:
+            if not isinstance(getattr(value, ofield.field_name), list):
+                setattr(value, ofield.field_name, [self])
+            else:
+                if self not in getattr(value, ofield.field_name):
+                    getattr(value, ofield.field_name).append(self)
 
 
 T = TypeVar('T', bound=JSONObject)

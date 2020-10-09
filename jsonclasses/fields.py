@@ -174,6 +174,12 @@ def fields(
     return retval
 
 
+def field(class_or_instance: Union[JSONObject, type[JSONObject]],
+          name: str) -> Optional[Field]:
+    all_fields = fields(class_or_instance)
+    return next((f for f in all_fields if f.field_name == name), None)
+
+
 def fdesc_match_class(fdesc: FieldDescription, cls: type[JSONObject]) -> bool:
     if fdesc.field_type == FieldType.LIST:
         item_types = to_types(fdesc.list_item_types, cls)
@@ -184,27 +190,37 @@ def fdesc_match_class(fdesc: FieldDescription, cls: type[JSONObject]) -> bool:
     return False
 
 
-def field_match_class(field: Field, cls: type[JSONObject]) -> bool:
-    return fdesc_match_class(field.field_description, cls)
+def field_match_class(tfield: Field, cls: type[JSONObject]) -> bool:
+    return fdesc_match_class(tfield.field_description, cls)
 
 
 def other_field(this: Union[JSONObject, type[JSONObject]],
                 other: Union[JSONObject, type[JSONObject]],
-                field: Union[str, Field]) -> Optional[Field]:
+                tfield: Union[str, Field]) -> Optional[Field]:
     tclass = cast(Any, this if type(this) is type else this.__class__)
-    if isinstance(field, str):
-        field = next(f for f in fields(this) if f.field_name == field)
-    field = cast(Field, field)
-    if field.field_description.field_storage == FieldStorage.LOCAL_KEY:
+    if isinstance(tfield, str):
+        tfield = field(this, tfield)
+    tfield = cast(Field, tfield)
+    if tfield.field_description.field_storage == FieldStorage.LOCAL_KEY:
         return next((f for f in fields(other)
-                    if (f.field_description.foreign_key == field.field_name)
+                    if (f.field_description.foreign_key == tfield.field_name)
                     and (field_match_class(f, tclass))), None)
-    if field.field_description.field_storage == FieldStorage.FOREIGN_KEY:
-        if field.field_description.use_join_table:
+    if tfield.field_description.field_storage == FieldStorage.FOREIGN_KEY:
+        if tfield.field_description.use_join_table:
             return None
         else:
-            fk = field.field_description.foreign_key
+            fk = tfield.field_description.foreign_key
             return next((f for f in fields(other)
                          if (f.field_name == fk)
                          and field_match_class(f, tclass)), None)
     return None
+
+
+def is_reference_field(field: Field) -> bool:
+    fdesc = field.field_description
+    fstore = fdesc.field_storage
+    if fstore == FieldStorage.LOCAL_KEY:
+        return True
+    if fstore == FieldStorage.FOREIGN_KEY:
+        return True
+    return False
