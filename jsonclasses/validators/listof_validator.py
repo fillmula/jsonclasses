@@ -58,7 +58,7 @@ class ListOfValidator(TypeValidator):
         if fd.collection_nullability == Nullability.NONNULL:
             if value is None:
                 value = []
-        if context.value is None:
+        if value is None:
             return None
         if not isinstance(value, list):
             return value

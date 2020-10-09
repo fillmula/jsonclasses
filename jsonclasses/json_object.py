@@ -152,8 +152,8 @@ class JSONObject:
         return True
 
     def __setattr__(self: T, name: str, value: Any) -> None:
-        this_field = field(self, name)
-        if this_field is None:  # not json class field
+        tfield = field(self, name)
+        if tfield is None:  # not json class field
             return super().__setattr__(name, value)
         if isinstance(value, list):  # json class mutable list collection
             value = OwnedList[Any](value)
@@ -163,13 +163,13 @@ class JSONObject:
             value = OwnedDict[str, Any](value)
             value.owner = self
             value.keypath = name
-        if is_reference_field(field(self, name)):  # json class ref field
+        if is_reference_field(tfield):  # json class ref field
             old_value = getattr(self, name)
             should_link = old_value is not value
             super().__setattr__(name, value)
             if should_link:
-                self.__unlink_field__(this_field, old_value)
-                self.__link_field__(this_field, value)
+                self.__unlink_field__(tfield, old_value)
+                self.__link_field__(tfield, value)
             return
         return super().__setattr__(name, value)  # json class normal field
 
@@ -180,10 +180,20 @@ class JSONObject:
         pass
 
     def __olist_add__(self, olist: OwnedList, idx: int, val: Any) -> None:
-        pass
+        tfield = field(self, olist.keypath)
+        if tfield is None:
+            return
+        if not is_reference_field(tfield):
+            return
+        self.__link_field__(tfield, [val])
 
     def __olist_del__(self, olist: OwnedList, val: Any) -> None:
-        pass
+        tfield = field(self, olist.keypath)
+        if tfield is None:
+            return
+        if not is_reference_field(tfield):
+            return
+        self.__unlink_field__(tfield, [val])
 
     def __olist_sor__(self, olist: OwnedList) -> None:
         pass
