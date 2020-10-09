@@ -2,7 +2,7 @@
 field types object.
 """
 from __future__ import annotations
-from typing import (Type, Any, TypeVar, Optional, Union, List, Dict, get_args,
+from typing import (Any, TypeVar, Optional, Union, List, Dict, get_args,
                     get_origin, cast, TYPE_CHECKING)
 from datetime import date, datetime
 from re import match, split
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 def str_to_types(argtype: str,
-                 graph_sibling: Type[T] = None,
+                 graph_sibling: type[T] = None,
                  optional: bool = False) -> Types:
     """Convert user specified string type to Types object."""
     from .types import types
@@ -46,27 +46,27 @@ def str_to_types(argtype: str,
         assert match_data is not None
         item_type = match_data.group(1)
         return str_to_types(item_type, graph_sibling, True)
-    elif argtype.startswith('List['):
-        match_data = match('List\\[(.*)\\]', argtype)
+    elif match('[Ll]ist\\[', argtype):
+        match_data = match('[Ll]ist\\[(.*)\\]', argtype)
         assert match_data is not None
         item_type = match_data.group(1)
         list_type = types.listof(str_to_types(item_type, graph_sibling))
         return list_type if optional else list_type.required
-    elif argtype.startswith('Dict['):
-        match_data = match('Dict\\[.+, ?(.*)\\]', argtype)
+    elif match('[Dd]ict\\[', argtype):
+        match_data = match('[Dd]ict\\[.+, ?(.*)\\]', argtype)
         assert match_data is not None
         item_type = match_data.group(1)
         dict_type = types.dictof(str_to_types(item_type, graph_sibling))
         return dict_type if optional else dict_type.required
     else:
-        graph_name = cast(Type[JSONObject], graph_sibling).config.graph
+        graph_name = cast(type[JSONObject], graph_sibling).config.graph
         cls = class_graph_map.graph(graph_name).get(argtype)
         instance_type = types.instanceof(cls)
         return instance_type if optional else instance_type.required
 
 
 def to_types(argtype: Any,
-             graph_sibling: Optional[Type[T]] = None,
+             graph_sibling: Optional[type[T]] = None,
              optional: bool = False) -> Types:
     """Convert arbitrary user specified type to Types object."""
     from .json_object import JSONObject
@@ -124,7 +124,7 @@ def to_types(argtype: Any,
         raise ValueError(f'{argtype} is not a valid JSON Class type.')
 
 
-def resolve_types(arbitrary_type: Any, graph_sibling: Type[T] = None) -> Types:
+def resolve_types(arbitrary_type: Any, graph_sibling: type[T] = None) -> Types:
     """Get desired JSON Class field types object from arbitrary types that
     users can specify.
 

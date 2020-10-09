@@ -175,27 +175,55 @@ class TestJSONObjectTypesSynthesis(TestCase):
         object.validate()
 
     def test_auto_generates_required_list(self):
+        @jsonclass(graph='test_marker_auto_gen_2')
+        class Testlist(JSONObject):
+            val: list[str]
+        object = Testlist()
+        self.assertRaises(ValidationException, object.validate)
+
+    def test_auto_generates_optional_list(self):
+        @jsonclass(graph='test_marker_auto_gen_2')
+        class TestOptionallist(JSONObject):
+            val: Optional[list[str]]
+        object = TestOptionallist()
+        object.validate()
+
+    def test_auto_generates_required_list_with_str_type(self):
+        @jsonclass(graph='test_marker_auto_gen_2')
+        class TestlistStrType(JSONObject):
+            val: 'list[str]'
+        object = TestlistStrType()
+        self.assertRaises(ValidationException, object.validate)
+
+    def test_auto_generates_optional_list_with_str_type(self):
+        @jsonclass(graph='test_marker_auto_gen_2')
+        class TestOptionallistStrType(JSONObject):
+            val: 'Optional[list[str]]'
+        object = TestOptionallistStrType()
+        object.validate()
+
+    def test_auto_generates_required_list_capitalized(self):
         @jsonclass(graph='test_marker_auto_gen')
         class Testlist(JSONObject):
             val: List[str]
         object = Testlist()
         self.assertRaises(ValidationException, object.validate)
 
-    def test_auto_generates_optional_list(self):
+    def test_auto_generates_optional_list_capitalized(self):
         @jsonclass(graph='test_marker_auto_gen')
         class TestOptionallist(JSONObject):
             val: Optional[List[str]]
         object = TestOptionallist()
         object.validate()
 
-    def test_auto_generates_required_list_with_str_type(self):
+    def test_auto_generates_required_list_with_str_type_capitalized(self):
         @jsonclass(graph='test_marker_auto_gen')
         class TestlistStrType(JSONObject):
             val: 'List[str]'
         object = TestlistStrType()
         self.assertRaises(ValidationException, object.validate)
 
-    def test_auto_generates_optional_list_with_str_type(self):
+    def test_auto_generates_optional_list_with_str_type_capitalized(self):
         @jsonclass(graph='test_marker_auto_gen')
         class TestOptionallistStrType(JSONObject):
             val: 'Optional[List[str]]'
@@ -203,27 +231,55 @@ class TestJSONObjectTypesSynthesis(TestCase):
         object.validate()
 
     def test_auto_generates_required_dict(self):
+        @jsonclass(graph='test_marker_auto_gen_2')
+        class Testdict(JSONObject):
+            val: dict[str, str]
+        object = Testdict()
+        self.assertRaises(ValidationException, object.validate)
+
+    def test_auto_generates_optional_dict(self):
+        @jsonclass(graph='test_marker_auto_gen_2')
+        class TestOptionaldict(JSONObject):
+            val: Optional[dict[str, str]]
+        object = TestOptionaldict()
+        object.validate()
+
+    def test_auto_generates_required_dict_with_str_type(self):
+        @jsonclass(graph='test_marker_auto_gen_2')
+        class TestdictStrType(JSONObject):
+            val: 'dict[str, str]'
+        object = TestdictStrType()
+        self.assertRaises(ValidationException, object.validate)
+
+    def test_auto_generates_optional_dict_with_str_type(self):
+        @jsonclass(graph='test_marker_auto_gen_2')
+        class TestOptionaldictStrType(JSONObject):
+            val: 'Optional[dict[str, str]]'
+        object = TestOptionaldictStrType()
+        object.validate()
+
+    def test_auto_generates_required_dict_capitalized(self):
         @jsonclass(graph='test_marker_auto_gen')
         class Testdict(JSONObject):
             val: Dict[str, str]
         object = Testdict()
         self.assertRaises(ValidationException, object.validate)
 
-    def test_auto_generates_optional_dict(self):
+    def test_auto_generates_optional_dict_capitalized(self):
         @jsonclass(graph='test_marker_auto_gen')
         class TestOptionaldict(JSONObject):
             val: Optional[Dict[str, str]]
         object = TestOptionaldict()
         object.validate()
 
-    def test_auto_generates_required_dict_with_str_type(self):
+    def test_auto_generates_required_dict_with_str_type_capitalized(self):
         @jsonclass(graph='test_marker_auto_gen')
         class TestdictStrType(JSONObject):
             val: 'Dict[str, str]'
         object = TestdictStrType()
         self.assertRaises(ValidationException, object.validate)
 
-    def test_auto_generates_optional_dict_with_str_type(self):
+    def test_auto_generates_optional_dict_with_str_type_capitalized(self):
         @jsonclass(graph='test_marker_auto_gen')
         class TestOptionaldictStrType(JSONObject):
             val: 'Optional[Dict[str, str]]'
