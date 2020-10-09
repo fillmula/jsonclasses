@@ -120,3 +120,13 @@ class OwnedDict(dict, MutableMapping[_KT, _VT], Generic[_KT, _VT]):
             removed = None
         super().__delitem__(k)
         self.owner.__odict_del__(self, removed)
+
+    def __ior__(self, rhs: Iterable) -> OwnedDict[_KT, _VT]:
+        new_dict = dict(rhs)
+        items_to_del = [i[1] for i in self.items() if i[0] in new_dict.keys()]
+        retval = super().__ior__(rhs)
+        for v in items_to_del:
+            self.owner.__odict_del__(self, v)
+        for k, v in new_dict.items():
+            self.owner.__odict_add__(self, k, v)
+        return retval

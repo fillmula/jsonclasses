@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, NamedTuple, List
+from typing import Any, NamedTuple
 from unittest import TestCase
 from jsonclasses.owned_list import OwnedList
 
@@ -22,9 +22,9 @@ class SorRecord(NamedTuple):
 class Owner:
 
     def __init__(self):
-        self.add_records: List[AddRecord] = []
-        self.del_records: List[DelRecord] = []
-        self.sor_records: List[SorRecord] = []
+        self.add_records: list[AddRecord] = []
+        self.del_records: list[DelRecord] = []
+        self.sor_records: list[SorRecord] = []
 
     def __olist_add__(self, olist: OwnedList, idx: int, val: Any) -> None:
         self.add_records.append(AddRecord(olist, idx, val))

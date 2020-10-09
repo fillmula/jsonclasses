@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Generic, NamedTuple, List, TypeVar
+from typing import Generic, NamedTuple, TypeVar
 from unittest import TestCase
 from jsonclasses.owned_dict import OwnedDict
 
@@ -21,8 +21,8 @@ class DelRecord(NamedTuple):
 class Owner(Generic[KT, VT]):
 
     def __init__(self):
-        self.add_records: List[AddRecord] = []
-        self.del_records: List[DelRecord] = []
+        self.add_records: list[AddRecord] = []
+        self.del_records: list[DelRecord] = []
 
     def __odict_add__(self, odict: OwnedDict, key: KT, val: VT) -> None:
         self.add_records.append(AddRecord(odict, key, val))
@@ -241,3 +241,21 @@ class TestOwnedDict(TestCase):
         self.assertEqual(owned_dict, {'a': 1, 'b': 2})
         self.assertEqual(owner.add_records, [])
         self.assertEqual(owner.del_records, [])
+
+    def test_owned_dict_get_notified_thru_or_equal_sign(self):
+        owner = Owner()
+        owned_dict = OwnedDict({'a': 1, 'b': 2})
+        owned_dict.owner = owner
+        owned_dict |= {'b': 3, 'c': 4}
+        self.assertEqual(owned_dict, {'a': 1, 'b': 3, 'c': 4})
+        self.assertEqual(owner.add_records, [
+            AddRecord(owned_dict, 'b', 3),
+            AddRecord(owned_dict, 'c', 4)])
+        self.assertEqual(owner.del_records, [DelRecord(owned_dict, 2)])
+
+    def test_owned_dict_or_equal_sign_raises_if_wrong_argument(self):
+        owner = Owner()
+        owned_dict = OwnedDict({'a': 1, 'b': 2})
+        owned_dict.owner = owner
+        with self.assertRaisesRegex(TypeError, "'int' object is not iterable"):
+            owned_dict |= 5
