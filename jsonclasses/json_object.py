@@ -5,7 +5,7 @@ from typing import Any, Optional, ClassVar, TypeVar
 from dataclasses import dataclass, fields as dataclass_fields
 from .config import Config
 from .exceptions import ValidationException
-from .fields import FieldType, Field, other_field, field, is_reference_field
+from .fields import FieldStorage, FieldType, Field, other_field, field, is_reference_field
 from .validators.instanceof_validator import InstanceOfValidator
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
 from .lookup_map import LookupMap
@@ -151,10 +151,17 @@ class JSONObject:
             return False
         return True
 
+    def __setattr_direct__(self: T, name: str, value: Any) -> None:
+        super().__setattr__(name, value)
+
     def __setattr__(self: T, name: str, value: Any) -> None:
+        if name.startswith('_'):  # private fields
+            super().__setattr__(name, value)
+            return
         tfield = field(self, name)
         if tfield is None:  # not json class field
-            return super().__setattr__(name, value)
+            super().__setattr__(name, value)
+            return
         if isinstance(value, list):  # json class mutable list collection
             value = OwnedList[Any](value)
             value.owner = self
@@ -166,12 +173,13 @@ class JSONObject:
         if is_reference_field(tfield):  # json class ref field
             old_value = getattr(self, name)
             should_link = old_value is not value
-            super().__setattr__(name, value)
             if should_link:
                 self.__unlink_field__(tfield, old_value)
+            super().__setattr__(name, value)
+            if should_link:
                 self.__link_field__(tfield, value)
             return
-        return super().__setattr__(name, value)  # json class normal field
+        super().__setattr__(name, value)  # json class normal field
 
     def __odict_add__(self, odict: OwnedDict, key: str, val: Any) -> None:
         pass
@@ -213,7 +221,8 @@ class JSONObject:
             if ofield is None:
                 return
             if ofield.field_description.field_type == FieldType.INSTANCE:
-                setattr(item, ofield.field_name, None)
+                if getattr(item, ofield.field_name) is self:
+                    item.__setattr_direct__(ofield.field_name, None)
             elif ofield.field_description.field_type == FieldType.LIST:
                 that_list = getattr(item, ofield.field_name)
                 if isinstance(that_list, list):

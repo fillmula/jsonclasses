@@ -191,3 +191,27 @@ class TestJSONObjectReferenceHook(TestCase):
         self.assertEqual(customer2.products, [product1, product2])
         self.assertEqual(product1.customers, [customer2])
         self.assertEqual(product2.customers, [customer2])
+
+    def test_json_objects_connects_many_many_reassign(self):
+        customer1 = Customer(id=1, name='Customer John', products=[])
+        customer2 = Customer(id=2, name='Customer Peter', products=[])
+        product1 = Product(id=1, name='PS5', customers=[])
+        product2 = Product(id=1, name='Xbox', customers=[])
+        customer1.products.append(product1)
+        customer1.products.append(product2)
+        customer2.products.extend([product1, product2])
+        customer1.products = [product1, product2]
+        self.assertEqual(customer1.products, [product1, product2])
+        self.assertEqual(customer2.products, [product1, product2])
+        self.assertEqual(product1.customers, [customer2, customer1])
+        self.assertEqual(product2.customers, [customer1, customer2])
+
+    def test_json_objects_connects_1_1_reassign(self):
+        staff1 = Staff(id=1, position='CEO')
+        staff2 = Staff(id=2, position='CFO')
+        user = User(id=1, name='Victor')
+        user.staff = staff1
+        user.staff = staff2
+        self.assertEqual(staff1.user, None)
+        self.assertEqual(staff2.user, user)
+        self.assertEqual(user.staff, staff2)
