@@ -215,7 +215,7 @@ class JSONObject:
         if field.field_description.field_type == FieldType.LIST:
             if not isinstance(value, list):
                 return
-            items = value
+            items = list(value)
         for item in items:
             ofield = other_field(self, item, field)
             if ofield is None:
