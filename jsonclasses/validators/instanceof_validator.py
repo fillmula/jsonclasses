@@ -2,7 +2,8 @@
 from __future__ import annotations
 from typing import Any, Sequence, Type, Union, cast, TYPE_CHECKING
 from ..fields import (Field, FieldDescription, FieldStorage, FieldType,
-                      WriteRule, ReadRule, Strictness, fields)
+                      WriteRule, ReadRule, Strictness, fields,
+                      is_reference_field)
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..keypath import concat_keypath
@@ -171,10 +172,7 @@ class InstanceOfValidator(Validator):
         dict_keys = list(context.value.keys())
         for field in fields(dest):
             if not self._has_field_value(field, dict_keys):
-                field_storage = field.field_description.field_storage
-                if field_storage == FieldStorage.FOREIGN_KEY:
-                    pass
-                elif field_storage == FieldStorage.LOCAL_KEY:
+                if is_reference_field(field):
                     pass
                 elif context.fill_dest_blanks and not soft_apply_mode:
                     self._fill_default_value(field, dest, context, cls)
