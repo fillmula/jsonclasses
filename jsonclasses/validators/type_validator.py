@@ -13,8 +13,8 @@ class TypeValidator(Validator):
         self.field_type: FieldType = FieldType.ANY
         self.exact_type: bool = False
 
-    def define(self, field_description: FieldDescription) -> None:
-        field_description.field_type = self.field_type
+    def define(self, fdesc: FieldDescription) -> None:
+        fdesc.field_type = self.field_type
 
     def validate(self, context: ValidatingContext) -> None:
         if context.value is None:

@@ -9,7 +9,7 @@ class LinkedByValidator(Validator):
     def __init__(self, foreign_key: str) -> None:
         self.foreign_key = foreign_key
 
-    def define(self, field_description: FieldDescription) -> None:
-        field_description.field_storage = FieldStorage.FOREIGN_KEY
-        field_description.foreign_key = self.foreign_key
-        field_description.use_join_table = False
+    def define(self, fdesc: FieldDescription) -> None:
+        fdesc.field_storage = FieldStorage.FOREIGN_KEY
+        fdesc.foreign_key = self.foreign_key
+        fdesc.use_join_table = False

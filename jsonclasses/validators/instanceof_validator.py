@@ -21,9 +21,9 @@ class InstanceOfValidator(Validator):
     def __init__(self, raw_type: InstanceOfType) -> None:
         self.raw_type = raw_type
 
-    def define(self, field_description: FieldDescription) -> None:
-        field_description.field_type = FieldType.INSTANCE
-        field_description.instance_types = self.raw_type
+    def define(self, fdesc: FieldDescription) -> None:
+        fdesc.field_type = FieldType.INSTANCE
+        fdesc.instance_types = self.raw_type
 
     def validate(self, context: ValidatingContext) -> None:
         from ..json_object import JSONObject
@@ -31,7 +31,7 @@ class InstanceOfValidator(Validator):
         if context.value is None:
             return
         types = resolve_types(self.raw_type, context.config_owner.linked_class)
-        cls = cast(Type[JSONObject], types.field_description.instance_types)
+        cls = cast(Type[JSONObject], types.fdesc.instance_types)
         all_fields = context.all_fields
         if all_fields is None:
             all_fields = cls.config.validate_all_fields
@@ -58,7 +58,7 @@ class InstanceOfValidator(Validator):
         keypath_messages = {}
         for field in fields(context.value):
             fname = field.field_name
-            fd = field.field_description
+            fd = field.fdesc
             bypass = False
             if fd.field_storage == FieldStorage.EMBEDDED:
                 if only_validate_modified and fname not in modified_fields:
@@ -74,7 +74,7 @@ class InstanceOfValidator(Validator):
                     config_owner=context.value.__class__.config,
                     keypath_parent=fname,
                     parent=context.value,
-                    field_description=field.field_description))
+                    fdesc=field.fdesc))
             except ValidationException as exception:
                 if all_fields:
                     keypath_messages.update(exception.keypath_messages)
@@ -116,7 +116,7 @@ class InstanceOfValidator(Validator):
                 config_owner=cls.config,
                 keypath_parent=field.field_name,
                 parent=context.value,
-                field_description=field.field_description))
+                fdesc=field.fdesc))
             setattr(dest, field.field_name, tsfmd)
 
     def _has_field_value(self, field: Field, keys: Sequence[str]) -> bool:
@@ -141,7 +141,7 @@ class InstanceOfValidator(Validator):
             return context.dest if context.dest is not None else context.value
         # figure out types, cls and dest
         types = resolve_types(self.raw_type, context.config_owner.linked_class)
-        cls = cast(Type[JSONObject], types.field_description.instance_types)
+        cls = cast(Type[JSONObject], types.fdesc.instance_types)
         primary_key = cls.config.primary_key
         id = cast(Union[str, int], context.value.get(primary_key))
         soft_apply_mode = False
@@ -161,10 +161,10 @@ class InstanceOfValidator(Validator):
             dest = cls()
         # strictness check
         strictness = cast(bool, cls.config.strict_input)
-        if context.field_description is not None:
-            if context.field_description.strictness == Strictness.STRICT:
+        if context.fdesc is not None:
+            if context.fdesc.strictness == Strictness.STRICT:
                 strictness = True
-            elif context.field_description.strictness == Strictness.UNSTRICT:
+            elif context.fdesc.strictness == Strictness.UNSTRICT:
                 strictness = False
         if strictness:
             self._strictness_check(context, dest)
@@ -174,7 +174,7 @@ class InstanceOfValidator(Validator):
         for field in fields(dest):
             if not self._has_field_value(field, dict_keys):
                 if is_reference_field(field):
-                    fdesc = field.field_description
+                    fdesc = field.fdesc
                     if fdesc.field_type == FieldType.LIST:
                         if fdesc.collection_nullability == Nullability.NONNULL:
                             nonnull_ref_lists.append(field.field_name)
@@ -184,13 +184,13 @@ class InstanceOfValidator(Validator):
                 continue
             field_value = self._get_field_value(field, context)
             allow_write_field = True
-            if field.field_description.write_rule == WriteRule.NO_WRITE:
+            if field.fdesc.write_rule == WriteRule.NO_WRITE:
                 allow_write_field = False
-            if field.field_description.write_rule == WriteRule.WRITE_ONCE:
+            if field.fdesc.write_rule == WriteRule.WRITE_ONCE:
                 cfv = getattr(dest, field.field_name)
                 if (cfv is not None) and (not isinstance(cfv, Types)):
                     allow_write_field = False
-            if field.field_description.write_rule == WriteRule.WRITE_NONNULL:
+            if field.fdesc.write_rule == WriteRule.WRITE_NONNULL:
                 if field_value is None:
                     allow_write_field = False
             if not allow_write_field:
@@ -206,7 +206,7 @@ class InstanceOfValidator(Validator):
                 config_owner=cls.config,
                 keypath_parent=field.field_name,
                 parent=context.value,
-                field_description=field.field_description)
+                fdesc=field.fdesc)
             tsfmd = field.field_types.validator.transform(field_context)
             setattr(dest, field.field_name, tsfmd)
         for cname in nonnull_ref_lists:
@@ -223,7 +223,7 @@ class InstanceOfValidator(Validator):
         no_key_refs = cls_name in entity_chain
         for field in fields(context.value):
             field_value = getattr(context.value, field.field_name)
-            fd = field.field_types.field_description
+            fd = field.field_types.fdesc
             jf_name = field.json_field_name
             ignore_writeonly = context.ignore_writeonly
             if fd.field_storage == FieldStorage.LOCAL_KEY and no_key_refs:

@@ -8,5 +8,5 @@ class EagerValidator(Validator):
     This is used usually before heavy transforming validators.
     """
 
-    def define(self, field_description: FieldDescription) -> None:
-        field_description.has_eager_validator = True
+    def define(self, fdesc: FieldDescription) -> None:
+        fdesc.has_eager_validator = True

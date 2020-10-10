@@ -20,9 +20,9 @@ class ShapeValidator(TypeValidator):
         self.shape_types = shape_types
         self.exact_type = False
 
-    def define(self, field_description: FieldDescription) -> None:
-        super().define(field_description)
-        field_description.shape_types = self.shape_types
+    def define(self, fdesc: FieldDescription) -> None:
+        super().define(fdesc)
+        fdesc.shape_types = self.shape_types
 
     def validate(self, context: ValidatingContext) -> None:
         if context.value is None:
@@ -46,7 +46,7 @@ class ShapeValidator(TypeValidator):
                         keypath_owner=concat_keypath(context.keypath_owner, k),
                         keypath_parent=k,
                         parent=context.value,
-                        field_description=types.field_description))
+                        fdesc=types.fdesc))
                 except ValidationException as exception:
                     if all_fields:
                         keypath_messages.update(exception.keypath_messages)
@@ -90,7 +90,7 @@ class ShapeValidator(TypeValidator):
 
     def transform(self, context: TransformingContext) -> Any:
         value = context.value
-        fd = cast(FieldDescription, context.field_description)
+        fd = cast(FieldDescription, context.fdesc)
         if fd.collection_nullability == Nullability.NONNULL and value is None:
             value = {}
         if value is None:
@@ -113,7 +113,7 @@ class ShapeValidator(TypeValidator):
                 keypath_owner=concat_keypath(context.keypath_owner, fk),
                 keypath_parent=fk,
                 parent=value,
-                field_description=types.field_description))
+                fdesc=types.fdesc))
         return retval
 
     def tojson(self, context: ToJSONContext) -> Any:

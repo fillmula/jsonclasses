@@ -126,7 +126,7 @@ class Field(NamedTuple):
     db_field_name: str
     field_types: Types
     assigned_default_value: Any
-    field_description: FieldDescription
+    fdesc: FieldDescription
     field_validator: ChainedValidator
 
 
@@ -169,7 +169,7 @@ def fields(
                   db_field_name=db_field_name,
                   field_types=field_types,
                   assigned_default_value=assigned_default_value,
-                  field_description=field_types.field_description,
+                  fdesc=field_types.fdesc,
                   field_validator=field_types.validator))
     return retval
 
@@ -183,15 +183,15 @@ def field(class_or_instance: Union[JSONObject, type[JSONObject]],
 def fdesc_match_class(fdesc: FieldDescription, cls: type[JSONObject]) -> bool:
     if fdesc.field_type == FieldType.LIST:
         item_types = to_types(fdesc.list_item_types, cls)
-        return fdesc_match_class(item_types.field_description, cls)
+        return fdesc_match_class(item_types.fdesc, cls)
     if fdesc.field_type == FieldType.INSTANCE:
         instance_types = to_types(fdesc.instance_types, cls)
-        return instance_types.field_description.instance_types == cls
+        return instance_types.fdesc.instance_types == cls
     return False
 
 
 def field_match_class(tfield: Field, cls: type[JSONObject]) -> bool:
-    return fdesc_match_class(tfield.field_description, cls)
+    return fdesc_match_class(tfield.fdesc, cls)
 
 
 def other_field(this: Union[JSONObject, type[JSONObject]],
@@ -201,12 +201,12 @@ def other_field(this: Union[JSONObject, type[JSONObject]],
     if isinstance(tfield, str):
         tfield = field(this, tfield)
     tfield = cast(Field, tfield)
-    if tfield.field_description.field_storage == FieldStorage.LOCAL_KEY:
+    if tfield.fdesc.field_storage == FieldStorage.LOCAL_KEY:
         return next((f for f in fields(other)
-                    if (f.field_description.foreign_key == tfield.field_name)
+                    if (f.fdesc.foreign_key == tfield.field_name)
                     and (field_match_class(f, tclass))), None)
-    if tfield.field_description.field_storage == FieldStorage.FOREIGN_KEY:
-        fk = tfield.field_description.foreign_key
+    if tfield.fdesc.field_storage == FieldStorage.FOREIGN_KEY:
+        fk = tfield.fdesc.foreign_key
         return next((f for f in fields(other)
                      if (f.field_name == fk)
                      and field_match_class(f, tclass)), None)
@@ -214,10 +214,8 @@ def other_field(this: Union[JSONObject, type[JSONObject]],
 
 
 def is_reference_field(field: Field) -> bool:
-    fdesc = field.field_description
-    fstore = fdesc.field_storage
-    if fstore == FieldStorage.LOCAL_KEY:
+    if field.fdesc.field_storage == FieldStorage.LOCAL_KEY:
         return True
-    if fstore == FieldStorage.FOREIGN_KEY:
+    if field.fdesc.field_storage == FieldStorage.FOREIGN_KEY:
         return True
     return False

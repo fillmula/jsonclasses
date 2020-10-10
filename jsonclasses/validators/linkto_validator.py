@@ -6,5 +6,5 @@ from .validator import Validator
 class LinkToValidator(Validator):
     """Link to validator marks a field which is a local key."""
 
-    def define(self, field_description: FieldDescription) -> None:
-        field_description.field_storage = FieldStorage.LOCAL_KEY
+    def define(self, fdesc: FieldDescription) -> None:
+        fdesc.field_storage = FieldStorage.LOCAL_KEY

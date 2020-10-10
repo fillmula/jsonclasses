@@ -39,14 +39,14 @@ class Types:
         *args: Validator
     ) -> None:
         if not original:
-            self.field_description = FieldDescription()
+            self.fdesc = FieldDescription()
             self.validator = ChainedValidator()
         else:
-            self.field_description = deepcopy(original.field_description)
+            self.fdesc = deepcopy(original.fdesc)
             validator = original.validator
             for arg in args:
                 validator = validator.append(arg)
-                arg.define(self.field_description)
+                arg.define(self.fdesc)
             self.validator = validator
 
     @property

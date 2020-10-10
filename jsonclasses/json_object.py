@@ -65,7 +65,7 @@ class JSONObject:
             config_owner=config,
             keypath_parent='',
             parent=self,
-            field_description=None,
+            fdesc=None,
             all_fields=True,
             dest=self,
             fill_dest_blanks=fill_blanks,
@@ -132,7 +132,7 @@ class JSONObject:
             config_owner=config,
             keypath_parent='',
             parent=self,
-            field_description=None,
+            fdesc=None,
             all_fields=all_fields,
             lookup_map=LookupMap())
         InstanceOfValidator(self.__class__).validate(context)
@@ -210,11 +210,11 @@ class JSONObject:
 
     def __unlink_field__(self, field: Field, value: Any) -> None:
         items: list[JSONObject] = []
-        if field.field_description.field_type == FieldType.INSTANCE:
+        if field.fdesc.field_type == FieldType.INSTANCE:
             if not isinstance(value, JSONObject):
                 return
             items = [value]
-        if field.field_description.field_type == FieldType.LIST:
+        if field.fdesc.field_type == FieldType.LIST:
             if not isinstance(value, list):
                 return
             items = list(value)
@@ -222,10 +222,10 @@ class JSONObject:
             ofield = other_field(self, item, field)
             if ofield is None:
                 return
-            if ofield.field_description.field_type == FieldType.INSTANCE:
+            if ofield.fdesc.field_type == FieldType.INSTANCE:
                 if getattr(item, ofield.field_name) is self:
                     item.__setattr_direct__(ofield.field_name, None)
-            elif ofield.field_description.field_type == FieldType.LIST:
+            elif ofield.fdesc.field_type == FieldType.LIST:
                 that_list = getattr(item, ofield.field_name)
                 if isinstance(that_list, list):
                     if self in that_list:
@@ -233,11 +233,11 @@ class JSONObject:
 
     def __link_field__(self, field: Field, value: Any) -> None:
         items: list[JSONObject] = []
-        if field.field_description.field_type == FieldType.INSTANCE:
+        if field.fdesc.field_type == FieldType.INSTANCE:
             if not isinstance(value, JSONObject):
                 return
             items = [value]
-        if field.field_description.field_type == FieldType.LIST:
+        if field.fdesc.field_type == FieldType.LIST:
             if not isinstance(value, list):
                 return
             items = value
@@ -245,10 +245,10 @@ class JSONObject:
             ofield = other_field(self, item, field)
             if ofield is None:
                 return
-            if ofield.field_description.field_type == FieldType.INSTANCE:
+            if ofield.fdesc.field_type == FieldType.INSTANCE:
                 if getattr(item, ofield.field_name) != self:
                     setattr(item, ofield.field_name, self)
-            elif ofield.field_description.field_type == FieldType.LIST:
+            elif ofield.fdesc.field_type == FieldType.LIST:
                 if not isinstance(getattr(item, ofield.field_name), list):
                     setattr(item, ofield.field_name, [self])
                 else:

@@ -24,7 +24,7 @@ class ValidatingContext(NamedTuple):
     config_owner: Config
     keypath_parent: Union[str, int]  # key relative to parent
     parent: Any  # the direct parent of this field
-    field_description: Optional[FieldDescription] = None
+    fdesc: Optional[FieldDescription] = None
     all_fields: Optional[bool] = None
     lookup_map: LookupMap = LookupMap()  # Override this, this is a placeholder
 
@@ -47,9 +47,9 @@ class ValidatingContext(NamedTuple):
                             if 'keypath_parent' in keys
                             else self.keypath_parent),
             parent=kwargs['parent'] if 'parent' in keys else self.parent,
-            field_description=(kwargs['field_description']
-                               if 'field_description' in keys
-                               else self.field_description),
+            fdesc=(kwargs['fdesc']
+                               if 'fdesc' in keys
+                               else self.fdesc),
             all_fields=(kwargs['all_fields']
                         if 'all_fields' in keys else self.all_fields),
             lookup_map=(kwargs['lookup_map']
@@ -67,7 +67,7 @@ class ValidatingContext(NamedTuple):
             config_owner=self.config_owner,
             keypath_parent=self.keypath_parent,
             parent=self.parent,
-            field_description=self.field_description,
+            fdesc=self.fdesc,
             all_fields=self.all_fields,
             lookup_map=self.lookup_map)
 
@@ -90,7 +90,7 @@ class TransformingContext(NamedTuple):
     config_owner: Config
     keypath_parent: Union[str, int]  # key relative to parent
     parent: Any  # the direct parent of this field
-    field_description: Optional[FieldDescription] = None
+    fdesc: Optional[FieldDescription] = None
     all_fields: Optional[bool] = None
     dest: Optional[JSONObject] = None
     fill_dest_blanks: bool = True
@@ -115,9 +115,9 @@ class TransformingContext(NamedTuple):
                             if 'keypath_parent' in keys
                             else self.keypath_parent),
             parent=kwargs['parent'] if 'parent' in keys else self.parent,
-            field_description=(kwargs['field_description']
-                               if 'field_description' in keys
-                               else self.field_description),
+            fdesc=(kwargs['fdesc']
+                               if 'fdesc' in keys
+                               else self.fdesc),
             all_fields=(kwargs['all_fields']
                         if 'all_fields' in keys else self.all_fields),
             lookup_map=(kwargs['lookup_map']
@@ -135,7 +135,7 @@ class TransformingContext(NamedTuple):
             config_owner=self.config_owner,
             keypath_parent=self.keypath_parent,
             parent=self.parent,
-            field_description=self.field_description,
+            fdesc=self.fdesc,
             all_fields=self.all_fields,
             lookup_map=self.lookup_map)
 

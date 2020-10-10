@@ -10,15 +10,15 @@ from ..config import Config
 class RequiredValidator(Validator):
     """Mark a field as required."""
 
-    def define(self, field_description: FieldDescription) -> None:
-        field_description.required = True
+    def define(self, fdesc: FieldDescription) -> None:
+        fdesc.required = True
 
     def validate(self, context: ValidatingContext) -> None:
         storage = FieldStorage.EMBEDDED
         list_field = False
-        if context.field_description is not None:
-            storage = context.field_description.field_storage
-            list_field = context.field_description.field_type == FieldType.LIST
+        if context.fdesc is not None:
+            storage = context.fdesc.field_storage
+            list_field = context.fdesc.field_type == FieldType.LIST
         if storage == FieldStorage.FOREIGN_KEY:  # we don't check foreign key
             return
         if storage == FieldStorage.LOCAL_KEY:

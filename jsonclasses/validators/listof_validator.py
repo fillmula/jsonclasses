@@ -19,16 +19,16 @@ class ListOfValidator(TypeValidator):
         self.types = types
         self.exact_type = False
 
-    def define(self, field_description: FieldDescription) -> None:
-        super().define(field_description)
-        field_description.list_item_types = self.types
+    def define(self, fdesc: FieldDescription) -> None:
+        super().define(fdesc)
+        fdesc.list_item_types = self.types
 
     def validate(self, context: ValidatingContext) -> None:
         if context.value is None:
             return
         super().validate(context)
         types = resolve_types(self.types, context.config_owner.linked_class)
-        if types.field_description.item_nullability == Nullability.UNDEFINED:
+        if types.fdesc.item_nullability == Nullability.UNDEFINED:
             types = types.required
         all_fields = context.all_fields
         if all_fields is None:
@@ -42,7 +42,7 @@ class ListOfValidator(TypeValidator):
                     keypath_owner=concat_keypath(context.keypath_owner, i),
                     keypath_parent=i,
                     parent=context.value,
-                    field_description=types.field_description))
+                    fdesc=types.fdesc))
             except ValidationException as exception:
                 if all_fields:
                     keypath_messages.update(exception.keypath_messages)
@@ -53,7 +53,7 @@ class ListOfValidator(TypeValidator):
 
     def transform(self, context: TransformingContext) -> Any:
         value = context.value
-        fd = context.field_description
+        fd = context.fdesc
         assert fd is not None
         if fd.collection_nullability == Nullability.NONNULL:
             if value is None:
@@ -72,7 +72,7 @@ class ListOfValidator(TypeValidator):
                     keypath_owner=concat_keypath(context.keypath_owner, i),
                     keypath_parent=i,
                     parent=value,
-                    field_description=types.field_description))
+                    fdesc=types.fdesc))
                 retval.append(transformed)
             return retval
         else:
