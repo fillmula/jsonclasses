@@ -7,7 +7,7 @@ from jsonclasses.exceptions import ValidationException
 
 @jsonclass(class_graph='test_instanceof_22')
 class User(JSONObject):
-    id: int
+    id: int = types.int.primary
     name: str
     posts: List[Post] = types.listof('Post').linkedby('user').required
     comments: List[Comment] = types.listof('Comment').linkedby('commenter').required
@@ -15,7 +15,7 @@ class User(JSONObject):
 
 @jsonclass(class_graph='test_instanceof_22')
 class Post(JSONObject):
-    id: int
+    id: int = types.int.primary
     name: str
     user: User = types.linkto.instanceof('User').required
     comments: List[Comment] = types.listof('Comment').linkedby('post').required
@@ -23,7 +23,7 @@ class Post(JSONObject):
 
 @jsonclass(class_graph='test_instanceof_22')
 class Comment(JSONObject):
-    id: int
+    id: int = types.int.primary
     content: str
     post: Post = types.linkto.instanceof('Post').required
     parent: Optional[Comment] = types.linkto.instanceof('Comment')
@@ -379,13 +379,13 @@ class TestInstanceOfValidator(unittest.TestCase):
 
         @jsonclass(class_graph='test_instanceof_15')
         class Staff(JSONObject):
-            id: int
+            id: int = types.int.primary
             position: str
             user: User = types.linkto.instanceof('User').required
 
         @jsonclass(class_graph='test_instanceof_15')
         class User(JSONObject):
-            id: int
+            id: int = types.int.primary
             name: str
             staff: Staff = types.instanceof('Staff').linkedby('user').required
 

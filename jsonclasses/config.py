@@ -26,10 +26,6 @@ STRICT_INPUT = True
 raises if invalid key value pairs are received.
 """
 
-PRIMARY_KEY = 'id'
-"""Instruct on how to find the primary key to this JSON Class objects.
-"""
-
 LocalKey = Callable[[str, FieldType], str]
 
 
@@ -39,11 +35,6 @@ def LOCAL_KEY(field_name: str, field_type: FieldType) -> str:
         return field_name + '_ids'
     return field_name + '_id'
 
-
-TIMESTAMPS = ['created_at', 'updated_at', 'deleted_at']
-"""The field names for timestamp fields. Specify None at specified position to
-tell JSON Class that this class doesn't have that timestamp field.
-"""
 
 VALIDATE_ALL_FIELDS = True
 """When validating, if no validate rule specified, default to all fields.
@@ -63,7 +54,6 @@ class Config:
     camelize_json_keys: Optional[bool] = None
     camelize_db_keys: Optional[bool] = None
     strict_input: Optional[bool] = None
-    primary_key: Optional[str] = None
     local_key: Optional[LocalKey] = None
     timestamps: Optional[list[str]] = None
     validate_all_fields: Optional[bool] = None
@@ -78,12 +68,8 @@ class Config:
             self.camelize_db_keys = CAMELIZE_DB_KEYS
         if self.strict_input is None:
             self.strict_input = STRICT_INPUT
-        if self.primary_key is None:
-            self.primary_key = PRIMARY_KEY
         if self.local_key is None:
             self.local_key = LOCAL_KEY
-        if self.timestamps is None:
-            self.timestamps = TIMESTAMPS
         if self.validate_all_fields is None:
             self.validate_all_fields = VALIDATE_ALL_FIELDS
         if self.soft_delete is None:

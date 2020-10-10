@@ -1,5 +1,6 @@
 """This modules contains the JSON Class types marker."""
 from __future__ import annotations
+from jsonclasses.validators.primary_validator import PrimaryValidator
 from typing import Callable, Any, Optional
 from copy import deepcopy
 from .fields import FieldDescription
@@ -55,6 +56,12 @@ class Types:
         will never pass validation.
         """
         return Types(self, InvalidValidator())
+
+    @property
+    def primary(self) -> Types:
+        """Field marked with primary become the object's primary key.
+        """
+        return Types(self, PrimaryValidator())
 
     @property
     def readonly(self) -> Types:

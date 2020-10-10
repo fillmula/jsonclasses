@@ -86,6 +86,10 @@ class FieldDescription():  # pylint: disable=too-many-instance-attributes
     field_type: Optional[FieldType] = None
     field_storage: FieldStorage = FieldStorage.EMBEDDED
 
+    # primary key
+    primary: bool = False
+
+    # database modifiers
     index: bool = False
     unique: bool = False
     required: bool = False
@@ -219,3 +223,8 @@ def is_reference_field(field: Field) -> bool:
     if field.fdesc.field_storage == FieldStorage.FOREIGN_KEY:
         return True
     return False
+
+
+def pk_field(cori: Union[JSONObject, type[JSONObject]]) -> Optional[Field]:
+    tfields = fields(cori)
+    return next((f for f in tfields if f.fdesc.primary is True), None)

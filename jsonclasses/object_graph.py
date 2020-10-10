@@ -1,5 +1,6 @@
 """This module defineds the JSON Class object mapping graph."""
 from __future__ import annotations
+from .fields import pk_field
 from typing import TypeVar, cast, TYPE_CHECKING
 if TYPE_CHECKING:
     from .json_object import JSONObject
@@ -13,8 +14,8 @@ class ClassTable:
         self._memory_id_table = {}
 
     def put(self, object: T) -> None:
-        pk = object.__class__.config.primary_key
         try:
+            pk = pk_field(object).field_name
             pk_value = getattr(object, cast(str, pk))
         except AttributeError:
             pk_value = None
@@ -25,8 +26,8 @@ class ClassTable:
             self._primary_key_table[pk_value] = object
 
     def has(self, object: T) -> bool:
-        pk = object.__class__.config.primary_key
         try:
+            pk = pk_field(object).field_name
             pk_value = getattr(object, cast(str, pk))
         except AttributeError:
             pk_value = None

@@ -47,9 +47,7 @@ class ValidatingContext(NamedTuple):
                             if 'keypath_parent' in keys
                             else self.keypath_parent),
             parent=kwargs['parent'] if 'parent' in keys else self.parent,
-            fdesc=(kwargs['fdesc']
-                               if 'fdesc' in keys
-                               else self.fdesc),
+            fdesc=kwargs['fdesc'] if 'fdesc' in keys else self.fdesc,
             all_fields=(kwargs['all_fields']
                         if 'all_fields' in keys else self.all_fields),
             lookup_map=(kwargs['lookup_map']
@@ -115,9 +113,7 @@ class TransformingContext(NamedTuple):
                             if 'keypath_parent' in keys
                             else self.keypath_parent),
             parent=kwargs['parent'] if 'parent' in keys else self.parent,
-            fdesc=(kwargs['fdesc']
-                               if 'fdesc' in keys
-                               else self.fdesc),
+            fdesc=kwargs['fdesc'] if 'fdesc' in keys else self.fdesc,
             all_fields=(kwargs['all_fields']
                         if 'all_fields' in keys else self.all_fields),
             lookup_map=(kwargs['lookup_map']

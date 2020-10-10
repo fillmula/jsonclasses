@@ -158,13 +158,13 @@ class TestORMObject(unittest.TestCase):
 
         @jsonclass(class_graph='test_orm_8')
         class User(ORMObject):
-            id: int
+            id: int = types.int.primary
             name: str
             product: Product = types.instanceof('Product').linkedby('user')
 
         @jsonclass(class_graph='test_orm_8')
         class Product(ORMObject):
-            id: int
+            id: int = types.int.primary
             name: str
             stock: int
             user: User = types.linkto.instanceof('User').required

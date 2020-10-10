@@ -5,35 +5,35 @@ from jsonclasses import jsonclass, JSONObject, types
 
 @jsonclass(class_graph='test_json_object_assign')
 class Staff(JSONObject):
-    id: int
+    id: int = types.int.primary
     position: str
     user: User = types.linkto.instanceof('User').required
 
 
 @jsonclass(class_graph='test_json_object_assign')
 class User(JSONObject):
-    id: int
+    id: int = types.int.primary
     name: str
     staff: Staff = types.instanceof('Staff').linkedby('user').required
 
 
 @jsonclass(class_graph='test_json_object_assign')
 class Post(JSONObject):
-    id: int
+    id: int = types.int.primary
     name: str
     author: Author = types.linkto.instanceof('Author').required
 
 
 @jsonclass(class_graph='test_json_object_assign')
 class Author(JSONObject):
-    id: int
+    id: int = types.int.primary
     name: str
     posts: list[Post] = types.listof('Post').linkedby('author').required
 
 
 @jsonclass(class_graph='test_json_object_assign')
 class Customer(JSONObject):
-    id: int
+    id: int = types.int.primary
     name: str
     products: list[Product] = (types.listof('Product').nonnull
                                .linkedthru('customers').required)
@@ -41,7 +41,7 @@ class Customer(JSONObject):
 
 @jsonclass(class_graph='test_json_object_assign')
 class Product(JSONObject):
-    id: int
+    id: int = types.int.primary
     name: str
     customers: list[Customer] = (types.listof('Customer').nonnull
                                  .linkedthru('products').required)

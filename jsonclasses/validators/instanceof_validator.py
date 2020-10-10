@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Sequence, Type, Union, cast, TYPE_CHECKING
 from ..fields import (Field, FieldDescription, FieldStorage, FieldType,
                       Nullability, WriteRule, ReadRule, Strictness, fields,
-                      is_reference_field)
+                      is_reference_field, pk_field)
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..keypath import concat_keypath
@@ -41,9 +41,9 @@ class InstanceOfValidator(Validator):
                                        f"should be instance of "
                                        f"'{cls.__name__}'.")
             }, context.root)
-        primary_key = cast(str, cls.config.primary_key)
         try:
-            id = cast(Union[str, int], getattr(context.value, primary_key))
+            pk = pk_field(cls).field_name
+            id = cast(Union[str, int], getattr(context.value, pk))
             if id is not None:
                 if context.lookup_map.fetch(cls.__name__, id):
                     return
@@ -142,21 +142,25 @@ class InstanceOfValidator(Validator):
         # figure out types, cls and dest
         types = resolve_types(self.raw_type, context.config_owner.linked_class)
         cls = cast(Type[JSONObject], types.fdesc.instance_types)
-        primary_key = cls.config.primary_key
-        id = cast(Union[str, int], context.value.get(primary_key))
+        this_pk_field = pk_field(cls)
+        if this_pk_field:
+            pk = this_pk_field.field_name
+            pk_value = cast(Union[str, int], context.value.get(pk))
+        else:
+            pk_value = None
         soft_apply_mode = False
         if context.dest is not None:
             dest = context.dest
-            if id is not None:
-                context.lookup_map.put(cls.__name__, id, dest)
-        elif id is not None:
-            exist_item = context.lookup_map.fetch(cls.__name__, id)
+            if pk_value is not None:
+                context.lookup_map.put(cls.__name__, pk_value, dest)
+        elif pk_value is not None:
+            exist_item = context.lookup_map.fetch(cls.__name__, pk_value)
             if exist_item is not None:
                 dest = exist_item
                 soft_apply_mode = True
             else:
                 dest = cls()
-                context.lookup_map.put(cls.__name__, id, dest)
+                context.lookup_map.put(cls.__name__, pk_value, dest)
         else:
             dest = cls()
         # strictness check

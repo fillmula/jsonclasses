@@ -21,9 +21,7 @@ def jsonclass(
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
-    primary_key: Optional[str] = None,
     local_key: Optional[LocalKey] = None,
-    timestamps: Optional[list[str]] = None,
     validate_all_fields: Optional[bool] = None,
     soft_delete: Optional[bool] = None
 ) -> Callable[[type[T]], type[T]]: ...
@@ -36,9 +34,7 @@ def jsonclass(
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
-    primary_key: Optional[str] = None,
     local_key: Optional[LocalKey] = None,
-    timestamps: Optional[list[str]] = None,
     validate_all_fields: Optional[bool] = None,
     soft_delete: Optional[bool] = None
 ) -> type[T]: ...
@@ -50,9 +46,7 @@ def jsonclass(
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
-    primary_key: Optional[str] = None,
     local_key: Optional[LocalKey] = None,
-    timestamps: Optional[list[str]] = None,
     validate_all_fields: Optional[bool] = None,
     soft_delete: Optional[bool] = None
 ) -> Union[Callable[[type[T]], type[T]], type[T]]:
@@ -75,9 +69,7 @@ def jsonclass(
             camelize_json_keys=camelize_json_keys,
             camelize_db_keys=camelize_db_keys,
             strict_input=strict_input,
-            primary_key=primary_key,
             local_key=local_key,
-            timestamps=timestamps,
             validate_all_fields=validate_all_fields,
             soft_delete=soft_delete)
         config.install_on_class(cls)
@@ -91,9 +83,7 @@ def jsonclass(
                 camelize_json_keys=camelize_json_keys,
                 camelize_db_keys=camelize_db_keys,
                 strict_input=strict_input,
-                primary_key=primary_key,
                 local_key=local_key,
-                timestamps=timestamps,
                 validate_all_fields=validate_all_fields,
                 soft_delete=soft_delete)
         return parametered_jsonclass

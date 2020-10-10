@@ -3,6 +3,8 @@
 from .validator import Validator
 from .invalid_validator import InvalidValidator
 
+from .primary_validator import PrimaryValidator
+
 # access markers
 from .writeonly_validator import WriteonlyValidator
 from .writeonce_validator import WriteonceValidator
