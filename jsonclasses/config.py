@@ -59,7 +59,7 @@ class Config:
     """The Config class contains user's settings for a JSON Class.
     """
 
-    graph: str = 'default'
+    class_graph: str = 'default'
     camelize_json_keys: Optional[bool] = None
     camelize_db_keys: Optional[bool] = None
     strict_input: Optional[bool] = None

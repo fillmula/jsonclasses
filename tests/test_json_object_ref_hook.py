@@ -3,35 +3,35 @@ from unittest import TestCase
 from jsonclasses import jsonclass, JSONObject, types
 
 
-@jsonclass(graph='test_json_object_assign')
+@jsonclass(class_graph='test_json_object_assign')
 class Staff(JSONObject):
     id: int
     position: str
     user: User = types.linkto.instanceof('User').required
 
 
-@jsonclass(graph='test_json_object_assign')
+@jsonclass(class_graph='test_json_object_assign')
 class User(JSONObject):
     id: int
     name: str
     staff: Staff = types.instanceof('Staff').linkedby('user').required
 
 
-@jsonclass(graph='test_json_object_assign')
+@jsonclass(class_graph='test_json_object_assign')
 class Post(JSONObject):
     id: int
     name: str
     author: Author = types.linkto.instanceof('Author').required
 
 
-@jsonclass(graph='test_json_object_assign')
+@jsonclass(class_graph='test_json_object_assign')
 class Author(JSONObject):
     id: int
     name: str
     posts: list[Post] = types.listof('Post').linkedby('author').required
 
 
-@jsonclass(graph='test_json_object_assign')
+@jsonclass(class_graph='test_json_object_assign')
 class Customer(JSONObject):
     id: int
     name: str
@@ -39,7 +39,7 @@ class Customer(JSONObject):
                                .linkedthru('customers').required)
 
 
-@jsonclass(graph='test_json_object_assign')
+@jsonclass(class_graph='test_json_object_assign')
 class Product(JSONObject):
     id: int
     name: str

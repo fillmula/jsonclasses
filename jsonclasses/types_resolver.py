@@ -59,7 +59,7 @@ def str_to_types(argtype: str,
         dict_type = types.dictof(str_to_types(item_type, graph_sibling))
         return dict_type if optional else dict_type.required
     else:
-        graph_name = cast(type[JSONObject], graph_sibling).config.graph
+        graph_name = cast(type[JSONObject], graph_sibling).config.class_graph
         cls = class_graph_map.graph(graph_name).get(argtype)
         instance_type = types.instanceof(cls)
         return instance_type if optional else instance_type.required

@@ -5,7 +5,7 @@ from jsonclasses import jsonclass, JSONObject
 class TestJSONObjectUpdate(unittest.TestCase):
 
     def test_update_without_arguments_wont_change_anything(self):
-        @jsonclass(graph='test_update_1')
+        @jsonclass(class_graph='test_update_1')
         class Contact(JSONObject):
             name: str
             address: str
@@ -14,7 +14,7 @@ class TestJSONObjectUpdate(unittest.TestCase):
         self.assertEqual(contact.__dict__, {'name': 'John', 'address': 'Balk'})
 
     def test_update_updates_values_at_given_keys(self):
-        @jsonclass(graph='test_update_2')
+        @jsonclass(class_graph='test_update_2')
         class Contact(JSONObject):
             name: str
             address: str
@@ -23,7 +23,7 @@ class TestJSONObjectUpdate(unittest.TestCase):
         self.assertEqual(contact.__dict__, {'name': 'Peter', 'address': 'Light'})
 
     def test_update_raises_if_given_key_is_not_allowed(self):
-        @jsonclass(graph='test_update_3')
+        @jsonclass(class_graph='test_update_3')
         class Contact(JSONObject):
             name: str
             address: str
@@ -32,7 +32,7 @@ class TestJSONObjectUpdate(unittest.TestCase):
             contact.update(**{'nama': 'Peter', 'address': 'Light'})
 
     def test_update_raises_if_given_keys_are_not_allowed(self):
-        @jsonclass(graph='test_update_4')
+        @jsonclass(class_graph='test_update_4')
         class Contact(JSONObject):
             name: str
             address: str

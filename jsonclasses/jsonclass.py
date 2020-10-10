@@ -17,7 +17,7 @@ def jsonclass(cls: type[T]) -> type[T]: ...
 @overload
 def jsonclass(
     cls: None,
-    graph: Optional[str] = 'default',
+    class_graph: Optional[str] = 'default',
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
@@ -32,7 +32,7 @@ def jsonclass(
 @overload
 def jsonclass(
     cls: type[T],
-    graph: Optional[str] = 'default',
+    class_graph: Optional[str] = 'default',
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
@@ -46,7 +46,7 @@ def jsonclass(
 
 def jsonclass(
     cls: Optional[type[T]] = None,
-    graph: Optional[str] = 'default',
+    class_graph: Optional[str] = 'default',
     camelize_json_keys: Optional[bool] = None,
     camelize_db_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
@@ -71,7 +71,7 @@ def jsonclass(
             raise ValueError('@jsonclass should be used to decorate subclasses'
                              ' of JSONObject.')
         config = Config(
-            graph=cast(str, graph),
+            class_graph=cast(str, class_graph),
             camelize_json_keys=camelize_json_keys,
             camelize_db_keys=camelize_db_keys,
             strict_input=strict_input,
@@ -82,12 +82,12 @@ def jsonclass(
             soft_delete=soft_delete)
         config.install_on_class(cls)
         dataclass_cls = dataclass(init=False)(cls)
-        return class_graph_map.graph(cast(str, graph)).add(dataclass_cls)
+        return class_graph_map.graph(cast(str, class_graph)).add(dataclass_cls)
     else:
         def parametered_jsonclass(cls):
             return jsonclass(
                 cls,
-                graph=graph,
+                class_graph=class_graph,
                 camelize_json_keys=camelize_json_keys,
                 camelize_db_keys=camelize_db_keys,
                 strict_input=strict_input,

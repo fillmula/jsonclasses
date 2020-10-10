@@ -3,14 +3,14 @@ from unittest import TestCase
 from jsonclasses import jsonclass, JSONObject, types, ValidationException
 
 
-@jsonclass(graph='test_present_1')
+@jsonclass(class_graph='test_present_1')
 class Group(JSONObject):
     id: int
     name: str
     template: Template = types.instanceof('Template').linkedby('group').present
 
 
-@jsonclass(graph='test_present_1')
+@jsonclass(class_graph='test_present_1')
 class Template(JSONObject):
     id: int
     name: str

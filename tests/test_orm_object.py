@@ -35,7 +35,7 @@ class TestORMObject(unittest.TestCase):
         self.assertEqual(object.modified_fields, {'id'})
 
     def test_orm_object_triggers_is_modified_on_field_change(self):
-        @jsonclass(graph='test_orm_1')
+        @jsonclass(class_graph='test_orm_1')
         class Product(ORMObject):
             name: str
             stock: int
@@ -53,7 +53,7 @@ class TestORMObject(unittest.TestCase):
         self.assertEqual(product.modified_fields, {'name', 'stock'})
 
     def test_orm_object_triggers_is_modified_on_set_change(self):
-        @jsonclass(graph='test_orm_2')
+        @jsonclass(class_graph='test_orm_2')
         class Product(ORMObject):
             name: str
             stock: int
@@ -71,7 +71,7 @@ class TestORMObject(unittest.TestCase):
         self.assertEqual(product.modified_fields, {'name', 'stock'})
 
     def test_orm_object_triggers_is_modified_on_update_change(self):
-        @jsonclass(graph='test_orm_3')
+        @jsonclass(class_graph='test_orm_3')
         class Product(ORMObject):
             name: str
             stock: int
@@ -89,7 +89,7 @@ class TestORMObject(unittest.TestCase):
         self.assertEqual(product.modified_fields, {'name', 'stock'})
 
     def test_orm_object_triggers_is_modified_on_list_update(self):
-        @jsonclass(graph='test_orm_4')
+        @jsonclass(class_graph='test_orm_4')
         class Product(ORMObject):
             name: str
             variants: List[str]
@@ -101,7 +101,7 @@ class TestORMObject(unittest.TestCase):
         self.assertEqual(product.modified_fields, {'variants'})
 
     def test_orm_object_triggers_is_modified_on_dict_update(self):
-        @jsonclass(graph='test_orm_4_2')
+        @jsonclass(class_graph='test_orm_4_2')
         class Product(ORMObject):
             name: str
             variants: Dict[str, str]
@@ -113,7 +113,7 @@ class TestORMObject(unittest.TestCase):
         self.assertEqual(product.modified_fields, {'variants'})
 
     def test_orm_object_doesnt_track_modified_for_new_objects(self):
-        @jsonclass(graph='test_orm_5')
+        @jsonclass(class_graph='test_orm_5')
         class Product(ORMObject):
             name: str
             stock: int
@@ -129,7 +129,7 @@ class TestORMObject(unittest.TestCase):
         self.assertEqual(product.modified_fields, set())
 
     def test_existing_orm_object_only_validate_modified_fields(self):
-        @jsonclass(graph='test_orm_6')
+        @jsonclass(class_graph='test_orm_6')
         class Product(ORMObject):
             name: str
             stock: int
@@ -141,7 +141,7 @@ class TestORMObject(unittest.TestCase):
         product.validate()
 
     def test_new_orm_object_validate_all_fields(self):
-        @jsonclass(graph='test_orm_7')
+        @jsonclass(class_graph='test_orm_7')
         class Product(ORMObject):
             name: str
             stock: int
@@ -156,13 +156,13 @@ class TestORMObject(unittest.TestCase):
 
     def test_orm_object_reference_fields_on_root_are_validated_anyway(self):
 
-        @jsonclass(graph='test_orm_8')
+        @jsonclass(class_graph='test_orm_8')
         class User(ORMObject):
             id: int
             name: str
             product: Product = types.instanceof('Product').linkedby('user')
 
-        @jsonclass(graph='test_orm_8')
+        @jsonclass(class_graph='test_orm_8')
         class Product(ORMObject):
             id: int
             name: str

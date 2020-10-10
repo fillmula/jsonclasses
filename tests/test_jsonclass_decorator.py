@@ -14,7 +14,7 @@ class TestJsonClassDecorator(unittest.TestCase):
         self.assertTrue(issubclass(MyJSONClassDecoratorTestObject, JSONObject))
 
     def test_json_class_decorator_works_with_graph(self):
-        @jsonclass(graph='my-secret-graph-087')
+        @jsonclass(class_graph='my-secret-graph-087')
         class MyJSONClassDecoratorTestObjectInMyGraph(JSONObject):
             str_field: str
             int_field: str
@@ -28,7 +28,7 @@ class TestJsonClassDecorator(unittest.TestCase):
 
     def test_json_class_decorator_with_args_raises_value_error_if_decorated_is_not_class(self):
         with self.assertRaisesRegex(ValueError, '@jsonclass should be used to decorate a class\\.'):
-            @jsonclass(graph='my-secret-graph-087')
+            @jsonclass(class_graph='my-secret-graph-087')
             def _my_method():
                 pass
 
@@ -40,7 +40,7 @@ class TestJsonClassDecorator(unittest.TestCase):
 
     def test_json_class_decorator_with_args_raises_value_error_if_decorated_is_not_subclass_of_json_object(self):
         with self.assertRaisesRegex(ValueError, '@jsonclass should be used to decorate subclasses of JSONObject\\.'):
-            @jsonclass(graph='my-secret-graph-087')
+            @jsonclass(class_graph='my-secret-graph-087')
             class _MyOwnClass():
                 pass
 
@@ -53,7 +53,7 @@ class TestJsonClassDecorator(unittest.TestCase):
         self.assertTrue(MyJSONClassDecoratorTestObjectInDefaultGraph is class_from_map)
 
     def test_json_class_decorator_with_graph_registers_class_in_designated_graph(self):
-        @jsonclass(graph='my-secret-graph-087')
+        @jsonclass(class_graph='my-secret-graph-087')
         class MyJSONClassDecoratorTestObjectInDefaultGraph(JSONObject):
             str_field: str
             int_field: str
@@ -61,45 +61,45 @@ class TestJsonClassDecorator(unittest.TestCase):
         self.assertTrue(MyJSONClassDecoratorTestObjectInDefaultGraph is class_from_map)
 
     def test_json_class_decorator_installs_config_on_class(self):
-        @jsonclass(graph='my-secret-graph-087')
+        @jsonclass(class_graph='my-secret-graph-087')
         class MyClassThatHasConfig(JSONObject):
             str_field: str
             int_field: str
         config = MyClassThatHasConfig.config
         self.assertTrue(isinstance(config, Config))
         del config.linked_class
-        self.assertEqual(config, Config(graph='my-secret-graph-087', camelize_json_keys=True, camelize_db_keys=True))
+        self.assertEqual(config, Config(class_graph='my-secret-graph-087', camelize_json_keys=True, camelize_db_keys=True))
 
     def test_json_class_decorator_pass_settings_camelize_json_to_class(self):
-        @jsonclass(graph='my-secret-graph-087', camelize_json_keys=False)
+        @jsonclass(class_graph='my-secret-graph-087', camelize_json_keys=False)
         class MyClassThatHasConfigWithJSONKey(JSONObject):
             str_field: str
             int_field: str
         config = MyClassThatHasConfigWithJSONKey.config
         self.assertTrue(isinstance(config, Config))
         del config.linked_class
-        self.assertEqual(config, Config(graph='my-secret-graph-087', camelize_json_keys=False, camelize_db_keys=True))
+        self.assertEqual(config, Config(class_graph='my-secret-graph-087', camelize_json_keys=False, camelize_db_keys=True))
 
     def test_json_class_decorator_pass_settings_camelize_db_to_class(self):
-        @jsonclass(graph='my-secret-graph-087', camelize_db_keys=False)
+        @jsonclass(class_graph='my-secret-graph-087', camelize_db_keys=False)
         class MyClassThatHasConfigWithDBKey(JSONObject):
             str_field: str
             int_field: str
         config = MyClassThatHasConfigWithDBKey.config
         self.assertTrue(isinstance(config, Config))
         del config.linked_class
-        self.assertEqual(config, Config(graph='my-secret-graph-087', camelize_json_keys=True, camelize_db_keys=False))
+        self.assertEqual(config, Config(class_graph='my-secret-graph-087', camelize_json_keys=True, camelize_db_keys=False))
 
     def test_json_class_decorator_throws_if_defined_duplicate_name_class_on_same_graph(self):
         with self.assertRaisesRegex(JSONClassRedefinitionError, 'Cannot define new JSON Class with same name in same graph'):
-            @jsonclass(graph='my-secret-graph-087', camelize_json_keys=False)
+            @jsonclass(class_graph='my-secret-graph-087', camelize_json_keys=False)
             class MyClassThatHasConfigWithJSONKey(JSONObject):
                 str_field: str
                 int_field: str
             MyClassThatHasConfigWithJSONKey()
 
     def test_json_class_decorator_get_config_linked_with_class(self):
-        @jsonclass(graph='my-secret-graph-087', camelize_db_keys=False)
+        @jsonclass(class_graph='my-secret-graph-087', camelize_db_keys=False)
         class MyClassThatConfigLinks(JSONObject):
             str_field: str
             int_field: str

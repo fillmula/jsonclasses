@@ -6,7 +6,7 @@ from json import dumps
 class TestJSONObjectInitialize(TestCase):
 
     def test_json_encoder_encodes_str(self):
-        @jsonclass(graph='test_json_encoder_1')
+        @jsonclass(class_graph='test_json_encoder_1')
         class Contact(JSONObject):
             name: str
             address: str
@@ -15,7 +15,7 @@ class TestJSONObjectInitialize(TestCase):
         self.assertEqual(json_str, '{"name": "John", "address": "Stanley Road"}')
 
     def test_json_encoder_encodes_list(self):
-        @jsonclass(graph='test_json_encoder_2')
+        @jsonclass(class_graph='test_json_encoder_2')
         class Contact(JSONObject):
             name: str
             address: str

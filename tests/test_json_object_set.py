@@ -6,7 +6,7 @@ from datetime import datetime, date
 class TestJSONObjectSet(TestCase):
 
     def test_set_without_arguments_wont_change_anything(self):
-        @jsonclass(graph='test_set_1')
+        @jsonclass(class_graph='test_set_1')
         class Contact(JSONObject):
             name: str
             address: str
@@ -15,7 +15,7 @@ class TestJSONObjectSet(TestCase):
         self.assertEqual(contact.__dict__, {'name': 'John', 'address': 'Balk'})
 
     def test_set_with_keyed_arguments_updates_value(self):
-        @jsonclass(graph='test_set_2')
+        @jsonclass(class_graph='test_set_2')
         class BusinessCard(JSONObject):
             name: str
             phone_no: str
@@ -24,7 +24,7 @@ class TestJSONObjectSet(TestCase):
         self.assertEqual(card.__dict__, {'name': 'John', 'phone_no': '22'})
 
     def test_set_with_dict_argument_updates_value(self):
-        @jsonclass(graph='test_set_3')
+        @jsonclass(class_graph='test_set_3')
         class BusinessCard(JSONObject):
             name: str
             phone_no: str
@@ -33,7 +33,7 @@ class TestJSONObjectSet(TestCase):
         self.assertEqual(card.__dict__, {'name': 'John', 'phone_no': '234'})
 
     def test_set_is_chainable(self):
-        @jsonclass(graph='test_set_4')
+        @jsonclass(class_graph='test_set_4')
         class Rainbow(JSONObject):
             red: int
             orange: int
@@ -49,7 +49,7 @@ class TestJSONObjectSet(TestCase):
         )
 
     def test_set_handles_date_transform(self):
-        @jsonclass(graph='test_set_5')
+        @jsonclass(class_graph='test_set_5')
         class Semester(JSONObject):
             start: date
             end: date
@@ -64,7 +64,7 @@ class TestJSONObjectSet(TestCase):
         )
 
     def test_set_handles_datetime_transform(self):
-        @jsonclass(graph='test_set_6')
+        @jsonclass(class_graph='test_set_6')
         class Timer(JSONObject):
             expired_at: datetime
         timer = Timer()
@@ -77,7 +77,7 @@ class TestJSONObjectSet(TestCase):
         )
 
     def test_set_ignores_redundant_keys(self):
-        @jsonclass(graph='test_set_7', strict_input=False)
+        @jsonclass(class_graph='test_set_7', strict_input=False)
         class Size(JSONObject):
             width: float
             height: float
@@ -86,7 +86,7 @@ class TestJSONObjectSet(TestCase):
         self.assertEqual(size.__dict__, {'width': 10.5, 'height': 7.5})
 
     def test_set_none_on_fields_from_dict(self):
-        @jsonclass(graph='test_set_8')
+        @jsonclass(class_graph='test_set_8')
         class Size(JSONObject):
             width: float
             height: float
@@ -95,7 +95,7 @@ class TestJSONObjectSet(TestCase):
         self.assertEqual(size.__dict__, {'width': None, 'height': 5.0})
 
     def test_set_none_on_fields_from_keyed_arguments(self):
-        @jsonclass(graph='test_set_9')
+        @jsonclass(class_graph='test_set_9')
         class Size(JSONObject):
             width: float
             height: float
@@ -104,7 +104,7 @@ class TestJSONObjectSet(TestCase):
         self.assertEqual(size.__dict__, {'width': None, 'height': 5.0})
 
     def test_set_auto_convert_camelcase_keys_into_snakecase(self):
-        @jsonclass(graph='test_set_10')
+        @jsonclass(class_graph='test_set_10')
         class Coupon(JSONObject):
             minimum_purchase_value: int
             discount_rate: float
@@ -114,7 +114,7 @@ class TestJSONObjectSet(TestCase):
         self.assertEqual(coupon.discount_rate, 0.5)
 
     def test_set_will_not_modify_date_if_date_is_passed_in(self):
-        @jsonclass(graph='test_set_11')
+        @jsonclass(class_graph='test_set_11')
         class Semester(JSONObject):
             start: date
             end: date
@@ -126,7 +126,7 @@ class TestJSONObjectSet(TestCase):
         self.assertEqual(semester.end, end)
 
     def test_set_will_not_modify_datetime_if_datetime_is_passed_in(self):
-        @jsonclass(graph='test_set_12')
+        @jsonclass(class_graph='test_set_12')
         class Timer(JSONObject):
             expired_at: datetime
         expired_at = datetime.fromisoformat('2020-10-10T05:03:02.999888')

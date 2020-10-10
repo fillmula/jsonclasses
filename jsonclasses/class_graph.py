@@ -20,7 +20,7 @@ class JSONClassRedefinitionError(Exception):
         new_module = getmodule(new_cls)
         assert new_module is not None
         new_file = new_module.__file__
-        graph = exist_cls.config.graph
+        graph = exist_cls.config.class_graph
         message = (f'Existing JSON Class \'{name}\' in graph \'{graph}\' is '
                    f'defined at \'{original_file}\'. Cannot define new JSON '
                    f'Class with same name in same graph \'{graph}\' at '
