@@ -171,10 +171,12 @@ class JSONObject:
             value.owner = self
             value.keypath = name
         if is_reference_field(tfield):  # json class ref field
-            old_value = getattr(self, name)
-            should_link = old_value is not value
-            if should_link:
-                self.__unlink_field__(tfield, old_value)
+            should_link = True
+            if hasattr(self, name):
+                old_value = getattr(self, name)
+                should_link = old_value is not value
+                if should_link:
+                    self.__unlink_field__(tfield, old_value)
             super().__setattr__(name, value)
             if should_link:
                 self.__link_field__(tfield, value)

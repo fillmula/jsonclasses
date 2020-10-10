@@ -23,3 +23,4 @@ from .json_encoder import JSONEncoder
 from .orm_object import ORMObject
 from .keypath import concat_keypath
 from .class_graph import ClassGraph, ClassGraphMap, class_graph_map
+from .typing import Link, linkto, linkedby, linkedthru
