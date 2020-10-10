@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any, Sequence, Type, Union, cast, TYPE_CHECKING
 from ..fields import (Field, FieldDescription, FieldStorage, FieldType,
-                      WriteRule, ReadRule, Strictness, fields,
+                      Nullability, WriteRule, ReadRule, Strictness, fields,
                       is_reference_field)
 from ..exceptions import ValidationException
 from .validator import Validator
@@ -170,9 +170,14 @@ class InstanceOfValidator(Validator):
             self._strictness_check(context, dest)
         # fill values
         dict_keys = list(context.value.keys())
+        nonnull_ref_lists: list[str] = []
         for field in fields(dest):
             if not self._has_field_value(field, dict_keys):
                 if is_reference_field(field):
+                    fdesc = field.field_description
+                    if fdesc.field_type == FieldType.LIST:
+                        if fdesc.collection_nullability == Nullability.NONNULL:
+                            nonnull_ref_lists.append(field.field_name)
                     pass
                 elif context.fill_dest_blanks and not soft_apply_mode:
                     self._fill_default_value(field, dest, context, cls)
@@ -204,6 +209,9 @@ class InstanceOfValidator(Validator):
                 field_description=field.field_description)
             tsfmd = field.field_types.validator.transform(field_context)
             setattr(dest, field.field_name, tsfmd)
+        for cname in nonnull_ref_lists:
+            if getattr(dest, cname) is None:
+                setattr(dest, cname, [])
         return dest
 
     def tojson(self, context: ToJSONContext) -> Any:
