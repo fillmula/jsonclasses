@@ -38,6 +38,32 @@ class TestJSONObjectTypesSynthesis(TestCase):
         self.assertEqual(twos_field_one.field_description.use_join_table,
                          None)
 
+    def test_auto_generates_1_many_local_key_foreign_key(self):
+
+        @jsonclass(class_graph='test_marker_auto_gen')
+        class TestOMKeyOne(JSONObject):
+            name: str
+            master: Link[TestOMKeyMany, linkto]
+
+        @jsonclass(class_graph='test_marker_auto_gen')
+        class TestOMKeyMany(JSONObject):
+            name: str
+            slaves: Link[list[TestOMKeyOne], linkedby('master')]
+
+        master_field = field(TestOMKeyOne, 'master')
+        self.assertEqual(master_field.field_description.field_type,
+                         FieldType.INSTANCE)
+        self.assertEqual(master_field.field_description.field_storage,
+                         FieldStorage.LOCAL_KEY)
+        self.assertEqual(master_field.field_description.foreign_key, None)
+
+        slave_fields = field(TestOMKeyMany, 'slaves')
+        self.assertEqual(slave_fields.field_description.field_type,
+                         FieldType.LIST)
+        self.assertEqual(slave_fields.field_description.field_storage,
+                         FieldStorage.FOREIGN_KEY)
+        self.assertEqual(slave_fields.field_description.foreign_key, 'master')
+
     def test_auto_generates_many_many_foreign_key(self):
 
         @jsonclass(class_graph='test_marker_auto_gen_q')
