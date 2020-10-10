@@ -1,6 +1,6 @@
 """This modules contains the JSON Class types marker."""
 from __future__ import annotations
-from typing import Callable, Any, Optional
+from typing import Callable, Any, Optional, Literal
 from copy import deepcopy
 from .fields import FieldDescription
 from .validators import (UseForValidator, BoolValidator, ChainedValidator,
@@ -69,6 +69,14 @@ class Types:
         actions.
         """
         return Types(self, UseForValidator(usage))
+
+    def timestamp(self,
+                  usage: Literal['created', 'updated', 'deleted']) -> Types:
+        """Field marked with timestamp are special timestamp marks. JSON Class
+        and it's ORM implementations use this information to perform special
+        actions on timestamp fields.
+        """
+        return Types(self, UseForValidator(f'{usage}_at'))
 
     @property
     def readonly(self) -> Types:
