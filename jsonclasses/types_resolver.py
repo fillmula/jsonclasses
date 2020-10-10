@@ -14,18 +14,22 @@ if TYPE_CHECKING:
 
 
 def apply_link_specifier(types: Types, specifier: str) -> Types:
+    from .fields import FieldType
     if match("^linkto", specifier):
         return types.linkto
     elif match("^linkedby\\('", specifier):
         match_data = match("^linkedby\\('(.+)'\\)", specifier)
         assert match_data is not None
         fk = match_data.group(1)
-        return types.linkedby(fk)
+        if types.field_description.field_type == FieldType.LIST:
+            return types.nonnull.linkedby(fk)
+        else:
+            return types.linkedby(fk)
     elif match("^linkedthru\\('", specifier):
         match_data = match("^linkedthru\\('(.+)'\\)", specifier)
         assert match_data is not None
         fk = match_data.group(1)
-        return types.linkedthru(fk)
+        return types.nonnull.linkedthru(fk)
     else:
         raise TypeError(f"wrong format of link specifier '{specifier}'")
 

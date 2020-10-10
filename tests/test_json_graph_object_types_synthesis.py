@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Annotated, cast
+from typing import cast
 from jsonclasses.fields import FieldType, FieldStorage, field
 from unittest import TestCase
 from jsonclasses import (jsonclass, JSONObject, Types,
