@@ -1,7 +1,7 @@
 from unittest import TestCase
 from typing import Annotated, Optional, TypedDict
-from jsonclasses import jsonclass, JSONObject, types
-from jsonclasses import linkedby
+from jsonclasses import jsonclass, JSONObject, types, linkedby
+
 
 class TestNonnullValidator(TestCase):
 
