@@ -4,6 +4,7 @@ from .validator import Validator
 from .invalid_validator import InvalidValidator
 
 from .primary_validator import PrimaryValidator
+from .usefor_validator import UseForValidator
 
 # access markers
 from .writeonly_validator import WriteonlyValidator

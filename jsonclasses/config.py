@@ -55,7 +55,6 @@ class Config:
     camelize_db_keys: Optional[bool] = None
     strict_input: Optional[bool] = None
     local_key: Optional[LocalKey] = None
-    timestamps: Optional[list[str]] = None
     validate_all_fields: Optional[bool] = None
     soft_delete: Optional[bool] = None
 

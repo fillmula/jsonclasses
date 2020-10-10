@@ -1,27 +1,27 @@
 """This modules contains the JSON Class types marker."""
 from __future__ import annotations
-from jsonclasses.validators.primary_validator import PrimaryValidator
 from typing import Callable, Any, Optional
 from copy import deepcopy
 from .fields import FieldDescription
-from .validators import (BoolValidator, ChainedValidator, DateValidator,
-                         DatetimeValidator, DefaultValidator, DictOfValidator,
-                         EagerValidator, EmbeddedValidator, FloatValidator,
-                         IndexValidator, InstanceOfValidator, IntValidator,
-                         InvalidValidator, LengthValidator, LinkedByValidator,
-                         LinkedInValidator, LinkedThruValidator,
-                         LinkToValidator, ListOfValidator, MatchValidator,
-                         MaxValidator, MaxlengthValidator, MinValidator,
-                         MinlengthValidator, NegativeValidator,
+from .validators import (UseForValidator, BoolValidator, ChainedValidator,
+                         DateValidator, DatetimeValidator, DefaultValidator,
+                         DictOfValidator, EagerValidator, EmbeddedValidator,
+                         FloatValidator, IndexValidator, InstanceOfValidator,
+                         IntValidator, InvalidValidator, LengthValidator,
+                         LinkedByValidator, LinkedInValidator,
+                         LinkedThruValidator, LinkToValidator, ListOfValidator,
+                         MatchValidator, MaxValidator, MaxlengthValidator,
+                         MinValidator, MinlengthValidator, NegativeValidator,
                          NonnullValidator, NullableValidator, OneOfValidator,
                          OneOfTypeValidator, PositiveValidator,
-                         PresentValidator, RangeValidator, ReadonlyValidator,
-                         ReadwriteValidator, RefereeValidator,
-                         ReferrerValidator, RequiredValidator, ShapeValidator,
-                         StrValidator, StrictValidator, TransformValidator,
-                         TrimValidator, TruncateValidator, UniqueValidator,
-                         ValidateValidator, Validator, WriteNonnullValidator,
-                         WriteonceValidator, WriteonlyValidator)
+                         PresentValidator, PrimaryValidator, RangeValidator,
+                         ReadonlyValidator, ReadwriteValidator,
+                         RefereeValidator, ReferrerValidator,
+                         RequiredValidator, ShapeValidator, StrValidator,
+                         StrictValidator, TransformValidator, TrimValidator,
+                         TruncateValidator, UniqueValidator, ValidateValidator,
+                         Validator, WriteNonnullValidator, WriteonceValidator,
+                         WriteonlyValidator)
 
 Str = str
 Int = int
@@ -62,6 +62,13 @@ class Types:
         """Field marked with primary become the object's primary key.
         """
         return Types(self, PrimaryValidator())
+
+    def usefor(self, usage: str) -> Types:
+        """Field marked with usefor are queried by JSON Class and it's ORM
+        implementations to get user designated fields to perform special
+        actions.
+        """
+        return Types(self, UseForValidator(usage))
 
     @property
     def readonly(self) -> Types:

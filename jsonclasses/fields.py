@@ -88,6 +88,7 @@ class FieldDescription():  # pylint: disable=too-many-instance-attributes
 
     # primary key
     primary: bool = False
+    usage: Optional[str] = None
 
     # database modifiers
     index: bool = False
@@ -228,3 +229,21 @@ def is_reference_field(field: Field) -> bool:
 def pk_field(cori: Union[JSONObject, type[JSONObject]]) -> Optional[Field]:
     tfields = fields(cori)
     return next((f for f in tfields if f.fdesc.primary is True), None)
+
+
+def created_at_field(
+        cori: Union[JSONObject, type[JSONObject]]) -> Optional[Field]:
+    tfields = fields(cori)
+    return next((f for f in tfields if f.fdesc.usage == 'created_at'), None)
+
+
+def updated_at_field(
+        cori: Union[JSONObject, type[JSONObject]]) -> Optional[Field]:
+    tfields = fields(cori)
+    return next((f for f in tfields if f.fdesc.usage == 'updated_at'), None)
+
+
+def deleted_at_field(
+        cori: Union[JSONObject, type[JSONObject]]) -> Optional[Field]:
+    tfields = fields(cori)
+    return next((f for f in tfields if f.fdesc.usage == 'deleted_at'), None)
