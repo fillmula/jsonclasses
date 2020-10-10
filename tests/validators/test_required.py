@@ -1,8 +1,8 @@
-import unittest
+from unittest import TestCase
 from jsonclasses import jsonclass, JSONObject, types, ValidationException
 
 
-class TestRequiredValidator(unittest.TestCase):
+class TestRequiredValidator(TestCase):
 
     def test_required_raises_on_embedded_none(self):
         @jsonclass(graph='test_required_1')

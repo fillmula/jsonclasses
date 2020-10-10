@@ -68,6 +68,7 @@ from .oneoftype_validator import OneOfTypeValidator
 # nullability validators
 from .required_validator import RequiredValidator
 from .nullable_validator import NullableValidator
+from .present_validator import PresentValidator
 
 # custom validator
 from .validate_validator import ValidateValidator

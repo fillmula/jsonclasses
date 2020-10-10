@@ -5,7 +5,7 @@ from typing import Any, Optional, ClassVar, TypeVar
 from dataclasses import dataclass, fields as dataclass_fields
 from .config import Config
 from .exceptions import ValidationException
-from .fields import FieldStorage, FieldType, Field, other_field, field, is_reference_field
+from .fields import FieldType, Field, other_field, field, is_reference_field
 from .validators.instanceof_validator import InstanceOfValidator
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
 from .lookup_map import LookupMap

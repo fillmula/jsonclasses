@@ -13,14 +13,14 @@ from .validators import (BoolValidator, ChainedValidator, DateValidator,
                          MaxValidator, MaxlengthValidator, MinValidator,
                          MinlengthValidator, NegativeValidator,
                          NonnullValidator, NullableValidator, OneOfValidator,
-                         OneOfTypeValidator, PositiveValidator, RangeValidator,
-                         ReadonlyValidator, ReadwriteValidator,
-                         RefereeValidator, ReferrerValidator,
-                         RequiredValidator, ShapeValidator, StrValidator,
-                         StrictValidator, TransformValidator, TrimValidator,
-                         TruncateValidator, UniqueValidator, ValidateValidator,
-                         Validator, WriteNonnullValidator, WriteonceValidator,
-                         WriteonlyValidator)
+                         OneOfTypeValidator, PositiveValidator,
+                         PresentValidator, RangeValidator, ReadonlyValidator,
+                         ReadwriteValidator, RefereeValidator,
+                         ReferrerValidator, RequiredValidator, ShapeValidator,
+                         StrValidator, StrictValidator, TransformValidator,
+                         TrimValidator, TruncateValidator, UniqueValidator,
+                         ValidateValidator, Validator, WriteNonnullValidator,
+                         WriteonceValidator, WriteonlyValidator)
 
 Str = str
 Int = int
@@ -344,15 +344,23 @@ class Types:
 
     @property
     def nullable(self) -> Types:
-        """Fields marked with nullable can be None. This is the default behavior
-        even without this marker. It's the opposite to required marker. Values
-        inside lists have implicitly required marker. Use this to allow null or
-        None values inside lists.
+        """Fields marked with nullable can be None. This is the default
+        behavior even without this marker. It's the opposite to required
+        marker. Values inside lists have implicitly required marker. Use this
+        to allow null or None values inside lists.
 
         Returns:
           Types: A new types chained with this marker.
         """
         return Types(self, NullableValidator())
+
+    @property
+    def present(self) -> Types:
+        """When validating, field marked with present, can not pass validation
+        if it has a None value. This is useful for foreign key fields to do
+        required validation.
+        """
+        return Types(self, PresentValidator())
 
     def validate(self, validate_callable) -> Types:
         """The validate field mark takes a validator callable as its sole argument.
