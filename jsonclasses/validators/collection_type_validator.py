@@ -1,7 +1,8 @@
 """module for listof validator."""
 from __future__ import annotations
-from typing import Any, Collection, Iterable, Union, cast, TYPE_CHECKING
+from typing import Any, Collection, Iterable, TypeVar, Union, cast, TYPE_CHECKING
 from ..fields import FieldDescription, Nullability
+from ..config import Config
 from ..exceptions import ValidationException
 from .type_validator import TypeValidator
 from ..keypath import concat_keypath
@@ -10,6 +11,8 @@ from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 if TYPE_CHECKING:
     from ..json_object import JSONObject
     from ..types import Types
+
+T = TypeVar('T', bound=Collection)
 
 
 class CollectionTypeValidator(TypeValidator):
@@ -42,6 +45,12 @@ class CollectionTypeValidator(TypeValidator):
 
     def append_value(self, i: Union[str, int], v: Any, col: Collection):
         raise NotImplementedError('please implement append_value')
+
+    def to_object_key(self, key: T, conf: Config) -> T:
+        return key
+
+    def to_json_key(self, key: T, conf: Config) -> T:
+        return key
 
     def validate(self, context: ValidatingContext) -> None:
         if context.value is None:
@@ -90,7 +99,10 @@ class CollectionTypeValidator(TypeValidator):
                 keypath_parent=i,
                 parent=context.value,
                 fdesc=itypes.fdesc))
-            self.append_value(i, transformed, retval)
+            self.append_value(
+                self.to_object_key(i, context.config_owner),
+                transformed,
+                retval)
         return retval
 
     def tojson(self, context: ToJSONContext) -> Any:
@@ -102,5 +114,8 @@ class CollectionTypeValidator(TypeValidator):
         retval = self.empty_value()
         for i, v in self.enumerator(context.value):
             transformed = itypes.validator.tojson(context.new(value=v))
-            self.append_value(i, transformed, retval)
+            self.append_value(
+                self.to_json_key(i, context.config),
+                transformed,
+                retval)
         return retval

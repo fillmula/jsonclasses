@@ -1,11 +1,8 @@
 """module for listof validator."""
 from __future__ import annotations
 from typing import Any, Collection, Iterable
-from ..fields import FieldType, Nullability
+from ..fields import FieldType
 from .collection_type_validator import CollectionTypeValidator
-from ..keypath import concat_keypath
-from ..types_resolver import resolve_types
-from ..contexts import TransformingContext, ToJSONContext
 
 
 class ListOfValidator(CollectionTypeValidator):
