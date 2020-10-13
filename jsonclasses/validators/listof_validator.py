@@ -3,53 +3,19 @@ from __future__ import annotations
 from typing import Any
 from ..fields import FieldDescription, FieldType, Nullability
 from ..exceptions import ValidationException
-from .type_validator import TypeValidator
+from .collection_type_validator import CollectionTypeValidator
 from ..keypath import concat_keypath
 from ..types_resolver import resolve_types
 from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 
 
-class ListOfValidator(TypeValidator):
+class ListOfValidator(CollectionTypeValidator):
     """This validator validates list."""
 
-    def __init__(self, types: Any) -> None:
-        super().__init__()
+    def __init__(self, raw_item_types: Any) -> None:
+        super().__init__(raw_item_types)
         self.cls = list
         self.field_type = FieldType.LIST
-        self.types = types
-        self.exact_type = False
-
-    def define(self, fdesc: FieldDescription) -> None:
-        super().define(fdesc)
-        fdesc.list_item_types = self.types
-
-    def validate(self, context: ValidatingContext) -> None:
-        if context.value is None:
-            return
-        super().validate(context)
-        types = resolve_types(self.types, context.config_owner.linked_class)
-        if types.fdesc.item_nullability == Nullability.UNDEFINED:
-            types = types.required
-        all_fields = context.all_fields
-        if all_fields is None:
-            all_fields = context.config_owner.validate_all_fields
-        keypath_messages = {}
-        for i, v in enumerate(context.value):
-            try:
-                types.validator.validate(context.new(
-                    value=v,
-                    keypath_root=concat_keypath(context.keypath_root, i),
-                    keypath_owner=concat_keypath(context.keypath_owner, i),
-                    keypath_parent=i,
-                    parent=context.value,
-                    fdesc=types.fdesc))
-            except ValidationException as exception:
-                if all_fields:
-                    keypath_messages.update(exception.keypath_messages)
-                else:
-                    raise exception
-        if len(keypath_messages) > 0:
-            raise ValidationException(keypath_messages=keypath_messages, root=context.root)
 
     def transform(self, context: TransformingContext) -> Any:
         value = context.value
@@ -62,7 +28,7 @@ class ListOfValidator(TypeValidator):
             return None
         if not isinstance(value, list):
             return value
-        types = resolve_types(self.types, context.config_owner.linked_class)
+        types = resolve_types(self.raw_item_types, context.config_owner.linked_class)
         if types:
             retval = []
             for i, v in enumerate(value):
@@ -83,7 +49,7 @@ class ListOfValidator(TypeValidator):
             return None
         if not isinstance(context.value, list):
             return context.value
-        types = resolve_types(self.types, context.config.linked_class)
+        types = resolve_types(self.raw_item_types, context.config.linked_class)
         if types:
             retval = []
             for v in context.value:

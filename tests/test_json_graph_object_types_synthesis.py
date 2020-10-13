@@ -80,7 +80,7 @@ class TestJSONObjectTypesSynthesis(TestCase):
         self.assertEqual(twos_field_ones.fdesc.field_type,
                          FieldType.LIST)
         ones_item_types = cast(Types,
-                               twos_field_ones.fdesc.list_item_types)
+                               twos_field_ones.fdesc.raw_item_types)
         self.assertEqual(ones_item_types.fdesc.instance_types,
                          TestManyManyKeyOne)
 
@@ -88,7 +88,7 @@ class TestJSONObjectTypesSynthesis(TestCase):
         self.assertEqual(ones_field_twos.fdesc.field_type,
                          FieldType.LIST)
         twos_item_types = cast(Types,
-                               ones_field_twos.fdesc.list_item_types)
+                               ones_field_twos.fdesc.raw_item_types)
         self.assertEqual(twos_item_types.fdesc.instance_types,
                          TestManyManyKeyTwo)
 

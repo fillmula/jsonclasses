@@ -1,0 +1,107 @@
+"""module for listof validator."""
+from __future__ import annotations
+from typing import Any, Iterable, TYPE_CHECKING
+from ..fields import FieldDescription, Nullability
+from ..exceptions import ValidationException
+from .type_validator import TypeValidator
+from ..keypath import concat_keypath
+from ..types_resolver import resolve_types
+from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
+if TYPE_CHECKING:
+    from ..json_object import JSONObject
+    from ..types import Types
+
+
+class CollectionTypeValidator(TypeValidator):
+    """Base class for collection type validators."""
+
+    def __init__(self, raw_item_types: Any) -> None:
+        super().__init__()
+        self.raw_item_types = raw_item_types
+        self.exact_type = False
+
+    def define(self, fdesc: FieldDescription) -> None:
+        super().define(fdesc)
+        fdesc.raw_item_types = self.raw_item_types
+
+    def item_types(self, owner_cls: type[JSONObject]) -> Types:
+        if hasattr(self, '_item_types'):
+            return getattr(self, '_item_types')
+        else:
+            itypes = resolve_types(self.raw_item_types, owner_cls)
+            if itypes.fdesc.item_nullability == Nullability.UNDEFINED:
+                itypes = itypes.required
+            setattr(self, '_item_types', itypes)
+            return itypes
+
+    def enumerator(self, value: Any) -> Iterable:
+        return enumerate(value)
+
+    def validate(self, context: ValidatingContext) -> None:
+        if context.value is None:
+            return
+        super().validate(context)
+        types = self.item_types(context.config_owner.linked_class)
+        all_fields = next(b for b in [
+            context.all_fields,
+            context.config_owner.validate_all_fields] if b is not None)
+        keypath_messages = {}
+        for i, v in self.enumerator(context.value):
+            try:
+                types.validator.validate(context.new(
+                    value=v,
+                    keypath_root=concat_keypath(context.keypath_root, i),
+                    keypath_owner=concat_keypath(context.keypath_owner, i),
+                    keypath_parent=i,
+                    parent=context.value,
+                    fdesc=types.fdesc))
+            except ValidationException as exception:
+                if all_fields:
+                    keypath_messages.update(exception.keypath_messages)
+                else:
+                    raise exception
+        if len(keypath_messages) > 0:
+            raise ValidationException(
+                keypath_messages=keypath_messages,
+                root=context.root)
+
+    def transform(self, context: TransformingContext) -> Any:
+        value = context.value
+        fd = context.fdesc
+        assert fd is not None
+        if fd.collection_nullability == Nullability.NONNULL:
+            if value is None:
+                value = []
+        if value is None:
+            return None
+        if not isinstance(value, list):
+            return value
+        types = resolve_types(self.types, context.config_owner.linked_class)
+        if types:
+            retval = []
+            for i, v in enumerate(value):
+                transformed = types.validator.transform(context.new(
+                    value=v,
+                    keypath_root=concat_keypath(context.keypath_root, i),
+                    keypath_owner=concat_keypath(context.keypath_owner, i),
+                    keypath_parent=i,
+                    parent=value,
+                    fdesc=types.fdesc))
+                retval.append(transformed)
+            return retval
+        else:
+            return value
+
+    def tojson(self, context: ToJSONContext) -> Any:
+        if context.value is None:
+            return None
+        if not isinstance(context.value, list):
+            return context.value
+        types = resolve_types(self.types, context.config.linked_class)
+        if types:
+            retval = []
+            for v in context.value:
+                retval.append(types.validator.tojson(context.new(value=v)))
+            return retval
+        else:
+            return context.value

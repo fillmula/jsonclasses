@@ -96,7 +96,7 @@ class FieldDescription():  # pylint: disable=too-many-instance-attributes
     required: bool = False
 
     # collection marks
-    list_item_types: Optional[Any] = None
+    raw_item_types: Optional[Any] = None
     dict_item_types: Optional[Any] = None
     shape_types: Optional[dict[str, Any]] = None
 
@@ -187,7 +187,7 @@ def field(class_or_instance: Union[JSONObject, type[JSONObject]],
 
 def fdesc_match_class(fdesc: FieldDescription, cls: type[JSONObject]) -> bool:
     if fdesc.field_type == FieldType.LIST:
-        item_types = to_types(fdesc.list_item_types, cls)
+        item_types = to_types(fdesc.raw_item_types, cls)
         return fdesc_match_class(item_types.fdesc, cls)
     if fdesc.field_type == FieldType.INSTANCE:
         instance_types = to_types(fdesc.instance_types, cls)

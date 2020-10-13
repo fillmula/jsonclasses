@@ -20,3 +20,9 @@ class Validator:
     def tojson(self, context: ToJSONContext) -> Any:
         """Transform JSON Class object and fields into JSON dict and values."""
         return context.value
+
+    def serialize(self, context: TransformingContext) -> Any:
+        """A chance for validators to update the object's value before the
+        value is serialized into the database.
+        """
+        return context.value

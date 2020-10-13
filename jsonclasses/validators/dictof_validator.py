@@ -1,6 +1,6 @@
 """module for dictof validator."""
 from __future__ import annotations
-from typing import Any
+from typing import Any, Iterable
 from inflection import underscore, camelize
 from ..fields import FieldDescription, FieldType, Nullability
 from ..exceptions import ValidationException
@@ -23,6 +23,9 @@ class DictOfValidator(TypeValidator):
     def define(self, fdesc: FieldDescription) -> None:
         super().define(fdesc)
         fdesc.dict_item_types = self.types
+
+    def enumerator(self, value: dict[str, Any]) -> Iterable:
+        return value.items()
 
     def validate(self, context: ValidatingContext) -> None:
         if context.value is None:
