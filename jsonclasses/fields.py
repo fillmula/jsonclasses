@@ -97,7 +97,6 @@ class FieldDescription():  # pylint: disable=too-many-instance-attributes
 
     # collection marks
     raw_item_types: Optional[Any] = None
-    dict_item_types: Optional[Any] = None
     shape_types: Optional[dict[str, Any]] = None
 
     # instance mark

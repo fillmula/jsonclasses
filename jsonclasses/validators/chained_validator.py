@@ -100,3 +100,9 @@ class ChainedValidator(Validator):
         for validator in self.validators:
             value = validator.tojson(context.new(value=value))
         return value
+
+    def serialize(self, context: TransformingContext) -> Any:
+        value = context.value
+        for validator in self.validators:
+            value = validator.serialize(context.new(value=value))
+        return value
