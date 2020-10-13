@@ -1,12 +1,11 @@
 """module for listof validator."""
 from __future__ import annotations
-from typing import Any
-from ..fields import FieldDescription, FieldType, Nullability
-from ..exceptions import ValidationException
+from typing import Any, Collection, Iterable
+from ..fields import FieldType, Nullability
 from .collection_type_validator import CollectionTypeValidator
 from ..keypath import concat_keypath
 from ..types_resolver import resolve_types
-from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
+from ..contexts import TransformingContext, ToJSONContext
 
 
 class ListOfValidator(CollectionTypeValidator):
@@ -17,43 +16,11 @@ class ListOfValidator(CollectionTypeValidator):
         self.cls = list
         self.field_type = FieldType.LIST
 
-    def transform(self, context: TransformingContext) -> Any:
-        value = context.value
-        fd = context.fdesc
-        assert fd is not None
-        if fd.collection_nullability == Nullability.NONNULL:
-            if value is None:
-                value = []
-        if value is None:
-            return None
-        if not isinstance(value, list):
-            return value
-        types = resolve_types(self.raw_item_types, context.config_owner.linked_class)
-        if types:
-            retval = []
-            for i, v in enumerate(value):
-                transformed = types.validator.transform(context.new(
-                    value=v,
-                    keypath_root=concat_keypath(context.keypath_root, i),
-                    keypath_owner=concat_keypath(context.keypath_owner, i),
-                    keypath_parent=i,
-                    parent=value,
-                    fdesc=types.fdesc))
-                retval.append(transformed)
-            return retval
-        else:
-            return value
+    def enumerator(self, value: list) -> Iterable:
+        return enumerate(value)
 
-    def tojson(self, context: ToJSONContext) -> Any:
-        if context.value is None:
-            return None
-        if not isinstance(context.value, list):
-            return context.value
-        types = resolve_types(self.raw_item_types, context.config.linked_class)
-        if types:
-            retval = []
-            for v in context.value:
-                retval.append(types.validator.tojson(context.new(value=v)))
-            return retval
-        else:
-            return context.value
+    def empty_value(self) -> Collection:
+        return []
+
+    def append_value(self, i: int, v: Any, col: list):
+        col.append(v)

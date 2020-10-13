@@ -1,59 +1,30 @@
 """module for dictof validator."""
 from __future__ import annotations
-from typing import Any, Iterable
+from typing import Any, Iterable, Collection
 from inflection import underscore, camelize
-from ..fields import FieldDescription, FieldType, Nullability
-from ..exceptions import ValidationException
-from .type_validator import TypeValidator
+from ..fields import FieldType, Nullability
+from .collection_type_validator import CollectionTypeValidator
 from ..keypath import concat_keypath
 from ..types_resolver import resolve_types
-from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
+from ..contexts import TransformingContext, ToJSONContext
 
 
-class DictOfValidator(TypeValidator):
+class DictOfValidator(CollectionTypeValidator):
     """This validator validates dict."""
 
-    def __init__(self, types: Any) -> None:
-        super().__init__()
+    def __init__(self, raw_item_types: Any) -> None:
+        super().__init__(raw_item_types)
         self.cls = dict
         self.field_type = FieldType.DICT
-        self.types = types
-        self.exact_type = False
-
-    def define(self, fdesc: FieldDescription) -> None:
-        super().define(fdesc)
-        fdesc.dict_item_types = self.types
 
     def enumerator(self, value: dict[str, Any]) -> Iterable:
         return value.items()
 
-    def validate(self, context: ValidatingContext) -> None:
-        if context.value is None:
-            return
-        super().validate(context)
-        types = resolve_types(self.types, context.config_owner.linked_class)
-        if types.fdesc.item_nullability == Nullability.UNDEFINED:
-            types = types.required
-        all_fields = context.all_fields
-        if all_fields is None:
-            all_fields = context.config_owner.validate_all_fields
-        keypath_messages = {}
-        for k, v in context.value.items():
-            try:
-                types.validator.validate(context.new(
-                    value=v,
-                    keypath_root=concat_keypath(context.keypath_root, k),
-                    keypath_owner=concat_keypath(context.keypath_owner, k),
-                    keypath_parent=k,
-                    parent=context.value,
-                    fdesc=types.fdesc))
-            except ValidationException as exception:
-                if all_fields:
-                    keypath_messages.update(exception.keypath_messages)
-                else:
-                    raise exception
-        if len(keypath_messages) > 0:
-            raise ValidationException(keypath_messages=keypath_messages, root=context.root)
+    def empty_value(self) -> Collection:
+        return {}
+
+    def append_value(self, i: str, v: Any, col: dict):
+        col[i] = v
 
     def transform(self, context: TransformingContext) -> Any:
         value = context.value
@@ -66,7 +37,7 @@ class DictOfValidator(TypeValidator):
             return None
         if not isinstance(value, dict):
             return value
-        types = resolve_types(self.types, context.config_owner.linked_class)
+        types = resolve_types(self.raw_item_types, context.config_owner.linked_class)
         retval = {}
         for k, v in value.items():
             new_key = underscore(k) if context.config_owner.camelize_json_keys else k
@@ -84,7 +55,7 @@ class DictOfValidator(TypeValidator):
             return None
         if not isinstance(context.value, dict):
             return context.value
-        types = resolve_types(self.types, context.config.linked_class)
+        types = resolve_types(self.raw_item_types, context.config.linked_class)
         retval = {}
         for k, v in context.value.items():
             key = (camelize(k, False) if context.config.camelize_json_keys

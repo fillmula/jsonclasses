@@ -1,6 +1,6 @@
 """module for listof validator."""
 from __future__ import annotations
-from typing import Any, Iterable, TYPE_CHECKING
+from typing import Any, Collection, Iterable, Union, cast, TYPE_CHECKING
 from ..fields import FieldDescription, Nullability
 from ..exceptions import ValidationException
 from .type_validator import TypeValidator
@@ -34,8 +34,14 @@ class CollectionTypeValidator(TypeValidator):
             setattr(self, '_item_types', itypes)
             return itypes
 
-    def enumerator(self, value: Any) -> Iterable:
-        return enumerate(value)
+    def enumerator(self, value: Collection) -> Iterable:
+        raise NotImplementedError('please implement enumerator')
+
+    def empty_value(self) -> Collection:
+        raise NotImplementedError('please override empty_value')
+
+    def append_value(self, i: Union[str, int], v: Any, col: Collection):
+        raise NotImplementedError('please implement append_value')
 
     def validate(self, context: ValidatingContext) -> None:
         if context.value is None:
@@ -66,42 +72,35 @@ class CollectionTypeValidator(TypeValidator):
                 root=context.root)
 
     def transform(self, context: TransformingContext) -> Any:
-        value = context.value
-        fd = context.fdesc
-        assert fd is not None
-        if fd.collection_nullability == Nullability.NONNULL:
-            if value is None:
-                value = []
-        if value is None:
-            return None
-        if not isinstance(value, list):
-            return value
-        types = resolve_types(self.types, context.config_owner.linked_class)
-        if types:
-            retval = []
-            for i, v in enumerate(value):
-                transformed = types.validator.transform(context.new(
-                    value=v,
-                    keypath_root=concat_keypath(context.keypath_root, i),
-                    keypath_owner=concat_keypath(context.keypath_owner, i),
-                    keypath_parent=i,
-                    parent=value,
-                    fdesc=types.fdesc))
-                retval.append(transformed)
-            return retval
-        else:
-            return value
+        fdesc = cast(FieldDescription, context.fdesc)
+        if context.value is None:
+            if fdesc.collection_nullability == Nullability.NONNULL:
+                return self.empty_value()
+            else:
+                return None
+        if not isinstance(context.value, self.cls):
+            return context.value
+        itypes = self.item_types(context.config_owner.linked_class)
+        retval = self.empty_value()
+        for i, v in self.enumerator(context.value):
+            transformed = itypes.validator.transform(context.new(
+                value=v,
+                keypath_root=concat_keypath(context.keypath_root, i),
+                keypath_owner=concat_keypath(context.keypath_owner, i),
+                keypath_parent=i,
+                parent=context.value,
+                fdesc=itypes.fdesc))
+            self.append_value(i, transformed, retval)
+        return retval
 
     def tojson(self, context: ToJSONContext) -> Any:
         if context.value is None:
             return None
-        if not isinstance(context.value, list):
+        if not isinstance(context.value, self.cls):
             return context.value
-        types = resolve_types(self.types, context.config.linked_class)
-        if types:
-            retval = []
-            for v in context.value:
-                retval.append(types.validator.tojson(context.new(value=v)))
-            return retval
-        else:
-            return context.value
+        itypes = self.item_types(context.config.linked_class)
+        retval = self.empty_value()
+        for i, v in self.enumerator(context.value):
+            transformed = itypes.validator.tojson(context.new(value=v))
+            self.append_value(i, transformed, retval)
+        return retval
