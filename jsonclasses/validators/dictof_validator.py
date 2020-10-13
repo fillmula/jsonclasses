@@ -18,7 +18,7 @@ class DictOfValidator(CollectionTypeValidator):
     def enumerator(self, value: dict[str, Any]) -> Iterable:
         return value.items()
 
-    def empty_value(self) -> Collection:
+    def empty_collection(self) -> Collection:
         return {}
 
     def append_value(self, i: str, v: Any, col: dict):

@@ -40,8 +40,8 @@ class CollectionTypeValidator(TypeValidator):
     def enumerator(self, value: Collection) -> Iterable:
         raise NotImplementedError('please implement enumerator')
 
-    def empty_value(self) -> Collection:
-        raise NotImplementedError('please override empty_value')
+    def empty_collection(self) -> Collection:
+        raise NotImplementedError('please override empty_collection')
 
     def append_value(self, i: Union[str, int], v: Any, col: Collection):
         raise NotImplementedError('please implement append_value')
@@ -84,13 +84,13 @@ class CollectionTypeValidator(TypeValidator):
         fdesc = cast(FieldDescription, context.fdesc)
         if context.value is None:
             if fdesc.collection_nullability == Nullability.NONNULL:
-                return self.empty_value()
+                return self.empty_collection()
             else:
                 return None
         if not isinstance(context.value, self.cls):
             return context.value
         itypes = self.item_types(context.config_owner.linked_class)
-        retval = self.empty_value()
+        retval = self.empty_collection()
         for i, v in self.enumerator(context.value):
             transformed = itypes.validator.transform(context.new(
                 value=v,
@@ -111,7 +111,7 @@ class CollectionTypeValidator(TypeValidator):
         if not isinstance(context.value, self.cls):
             return context.value
         itypes = self.item_types(context.config.linked_class)
-        retval = self.empty_value()
+        retval = self.empty_collection()
         for i, v in self.enumerator(context.value):
             transformed = itypes.validator.tojson(context.new(value=v))
             self.append_value(

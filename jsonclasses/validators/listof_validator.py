@@ -16,7 +16,7 @@ class ListOfValidator(CollectionTypeValidator):
     def enumerator(self, value: list) -> Iterable:
         return enumerate(value)
 
-    def empty_value(self) -> Collection:
+    def empty_collection(self) -> Collection:
         return []
 
     def append_value(self, i: int, v: Any, col: list):
