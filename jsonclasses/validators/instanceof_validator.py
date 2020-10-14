@@ -241,3 +241,42 @@ class InstanceOfValidator(Validator):
                 entity_chain=[*entity_chain, cls_name])
             retval[jf_name] = field.field_types.validator.tojson(item_context)
         return retval
+
+    def serialize(self, context: TransformingContext) -> Any:
+        from ..orm_object import ORMObject
+        if context.value is None:
+            return None
+        # Note: this is duplication with transform, refactor if needed
+        types = resolve_types(self.raw_type, context.config_owner.linked_class)
+        cls = cast(Type[JSONObject], types.fdesc.instance_types)
+        this_pk_field = pk_field(cls)
+        if this_pk_field:
+            pk = this_pk_field.field_name
+            pk_value = cast(Union[str, int], context.value.get(pk))
+        else:
+            pk_value = None
+        exist_item = context.lookup_map.fetch(cls.__name__, pk_value)
+        if exist_item is not None:  # Don't do twice for an object
+            return context.value
+        context.lookup_map.put(cls.__name__, pk_value, context.value)
+        should_update = False
+        if isinstance(context.value, ORMObject):
+            orm_value = cast(ORMObject, context.value)
+            if orm_value.is_modified:
+                should_update = True
+        for field in fields(context.value):
+            if is_reference_field(field) or should_update:
+                field_value = getattr(context.value, field.field_name)
+                field_context = context.new(
+                    value=field_value,
+                    keypath_root=concat_keypath(context.keypath_root,
+                                                field.field_name),
+                    keypath_owner=field.field_name,
+                    owner=context.value,
+                    config_owner=cls.config,
+                    keypath_parent=field.field_name,
+                    parent=context.value,
+                    fdesc=field.fdesc)
+                tsfmd = field.field_types.validator.serialize(field_context)
+                setattr(context.value, field.field_name, tsfmd)
+        return context.value

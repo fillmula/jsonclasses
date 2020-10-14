@@ -87,4 +87,4 @@ class ORMObject(JSONObject):
         return self._modified_fields
 
 
-T = TypeVar('T', bound=ORMObject)
+T = TypeVar('T', bound=JSONObject)
