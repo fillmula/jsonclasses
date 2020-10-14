@@ -8,6 +8,9 @@ from .jsonclass import jsonclass
 from .json_object import JSONObject
 from .owned_dict import OwnedDict
 from .owned_list import OwnedList
+from .validators.instanceof_validator import InstanceOfValidator
+from .contexts import TransformingContext
+from .lookup_map import LookupMap
 
 
 @jsonclass
@@ -86,5 +89,38 @@ class ORMObject(JSONObject):
             self._modified_fields: set[str] = set()
         return self._modified_fields
 
+    def _setonsave(self: T) -> None:
+        """Update fields with setonsave marks if this object is modified. This
+        is a graph operation. Objects chained with the saving object will also
+        get setonsave called and saved.
+        """
+        validator = InstanceOfValidator(self.__class__)
+        config = self.__class__.config
+        context = TransformingContext(
+            value=self,
+            keypath_root='',
+            root=self,
+            config_root=config,
+            keypath_owner='',
+            owner=self,
+            config_owner=config,
+            keypath_parent='',
+            parent=self,
+            fdesc=None,
+            lookup_map=LookupMap())
+        validator.serialize(context)
 
-T = TypeVar('T', bound=JSONObject)
+    def _database_write(self: T) -> None:
+        raise NotImplementedError('please override _database_write')
+
+    def save(self: T,
+             validate_all_fields: bool = False,
+             skip_validation: bool = False) -> T:
+        if not skip_validation:
+            self.validate(all_fields=validate_all_fields)
+        self._setonsave()
+        self._database_write()
+        return self
+
+
+T = TypeVar('T', bound=ORMObject)

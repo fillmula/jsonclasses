@@ -17,11 +17,11 @@ from .validators import (UseForValidator, BoolValidator, ChainedValidator,
                          PresentValidator, PrimaryValidator, RangeValidator,
                          ReadonlyValidator, ReadwriteValidator,
                          RefereeValidator, ReferrerValidator,
-                         RequiredValidator, ShapeValidator, StrValidator,
-                         StrictValidator, TransformValidator, TrimValidator,
-                         TruncateValidator, UniqueValidator, ValidateValidator,
-                         Validator, WriteNonnullValidator, WriteonceValidator,
-                         WriteonlyValidator)
+                         RequiredValidator, SetOnSaveValidator, ShapeValidator,
+                         StrValidator, StrictValidator, TransformValidator,
+                         TrimValidator, TruncateValidator, UniqueValidator,
+                         ValidateValidator, Validator, WriteNonnullValidator,
+                         WriteonceValidator, WriteonlyValidator)
 
 Str = str
 Int = int
@@ -448,6 +448,19 @@ class Types:
           Types: A new types chained with this marker.
         """
         return Types(self, EagerValidator(), TransformValidator(transformer))
+
+    def setonsave(self, setter: Callable) -> Types:
+        """Setonsave marker marks a field to be updated just before serializing
+        into the database if this field is modified and to be serialized.
+
+        Args:
+          setter (Callable): This setter function takes zero or one argument
+          which is the current value of the field.
+
+        Returns:
+          Types: A new types chained with this marker.
+        """
+        return Types(self, SetOnSaveValidator(setter))
 
     @property
     def nonnull(self) -> Types:

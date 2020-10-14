@@ -244,6 +244,7 @@ class InstanceOfValidator(Validator):
 
     def serialize(self, context: TransformingContext) -> Any:
         from ..orm_object import ORMObject
+        from ..json_object import JSONObject
         if context.value is None:
             return None
         # Note: this is duplication with transform, refactor if needed
@@ -259,11 +260,11 @@ class InstanceOfValidator(Validator):
         if exist_item is not None:  # Don't do twice for an object
             return context.value
         context.lookup_map.put(cls.__name__, pk_value, context.value)
-        should_update = False
+        should_update = True
         if isinstance(context.value, ORMObject):
             orm_value = cast(ORMObject, context.value)
-            if orm_value.is_modified:
-                should_update = True
+            if not orm_value.is_modified:
+                should_update = False
         for field in fields(context.value):
             if is_reference_field(field) or should_update:
                 field_value = getattr(context.value, field.field_name)
