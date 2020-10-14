@@ -124,13 +124,31 @@ class ShapeValidator(TypeValidator):
         retval = {}
         for k, t in self.shape_types.items():
             key = camelize(k, False) if context.config.camelize_json_keys else k
-            try:
-                value_at_key = context.value[k]
-            except KeyError:
-                value_at_key = None
+            value_at_key = context.value.get(k)
             types = resolve_types(t, context.config.linked_class)
             if types:
                 retval[key] = types.validator.tojson(context.new(value=value_at_key))
+            else:
+                retval[key] = value_at_key
+        return retval
+
+    def serialize(self, context: TransformingContext) -> Any:
+        if context.value is None:
+            return None
+        if not isinstance(context.value, dict):
+            return context.value
+        retval = {}
+        for key, raw_types in self.shape_types.items():
+            value_at_key = context.value.get(key)
+            types = resolve_types(raw_types, context.config.linked_class)
+            if types:
+                retval[key] = types.validator.transform(context.new(
+                    value=value_at_key,
+                    keypath_root=concat_keypath(context.keypath_root, key),
+                    keypath_owner=concat_keypath(context.keypath_owner, key),
+                    keypath_parent=key,
+                    parent=context.value,
+                    fdesc=types.fdesc))
             else:
                 retval[key] = value_at_key
         return retval

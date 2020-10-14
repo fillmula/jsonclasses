@@ -119,3 +119,24 @@ class CollectionTypeValidator(TypeValidator):
                 transformed,
                 retval)
         return retval
+
+    def serialize(self, context: TransformingContext) -> Any:
+        if context.value is None:
+            return None
+        if not isinstance(context.value, self.cls):
+            return context.value
+        itypes = self.item_types(context.config.linked_class)
+        retval = self.empty_collection()
+        for i, v in self.enumerator(context.value):
+            transformed = itypes.validator.serialize(context.new(
+                value=v,
+                keypath_root=concat_keypath(context.keypath_root, i),
+                keypath_owner=concat_keypath(context.keypath_owner, i),
+                keypath_parent=i,
+                parent=context.value,
+                fdesc=itypes.fdesc))
+            self.append_value(
+                self.to_json_key(i, context.config),
+                transformed,
+                retval)
+        return retval
