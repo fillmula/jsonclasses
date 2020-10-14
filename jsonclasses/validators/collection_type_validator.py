@@ -125,7 +125,7 @@ class CollectionTypeValidator(TypeValidator):
             return None
         if not isinstance(context.value, self.cls):
             return context.value
-        itypes = self.item_types(context.config.linked_class)
+        itypes = self.item_types(context.config_owner.linked_class)
         retval = self.empty_collection()
         for i, v in self.enumerator(context.value):
             transformed = itypes.validator.serialize(context.new(
@@ -136,7 +136,7 @@ class CollectionTypeValidator(TypeValidator):
                 parent=context.value,
                 fdesc=itypes.fdesc))
             self.append_value(
-                self.to_json_key(i, context.config),
+                self.to_json_key(i, context.config_owner),
                 transformed,
                 retval)
         return retval

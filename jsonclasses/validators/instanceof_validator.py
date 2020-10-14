@@ -251,11 +251,11 @@ class InstanceOfValidator(Validator):
         types = resolve_types(self.raw_type, context.config_owner.linked_class)
         cls = cast(Type[JSONObject], types.fdesc.instance_types)
         this_pk_field = pk_field(cls)
+        pk_value = None
         if this_pk_field:
             pk = this_pk_field.field_name
-            pk_value = cast(Union[str, int], context.value.get(pk))
-        else:
-            pk_value = None
+            if hasattr(context.value, pk):
+                pk_value = cast(Union[str, int], getattr(context.value, pk))
         exist_item = context.lookup_map.fetch(cls.__name__, pk_value)
         if exist_item is not None:  # Don't do twice for an object
             return context.value
@@ -263,7 +263,7 @@ class InstanceOfValidator(Validator):
         should_update = True
         if isinstance(context.value, ORMObject):
             orm_value = cast(ORMObject, context.value)
-            if not orm_value.is_modified:
+            if not orm_value.is_modified and not orm_value.is_new:
                 should_update = False
         for field in fields(context.value):
             if is_reference_field(field) or should_update:
