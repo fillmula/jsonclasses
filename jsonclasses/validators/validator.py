@@ -23,6 +23,10 @@ class Validator:
 
     def serialize(self, context: TransformingContext) -> Any:
         """A chance for validators to update the object's value before the
-        value is serialized into the database.
+        value is serialized into the database. This is only triggered for
+        objects which are modified and have fields to write to the database.
+
+        Unmodified objects won't cause serialize to trigger. JSON Classes which
+        are not subclasses of ORMObject won't trigger this.
         """
         return context.value
