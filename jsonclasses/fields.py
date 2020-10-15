@@ -6,7 +6,7 @@ from enum import Enum
 from dataclasses import (dataclass, fields as dataclass_fields,
                          Field as DataclassField)
 from inflection import camelize
-from .types_resolver import to_types
+from .types_resolver import resolve_types, to_types
 if TYPE_CHECKING:
     from .types import Types
     from .validators.chained_validator import ChainedValidator
@@ -222,6 +222,21 @@ def is_reference_field(field: Field) -> bool:
         return True
     if field.fdesc.field_storage == FieldStorage.FOREIGN_KEY:
         return True
+    return False
+
+
+def is_embedded_instance_field(cori: Union[JSONObject, type[JSONObject]],
+                               field: Field) -> bool:
+    from .json_object import JSONObject
+    if field.fdesc.field_type == FieldType.INSTANCE:
+        return True
+    if field.fdesc.field_type == FieldType.LIST:
+        if isinstance(cori, JSONObject):
+            cori = cori.__class__
+        item_types = resolve_types(field.fdesc.raw_item_types,
+                                   cast(type[JSONObject], cori))
+        if item_types.fdesc.field_type == FieldType.INSTANCE:
+            return True
     return False
 
 

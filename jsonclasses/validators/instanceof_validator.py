@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Sequence, Type, Union, cast, TYPE_CHECKING
 from ..fields import (Field, FieldDescription, FieldStorage, FieldType,
                       Nullability, WriteRule, ReadRule, Strictness, fields,
-                      is_reference_field, pk_field)
+                      is_reference_field, is_embedded_instance_field, pk_field)
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..keypath import concat_keypath
@@ -266,7 +266,9 @@ class InstanceOfValidator(Validator):
             if not orm_value.is_modified and not orm_value.is_new:
                 should_update = False
         for field in fields(context.value):
-            if is_reference_field(field) or should_update:
+            if (is_reference_field(field)
+                    or is_embedded_instance_field(context.value, field)
+                    or should_update):
                 field_value = getattr(context.value, field.field_name)
                 field_context = context.new(
                     value=field_value,
