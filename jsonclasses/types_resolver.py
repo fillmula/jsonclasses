@@ -34,6 +34,25 @@ def apply_link_specifier(types: Types, specifier: str) -> Types:
         raise TypeError(f"wrong format of link specifier '{specifier}'")
 
 
+def merge_back_dicts(args: list[str]) -> list[str]:
+    """This method is used for union arguments parsing. When union contains
+    dict, dict is separated wrongly by split method. This function merge dicts
+    back.
+    """
+    retval = []
+    do_not_push_next = False
+    for idx, arg in enumerate(args):
+        if do_not_push_next:
+            do_not_push_next = False
+            continue
+        if match('^[Dd]ict\\[', arg):
+            retval.append(arg + ', ' + args[idx + 1])
+            do_not_push_next = True
+        else:
+            retval.append(arg)
+    return retval
+
+
 def str_to_types(argtype: str,
                  graph_sibling: type[T] = None,
                  optional: bool = False) -> Types:
@@ -56,7 +75,8 @@ def str_to_types(argtype: str,
         match_data = match('Union\\[(.*)\\]', argtype)
         assert match_data is not None
         all_item_types = match_data.group(1)
-        types_to_build_union = split(", *", all_item_types)  # TODO: Dict is not supported this way
+        types_to_build_union = split(", *", all_item_types)
+        types_to_build_union = merge_back_dicts(types_to_build_union)
         results = []
         for t in types_to_build_union:
             results.append(str_to_types(t, graph_sibling, True))

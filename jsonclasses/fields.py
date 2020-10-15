@@ -29,6 +29,7 @@ class FieldType(Enum):
     SHAPE = 'shape'
     INSTANCE = 'instance'
     ANY = 'any'
+    UNION = 'union'
 
 
 class FieldStorage(Enum):
@@ -94,6 +95,9 @@ class FieldDescription():  # pylint: disable=too-many-instance-attributes
     index: bool = False
     unique: bool = False
     required: bool = False
+
+    # union marks
+    union_types: Optional[list[Types]] = None
 
     # collection marks
     raw_item_types: Optional[Any] = None

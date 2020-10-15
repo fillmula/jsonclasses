@@ -1,3 +1,4 @@
+from jsonclasses.fields import FieldType, field
 from unittest import TestCase
 from typing import Optional, List, Dict, Union
 from jsonclasses import jsonclass, JSONObject, ValidationException
@@ -356,4 +357,21 @@ class TestJSONObjectTypesSynthesis(TestCase):
         class TestOptionalUnionStrType(JSONObject):
             val: 'Optional[Union[int, float]]'
         object = TestOptionalUnionStrType()
+        object.validate()
+
+    def test_auto_generates_required_union_with_dict_with_str_type(self):
+        @jsonclass(class_graph='test_marker_auto_gen')
+        class TestUnionDictType(JSONObject):
+            val: 'Union[Dict[str, int], int]'
+        cfield = field(TestUnionDictType, 'val')
+        utypes = cfield.fdesc.union_types
+        self.assertEqual(utypes[0].fdesc.field_type, FieldType.DICT)
+        self.assertEqual(utypes[1].fdesc.field_type, FieldType.INT)
+
+
+    def test_auto_generates_optional_union_with_dict_with_str_type(self):
+        @jsonclass(class_graph='test_marker_auto_gen')
+        class TestOptionalUnionDictType(JSONObject):
+            val: 'Optional[Union[Dict[str, bool], float]]'
+        object = TestOptionalUnionDictType()
         object.validate()
