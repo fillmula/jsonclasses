@@ -162,3 +162,29 @@ class TestSetOnSaveVailidator(TestCase):
         self.assertEqual(user.value, 1)
         self.assertEqual(book1.value, 2)
         self.assertEqual(book2.value, 2)
+
+    def test_json_object_setonsave_triggers_anyway_if_owner_not_modified(self):
+        @jsonclass(class_graph='test_setonsave_7')
+        class User(ORMObject):
+            id: int = types.int.primary.required
+            name: str = types.str.required
+            value: int = types.int.setonsave(lambda x: x + 1).required
+            book: Book = types.instanceof('Book').embedded.required
+
+        @jsonclass(class_graph='test_setonsave_7')
+        class Book(JSONObject):
+            id: int = types.int.primary.required
+            name: str = types.str.required
+            value: int = types.int.setonsave(lambda x: x + 1).required
+
+        book1 = Book(id=1, name='B1', value=1)
+        setattr(book1, '_is_new', False)
+        user = User(id=1, name='U', value=1, book=book1)
+        book1.name = 'BB1'
+        setattr(user, '_is_new', False)
+        setattr(user, '_is_modified', False)
+        setattr(user, '_modified_fields', set())
+        user._setonsave()
+
+        self.assertEqual(user.value, 1)
+        self.assertEqual(book1.value, 2)
