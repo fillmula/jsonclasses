@@ -173,8 +173,7 @@ class JSONObject:
                 if graph1.has(o):
                     # print(graph1.get(o))
                     if graph1.get(o) is not o:
-                        pass
-                        # raise ValueError('conflict on graph merging')
+                        raise ValueError('conflict on graph merging')
                 graph1.put(o)
                 o._graph = graph1
 

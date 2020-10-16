@@ -170,7 +170,7 @@ class TestJSONObjectReferenceHook(TestCase):
         customer1 = Customer(id=1, name='Customer John', products=[])
         customer2 = Customer(id=2, name='Customer Peter', products=[])
         product1 = Product(id=1, name='PS5', customers=[])
-        product2 = Product(id=1, name='Xbox', customers=[])
+        product2 = Product(id=2, name='Xbox', customers=[])
         customer1.products.append(product1)
         customer1.products.append(product2)
         customer2.products.extend([product1, product2])
@@ -181,7 +181,7 @@ class TestJSONObjectReferenceHook(TestCase):
 
     def test_json_objects_disconnects_many_many_thru_list_del(self):
         product1 = Product(id=1, name='PS5')
-        product2 = Product(id=1, name='Xbox')
+        product2 = Product(id=2, name='Xbox')
         customer1 = Customer(id=1, name='Customer John',
                              products=[product1, product2])
         customer2 = Customer(id=2, name='Customer Peter',
@@ -194,7 +194,7 @@ class TestJSONObjectReferenceHook(TestCase):
 
     def test_json_objects_disconnects_many_many_thru_list_reassign(self):
         product1 = Product(id=1, name='PS5')
-        product2 = Product(id=1, name='Xbox')
+        product2 = Product(id=2, name='Xbox')
         customer1 = Customer(id=1, name='Customer John',
                              products=[product1, product2])
         customer2 = Customer(id=2, name='Customer Peter',
@@ -209,7 +209,7 @@ class TestJSONObjectReferenceHook(TestCase):
         customer1 = Customer(id=1, name='Customer John', products=[])
         customer2 = Customer(id=2, name='Customer Peter', products=[])
         product1 = Product(id=1, name='PS5', customers=[])
-        product2 = Product(id=1, name='Xbox', customers=[])
+        product2 = Product(id=2, name='Xbox', customers=[])
         customer1.products.extend([product1, product2])
         customer2.products.extend([product1, product2])
         customer1.products = [product1, product2]
