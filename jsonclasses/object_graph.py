@@ -50,6 +50,11 @@ class ClassTable:
 
 
 class ObjectGraph:
+    """The object graph is a graph containing JSON Class objects. It has two
+    main usages. First, it's used for tracking and referencing objects within
+    the same objects from a query result. Second, it's used for marking objects
+    as handled when performing validating and serializing.
+    """
 
     def __init__(self):
         self._class_tables: dict[str, ClassTable] = {}
