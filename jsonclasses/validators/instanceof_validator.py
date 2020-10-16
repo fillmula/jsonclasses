@@ -247,20 +247,9 @@ class InstanceOfValidator(Validator):
 
     def serialize(self, context: TransformingContext) -> Any:
         from ..orm_object import ORMObject
-        from ..json_object import JSONObject
         if context.value is None:
             return None
-        # Note: this is duplication with transform, refactor if needed
-        types = resolve_types(self.raw_type, context.config_owner.linked_class)
-        cls = cast(Type[JSONObject], types.fdesc.instance_types)
-        this_pk_field = pk_field(cls)
-        pk_value = None
-        if this_pk_field:
-            pk = this_pk_field.field_name
-            if hasattr(context.value, pk):
-                pk_value = cast(Union[str, int], getattr(context.value, pk))
-        exist_item = context.object_graph.getp(context.value.__class__,
-                                               pk_value)
+        exist_item = context.object_graph.get(context.value)
         if exist_item is not None:  # Don't do twice for an object
             return context.value
         context.object_graph.put(context.value)
@@ -280,7 +269,7 @@ class InstanceOfValidator(Validator):
                                                 field.field_name),
                     keypath_owner=field.field_name,
                     owner=context.value,
-                    config_owner=cls.config,
+                    config_owner=context.value.config,
                     keypath_parent=field.field_name,
                     parent=context.value,
                     fdesc=field.fdesc)
