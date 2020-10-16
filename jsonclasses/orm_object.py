@@ -3,6 +3,7 @@ This module contains `ORMObject`, the abstract base class for interacting with
 ORMs.
 """
 from __future__ import annotations
+from jsonclasses.object_graph import ObjectGraph
 from typing import TypeVar, Any
 from .jsonclass import jsonclass
 from .json_object import JSONObject
@@ -106,7 +107,7 @@ class ORMObject(JSONObject):
             keypath_parent='',
             parent=self,
             fdesc=None,
-            object_graph=self._graph)
+            object_graph=ObjectGraph())
         validator.serialize(context)
 
     def _database_write(self: T) -> None:

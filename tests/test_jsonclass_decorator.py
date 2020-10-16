@@ -1,10 +1,10 @@
-import unittest
+from unittest import TestCase
 from jsonclasses import jsonclass, JSONObject
 from jsonclasses.class_graph import class_graph_map, JSONClassRedefinitionError
 from jsonclasses.config import Config
 
 
-class TestJsonClassDecorator(unittest.TestCase):
+class TestJsonClassDecorator(TestCase):
 
     def test_json_class_decorator_works_alone(self):
         @jsonclass

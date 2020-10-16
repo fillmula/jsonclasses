@@ -69,7 +69,7 @@ class JSONObject:
             all_fields=True,
             dest=self,
             fill_dest_blanks=fill_blanks,
-            object_graph=ObjectGraph())
+            object_graph=self._graph)
         validator.transform(context)
 
     def update(self: T, **kwargs: Any) -> T:
@@ -155,14 +155,31 @@ class JSONObject:
     def _graph(self: T) -> ObjectGraph:
         """The JSON Object's object graph.
         """
-        if not hasattr(self, '__graph'):
-            self.__graph = ObjectGraph()
-            # self.__graph.put(self)
-        return self.__graph
+        if not hasattr(self, '_graph_'):
+            setattr(self, '_graph_', ObjectGraph())
+        return self._graph_
 
     @_graph.setter
-    def _graph(self: T, val: ObjectGraph):
-        self.__graph = val
+    def _graph(self: T, val: ObjectGraph) -> None:
+        self._graph_ = val
+
+    def _merge_graph(self: T, obj: T) -> None:
+        graph1 = self._graph
+        graph2 = obj._graph
+        if graph1 is graph2:
+            return
+        for o in graph2:
+            if o._graph is not graph1:
+                if graph1.has(o):
+                    # print(graph1.get(o))
+                    if graph1.get(o) is not o:
+                        pass
+                        # raise ValueError('conflict on graph merging')
+                graph1.put(o)
+                o._graph = graph1
+
+    def _link_graph(self: T, obj: T) -> None:
+        self._merge_graph(obj)
 
     @property
     def __fdict__(self: T) -> dict[str, Any]:
@@ -277,6 +294,7 @@ class JSONObject:
                 else:
                     if self not in getattr(item, ofield.field_name):
                         getattr(item, ofield.field_name).append(self)
+            self._link_graph(item)
 
 
 T = TypeVar('T', bound=JSONObject)

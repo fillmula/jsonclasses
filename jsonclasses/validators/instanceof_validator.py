@@ -164,6 +164,7 @@ class InstanceOfValidator(Validator):
         else:
             dest = cls()
             context.object_graph.put(dest)
+        dest._graph = context.object_graph
 
         # strictness check
         strictness = cast(bool, cls.config.strict_input)

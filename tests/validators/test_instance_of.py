@@ -1,5 +1,5 @@
 from __future__ import annotations
-import unittest
+from unittest import TestCase
 from typing import List, Dict, Optional
 from jsonclasses import jsonclass, JSONObject, types
 from jsonclasses.exceptions import ValidationException
@@ -95,7 +95,7 @@ input = {
 }
 
 
-class TestInstanceOfValidator(unittest.TestCase):
+class TestInstanceOfValidator(TestCase):
 
     def test_instanceof_validator_creates_instanceof_designated_class_on_transforming(self):
         @jsonclass(class_graph='test_instanceof_1')

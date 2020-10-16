@@ -1,6 +1,6 @@
 """This module defineds the JSON Class object mapping graph."""
 from __future__ import annotations
-from typing import TypeVar, Union, Optional, TYPE_CHECKING
+from typing import Iterator, TypeVar, Union, Optional, TYPE_CHECKING
 from .fields import pk_field
 if TYPE_CHECKING:
     from .json_object import JSONObject
@@ -26,6 +26,9 @@ class ClassTable:
             self.putp(pk, object)
 
     def putp(self, pk: Union[str, int], object: T) -> None:
+        """Put object to this class table when designated primary key. This is
+        useful when transforming and the values are not set yet.
+        """
         self._primary_key_table[str(pk)] = object
 
     def has(self, object: T) -> bool:
@@ -41,6 +44,20 @@ class ClassTable:
         if self._memory_id_table.get(memory_id) is not None:
             return True
         return False
+
+    def get(self, object: T) -> Optional[T]:
+        try:
+            pkf = pk_field(object).field_name
+            pk = getattr(object, pkf)
+        except AttributeError:
+            pk = None
+        if pk is not None:
+            if self._primary_key_table.get(str(pk)) is not None:
+                return self._primary_key_table.get(str(pk))
+        memory_id = hex(id(object))
+        if self._memory_id_table.get(memory_id) is not None:
+            return self._memory_id_table.get(memory_id)
+        return None
 
     def getp(self, pk: Union[str, int]) -> Optional[T]:
         return self._primary_key_table.get(str(pk))
@@ -73,8 +90,22 @@ class ObjectGraph:
     def has(self, object: T) -> bool:
         return self.class_table(object.__class__).has(object)
 
+    def get(self, object: T) -> T:
+        return self.class_table(object.__class__).get(object)
+
     def getp(self, cls: type[T], pk: Union[str, int]) -> Optional[T]:
         return self.class_table(cls).getp(pk)
 
     def getm(self, cls: type[T], memid: int) -> Optional[T]:
         return self.class_table(cls).getm(memid)
+
+    def __iter__(self) -> Iterator:
+        lst = []
+        for ct in self._class_tables.values():
+            for obj in ct._primary_key_table.values():
+                if obj not in lst:
+                    lst.append(obj)
+            for obj in ct._memory_id_table.values():
+                if obj not in lst:
+                    lst.append(obj)
+        return lst.__iter__()
