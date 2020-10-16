@@ -1,19 +1,20 @@
 from __future__ import annotations
 from typing import Optional
 from unittest import TestCase
-from jsonclasses import jsonclass, JSONObject, types, Link, linkedby, linkto
+from jsonclasses import (jsonclass, JSONObject, ORMObject, types, Link,
+                         linkedby, linkto)
 
 
 @jsonclass(class_graph='test_object_graph_1')
-class Contact(JSONObject):
-    id: int = types.int.primary.required
+class Contact(ORMObject):
+    id: Optional[int] = types.int.primary
     name: str
     address: Link[Address, linkedby('contact')]
 
 
 @jsonclass(class_graph='test_object_graph_1')
-class Address(JSONObject):
-    id: int = types.int.primary.required
+class Address(ORMObject):
+    id: Optional[int] = types.int.primary
     line1: str
     contact: Link[Contact, linkto]
 
@@ -68,3 +69,24 @@ class TestObjectGraph(TestCase):
         post = Post(id=1, name='P1')
         user.posts.append(post)
         self.assertEqual(user._graph, post._graph)
+
+    def test_referenced_objects_validate_dont_get_circular_without_pk(self):
+        contact = Contact(name='John')
+        address = Address(line1='Line 1')
+        contact.address = address
+        contact.validate()
+
+    def test_referenced_objects_tojson_dont_get_circular_without_pk(self):
+        contact = Contact(name='John')
+        address = Address(line1='Line 1')
+        contact.address = address
+        self.assertEqual(contact.tojson(), {
+            'id': None, 'name': 'John', 'address': {
+                'id': None, 'line1': 'Line 1', 'contact': {
+                    'id': None, 'name': 'John'}}})
+
+    def test_referenced_objects_serialize_dont_get_circular_without_pk(self):
+        contact = Contact(name='John')
+        address = Address(line1='Line 1')
+        contact.address = address
+        contact._setonsave()

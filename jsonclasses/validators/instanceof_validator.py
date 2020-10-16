@@ -41,15 +41,9 @@ class InstanceOfValidator(Validator):
                                        f"should be instance of "
                                        f"'{cls.__name__}'.")
             }, context.root)
-        try:
-            pk = pk_field(cls).field_name
-            id = cast(Union[str, int], getattr(context.value, pk))
-            if id is not None:
-                if context.object_graph.has(context.value):
-                    return
-                context.object_graph.put(context.value)
-        except AttributeError:
-            pass
+        if context.object_graph.has(context.value):
+            return
+        context.object_graph.put(context.value)
         only_validate_modified = False
         modified_fields = []
         if isinstance(context.value, ORMObject) and not context.value.is_new:
