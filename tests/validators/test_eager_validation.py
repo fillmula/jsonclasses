@@ -22,7 +22,7 @@ class TestEagerValidator(unittest.TestCase):
             username: str = types.str.required
             password: str = types.str.minlength(8).maxlength(10).transform(lambda s: s + '0x0x').required
         user = User(password='12345678')
-        self.assertEqual(user.__dict__, {'username': None, 'password': '123456780x0x'})
+        self.assertEqual(user.__fdict__, {'username': None, 'password': '123456780x0x'})
 
     def test_eager_validator_will_not_perform_when_value_is_none_on_init(self):
         @jsonclass(class_graph='test_eager_validator_3')

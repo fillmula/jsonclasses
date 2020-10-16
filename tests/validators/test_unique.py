@@ -39,7 +39,7 @@ class TestUniqueValidator(unittest.TestCase):
             phone_no: str
             wechat_open_id: str
         user = User(**data, password='1234567890')
-        self.assertEqual(user.__dict__, {
+        self.assertEqual(user.__fdict__, {
             'username': 'john.qq',
             'nickname': 'John QQ',
             'gender': 'male',

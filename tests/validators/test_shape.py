@@ -35,7 +35,7 @@ class TestShapeValidator(unittest.TestCase):
                 'line3': types.str
             }).required
         user = User(address={'line1': 'Sydney'})
-        self.assertEqual(user.__dict__, {
+        self.assertEqual(user.__fdict__, {
             'address': {'line1': 'Sydney', 'line2': None, 'line3': None}
         })
 
@@ -48,7 +48,7 @@ class TestShapeValidator(unittest.TestCase):
                 'line3': types.str
             }).required
         user = User(address={'line1': 'Sydney', 'haha': 'I\'m here'})
-        self.assertEqual(user.__dict__, {
+        self.assertEqual(user.__fdict__, {
             'address': {'line1': 'Sydney', 'line2': None, 'line3': None}
         })
 
@@ -80,7 +80,7 @@ class TestShapeValidator(unittest.TestCase):
                 'student_b': types.int
             })
         score = Score(scores={'studentA': 2, 'studentB': 4})
-        self.assertEqual(score.__dict__, {'scores': {'student_a': 2, 'student_b': 4}})
+        self.assertEqual(score.__fdict__, {'scores': {'student_a': 2, 'student_b': 4}})
 
     def test_shape_should_not_handle_camelized_keys_when_initializing_if_its_the_class_setting(self):
         @jsonclass(class_graph='test_shape_8', camelize_json_keys=False)
@@ -90,7 +90,7 @@ class TestShapeValidator(unittest.TestCase):
                 'student_b': types.int
             })
         score = Score(scores={'student_a': 2, 'student_b': 4})
-        self.assertEqual(score.__dict__, {'scores': {'student_a': 2, 'student_b': 4}})
+        self.assertEqual(score.__fdict__, {'scores': {'student_a': 2, 'student_b': 4}})
 
     def test_shape_produce_error_messages_for_all_items(self):
         @jsonclass(class_graph='test_shape_9')

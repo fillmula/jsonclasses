@@ -368,7 +368,6 @@ class TestJSONObjectTypesSynthesis(TestCase):
         self.assertEqual(utypes[0].fdesc.field_type, FieldType.DICT)
         self.assertEqual(utypes[1].fdesc.field_type, FieldType.INT)
 
-
     def test_auto_generates_optional_union_with_dict_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
         class TestOptionalUnionDictType(JSONObject):

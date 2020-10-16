@@ -131,14 +131,14 @@ class TestDictOfValidator(unittest.TestCase):
         class Score(JSONObject):
             scores: Dict[str, int] = types.dictof(types.int)
         score = Score(scores={'johnLeo': 2, 'peterSun': 4})
-        self.assertEqual(score.__dict__, {'scores': {'john_leo': 2, 'peter_sun': 4}})
+        self.assertEqual(score.__fdict__, {'scores': {'john_leo': 2, 'peter_sun': 4}})
 
     def test_dictof_should_not_handle_camelized_keys_when_initializing_if_its_the_class_setting(self):
         @jsonclass(class_graph='test_dictof_16', camelize_json_keys=False)
         class Score(JSONObject):
             scores: Dict[str, int] = types.dictof(types.int)
         score = Score(scores={'johnLeo': 2, 'peterSun': 4})
-        self.assertEqual(score.__dict__, {'scores': {'johnLeo': 2, 'peterSun': 4}})
+        self.assertEqual(score.__fdict__, {'scores': {'johnLeo': 2, 'peterSun': 4}})
 
     def test_dictof_produce_error_messages_for_all_items(self):
         @jsonclass(class_graph='test_dictof_17')

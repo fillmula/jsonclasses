@@ -11,7 +11,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
             name: str
             address: str
         contact = Contact()
-        self.assertEqual(contact.__dict__, {'name': None, 'address': None})
+        self.assertEqual(contact.__fdict__, {'name': None, 'address': None})
 
     def test_initialize_with_keyed_arguments(self):
         @jsonclass(class_graph='test_initialize_2')
@@ -19,7 +19,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
             name: str
             phone_no: str
         card = BusinessCard(name='John', phone_no='012345678')
-        self.assertEqual(card.__dict__, {'name': 'John', 'phone_no': '012345678'})
+        self.assertEqual(card.__fdict__, {'name': 'John', 'phone_no': '012345678'})
 
     def test_initialize_with_keyed_arguments_fill_none_on_blank_keys(self):
         @jsonclass(class_graph='test_initialize_3')
@@ -27,7 +27,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
             x: int
             y: int
         point = Point(x=50)
-        self.assertEqual(point.__dict__, {'x': 50, 'y': None})
+        self.assertEqual(point.__fdict__, {'x': 50, 'y': None})
 
     def test_initialize_with_keyed_arguments_remove_redundant_keys(self):
         @jsonclass(class_graph='test_initialize_4', strict_input=False)
@@ -35,7 +35,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
             width: float
             height: float
         size = Size(width=10.5, height=7.5, depth=2.5)
-        self.assertEqual(size.__dict__, {'width': 10.5, 'height': 7.5})
+        self.assertEqual(size.__fdict__, {'width': 10.5, 'height': 7.5})
 
     def test_initialize_with_a_dict(self):
         @jsonclass(class_graph='test_initialize_5')
@@ -43,7 +43,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
             longitude: float
             latitude: float
         location = Location(**{'longitude': 0, 'latitude': 30})
-        self.assertEqual(location.__dict__, {'longitude': 0, 'latitude': 30})
+        self.assertEqual(location.__fdict__, {'longitude': 0, 'latitude': 30})
 
     def test_initialize_with_dict_fill_none_on_blank_keys(self):
         @jsonclass(class_graph='test_initialize_6')
@@ -52,7 +52,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
             y: int
         input = {'x': 50}
         point = Point(**input)
-        self.assertEqual(point.__dict__, {'x': 50, 'y': None})
+        self.assertEqual(point.__fdict__, {'x': 50, 'y': None})
 
     def test_initialize_with_dict_remove_redundant_keys(self):
         @jsonclass(class_graph='test_initialize_7', strict_input=False)
@@ -61,7 +61,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
             height: float
         input = {'width': 10.5, 'height': 7.5, 'depth': 2.5}
         size = Size(**input)
-        self.assertEqual(size.__dict__, {'width': 10.5, 'height': 7.5})
+        self.assertEqual(size.__fdict__, {'width': 10.5, 'height': 7.5})
 
     def test_initialize_fill_default_values_for_blank_keys(self):
         @jsonclass(class_graph='test_initialize_8')
@@ -69,7 +69,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
             student_id: int = 5
             name: str = 'Student X'
         student = Student()
-        self.assertEqual(student.__dict__, {'student_id': 5, 'name': 'Student X'})
+        self.assertEqual(student.__fdict__, {'student_id': 5, 'name': 'Student X'})
 
     def test_initialize_with_value_passed_in_rather_than_default_value(self):
         @jsonclass(class_graph='test_initialize_9')
@@ -77,7 +77,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
             no: int = 3
             name: str = 'Employee D'
         employee = Employee(no=20, name='John Larryson')
-        self.assertEqual(employee.__dict__, {'no': 20, 'name': 'John Larryson'})
+        self.assertEqual(employee.__fdict__, {'no': 20, 'name': 'John Larryson'})
 
     def test_initialize_auto_convert_camelcase_keys_into_snakecase(self):
         @jsonclass(class_graph='test_initialize_10')
@@ -95,7 +95,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
             end: date
         semester = Semester(**{'start': '2020-02-20', 'end': '2020-06-30'})
         self.assertEqual(
-            semester.__dict__,
+            semester.__fdict__,
             {
                 'start': date.fromisoformat('2020-02-20'),
                 'end': date.fromisoformat('2020-06-30')
@@ -109,7 +109,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
             end: date
         semester = Semester(**{'start': '2020-02-20T00:00:00.000Z', 'end': '2020-06-30T03:03:03.333Z'})
         self.assertEqual(
-            semester.__dict__,
+            semester.__fdict__,
             {
                 'start': date.fromisoformat('2020-02-20'),
                 'end': date.fromisoformat('2020-06-30')
@@ -122,7 +122,7 @@ class TestJSONObjectInitialize(unittest.TestCase):
             expired_at: datetime
         timer = Timer(**{'expiredAt': '2020-08-29T06:38:34.242Z'})
         self.assertEqual(
-            timer.__dict__,
+            timer.__fdict__,
             {
                 'expired_at': datetime.fromisoformat('2020-08-29T06:38:34.242000')
             }

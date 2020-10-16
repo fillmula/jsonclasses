@@ -82,7 +82,7 @@ class JSONObject:
         through this method. This method returns self, thus you can chain
         calling with other instance methods.
         """
-        unallowed_keys = set(kwargs.keys()) - set(self.__dict__.keys())
+        unallowed_keys = set(kwargs.keys()) - set(self.__fdict__.keys())
         unallowed_keys_length = len(unallowed_keys)
         if unallowed_keys_length > 0:
             keys_list = ', '.join(list(unallowed_keys))
@@ -150,6 +150,14 @@ class JSONObject:
         except ValidationException:
             return False
         return True
+
+    @property
+    def __fdict__(self: T) -> dict[str, Any]:
+        retval = {}
+        for k, v in self.__dict__.items():
+            if not k.startswith('_'):
+                retval[k] = v
+        return retval
 
     def __setattr_direct__(self: T, name: str, value: Any) -> None:
         super().__setattr__(name, value)

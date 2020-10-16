@@ -190,8 +190,8 @@ class TestInstanceOfValidator(unittest.TestCase):
         self.assertIsInstance(user.addresses[0], Address)
         self.assertIsInstance(user.addresses[1], Address)
         self.assertEqual(len(user.addresses), 2)
-        self.assertEqual(user.addresses[0].__dict__, {'line1': 'London', 'line2': 'Road'})
-        self.assertEqual(user.addresses[1].__dict__, {'line1': 'Paris', 'line2': 'Road'})
+        self.assertEqual(user.addresses[0].__fdict__, {'line1': 'London', 'line2': 'Road'})
+        self.assertEqual(user.addresses[1].__fdict__, {'line1': 'Paris', 'line2': 'Road'})
 
     def test_instanceof_validator_validates_instances_inside_list(self):
         @jsonclass(class_graph='test_instanceof_5')

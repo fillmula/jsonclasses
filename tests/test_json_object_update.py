@@ -11,7 +11,7 @@ class TestJSONObjectUpdate(unittest.TestCase):
             address: str
         contact = Contact(name='John', address='Balk')
         contact.update()
-        self.assertEqual(contact.__dict__, {'name': 'John', 'address': 'Balk'})
+        self.assertEqual(contact.__fdict__, {'name': 'John', 'address': 'Balk'})
 
     def test_update_updates_values_at_given_keys(self):
         @jsonclass(class_graph='test_update_2')
@@ -20,7 +20,7 @@ class TestJSONObjectUpdate(unittest.TestCase):
             address: str
         contact = Contact(name='John', address='Balk')
         contact.update(**{'name': 'Peter', 'address': 'Light'})
-        self.assertEqual(contact.__dict__, {'name': 'Peter', 'address': 'Light'})
+        self.assertEqual(contact.__fdict__, {'name': 'Peter', 'address': 'Light'})
 
     def test_update_raises_if_given_key_is_not_allowed(self):
         @jsonclass(class_graph='test_update_3')

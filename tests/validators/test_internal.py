@@ -10,7 +10,7 @@ class TestInternalValidator(unittest.TestCase):
             id: str
             secret: str = types.str.internal
         secret = Secret(id='1', secret='2')
-        self.assertEqual(secret.__dict__, {'id': '1', 'secret': None})
+        self.assertEqual(secret.__fdict__, {'id': '1', 'secret': None})
 
     def test_internal_fields_will_not_be_set_through_set_initialization(self):
         @jsonclass(class_graph='test_internal_2')
@@ -19,7 +19,7 @@ class TestInternalValidator(unittest.TestCase):
             secret: str = types.str.internal
         secret = Secret(id='1')
         secret.set(secret='2')
-        self.assertEqual(secret.__dict__, {'id': '1', 'secret': None})
+        self.assertEqual(secret.__fdict__, {'id': '1', 'secret': None})
 
     def test_internal_fields_can_be_set_with_update(self):
         @jsonclass(class_graph='test_internal_3')
@@ -28,7 +28,7 @@ class TestInternalValidator(unittest.TestCase):
             secret: str = types.str.internal
         secret = Secret(id='1')
         secret.update(secret='2')
-        self.assertEqual(secret.__dict__, {'id': '1', 'secret': '2'})
+        self.assertEqual(secret.__fdict__, {'id': '1', 'secret': '2'})
 
     def test_internal_fields_can_be_set_directly(self):
         @jsonclass(class_graph='test_internal_4')
@@ -37,7 +37,7 @@ class TestInternalValidator(unittest.TestCase):
             secret: str = types.str.internal
         secret = Secret(id='1')
         secret.secret = '2'
-        self.assertEqual(secret.__dict__, {'id': '1', 'secret': '2'})
+        self.assertEqual(secret.__fdict__, {'id': '1', 'secret': '2'})
 
     def test_internal_fields_will_not_be_present_in_output(self):
         @jsonclass(class_graph='test_internal_5')
