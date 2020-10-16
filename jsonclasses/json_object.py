@@ -8,9 +8,9 @@ from .exceptions import ValidationException
 from .fields import FieldType, Field, other_field, field, is_reference_field
 from .validators.instanceof_validator import InstanceOfValidator
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
-from .lookup_map import LookupMap
 from .owned_dict import OwnedDict
 from .owned_list import OwnedList
+from .object_graph import ObjectGraph
 
 
 @dataclass(init=False)
@@ -69,7 +69,7 @@ class JSONObject:
             all_fields=True,
             dest=self,
             fill_dest_blanks=fill_blanks,
-            lookup_map=LookupMap())
+            object_graph=ObjectGraph())
         validator.transform(context)
 
     def update(self: T, **kwargs: Any) -> T:
@@ -134,7 +134,7 @@ class JSONObject:
             parent=self,
             fdesc=None,
             all_fields=all_fields,
-            lookup_map=LookupMap())
+            object_graph=ObjectGraph())
         InstanceOfValidator(self.__class__).validate(context)
         return self
 
@@ -152,7 +152,22 @@ class JSONObject:
         return True
 
     @property
+    def _graph(self: T) -> ObjectGraph:
+        """The JSON Object's object graph.
+        """
+        if not hasattr(self, '__graph'):
+            self.__graph = ObjectGraph()
+            # self.__graph.put(self)
+        return self.__graph
+
+    @_graph.setter
+    def _graph(self: T, val: ObjectGraph):
+        self.__graph = val
+
+    @property
     def __fdict__(self: T) -> dict[str, Any]:
+        """Purified dict contains __dict__ items only for fields.
+        """
         retval = {}
         for k, v in self.__dict__.items():
             if not k.startswith('_'):

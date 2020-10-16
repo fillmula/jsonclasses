@@ -45,9 +45,9 @@ class InstanceOfValidator(Validator):
             pk = pk_field(cls).field_name
             id = cast(Union[str, int], getattr(context.value, pk))
             if id is not None:
-                if context.lookup_map.fetch(cls.__name__, id):
+                if context.object_graph.has(context.value):
                     return
-                context.lookup_map.put(cls.__name__, id, context.value)
+                context.object_graph.put(context.value)
         except AttributeError:
             pass
         only_validate_modified = False
@@ -152,17 +152,19 @@ class InstanceOfValidator(Validator):
         if context.dest is not None:
             dest = context.dest
             if pk_value is not None:
-                context.lookup_map.put(cls.__name__, pk_value, dest)
+                context.object_graph.putp(pk_value, dest)
         elif pk_value is not None:
-            exist_item = context.lookup_map.fetch(cls.__name__, pk_value)
+            exist_item = context.object_graph.getp(cls, pk_value)
             if exist_item is not None:
                 dest = exist_item
                 soft_apply_mode = True
             else:
                 dest = cls()
-                context.lookup_map.put(cls.__name__, pk_value, dest)
+                context.object_graph.putp(pk_value, dest)
         else:
             dest = cls()
+            context.object_graph.put(dest)
+
         # strictness check
         strictness = cast(bool, cls.config.strict_input)
         if context.fdesc is not None:
@@ -256,10 +258,11 @@ class InstanceOfValidator(Validator):
             pk = this_pk_field.field_name
             if hasattr(context.value, pk):
                 pk_value = cast(Union[str, int], getattr(context.value, pk))
-        exist_item = context.lookup_map.fetch(cls.__name__, pk_value)
+        exist_item = context.object_graph.getp(context.value.__class__,
+                                               pk_value)
         if exist_item is not None:  # Don't do twice for an object
             return context.value
-        context.lookup_map.put(cls.__name__, pk_value, context.value)
+        context.object_graph.put(context.value)
         should_update = True
         if isinstance(context.value, ORMObject):
             orm_value = cast(ORMObject, context.value)

@@ -1,7 +1,7 @@
 """This module defineds the JSON Class object mapping graph."""
 from __future__ import annotations
+from typing import TypeVar, Union, Optional, TYPE_CHECKING
 from .fields import pk_field
-from typing import TypeVar, cast, TYPE_CHECKING
 if TYPE_CHECKING:
     from .json_object import JSONObject
     T = TypeVar('T', bound=JSONObject)
@@ -15,29 +15,38 @@ class ClassTable:
 
     def put(self, object: T) -> None:
         try:
-            pk = pk_field(object).field_name
-            pk_value = getattr(object, cast(str, pk))
+            pkf = pk_field(object).field_name
+            pk = getattr(object, pkf)
         except AttributeError:
-            pk_value = None
-        if pk_value is None:
+            pk = None
+        if pk is None:
             memory_id = hex(id(object))
             self._memory_id_table[memory_id] = object
         else:
-            self._primary_key_table[pk_value] = object
+            self.putp(pk, object)
+
+    def putp(self, pk: Union[str, int], object: T) -> None:
+        self._primary_key_table[str(pk)] = object
 
     def has(self, object: T) -> bool:
         try:
-            pk = pk_field(object).field_name
-            pk_value = getattr(object, cast(str, pk))
+            pkf = pk_field(object).field_name
+            pk = getattr(object, pkf)
         except AttributeError:
-            pk_value = None
-        if pk_value is not None:
-            if self._primary_key_table.get(pk_value) is not None:
+            pk = None
+        if pk is not None:
+            if self._primary_key_table.get(str(pk)) is not None:
                 return True
         memory_id = hex(id(object))
         if self._memory_id_table.get(memory_id) is not None:
             return True
         return False
+
+    def getp(self, pk: Union[str, int]) -> Optional[T]:
+        return self._primary_key_table.get(str(pk))
+
+    def getm(self, memid: int) -> Optional[T]:
+        return self._memory_id_table.get(hex(memid))
 
 
 class ObjectGraph:
@@ -53,5 +62,14 @@ class ObjectGraph:
     def put(self, object: T) -> None:
         self.class_table(object.__class__).put(object)
 
+    def putp(self, pk: Union[str, int], object: T) -> None:
+        self.class_table(object.__class__).putp(pk, object)
+
     def has(self, object: T) -> bool:
         return self.class_table(object.__class__).has(object)
+
+    def getp(self, cls: type[T], pk: Union[str, int]) -> Optional[T]:
+        return self.class_table(cls).getp(pk)
+
+    def getm(self, cls: type[T], memid: int) -> Optional[T]:
+        return self.class_table(cls).getm(memid)

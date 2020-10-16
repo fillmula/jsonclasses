@@ -10,7 +10,6 @@ from .owned_dict import OwnedDict
 from .owned_list import OwnedList
 from .validators.instanceof_validator import InstanceOfValidator
 from .contexts import TransformingContext
-from .lookup_map import LookupMap
 
 
 @jsonclass
@@ -107,7 +106,7 @@ class ORMObject(JSONObject):
             keypath_parent='',
             parent=self,
             fdesc=None,
-            lookup_map=LookupMap())
+            object_graph=self._graph)
         validator.serialize(context)
 
     def _database_write(self: T) -> None:

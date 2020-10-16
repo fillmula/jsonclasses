@@ -1,8 +1,6 @@
 from __future__ import annotations
-from jsonclasses.orm_object import ORMObject
 from unittest import TestCase
-from jsonclasses import (jsonclass, JSONObject, ORMObject, types,
-                         ValidationException)
+from jsonclasses import jsonclass, JSONObject, ORMObject, types
 
 
 class TestSetOnSaveVailidator(TestCase):
