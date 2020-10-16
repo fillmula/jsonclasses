@@ -22,7 +22,7 @@ class Address(JSONObject):
 class User(JSONObject):
     id: int = types.int.primary.required
     name: str
-    posts: list[Post] = types.listof('Post').linkedby('user').required
+    posts: list[Post] = types.nonnull.listof('Post').linkedby('user').required
     comments: list[Comment] = types.listof('Comment').linkedby('commenter').required
 
 
@@ -56,3 +56,15 @@ class TestObjectGraph(TestCase):
         address = Address(id=1, line1='Line 1')
         contact.address = address
         self.assertEqual(contact._graph, address._graph)
+
+    def test_merge_object_graph_on_list_assign(self):
+        user = User(id=1, name='John')
+        post = Post(id=1, name='P1')
+        user.posts = [post]
+        self.assertEqual(user._graph, post._graph)
+
+    def test_merge_object_graph_on_list_append(self):
+        user = User(id=1, name='John')
+        post = Post(id=1, name='P1')
+        user.posts.append(post)
+        self.assertEqual(user._graph, post._graph)
