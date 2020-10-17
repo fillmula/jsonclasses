@@ -12,6 +12,7 @@ from .contexts import TransformingContext, ValidatingContext, ToJSONContext
 from .owned_dict import OwnedDict
 from .owned_list import OwnedList
 from .object_graph import ObjectGraph
+from .keypath import concat_keypath
 
 
 @dataclass(init=False)
@@ -281,6 +282,34 @@ class JSONObject:
     def __setattr_direct__(self: T, name: str, value: Any) -> None:
         super().__setattr__(name, value)
 
+    def _owned_list(self: T, lst: list, kpath: str) -> OwnedList:
+        new_lst = []
+        for i, v in enumerate(lst):
+            if isinstance(v, list):
+                new_lst.append(self._owned_list(v, concat_keypath(kpath, i)))
+            elif isinstance(v, dict):
+                new_lst.append(self._owned_dict(v, concat_keypath(kpath, i)))
+            else:
+                new_lst.append(v)
+        owned_list = OwnedList[Any](new_lst)
+        owned_list.keypath = kpath
+        owned_list.owner = self
+        return owned_list
+
+    def _owned_dict(self: T, dct: dict, kpath: str) -> OwnedDict:
+        new_dct = {}
+        for k, v in dct.items():
+            if isinstance(v, list):
+                new_dct[k] = self._owned_list(v, concat_keypath(kpath, k))
+            elif isinstance(v, dict):
+                new_dct[k] = self._owned_dict(v, concat_keypath(kpath, k))
+            else:
+                new_dct[k] = v
+        owned_dict = OwnedDict[Any](new_dct)
+        owned_dict.keypath = kpath
+        owned_dict.owner = self
+        return owned_dict
+
     def __setattr__(self: T, name: str, value: Any) -> None:
         if name.startswith('_'):  # private fields
             super().__setattr__(name, value)
@@ -291,13 +320,9 @@ class JSONObject:
             super().__setattr__(name, value)
             return
         if isinstance(value, list):  # json class mutable list collection
-            value = OwnedList[Any](value)
-            value.owner = self
-            value.keypath = name
+            value = self._owned_list(value, name)
         if isinstance(value, dict):  # json class mutable dict collection
-            value = OwnedDict[str, Any](value)
-            value.owner = self
-            value.keypath = name
+            value = self._owned_dict(value, name)
         if is_reference_field(tfield):  # json class ref field
             should_link = True
             if hasattr(self, name):
@@ -312,18 +337,27 @@ class JSONObject:
         super().__setattr__(name, value)  # json class normal field
 
     def __odict_add__(self, odict: OwnedDict, key: str, val: Any) -> None:
-        pass
+        if isinstance(val, dict):
+            odict[key] = self._owned_dict(val,
+                                          concat_keypath(odict.keypath, key))
+        if isinstance(val, list):
+            odict[key] = self._owned_list(val,
+                                          concat_keypath(odict.keypath, key))
 
     def __odict_del__(self, odict: OwnedDict, val: Any) -> None:
         pass
 
     def __olist_add__(self, olist: OwnedList, idx: int, val: Any) -> None:
         tfield = field(self, olist.keypath)
-        if tfield is None:
+        if tfield is not None and is_reference_field(tfield):
+            self.__link_field__(tfield, [val])
             return
-        if not is_reference_field(tfield):
-            return
-        self.__link_field__(tfield, [val])
+        if isinstance(val, dict):
+            olist[idx] = self._owned_dict(val,
+                                          concat_keypath(olist.keypath, idx))
+        if isinstance(val, list):
+            olist[idx] = self._owned_list(val,
+                                          concat_keypath(olist.keypath, idx))
 
     def __olist_del__(self, olist: OwnedList, val: Any) -> None:
         tfield = field(self, olist.keypath)

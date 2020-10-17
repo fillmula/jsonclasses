@@ -12,3 +12,12 @@ def concat_keypath(*args: Union[str, int]):
             retval += '.'
         retval += str(arg)
     return retval
+
+
+def initial_keypaths(keypaths: set[str]) -> set[str]:
+    """Keypaths can be connected with dots, return only initial.
+    """
+    retval = set()
+    for keypath in keypaths:
+        retval.add(keypath.split('.')[0])
+    return retval

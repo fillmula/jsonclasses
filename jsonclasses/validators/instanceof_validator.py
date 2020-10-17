@@ -6,7 +6,7 @@ from ..fields import (Field, FieldDescription, FieldStorage, FieldType,
                       is_reference_field, is_embedded_instance_field, pk_field)
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..keypath import concat_keypath
+from ..keypath import concat_keypath, initial_keypaths
 from ..types_resolver import resolve_types
 from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 if TYPE_CHECKING:
@@ -48,7 +48,8 @@ class InstanceOfValidator(Validator):
         modified_fields = []
         if isinstance(context.value, ORMObject) and not context.value.is_new:
             only_validate_modified = True
-            modified_fields = list(context.value.modified_fields)
+            modified_fields = list(initial_keypaths((context.value
+                                                     .modified_fields)))
         keypath_messages = {}
         for field in fields(context.value):
             fname = field.field_name

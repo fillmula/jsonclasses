@@ -2,8 +2,7 @@ from __future__ import annotations
 from typing import Optional
 from datetime import datetime
 from unittest import TestCase
-from jsonclasses import (jsonclass, JSONObject, ORMObject, types, Link,
-                         linkedby, linkto)
+from jsonclasses import jsonclass, ORMObject, types, Link, linkedby, linkto
 
 
 @jsonclass(class_graph='test_object_graph_1')
