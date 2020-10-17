@@ -5,7 +5,8 @@ from typing import Any, Optional, ClassVar, TypeVar
 from dataclasses import dataclass, fields as dataclass_fields
 from .config import Config
 from .exceptions import ValidationException
-from .fields import FieldType, Field, other_field, field, is_reference_field
+from .fields import (FieldType, Field, other_field, field, is_reference_field,
+                     updated_at_field)
 from .validators.instanceof_validator import InstanceOfValidator
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
 from .owned_dict import OwnedDict
@@ -48,6 +49,7 @@ class JSONObject:
         method triggers eager validation and transform. This method returns
         self, thus you can chain calling with other instance methods.
         """
+        self._detached_test()
         self.__set(fill_blanks=False, **kwargs)
         return self
 
@@ -82,6 +84,7 @@ class JSONObject:
         through this method. This method returns self, thus you can chain
         calling with other instance methods.
         """
+        self._detached_test()
         unallowed_keys = set(kwargs.keys()) - set(self.__fdict__.keys())
         unallowed_keys_length = len(unallowed_keys)
         if unallowed_keys_length > 0:
@@ -102,6 +105,7 @@ class JSONObject:
         Returns:
           dict: A dict represents this object's JSON object.
         """
+        self._detached_test()
         validator = InstanceOfValidator(self.__class__)
         config = self.__class__.config
         context = ToJSONContext(value=self,
@@ -121,6 +125,7 @@ class JSONObject:
         Returns:
           None: upon successful validation, returns nothing.
         """
+        self._detached_test()
         config = self.__class__.config
         context = ValidatingContext(
             value=self,
@@ -152,6 +157,20 @@ class JSONObject:
         return True
 
     @property
+    def is_detached(self: T) -> bool:
+        """This property marks during object graph merging, this object doesn't
+        represent the newest object status and thus deteched from the graph and
+        become orphan and cannot be used.
+        """
+        if not hasattr(self, '_is_detached'):
+            self._is_detached = False
+        return self._is_detached
+
+    def _detached_test(self: T) -> None:
+        if self.is_detached:
+            raise ValueError(f'JSON object {self} is detached')
+
+    @property
     def _graph(self: T) -> ObjectGraph:
         """The JSON Object's object graph.
         """
@@ -163,6 +182,32 @@ class JSONObject:
     def _graph(self: T, val: ObjectGraph) -> None:
         self._graph_ = val
 
+    def _compare(self: T, old: T, new: T) -> T:
+        from .orm_object import ORMObject
+        if not isinstance(old, ORMObject):  # old and new have same class
+            raise ValueError((f'graph merging conflict on {old} and {new}, '
+                              'please use ORMObject'))
+        ua_field = updated_at_field(old)  # old and new have same fields
+        if ua_field is None:
+            raise ValueError((f'graph merging conflict on {old} and {new}, '
+                              'please record updated at timestamp'))
+        ua_old = getattr(old, ua_field.field_name)
+        ua_new = getattr(new, ua_field.field_name)
+        if ua_old == ua_new:
+            if not new.is_modified and not old.is_modified:
+                return new  # return any if both not modified
+            if new.is_modified and not old.is_modified:
+                return new
+            if old.is_modified and not new.is_modified:
+                return old
+            raise ValueError((f'graph merging conflict on {old} and {new},'
+                                ' both are modified'))
+        if ua_old is None:
+            return new
+        if ua_new is None:
+            return old
+        return new if ua_new > ua_old else old
+
     def _merge_graph(self: T, obj: T) -> None:
         graph1 = self._graph
         graph2 = obj._graph
@@ -171,9 +216,10 @@ class JSONObject:
         for o in graph2:
             if o._graph is not graph1:
                 if graph1.has(o):
-                    # print(graph1.get(o))
-                    if graph1.get(o) is not o:
-                        raise ValueError('conflict on graph merging')
+                    o_in_1 = graph1.get(o)
+                    if o_in_1 is not o:
+                        o_to_keep = self._compare(o_in_1, o)
+
                 graph1.put(o)
                 o._graph = graph1
 
@@ -197,6 +243,7 @@ class JSONObject:
         if name.startswith('_'):  # private fields
             super().__setattr__(name, value)
             return
+        self._detached_test()
         tfield = field(self, name)
         if tfield is None:  # not json class field
             super().__setattr__(name, value)
@@ -223,12 +270,13 @@ class JSONObject:
         super().__setattr__(name, value)  # json class normal field
 
     def __odict_add__(self, odict: OwnedDict, key: str, val: Any) -> None:
-        pass
+        self._detached_test()
 
     def __odict_del__(self, odict: OwnedDict, val: Any) -> None:
-        pass
+        self._detached_test()
 
     def __olist_add__(self, olist: OwnedList, idx: int, val: Any) -> None:
+        self._detached_test()
         tfield = field(self, olist.keypath)
         if tfield is None:
             return
@@ -237,6 +285,7 @@ class JSONObject:
         self.__link_field__(tfield, [val])
 
     def __olist_del__(self, olist: OwnedList, val: Any) -> None:
+        self._detached_test()
         tfield = field(self, olist.keypath)
         if tfield is None:
             return
@@ -245,7 +294,7 @@ class JSONObject:
         self.__unlink_field__(tfield, [val])
 
     def __olist_sor__(self, olist: OwnedList) -> None:
-        pass
+        self._detached_test()
 
     def __unlink_field__(self, field: Field, value: Any) -> None:
         items: list[JSONObject] = []
