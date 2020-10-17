@@ -201,12 +201,15 @@ class JSONObject:
             if old.is_modified and not new.is_modified:
                 return old
             raise ValueError((f'graph merging conflict on {old} and {new},'
-                                ' both are modified'))
+                              ' both are modified'))
         if ua_old is None:
             return new
         if ua_new is None:
             return old
         return new if ua_new > ua_old else old
+
+    def _replace_refs(self: T, old: T, new: T):
+        pass
 
     def _merge_graph(self: T, obj: T) -> None:
         graph1 = self._graph
@@ -217,11 +220,21 @@ class JSONObject:
             if o._graph is not graph1:
                 if graph1.has(o):
                     o_in_1 = graph1.get(o)
-                    if o_in_1 is not o:
-                        o_to_keep = self._compare(o_in_1, o)
-
-                graph1.put(o)
-                o._graph = graph1
+                    if o_in_1 is o:
+                        o_in_1._graph = graph1
+                        continue
+                    o_to_keep = self._compare(o_in_1, o)
+                    if o_in_1 is o_to_keep:
+                        o_in_2 = o
+                        self._replace_refs(o_in_2, o_in_1)
+                        pass
+                    else:
+                        graph1.put(o_to_keep)
+                        o_to_keep._graph = graph1
+                        self._replace_refs(o_in_1, o_to_keep)
+                else:
+                    graph1.put(o)
+                    o._graph = graph1
 
     def _link_graph(self: T, obj: T) -> None:
         self._merge_graph(obj)
