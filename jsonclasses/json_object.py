@@ -187,6 +187,10 @@ class JSONObject:
         if not isinstance(old, ORMObject):  # old and new have same class
             raise ValueError((f'graph merging conflict on {old} and {new}, '
                               'please use ORMObject'))
+        if old.is_detached:
+            return new
+        if new.is_detached:
+            return old
         ua_field = updated_at_field(old)  # old and new have same fields
         if ua_field is None:
             raise ValueError((f'graph merging conflict on {old} and {new}, '
@@ -223,10 +227,12 @@ class JSONObject:
                 oth_field = other_field(old, item, old_field)
                 other_value = getattr(item, oth_field.field_name)
                 if other_value is old:
+                    setattr(old, '_is_detached', True)
                     setattr(item, oth_field.field_name, new)
                 if isinstance(other_value, list):
                     try:
                         i = other_value.index(old)
+                        setattr(old, '_is_detached', True)
                         other_value[i] = new
                     except ValueError:
                         continue
@@ -247,11 +253,14 @@ class JSONObject:
                     if o_in_1 is o_to_keep:
                         o_in_2 = o
                         self._replace_refs(o_in_2, o_in_1)
-                        pass
+                        setattr(o_in_2, '_is_modified', False)
+                        setattr(o_in_2, '_is_detached', True)
                     else:
                         graph1.put(o_to_keep)
                         o_to_keep._graph = graph1
                         self._replace_refs(o_in_1, o_to_keep)
+                        setattr(o_in_1, '_is_modified', False)
+                        setattr(o_in_1, '_is_detached', True)
                 else:
                     graph1.put(o)
                     o._graph = graph1
@@ -276,7 +285,7 @@ class JSONObject:
         if name.startswith('_'):  # private fields
             super().__setattr__(name, value)
             return
-        self._detached_test()
+        # self._detached_test()
         tfield = field(self, name)
         if tfield is None:  # not json class field
             super().__setattr__(name, value)
@@ -303,13 +312,12 @@ class JSONObject:
         super().__setattr__(name, value)  # json class normal field
 
     def __odict_add__(self, odict: OwnedDict, key: str, val: Any) -> None:
-        self._detached_test()
+        pass
 
     def __odict_del__(self, odict: OwnedDict, val: Any) -> None:
-        self._detached_test()
+        pass
 
     def __olist_add__(self, olist: OwnedList, idx: int, val: Any) -> None:
-        self._detached_test()
         tfield = field(self, olist.keypath)
         if tfield is None:
             return
@@ -318,7 +326,6 @@ class JSONObject:
         self.__link_field__(tfield, [val])
 
     def __olist_del__(self, olist: OwnedList, val: Any) -> None:
-        self._detached_test()
         tfield = field(self, olist.keypath)
         if tfield is None:
             return
@@ -327,7 +334,7 @@ class JSONObject:
         self.__unlink_field__(tfield, [val])
 
     def __olist_sor__(self, olist: OwnedList) -> None:
-        self._detached_test()
+        pass
 
     def __unlink_field__(self, field: Field, value: Any) -> None:
         items: list[JSONObject] = []

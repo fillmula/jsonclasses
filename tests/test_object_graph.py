@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Optional
+from datetime import datetime
 from unittest import TestCase
 from jsonclasses import (jsonclass, JSONObject, ORMObject, types, Link,
                          linkedby, linkto)
@@ -20,15 +21,19 @@ class Address(ORMObject):
 
 
 @jsonclass(class_graph='test_object_graph_1')
-class User(JSONObject):
+class User(ORMObject):
     id: int = types.int.primary.required
     name: str
     posts: list[Post] = types.nonnull.listof('Post').linkedby('user').required
     comments: list[Comment] = types.listof('Comment').linkedby('commenter').required
+    updated_at: datetime = (types.datetime.timestamp('updated')
+                            .default(datetime.now)
+                            .setonsave(datetime.now)
+                            .required)
 
 
 @jsonclass(class_graph='test_object_graph_1')
-class Post(JSONObject):
+class Post(ORMObject):
     id: int = types.int.primary.required
     name: str
     user: User = types.linkto.instanceof('User').required
@@ -36,7 +41,7 @@ class Post(JSONObject):
 
 
 @jsonclass(class_graph='test_object_graph_1')
-class Comment(JSONObject):
+class Comment(ORMObject):
     id: int = types.int.primary.required
     content: str
     post: Post = types.linkto.instanceof('Post').required
@@ -90,3 +95,32 @@ class TestObjectGraph(TestCase):
         address = Address(line1='Line 1')
         contact.address = address
         contact._setonsave()
+
+    def test_merge_graph_conflict_keep_new_one(self):
+        oldu = User(id=1, updated_at=datetime(2019, 1, 5, 0, 0, 0), name='ou')
+        newu = User(id=1, name='nu')
+        comment1 = Comment(id=1, content='C1', commenter=oldu)
+        comment2 = Comment(id=2, content='C2', commenter=newu)
+        post = Post(id=1, name='P')
+        post.comments = [comment1, comment2]
+        self.assertIs(post.comments[0].commenter, newu)
+        self.assertIs(post.comments[1].commenter, newu)
+        self.assertEqual(oldu.is_detached, True)
+
+    def test_merge_graph_conflict_keep_edited_one(self):
+        ts = datetime(2019, 1, 5, 0, 0, 0)
+        oldu = User(id=1, updated_at=ts, name='ou')
+        newu = User(id=1, updated_at=ts, name='nu')
+        setattr(oldu, '_is_new', False)
+        setattr(newu, '_is_new', False)
+        newu.name = 'nnu'
+        comment1 = Comment(id=1, content='C1', commenter=oldu)
+        comment2 = Comment(id=2, content='C2', commenter=newu)
+        post = Post(id=1, name='P')
+        post.comments = [comment1]
+        setattr(oldu, '_is_modified', False)
+        setattr(oldu, '_modified_fields', set())
+        post.comments.append(comment2)
+        self.assertIs(post.comments[0].commenter, newu)
+        self.assertIs(post.comments[1].commenter, newu)
+        self.assertEqual(oldu.is_detached, True)
