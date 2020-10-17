@@ -5,8 +5,8 @@ from typing import Any, Optional, ClassVar, TypeVar
 from dataclasses import dataclass, fields as dataclass_fields
 from .config import Config
 from .exceptions import ValidationException
-from .fields import (FieldType, Field, other_field, field, is_reference_field,
-                     updated_at_field)
+from .fields import (FieldType, Field, fields, other_field, field,
+                     is_reference_field, updated_at_field)
 from .validators.instanceof_validator import InstanceOfValidator
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
 from .owned_dict import OwnedDict
@@ -209,7 +209,27 @@ class JSONObject:
         return new if ua_new > ua_old else old
 
     def _replace_refs(self: T, old: T, new: T):
-        pass
+        old_fields = fields(old)
+        for old_field in old_fields:
+            if not is_reference_field(old_field):
+                continue
+            val = getattr(old, old_field.field_name)
+            items: list[JSONObject] = []
+            if isinstance(val, JSONObject):
+                items = [val]
+            if isinstance(val, list):
+                items = val
+            for item in items:
+                oth_field = other_field(old, item, old_field)
+                other_value = getattr(item, oth_field.field_name)
+                if other_value is old:
+                    setattr(item, oth_field.field_name, new)
+                if isinstance(other_value, list):
+                    try:
+                        i = other_value.index(old)
+                        other_value[i] = new
+                    except ValueError:
+                        continue
 
     def _merge_graph(self: T, obj: T) -> None:
         graph1 = self._graph
