@@ -89,6 +89,14 @@ class ORMObject(JSONObject):
             self._modified_fields: set[str] = set()
         return self._modified_fields
 
+    @property
+    def is_deleted(self: T) -> bool:
+        """This property marks if the object is deleted from the database.
+        """
+        if not hasattr(self, '_is_deleted'):
+            self._is_deleted = False
+        return self._is_deleted
+
     def _setonsave(self: T) -> None:
         """Update fields with setonsave marks if this object is modified. This
         is a graph operation. Objects chained with the saving object will also

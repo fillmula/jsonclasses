@@ -170,6 +170,9 @@ class JSONObject:
     def _detached_test(self: T) -> None:
         if self.is_detached:
             raise ValueError(f'JSON object {self} is detached')
+        if (hasattr(self, '_is_deleted')
+           and getattr(self, '_is_deleted') is True):
+            raise ValueError(f'JSON object {self} is deleted')
 
     @property
     def _graph(self: T) -> ObjectGraph:
