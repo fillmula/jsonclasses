@@ -32,6 +32,10 @@ class JSONObject:
 
     config: ClassVar[Config]
 
+    @classmethod
+    def jofields(cls: type[T]) -> list[Field]:
+        return fields(cls)
+
     def __init__(self: T, **kwargs: Any) -> None:
         """Initialize a new jsonclass object from keyed arguments or a dict.
         This method is suitable for accepting web and malformed inputs. Eager
