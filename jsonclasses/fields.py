@@ -149,7 +149,7 @@ def dataclass_field_get_types(
         return to_types(field.type, graph_sibling)
 
 
-def fields(
+def get_fields(
     class_or_instance: Union[JSONObject, type[JSONObject]]
 ) -> list[Field]:
     """Iterate through a JSON Class or JSON Class instance's fields."""
@@ -188,7 +188,7 @@ def fields(
 
 def field(class_or_instance: Union[JSONObject, type[JSONObject]],
           name: str) -> Optional[Field]:
-    all_fields = fields(class_or_instance)
+    all_fields = get_fields(class_or_instance)
     return next((f for f in all_fields if f.field_name == name), None)
 
 
@@ -214,12 +214,12 @@ def other_field(this: Union[JSONObject, type[JSONObject]],
         tfield = field(this, tfield)
     tfield = cast(Field, tfield)
     if tfield.fdesc.field_storage == FieldStorage.LOCAL_KEY:
-        return next((f for f in fields(other)
+        return next((f for f in get_fields(other)
                     if (f.fdesc.foreign_key == tfield.field_name)
                     and (field_match_class(f, tclass))), None)
     if tfield.fdesc.field_storage == FieldStorage.FOREIGN_KEY:
         fk = tfield.fdesc.foreign_key
-        return next((f for f in fields(other)
+        return next((f for f in get_fields(other)
                      if (f.field_name == fk)
                      and field_match_class(f, tclass)), None)
     return None
@@ -249,23 +249,23 @@ def is_embedded_instance_field(cori: Union[JSONObject, type[JSONObject]],
 
 
 def pk_field(cori: Union[JSONObject, type[JSONObject]]) -> Optional[Field]:
-    tfields = fields(cori)
+    tfields = get_fields(cori)
     return next((f for f in tfields if f.fdesc.primary is True), None)
 
 
 def created_at_field(
         cori: Union[JSONObject, type[JSONObject]]) -> Optional[Field]:
-    tfields = fields(cori)
+    tfields = get_fields(cori)
     return next((f for f in tfields if f.fdesc.usage == 'created_at'), None)
 
 
 def updated_at_field(
         cori: Union[JSONObject, type[JSONObject]]) -> Optional[Field]:
-    tfields = fields(cori)
+    tfields = get_fields(cori)
     return next((f for f in tfields if f.fdesc.usage == 'updated_at'), None)
 
 
 def deleted_at_field(
         cori: Union[JSONObject, type[JSONObject]]) -> Optional[Field]:
-    tfields = fields(cori)
+    tfields = get_fields(cori)
     return next((f for f in tfields if f.fdesc.usage == 'deleted_at'), None)

@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any, Sequence, Type, Union, cast, TYPE_CHECKING
 from ..fields import (Field, FieldDescription, FieldStorage, FieldType,
-                      Nullability, WriteRule, ReadRule, Strictness, fields,
+                      Nullability, WriteRule, ReadRule, Strictness, get_fields,
                       is_reference_field, is_embedded_instance_field, pk_field)
 from ..exceptions import ValidationException
 from .validator import Validator
@@ -51,7 +51,7 @@ class InstanceOfValidator(Validator):
             modified_fields = list(initial_keypaths((context.value
                                                      .modified_fields)))
         keypath_messages = {}
-        for field in context.value.__class__.jofields():
+        for field in context.value.__class__.fields():
             fname = field.field_name
             fd = field.fdesc
             bypass = False
@@ -85,10 +85,10 @@ class InstanceOfValidator(Validator):
                           dest: JSONObject) -> None:
         if context.config_owner.camelize_json_keys:
             available_name_pairs = [(field.field_name, field.json_field_name)
-                                    for field in dest.__class__.jofields()]
+                                    for field in dest.__class__.fields()]
             available_names = [e for pair in available_name_pairs for e in pair]
         else:
-            available_names = [field.field_name for field in dest.__class__.jofields()]
+            available_names = [field.field_name for field in dest.__class__.fields()]
         for k in context.value.keys():
             if k not in available_names:
                 raise ValidationException(
@@ -173,7 +173,7 @@ class InstanceOfValidator(Validator):
         # fill values
         dict_keys = list(context.value.keys())
         nonnull_ref_lists: list[str] = []
-        for field in dest.__class__.jofields():
+        for field in dest.__class__.fields():
             if not self._has_field_value(field, dict_keys):
                 if is_reference_field(field):
                     fdesc = field.fdesc
@@ -223,7 +223,7 @@ class InstanceOfValidator(Validator):
         entity_chain = context.entity_chain
         cls_name = context.value.__class__.__name__
         no_key_refs = cls_name in entity_chain
-        for field in context.value.__class__.jofields():
+        for field in context.value.__class__.fields():
             field_value = getattr(context.value, field.field_name)
             fd = field.field_types.fdesc
             jf_name = field.json_field_name
@@ -253,7 +253,7 @@ class InstanceOfValidator(Validator):
             orm_value = cast(ORMObject, context.value)
             if not orm_value.is_modified and not orm_value.is_new:
                 should_update = False
-        for field in context.value.__class__.jofields():
+        for field in context.value.__class__.fields():
             if (is_reference_field(field)
                     or is_embedded_instance_field(context.value, field)
                     or should_update):

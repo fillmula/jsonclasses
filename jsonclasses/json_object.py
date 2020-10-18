@@ -5,7 +5,7 @@ from typing import Any, Optional, ClassVar, TypeVar
 from dataclasses import dataclass, fields as dataclass_fields
 from .config import Config
 from .exceptions import ValidationException
-from .fields import (FieldType, Field, fields, other_field, field,
+from .fields import (FieldType, Field, get_fields, other_field, field,
                      is_reference_field, updated_at_field)
 from .validators.instanceof_validator import InstanceOfValidator
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
@@ -33,8 +33,8 @@ class JSONObject:
     config: ClassVar[Config]
 
     @classmethod
-    def jofields(cls: type[T]) -> list[Field]:
-        return fields(cls)
+    def fields(cls: type[T]) -> list[Field]:
+        return get_fields(cls)
 
     def __init__(self: T, **kwargs: Any) -> None:
         """Initialize a new jsonclass object from keyed arguments or a dict.
@@ -221,7 +221,7 @@ class JSONObject:
         return new if ua_new > ua_old else old
 
     def _replace_refs(self: T, old: T, new: T):
-        old_fields = fields(old)
+        old_fields = old.__class__.fields()
         for old_field in old_fields:
             if not is_reference_field(old_field):
                 continue
