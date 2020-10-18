@@ -75,6 +75,7 @@ class ObjectGraph:
 
     def __init__(self):
         self._class_tables: dict[str, ClassTable] = {}
+        self._detached_table: dict[str, list[T]] = {}
 
     def class_table(self, cls: type[T]) -> ClassTable[T]:
         if self._class_tables.get(cls.__name__) is None:
@@ -109,3 +110,31 @@ class ObjectGraph:
                 if obj not in lst:
                     lst.append(obj)
         return lst.__iter__()
+
+    def put_detached(self, owner: type[T], detached: type[T]) -> None:
+        oid: str = ''
+        try:
+            pkf = pk_field(owner).field_name
+            oid = getattr(owner, pkf)
+        except AttributeError:
+            oid = None
+        if oid is None:
+            oid = hex(id(owner))
+        if self._detached_table.get(oid) is None:
+            self._detached_table[oid] = []
+        if detached not in self._detached_table[oid]:
+            self._detached_table[oid].append(detached)
+
+    def all_detached(self, owner: type[T]) -> list[type[T]]:
+        oid: str = ''
+        try:
+            pkf = pk_field(owner).field_name
+            oid = getattr(owner, pkf)
+        except AttributeError:
+            oid = None
+        if oid is None:
+            oid = hex(id(owner))
+        retval = self._detached_table.get(oid)
+        if retval is None:
+            return []
+        return retval
