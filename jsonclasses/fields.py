@@ -160,12 +160,13 @@ def get_fields(
         config = cls.config
     elif issubclass(class_or_instance, JSONObject):
         cls = class_or_instance
-        if hasattr(cls, '_fields'):
+        if hasattr(cls, '_fields') and cls._fields != []:
             return cls._fields
         config = class_or_instance.config
     else:
         raise ValueError('wrong argument passed to fields')
-    retval = []
+    list_fields = []
+    dict_fields = {}
     for field in dataclass_fields(class_or_instance):
         field_name = field.name
         json_field_name = camelize(field_name, False) if config.camelize_json_keys else field_name
@@ -174,22 +175,34 @@ def get_fields(
         assigned_default_value = None if isinstance(field.default, Types) else field.default
         if field.default == field.default_factory:  # type: ignore
             assigned_default_value = None
-        retval.append(
-            Field(field_name=field_name,
-                  json_field_name=json_field_name,
-                  db_field_name=db_field_name,
-                  field_types=field_types,
-                  assigned_default_value=assigned_default_value,
-                  fdesc=field_types.fdesc,
-                  field_validator=field_types.validator))
-    setattr(cls, '_fields', retval)
-    return retval
+        json_object_field = Field(
+            field_name=field_name,
+            json_field_name=json_field_name,
+            db_field_name=db_field_name,
+            field_types=field_types,
+            assigned_default_value=assigned_default_value,
+            fdesc=field_types.fdesc,
+            field_validator=field_types.validator)
+        list_fields.append(json_object_field)
+        dict_fields[field_name] = json_object_field
+    setattr(cls, '_fields', list_fields)
+    setattr(cls, '_dict_fields', dict_fields)
+    return list_fields
 
 
 def field(class_or_instance: Union[JSONObject, type[JSONObject]],
           name: str) -> Optional[Field]:
-    all_fields = get_fields(class_or_instance)
-    return next((f for f in all_fields if f.field_name == name), None)
+    from .json_object import JSONObject
+    if isinstance(class_or_instance, JSONObject):
+        cls = class_or_instance.__class__
+    elif issubclass(class_or_instance, JSONObject):
+        cls = class_or_instance
+    else:
+        raise ValueError('unexpected argument passed to field')
+    if hasattr(cls, '_dict_fields'):
+        return getattr(cls, '_dict_fields').get(name)
+    _ = get_fields(cls)
+    return getattr(cls, '_dict_fields').get(name)
 
 
 def fdesc_match_class(fdesc: FieldDescription, cls: type[JSONObject]) -> bool:
@@ -246,11 +259,6 @@ def is_embedded_instance_field(cori: Union[JSONObject, type[JSONObject]],
         if item_types.fdesc.field_type == FieldType.INSTANCE:
             return True
     return False
-
-
-def pk_field(cori: Union[JSONObject, type[JSONObject]]) -> Optional[Field]:
-    tfields = get_fields(cori)
-    return next((f for f in tfields if f.fdesc.primary is True), None)
 
 
 def created_at_field(

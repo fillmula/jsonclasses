@@ -2,8 +2,8 @@
 from __future__ import annotations
 from typing import Any, Sequence, Type, Union, cast, TYPE_CHECKING
 from ..fields import (Field, FieldDescription, FieldStorage, FieldType,
-                      Nullability, WriteRule, ReadRule, Strictness, get_fields,
-                      is_reference_field, is_embedded_instance_field, pk_field)
+                      Nullability, WriteRule, ReadRule, Strictness,
+                      is_reference_field, is_embedded_instance_field)
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..keypath import concat_keypath, initial_keypaths
@@ -86,7 +86,7 @@ class InstanceOfValidator(Validator):
         if context.config_owner.camelize_json_keys:
             available_name_pairs = [(field.field_name, field.json_field_name)
                                     for field in dest.__class__.fields()]
-            available_names = [e for pair in available_name_pairs for e in pair]
+            available_names = list({e for pair in available_name_pairs for e in pair})
         else:
             available_names = [field.field_name for field in dest.__class__.fields()]
         for k in context.value.keys():
@@ -137,7 +137,7 @@ class InstanceOfValidator(Validator):
         # figure out types, cls and dest
         types = resolve_types(self.raw_type, context.config_owner.linked_class)
         cls = cast(Type[JSONObject], types.fdesc.instance_types)
-        this_pk_field = pk_field(cls)
+        this_pk_field = cls.primary_field()
         if this_pk_field:
             pk = this_pk_field.field_name
             pk_value = cast(Union[str, int], context.value.get(pk))

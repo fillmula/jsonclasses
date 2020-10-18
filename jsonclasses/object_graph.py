@@ -1,7 +1,6 @@
 """This module defineds the JSON Class object mapping graph."""
 from __future__ import annotations
 from typing import Iterator, TypeVar, Union, Optional, TYPE_CHECKING
-from .fields import pk_field
 if TYPE_CHECKING:
     from .json_object import JSONObject
     T = TypeVar('T', bound=JSONObject)
@@ -14,11 +13,7 @@ class ClassTable:
         self._memory_id_table = {}
 
     def put(self, object: T) -> None:
-        try:
-            pkf = pk_field(object).field_name
-            pk = getattr(object, pkf)
-        except AttributeError:
-            pk = None
+        pk = object._id
         if pk is None:
             memory_id = hex(id(object))
             self._memory_id_table[memory_id] = object
@@ -32,11 +27,7 @@ class ClassTable:
         self._primary_key_table[str(pk)] = object
 
     def has(self, object: T) -> bool:
-        try:
-            pkf = pk_field(object).field_name
-            pk = getattr(object, pkf)
-        except AttributeError:
-            pk = None
+        pk = object._id
         if pk is not None:
             if self._primary_key_table.get(str(pk)) is not None:
                 return True
@@ -46,11 +37,7 @@ class ClassTable:
         return False
 
     def get(self, object: T) -> Optional[T]:
-        try:
-            pkf = pk_field(object).field_name
-            pk = getattr(object, pkf)
-        except AttributeError:
-            pk = None
+        pk = object._id
         if pk is not None:
             if self._primary_key_table.get(str(pk)) is not None:
                 return self._primary_key_table.get(str(pk))
@@ -113,11 +100,7 @@ class ObjectGraph:
 
     def put_detached(self, owner: type[T], detached: type[T]) -> None:
         oid: str = ''
-        try:
-            pkf = pk_field(owner).field_name
-            oid = getattr(owner, pkf)
-        except AttributeError:
-            oid = None
+        oid = owner._id
         if oid is None:
             oid = hex(id(owner))
         if self._detached_table.get(oid) is None:
@@ -126,12 +109,7 @@ class ObjectGraph:
             self._detached_table[oid].append(detached)
 
     def all_detached(self, owner: type[T]) -> list[type[T]]:
-        oid: str = ''
-        try:
-            pkf = pk_field(owner).field_name
-            oid = getattr(owner, pkf)
-        except AttributeError:
-            oid = None
+        oid: str = owner._id
         if oid is None:
             oid = hex(id(owner))
         retval = self._detached_table.get(oid)
