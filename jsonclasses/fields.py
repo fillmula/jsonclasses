@@ -155,13 +155,16 @@ def fields(
     """Iterate through a JSON Class or JSON Class instance's fields."""
     from .types import Types
     from .json_object import JSONObject
-    from .config import Config
     if isinstance(class_or_instance, JSONObject):
-        config = class_or_instance.__class__.config
+        cls = class_or_instance.__class__
+        config = cls.config
     elif issubclass(class_or_instance, JSONObject):
+        cls = class_or_instance
+        if hasattr(cls, '_fields'):
+            return cls._fields
         config = class_or_instance.config
     else:
-        config = Config()
+        raise ValueError('wrong argument passed to fields')
     retval = []
     for field in dataclass_fields(class_or_instance):
         field_name = field.name
@@ -179,6 +182,7 @@ def fields(
                   assigned_default_value=assigned_default_value,
                   fdesc=field_types.fdesc,
                   field_validator=field_types.validator))
+    setattr(cls, '_fields', retval)
     return retval
 
 
