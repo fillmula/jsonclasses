@@ -116,3 +116,8 @@ class ObjectGraph:
         if retval is None:
             return []
         return retval
+
+    def del_detached(self, owner: type[T], detached: type[T]) -> None:
+        lst = self.all_detached(owner)
+        if detached in lst:
+            lst.remove(detached)
