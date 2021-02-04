@@ -1,5 +1,6 @@
 import unittest
-from jsonclasses import jsonclass, JSONObject, ValidationException
+from typing import Optional
+from jsonclasses import jsonclass, JSONObject, ValidationException, types
 from datetime import datetime, date
 
 
@@ -154,3 +155,28 @@ class TestJSONObjectInitialize(unittest.TestCase):
         expired_at = datetime.fromisoformat('2020-10-10T05:03:02.999888')
         with self.assertRaises(ValidationException):
             Timer(**{'expiredAt': expired_at, 'boom': True})
+
+    def test_initialize_strict_handle_correctly_for_multiple_inheritance(self):
+        @jsonclass(class_graph='test_initialize_17', strict_input=True)
+        class BaseObject(JSONObject):
+            pass
+
+        @jsonclass(class_graph='test_initialize_17', strict_input=True)
+        class DBObject(BaseObject):
+            id: str = (types.str.readonly.primary.default(lambda: str())
+                       .required)
+            created_at: datetime = (types.datetime.readonly.timestamp('created')
+                                    .default(datetime.now).required)
+            updated_at: datetime = (types.datetime.readonly.timestamp('updated')
+                                    .default(datetime.now).setonsave(datetime.now)
+                                    .required)
+            deleted_at: Optional[datetime] = (types.datetime.readonly
+                                              .timestamp('deleted'))
+
+        @jsonclass(class_graph='test_initialize_17', strict_input=True)
+        class MyObject(DBObject):
+            name: str
+            age: int
+
+        input = {'name': 'John', 'age': 27}
+        MyObject(**input)
