@@ -155,16 +155,18 @@ def get_fields(
     """Iterate through a JSON Class or JSON Class instance's fields."""
     from .types import Types
     from .json_object import JSONObject
+    from .class_graph import class_graph_map
     if isinstance(class_or_instance, JSONObject):
         cls = class_or_instance.__class__
         config = cls.config
     elif issubclass(class_or_instance, JSONObject):
         cls = class_or_instance
-        if hasattr(cls, '_fields') and cls._fields != []:
-            return cls._fields
         config = class_or_instance.config
     else:
         raise ValueError('wrong argument passed to fields')
+    graph = class_graph_map.graph(cls.config.class_graph)
+    if graph.get_fields(cls) is not None:
+        return graph.get_fields(cls)
     list_fields = []
     dict_fields = {}
     for field in dataclass_fields(class_or_instance):
@@ -185,24 +187,26 @@ def get_fields(
             field_validator=field_types.validator)
         list_fields.append(json_object_field)
         dict_fields[field_name] = json_object_field
-    setattr(cls, '_fields', list_fields)
-    setattr(cls, '_dict_fields', dict_fields)
+    graph.set_fields(cls, list_fields)
+    graph.set_dict_fields(cls, dict_fields)
     return list_fields
 
 
 def field(class_or_instance: Union[JSONObject, type[JSONObject]],
           name: str) -> Optional[Field]:
     from .json_object import JSONObject
+    from .class_graph import class_graph_map
     if isinstance(class_or_instance, JSONObject):
         cls = class_or_instance.__class__
     elif issubclass(class_or_instance, JSONObject):
         cls = class_or_instance
     else:
         raise ValueError('unexpected argument passed to field')
-    if hasattr(cls, '_dict_fields'):
-        return getattr(cls, '_dict_fields').get(name)
-    _ = get_fields(cls)
-    return getattr(cls, '_dict_fields').get(name)
+    graph = class_graph_map.graph(cls.config.class_graph)
+    if graph.get_dict_fields(cls) is not None:
+        return graph.get_dict_fields(cls).get(name)
+    get_fields(cls)
+    return graph.get_dict_fields(cls).get(name)
 
 
 def fdesc_match_class(fdesc: FieldDescription, cls: type[JSONObject]) -> bool:

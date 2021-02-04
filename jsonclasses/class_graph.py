@@ -1,9 +1,10 @@
 """This module defineds the JSON Class class mapping graph."""
 from __future__ import annotations
-from typing import TypeVar, TYPE_CHECKING
+from typing import Optional, TypeVar, TYPE_CHECKING
 from inspect import getmodule
 if TYPE_CHECKING:
     from .json_object import JSONObject
+    from .fields import Field
     T = TypeVar('T', bound=JSONObject)
 
 
@@ -43,6 +44,8 @@ class ClassGraph:
     def __init__(self, graph_name: str):
         self._graph_name = graph_name
         self._map: dict[str, type[JSONObject]] = {}
+        self._fields_map: dict[str, list[Field]] = {}
+        self._dict_fields_map: dict[str, dict[str, Field]] = {}
 
     def add(self, cls: type[T]) -> type[T]:
         """Add a JSON Class to the graph."""
@@ -56,6 +59,30 @@ class ClassGraph:
             return self._map[cls_name]
         except KeyError:
             raise JSONClassNotFoundError(name=cls_name, graph=self._graph_name)
+
+    def set_fields(self, cls: type[T], fields: list[Field]) -> None:
+        name = cls.__name__
+        if self._map.get(name) is None:
+            raise JSONClassNotFoundError(name=name, graph=self._graph_name)
+        self._fields_map[name] = fields
+
+    def get_fields(self, cls: type[T]) -> Optional[list[Field]]:
+        name = cls.__name__
+        if self._map.get(name) is None:
+            raise JSONClassNotFoundError(name=name, graph=self._graph_name)
+        return self._fields_map.get(name)
+
+    def set_dict_fields(self, cls: type[T], fields: dict[str, Field]) -> None:
+        name = cls.__name__
+        if self._map.get(name) is None:
+            raise JSONClassNotFoundError(name=name, graph=self._graph_name)
+        self._dict_fields_map[name] = fields
+
+    def get_dict_fields(self, cls: type[T]) -> Optional[dict[str, Field]]:
+        name = cls.__name__
+        if self._map.get(name) is None:
+            raise JSONClassNotFoundError(name=name, graph=self._graph_name)
+        return self._dict_fields_map.get(name)
 
 
 class ClassGraphMap:
