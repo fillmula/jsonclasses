@@ -153,8 +153,20 @@ class TestJSONObjectInitialize(unittest.TestCase):
         class Timer(JSONObject):
             expired_at: datetime
         expired_at = datetime.fromisoformat('2020-10-10T05:03:02.999888')
-        with self.assertRaises(ValidationException):
+        with self.assertRaisesRegex(ValidationException, "'boom': Key 'boom' is not allowed."):
             Timer(**{'expiredAt': expired_at, 'boom': True})
+
+    def test_initialize_strict_raises_on_nested_unallowed_keys(self):
+        @jsonclass(class_graph='test_initialize_16', strict_input=True)
+        class Friend(JSONObject):
+            name: str
+
+        @jsonclass(class_graph='test_initialize_16', strict_input=True)
+        class User(JSONObject):
+            friends: list[Friend]
+
+        with self.assertRaisesRegex(ValidationException, "'friends.0.age': Key 'age' at 'friends.0' is not allowed."):
+            User(**{'friends': [{'name': 'John', 'age': 15}]})
 
     def test_initialize_strict_handle_correctly_for_multiple_inheritance(self):
         @jsonclass(class_graph='test_initialize_17', strict_input=True)

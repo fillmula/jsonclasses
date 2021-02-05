@@ -91,9 +91,12 @@ class InstanceOfValidator(Validator):
             available_names = [field.field_name for field in dest.__class__.fields()]
         for k in context.value.keys():
             if k not in available_names:
-                raise ValidationException(
-                    {context.keypath_root: f'Key \'{k}\' at \'{context.keypath_root}\' is not allowed.'},
-                    context.root)
+                kp = concat_keypath(context.keypath_root, k)
+                if context.keypath_root == '':
+                    msg = f'Key \'{k}\' is not allowed.'
+                else:
+                    msg = f'Key \'{k}\' at \'{context.keypath_root}\' is not allowed.'
+                raise ValidationException({kp: msg}, context.root)
 
     def _fill_default_value(self,
                             field: Field,
