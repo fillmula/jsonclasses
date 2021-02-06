@@ -1,6 +1,4 @@
 from unittest import TestCase
-from typing import List
-from datetime import datetime, date
 from jsonclasses import jsonclass, JSONObject, types
 from jsonclasses.exceptions import ValidationException
 
