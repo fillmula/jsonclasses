@@ -2,7 +2,7 @@
 from typing import Union
 
 
-def concat_keypath(*args: Union[str, int]):
+def concat_keypath(*args: Union[str, int]) -> str:
     """Concatenate partial keypaths and keypath components into a concatenated
     keypath.
     """
@@ -12,6 +12,17 @@ def concat_keypath(*args: Union[str, int]):
             retval += '.'
         retval += str(arg)
     return retval
+
+
+def keypath_drop_last(keypath: str) -> str:
+    """Drop the last part of a keypath. If it only has one part, empty string
+    is returned. If it's empty string, empty string is returned.
+    """
+    if keypath == '':
+        return ''
+    parts = keypath.split('.')
+    parts.pop()
+    return '.'.join(parts)
 
 
 def initial_keypaths(keypaths: set[str]) -> set[str]:

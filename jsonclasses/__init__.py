@@ -22,6 +22,6 @@ from .object_graph import ObjectGraph
 from .json_object import JSONObject
 from .json_encoder import JSONEncoder
 from .orm_object import ORMObject
-from .keypath import concat_keypath
+from .keypath import concat_keypath, keypath_drop_last
 from .class_graph import ClassGraph, ClassGraphMap, class_graph_map
 from .typing import Link, linkto, linkedby, linkedthru
