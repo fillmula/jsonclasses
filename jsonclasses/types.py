@@ -1,6 +1,6 @@
 """This modules contains the JSON Class types marker."""
 from __future__ import annotations
-from typing import Callable, Any, Optional, Literal
+from typing import Callable, Any, Optional, Union, Literal
 from copy import deepcopy
 from .fields import FieldDescription
 from .validators import (UseForValidator, BoolValidator, ChainedValidator,
@@ -15,14 +15,14 @@ from .validators import (UseForValidator, BoolValidator, ChainedValidator,
                          NonnullValidator, NullableValidator, OneOfValidator,
                          OneOfTypeValidator, PositiveValidator,
                          PresentValidator, PresentWithValidator,
-                         PrimaryValidator, RangeValidator, ReadonlyValidator,
-                         ReadwriteValidator, RefereeValidator,
-                         ReferrerValidator, RequiredValidator,
-                         SetOnSaveValidator, ShapeValidator, StrValidator,
-                         StrictValidator, TransformValidator, TrimValidator,
-                         TruncateValidator, UniqueValidator, ValidateValidator,
-                         Validator, WriteNonnullValidator, WriteonceValidator,
-                         WriteonlyValidator)
+                         PresentWithoutValidator, PrimaryValidator,
+                         RangeValidator, ReadonlyValidator, ReadwriteValidator,
+                         RefereeValidator, ReferrerValidator,
+                         RequiredValidator, SetOnSaveValidator, ShapeValidator,
+                         StrValidator, StrictValidator, TransformValidator,
+                         TrimValidator, TruncateValidator, UniqueValidator,
+                         ValidateValidator, Validator, WriteNonnullValidator,
+                         WriteonceValidator, WriteonlyValidator)
 
 Str = str
 Int = int
@@ -393,6 +393,14 @@ class Types:
         of this field is required.
         """
         return Types(self, PresentWithValidator(referring_key))
+
+    def presentwithout(self, referring_keys: Union[str, list[str]]) -> Types:
+        """Fields marked with presentwithout validator are forced presented if
+        referring field is not present. If referring field has None value, this
+        field's value should be present. If referring field has non None value,
+        value of this field is not forced to be present.
+        """
+        return Types(self, PresentWithoutValidator(referring_keys))
 
     def validate(self, validate_callable) -> Types:
         """The validate field mark takes a validator callable as its sole argument.
