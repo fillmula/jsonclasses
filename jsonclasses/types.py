@@ -267,7 +267,8 @@ class Types:
 
     @property
     def float(self) -> Types:
-        """Fields marked with float should be float type. This is a type marker.
+        """Fields marked with float should be float type. This is a type
+        marker.
         """
         return Types(self, FloatValidator())
 
@@ -278,14 +279,14 @@ class Types:
         return Types(self, MinValidator(value))
 
     def max(self, value: Float) -> Types:
-        """Fields marked with max are tested again this value. Values greater than
-        the argument value are considered invalid.
+        """Fields marked with max are tested again this value. Values greater
+        than the argument value are considered invalid.
         """
         return Types(self, MaxValidator(value))
 
     def range(self, min_value: Float, max_value: Float) -> Types:
-        """Fields marked with range are tested again argument values. Only values
-        between the arguments range are considered valid.
+        """Fields marked with range are tested again argument values. Only
+        values between the arguments range are considered valid.
         """
         return Types(self, RangeValidator(min_value, max_value))
 

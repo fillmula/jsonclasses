@@ -10,4 +10,6 @@ class TrimValidator(Validator):
     def transform(self, context: TransformingContext) -> Any:
         if context.value is None:
             return None
+        if not isinstance(context.value, str):
+            return context.value
         return context.value.strip()
