@@ -14,14 +14,15 @@ from .validators import (UseForValidator, BoolValidator, ChainedValidator,
                          MinValidator, MinlengthValidator, NegativeValidator,
                          NonnullValidator, NullableValidator, OneOfValidator,
                          OneOfTypeValidator, PositiveValidator,
-                         PresentValidator, PrimaryValidator, RangeValidator,
-                         ReadonlyValidator, ReadwriteValidator,
-                         RefereeValidator, ReferrerValidator,
-                         RequiredValidator, SetOnSaveValidator, ShapeValidator,
-                         StrValidator, StrictValidator, TransformValidator,
-                         TrimValidator, TruncateValidator, UniqueValidator,
-                         ValidateValidator, Validator, WriteNonnullValidator,
-                         WriteonceValidator, WriteonlyValidator)
+                         PresentValidator, PresentWithValidator,
+                         PrimaryValidator, RangeValidator, ReadonlyValidator,
+                         ReadwriteValidator, RefereeValidator,
+                         ReferrerValidator, RequiredValidator,
+                         SetOnSaveValidator, ShapeValidator, StrValidator,
+                         StrictValidator, TransformValidator, TrimValidator,
+                         TruncateValidator, UniqueValidator, ValidateValidator,
+                         Validator, WriteNonnullValidator, WriteonceValidator,
+                         WriteonlyValidator)
 
 Str = str
 Int = int
@@ -384,6 +385,14 @@ class Types:
         required validation.
         """
         return Types(self, PresentValidator())
+
+    def presentwith(self, referring_key: str) -> Types:
+        """Fields marked with presentwith validator are forced presented if
+        referring field is present. If referring field has None value, this
+        field's value is optional. If referring field has non None value, value
+        of this field is required.
+        """
+        return Types(self, PresentWithValidator(referring_key))
 
     def validate(self, validate_callable) -> Types:
         """The validate field mark takes a validator callable as its sole argument.

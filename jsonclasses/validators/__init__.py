@@ -72,6 +72,7 @@ from .oneoftype_validator import OneOfTypeValidator
 from .required_validator import RequiredValidator
 from .nullable_validator import NullableValidator
 from .present_validator import PresentValidator
+from .presentwith_validator import PresentWithValidator
 
 # custom validator
 from .validate_validator import ValidateValidator
