@@ -1,7 +1,7 @@
 from unittest import TestCase
 from jsonclasses import jsonclass, ORMObject, types
 from jsonclasses.exceptions import ValidationException
-from datetime import datetime, date
+from datetime import datetime
 
 
 class TestPreserializeValidator(TestCase):
