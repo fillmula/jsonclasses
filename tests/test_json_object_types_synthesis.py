@@ -1,6 +1,6 @@
-from jsonclasses.fields import FieldType, field
+from typing import Optional, Union
 from unittest import TestCase
-from typing import Optional, List, Dict, Union
+from jsonclasses.fields import FieldType, field
 from jsonclasses import jsonclass, JSONObject, ValidationException
 from datetime import datetime, date
 
@@ -206,28 +206,28 @@ class TestJSONObjectTypesSynthesis(TestCase):
     def test_auto_generates_required_list_capitalized(self):
         @jsonclass(class_graph='test_marker_auto_gen')
         class Testlist(JSONObject):
-            val: List[str]
+            val: list[str]
         object = Testlist()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_list_capitalized(self):
         @jsonclass(class_graph='test_marker_auto_gen')
         class TestOptionallist(JSONObject):
-            val: Optional[List[str]]
+            val: Optional[list[str]]
         object = TestOptionallist()
         object.validate()
 
     def test_auto_generates_required_list_with_str_type_capitalized(self):
         @jsonclass(class_graph='test_marker_auto_gen')
         class TestlistStrType(JSONObject):
-            val: 'List[str]'
+            val: 'list[str]'
         object = TestlistStrType()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_list_with_str_type_capitalized(self):
         @jsonclass(class_graph='test_marker_auto_gen')
         class TestOptionallistStrType(JSONObject):
-            val: 'Optional[List[str]]'
+            val: 'Optional[list[str]]'
         object = TestOptionallistStrType()
         object.validate()
 
@@ -262,28 +262,28 @@ class TestJSONObjectTypesSynthesis(TestCase):
     def test_auto_generates_required_dict_capitalized(self):
         @jsonclass(class_graph='test_marker_auto_gen')
         class Testdict(JSONObject):
-            val: Dict[str, str]
+            val: dict[str, str]
         object = Testdict()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_dict_capitalized(self):
         @jsonclass(class_graph='test_marker_auto_gen')
         class TestOptionaldict(JSONObject):
-            val: Optional[Dict[str, str]]
+            val: Optional[dict[str, str]]
         object = TestOptionaldict()
         object.validate()
 
     def test_auto_generates_required_dict_with_str_type_capitalized(self):
         @jsonclass(class_graph='test_marker_auto_gen')
         class TestdictStrType(JSONObject):
-            val: 'Dict[str, str]'
+            val: 'dict[str, str]'
         object = TestdictStrType()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_dict_with_str_type_capitalized(self):
         @jsonclass(class_graph='test_marker_auto_gen')
         class TestOptionaldictStrType(JSONObject):
-            val: 'Optional[Dict[str, str]]'
+            val: 'Optional[dict[str, str]]'
         object = TestOptionaldictStrType()
         object.validate()
 
@@ -362,7 +362,7 @@ class TestJSONObjectTypesSynthesis(TestCase):
     def test_auto_generates_required_union_with_dict_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
         class TestUnionDictType(JSONObject):
-            val: 'Union[Dict[str, int], int]'
+            val: 'Union[dict[str, int], int]'
         cfield = field(TestUnionDictType, 'val')
         utypes = cfield.fdesc.union_types
         self.assertEqual(utypes[0].fdesc.field_type, FieldType.DICT)
@@ -371,6 +371,6 @@ class TestJSONObjectTypesSynthesis(TestCase):
     def test_auto_generates_optional_union_with_dict_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
         class TestOptionalUnionDictType(JSONObject):
-            val: 'Optional[Union[Dict[str, bool], float]]'
+            val: 'Optional[Union[dict[str, bool], float]]'
         object = TestOptionalUnionDictType()
         object.validate()
