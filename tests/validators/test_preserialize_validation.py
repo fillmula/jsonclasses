@@ -54,6 +54,54 @@ class TestPreserializeValidator(TestCase):
         user._setonsave()
         self.assertEqual(user.updated_at, 5)
 
+    def test_preserialize_validator_validate_between_chains(self):
+        @jsonclass(class_graph='test_preserialize_validator_6')
+        class User(ORMObject):
+            username: str
+            updated_at: int = types.datetime.setonsave(lambda: 2).validate(lambda x: "wrong").setonsave(lambda x: x * 2).setonsave(lambda x: x + 1)
+
+        with self.assertRaises(ValidationException) as context:
+            user = User(username='123')
+            user._setonsave()
+        exception = context.exception
+        self.assertEqual(exception.keypath_messages['updated_at'], "wrong")
+
+    def test_preserialize_validator_validate_between_chains_2(self):
+        @jsonclass(class_graph='test_preserialize_validator_7')
+        class User(ORMObject):
+            username: str
+            updated_at: int = types.datetime.setonsave(lambda: 2).setonsave(lambda x: x * 2).validate(lambda x: "wrong").setonsave(lambda x: x + 1)
+
+        with self.assertRaises(ValidationException) as context:
+            user = User(username='123')
+            user._setonsave()
+        exception = context.exception
+        self.assertEqual(exception.keypath_messages['updated_at'], "wrong")
+
+    def test_preserialize_validator_validate_after_chains(self):
+        @jsonclass(class_graph='test_preserialize_validator_8')
+        class User(ORMObject):
+            username: str
+            updated_at: int = types.datetime.setonsave(lambda: 2).setonsave(lambda x: x * 2).setonsave(lambda x: x + 1).validate(lambda x: "wrong")
+
+        with self.assertRaises(ValidationException) as context:
+            user = User(username='123')
+            user._setonsave()
+        exception = context.exception
+        self.assertEqual(exception.keypath_messages['updated_at'], "wrong")
+
+    def test_preserialize_validator_validate_between_chains_do_not_throw_if_valid(self):
+        @jsonclass(class_graph='test_preserialize_validator_9')
+        class User(ORMObject):
+            username: str
+            updated_at: int = types.datetime \
+                                   .setonsave(lambda: 2).validate(lambda x: None) \
+                                   .setonsave(lambda x: x * 2).validate(lambda x: None) \
+                                   .setonsave(lambda x: x + 1).validate(lambda x: None)
+
+        user = User(username='123')
+        user._setonsave()
+
 
     # def test_eager_validator_will_not_perform_when_value_is_none_on_init(self):
     #     @jsonclass(class_graph='test_eager_validator_3')
