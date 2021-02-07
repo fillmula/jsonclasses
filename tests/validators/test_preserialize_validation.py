@@ -102,57 +102,77 @@ class TestPreserializeValidator(TestCase):
         user = User(username='123')
         user._setonsave()
 
+    def test_preserialize_validator_should_validate_and_setonsave_inside_list(self):
+        @jsonclass(class_graph='test_preserialize_validator_10')
+        class User(ORMObject):
+            counts: list[int] = types.listof(
+                types.int.setonsave(lambda s: s + 1)
+            )
+        user = User(counts=[123, 456])
+        user._setonsave()
+        self.assertEqual(user.counts[0], 124)
+        self.assertEqual(user.counts[1], 457)
 
-    # def test_eager_validator_will_not_perform_when_value_is_none_on_init(self):
-    #     @jsonclass(class_graph='test_eager_validator_3')
-    #     class User(JSONObject):
-    #         username: str = types.str.required
-    #         password: str = types.str.minlength(8).maxlength(16).transform(lambda s: s + '0x0x').required
-    #     try:
-    #         _user = User()
-    #     except ValidationException:
-    #         self.fail('eager validator should not perform on init if value is None.')
+    def test_preserialize_validator_should_validate_and_throw_inside_list(self):
+        @jsonclass(class_graph='test_preserialize_validator_11')
+        class User(ORMObject):
+            counts: list[int] = types.listof(
+                types.int.setonsave(lambda s: None).required
+            )
+        with self.assertRaises(ValidationException) as context:
+            user = User(counts=[123, 456])
+            user._setonsave()
+        exception = context.exception
+        self.assertEqual(exception.keypath_messages['counts.0'], "Value at 'counts.0' should not be None.")
 
+    def test_preserialize_validator_should_validate_and_setonsave_inside_dict(self):
+        @jsonclass(class_graph='test_preserialize_validator_12')
+        class User(ORMObject):
+            counts: dict[str, int] = types.dictof(
+                types.int.setonsave(lambda s: s + 1)
+            )
+        user = User(counts={'a': 123, 'b': 456})
+        user._setonsave()
+        self.assertEqual(user.counts['a'], 124)
+        self.assertEqual(user.counts['b'], 457)
 
-    # def test_eager_validator_should_validate_and_transform_inside_list(self):
-    #     @jsonclass(class_graph='test_eager_validator_7')
-    #     class User(JSONObject):
-    #         passwords: list[str] = types.listof(
-    #             types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x')
-    #         )
-    #     try:
-    #         _user = User(passwords=['123', '456', '789', '012'])
-    #     except:
-    #         self.fail('eager validator should not throw if value is valid')
+    def test_preserialize_validator_should_validate_and_throw_inside_dict(self):
+        @jsonclass(class_graph='test_preserialize_validator_13')
+        class User(ORMObject):
+            counts: dict[str, int] = types.dictof(
+                types.int.setonsave(lambda s: None).required
+            )
+        with self.assertRaises(ValidationException) as context:
+            user = User(counts={'a': 123, 'b': 456})
+            user._setonsave()
+        exception = context.exception
+        self.assertEqual(exception.keypath_messages['counts.a'], "Value at 'counts.a' should not be None.")
 
-    # def test_eager_validator_should_validate_and_throw_inside_list(self):
-    #     @jsonclass(class_graph='test_eager_validator_8')
-    #     class User(JSONObject):
-    #         passwords: list[str] = types.listof(
-    #             types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x')
-    #         )
-    #     with self.assertRaises(ValidationException):
-    #         _user = User(passwords=['123xxx', '456xxx', '789xxx', '012xxx'])
+    def test_preserialize_validator_should_validate_and_setonsave_inside_shape(self):
+        @jsonclass(class_graph='test_preserialize_validator_14')
+        class User(ORMObject):
+            counts: dict[str, int] = types.shape({
+                'a': types.int.setonsave(lambda x: x + 1),
+                'b': types.int.setonsave(lambda x: x + 1)
+            })
+        user = User(counts={'a': 123, 'b': 456})
+        user._setonsave()
+        self.assertEqual(user.counts['a'], 124)
+        self.assertEqual(user.counts['b'], 457)
 
-    # def test_eager_validator_should_validate_and_transform_inside_dict(self):
-    #     @jsonclass(class_graph='test_eager_validator_9')
-    #     class User(JSONObject):
-    #         passwords: dict[str, str] = types.dictof(
-    #             types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x')
-    #         )
-    #     try:
-    #         _user = User(passwords={'a': '123', 'b': '456', 'c': '789', 'd': '012'})
-    #     except:
-    #         self.fail('eager validator should not throw if value is valid')
+    def test_preserialize_validator_should_validate_and_throw_inside_shape(self):
+        @jsonclass(class_graph='test_preserialize_validator_15')
+        class User(ORMObject):
+            counts: dict[str, int] = types.shape({
+                'a': types.int.setonsave(lambda x: x + 1),
+                'b': types.int.setonsave(lambda x: None).required
+            })
+        with self.assertRaises(ValidationException) as context:
+            user = User(counts={'a': 123, 'b': 456})
+            user._setonsave()
+        exception = context.exception
+        self.assertEqual(exception.keypath_messages['counts.b'], "Value at 'counts.b' should not be None.")
 
-    # def test_eager_validator_should_validate_and_throw_inside_dict(self):
-    #     @jsonclass(class_graph='test_eager_validator_10')
-    #     class User(JSONObject):
-    #         passwords: dict[str, str] = types.dictof(
-    #             types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x')
-    #         )
-    #     with self.assertRaises(ValidationException):
-    #         _user = User(passwords={'a': '123xxx', 'b': '456xxx', 'c': '789xxx', 'd': '012xxx'})
 
     # def test_eager_validator_should_validate_and_transform_inside_shape(self):
     #     @jsonclass(class_graph='test_eager_validator_11')
@@ -175,40 +195,3 @@ class TestPreserializeValidator(TestCase):
     #         })
     #     with self.assertRaises(ValidationException):
     #         _user = User(passwords={'a': '123xxx', 'b': '456xxx'})
-
-    # def test_eager_validator_should_lazy_validate_when_validate_inside_list(self):
-    #     @jsonclass(class_graph='test_eager_validator_13')
-    #     class User(JSONObject):
-    #         passwords: list[str] = types.listof(
-    #             types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x')
-    #         )
-    #     user = User(passwords=['123', '456', '789', '012'])
-    #     try:
-    #         user.validate()
-    #     except:
-    #         self.fail('eager validator should not throw if not validation task after eager mark')
-
-    # def test_eager_validator_should_lazy_validate_when_validate_inside_dict(self):
-    #     @jsonclass(class_graph='test_eager_validator_14')
-    #     class User(JSONObject):
-    #         passwords: dict[str, str] = types.dictof(
-    #             types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x')
-    #         )
-    #     user = User(passwords={'a': '123', 'b': '456', 'c': '789', 'd': '012'})
-    #     try:
-    #         user.validate()
-    #     except:
-    #         self.fail('eager validator should not throw if not validation task after eager mark')
-
-    # def test_eager_validator_should_lazy_validate_when_validate_inside_shape(self):
-    #     @jsonclass(class_graph='test_eager_validator_15')
-    #     class User(JSONObject):
-    #         passwords: dict[str, str] = types.shape({
-    #             'a': types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x'),
-    #             'b': types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x')
-    #         })
-    #     user = User(passwords={'a': '123', 'b': '456'})
-    #     try:
-    #         user.validate()
-    #     except:
-    #         self.fail('eager validator should not throw if not validation task after eager mark')

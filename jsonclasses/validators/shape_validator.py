@@ -140,9 +140,9 @@ class ShapeValidator(TypeValidator):
         retval = {}
         for key, raw_types in self.shape_types.items():
             value_at_key = context.value.get(key)
-            types = resolve_types(raw_types, context.config.linked_class)
+            types = resolve_types(raw_types, context.config_owner.linked_class)
             if types:
-                retval[key] = types.validator.transform(context.new(
+                retval[key] = types.validator.serialize(context.new(
                     value=value_at_key,
                     keypath_root=concat_keypath(context.keypath_root, key),
                     keypath_owner=concat_keypath(context.keypath_owner, key),
