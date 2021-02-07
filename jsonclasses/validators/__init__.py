@@ -30,6 +30,9 @@ from .referee_validator import RefereeValidator
 # eager validation markers
 from .eager_validator import EagerValidator
 
+# preserialize validation markers
+from .preserialize_validator import PreserializeValidator
+
 # str validators
 from .str_validator import StrValidator
 from .match_validator import MatchValidator

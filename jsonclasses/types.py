@@ -15,14 +15,15 @@ from .validators import (UseForValidator, BoolValidator, ChainedValidator,
                          NonnullValidator, NullableValidator, OneOfValidator,
                          OneOfTypeValidator, PositiveValidator,
                          PresentValidator, PresentWithValidator,
-                         PresentWithoutValidator, PrimaryValidator,
-                         RangeValidator, ReadonlyValidator, ReadwriteValidator,
-                         RefereeValidator, ReferrerValidator,
-                         RequiredValidator, SetOnSaveValidator, ShapeValidator,
-                         StrValidator, StrictValidator, TransformValidator,
-                         TrimValidator, TruncateValidator, UniqueValidator,
-                         ValidateValidator, Validator, WriteNonnullValidator,
-                         WriteonceValidator, WriteonlyValidator)
+                         PresentWithoutValidator, PreserializeValidator,
+                         PrimaryValidator, RangeValidator, ReadonlyValidator,
+                         ReadwriteValidator, RefereeValidator,
+                         ReferrerValidator, RequiredValidator,
+                         SetOnSaveValidator, ShapeValidator, StrValidator,
+                         StrictValidator, TransformValidator, TrimValidator,
+                         TruncateValidator, UniqueValidator, ValidateValidator,
+                         Validator, WriteNonnullValidator, WriteonceValidator,
+                         WriteonlyValidator)
 
 Str = str
 Int = int
@@ -441,7 +442,7 @@ class Types:
         Returns:
           Types: A new types chained with this marker.
         """
-        return Types(self, TruncateValidator(max_length))
+        return Types(self, EagerValidator(), TruncateValidator(max_length))
 
     @property
     def trim(self) -> Types:
@@ -451,7 +452,7 @@ class Types:
         Returns:
             Types: A new types chained with this marker.
         """
-        return Types(self, TrimValidator())
+        return Types(self, EagerValidator(), TrimValidator())
 
     def transform(self, transformer: Callable) -> Types:
         """This mark applies transfromer on the value. When value is None, the
@@ -478,7 +479,7 @@ class Types:
         Returns:
           Types: A new types chained with this marker.
         """
-        return Types(self, SetOnSaveValidator(setter))
+        return Types(self, PreserializeValidator(), SetOnSaveValidator(setter))
 
     @property
     def nonnull(self) -> Types:

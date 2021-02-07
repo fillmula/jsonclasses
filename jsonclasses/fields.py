@@ -123,6 +123,7 @@ class FieldDescription():  # pylint: disable=too-many-instance-attributes
     strictness: Strictness = Strictness.UNDEFINED
 
     has_eager_validator: bool = False
+    has_preserialize_validator: bool = False
 
 
 class Field(NamedTuple):
