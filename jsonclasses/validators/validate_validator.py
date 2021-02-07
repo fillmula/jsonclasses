@@ -7,7 +7,7 @@ from ..contexts import ValidatingContext
 
 
 class ValidateValidator(Validator):
-    """Validate validator takes a arbitrary validator."""
+    """Validate validator takes a validator."""
 
     def __init__(self, validate_callable: Callable) -> None:
         self.validate_callable = validate_callable
@@ -17,8 +17,18 @@ class ValidateValidator(Validator):
         if params_len == 1:
             result = self.validate_callable(context.value)
         elif params_len == 2:
-            result = self.validate_callable(context.value, context.keypath_root)
+            result = self.validate_callable(context.value,
+                                            context.keypath_parent)
+        elif params_len == 3:
+            result = self.validate_callable(context.value,
+                                            context.keypath_parent,
+                                            context.parent)
         else:
-            result = self.validate_callable(context.value, context.keypath_root, context.root)
+            result = self.validate_callable(context.value,
+                                            context.keypath_parent,
+                                            context.parent,
+                                            context)
         if result is not None:
-            raise ValidationException(keypath_messages={context.keypath_root: result}, root=context.root)
+            raise ValidationException(
+                keypath_messages={context.keypath_root: result},
+                root=context.root)

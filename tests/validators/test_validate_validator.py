@@ -1,7 +1,6 @@
 import unittest
 from jsonclasses import jsonclass, JSONObject, types
 from jsonclasses.exceptions import ValidationException
-from datetime import datetime, date
 
 
 class TestValidateValidator(unittest.TestCase):
@@ -37,5 +36,43 @@ class TestValidateValidator(unittest.TestCase):
         @jsonclass(class_graph='test_validate_4')
         class User(JSONObject):
             email: str = types.str.validate(lambda e, k: None if len(e) == 3 else f'totally wrong {k}').required
+        user = User(email='abcd')
+        self.assertRaisesRegex(ValidationException, 'totally wrong email', user.validate)
+
+    def test_validate_is_fine_with_three_args_when_value_is_valid(self):
+        @jsonclass(class_graph='test_validate_5')
+        class User(JSONObject):
+            phone: str = '9'
+            email: str = types.str.validate(lambda e, k, p: None if p.phone == '9' else f'totally wrong {k}').required
+        user = User(email='abc')
+        try:
+            user.validate()
+        except ValidationException:
+            self.fail('validate should be fine if value is valid')
+
+    def test_validate_throws__with_three_args_when_value_is_invalid(self):
+        @jsonclass(class_graph='test_validate_6')
+        class User(JSONObject):
+            phone: str = '9'
+            email: str = types.str.validate(lambda e, k, p: None if p.phone != '9' else f'totally wrong {k}').required
+        user = User(email='abcd')
+        self.assertRaisesRegex(ValidationException, 'totally wrong email', user.validate)
+
+    def test_validate_is_fine_with_four_args_when_value_is_valid(self):
+        @jsonclass(class_graph='test_validate_7')
+        class User(JSONObject):
+            phone: str = '9'
+            email: str = types.str.validate(lambda e, k, p, c: None if c.root.phone == '9' else f'totally wrong {k}').required
+        user = User(email='abc')
+        try:
+            user.validate()
+        except ValidationException:
+            self.fail('validate should be fine if value is valid')
+
+    def test_validate_throws__with_four_args_when_value_is_invalid(self):
+        @jsonclass(class_graph='test_validate_8')
+        class User(JSONObject):
+            phone: str = '9'
+            email: str = types.str.validate(lambda e, k, p, c: None if c.root.phone != '9' else f'totally wrong {k}').required
         user = User(email='abcd')
         self.assertRaisesRegex(ValidationException, 'totally wrong email', user.validate)
