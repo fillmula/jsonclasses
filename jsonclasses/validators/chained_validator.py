@@ -163,7 +163,7 @@ class ChainedValidator(Validator):
         index = self._preserialize_validator_index_after_index(
                 self.validators, 0)
         next_index = self._preserialize_validator_index_after_index(
-                self.validators, index + 1 if index is not None else 0)
+                self.validators, index + 1) if index is not None else None
         validators = self.validators[:index]
         for validator in validators:
             curvalue = validator.serialize(context.new(value=curvalue))
@@ -173,7 +173,7 @@ class ChainedValidator(Validator):
                 curvalue = self._serialize_and_validate(
                     validator,
                     context.new(value=curvalue))
-                index = next_index if next_index is not None else None
-                next_index = self._preserialize_validator_index_after_index(
-                        self.validators, index + 1 if index is not None else 0)
+            index = next_index if next_index is not None else None
+            next_index = self._preserialize_validator_index_after_index(
+                    self.validators, index + 1) if index is not None else None
         return curvalue

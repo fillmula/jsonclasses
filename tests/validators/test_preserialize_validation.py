@@ -11,18 +11,49 @@ class TestPreserializeValidator(TestCase):
         class User(ORMObject):
             username: str
             updated_at: datetime = types.datetime.setonsave(lambda: None).required
+
         with self.assertRaises(ValidationException) as context:
             user = User(username='123')
             user._setonsave()
-            self.assertTrue("Value '123' at 'password' should have length not less than 8" in context.exception)
+        exception = context.exception
+        self.assertEqual(exception.keypath_messages['updated_at'], "Value at 'updated_at' should not be None.")
 
-    # def test_eager_validator_doesnt_cause_other_fields_to_validate_on_init(self):
-    #     @jsonclass(class_graph='test_eager_validator_2')
-    #     class User(JSONObject):
-    #         username: str = types.str.required
-    #         password: str = types.str.minlength(8).maxlength(10).transform(lambda s: s + '0x0x').required
-    #     user = User(password='12345678')
-    #     self.assertEqual(user.__fdict__, {'username': None, 'password': '123456780x0x'})
+    def test_preserialize_validator_does_not_validate_on_normal_validate(self):
+        @jsonclass(class_graph='test_preserialize_validator_2')
+        class User(ORMObject):
+            username: str
+            updated_at: datetime = types.datetime.setonsave(lambda: None).required
+
+        user = User(username='123')
+        user.validate()
+
+    def test_preserialize_validator_does_not_raise_if_valid_on_save(self):
+        @jsonclass(class_graph='test_preserialize_validator_3')
+        class User(ORMObject):
+            username: str
+            updated_at: datetime = types.datetime.setonsave(datetime.now).required
+
+        user = User(username='123')
+        user._setonsave()
+
+    def test_preserialize_validator_setonsave_is_chained_2(self):
+        @jsonclass(class_graph='test_preserialize_validator_4')
+        class User(ORMObject):
+            username: str
+            updated_at: int = types.datetime.setonsave(lambda: 2).setonsave(lambda x: x * 2)
+        user = User(username='123')
+        user._setonsave()
+        self.assertEqual(user.updated_at, 4)
+
+    def test_preserialize_validator_setonsave_is_chained_3(self):
+        @jsonclass(class_graph='test_preserialize_validator_5')
+        class User(ORMObject):
+            username: str
+            updated_at: int = types.datetime.setonsave(lambda: 2).setonsave(lambda x: x * 2).setonsave(lambda x: x + 1)
+        user = User(username='123')
+        user._setonsave()
+        self.assertEqual(user.updated_at, 5)
+
 
     # def test_eager_validator_will_not_perform_when_value_is_none_on_init(self):
     #     @jsonclass(class_graph='test_eager_validator_3')
@@ -34,37 +65,6 @@ class TestPreserializeValidator(TestCase):
     #     except ValidationException:
     #         self.fail('eager validator should not perform on init if value is None.')
 
-    # def test_eager_validator_validates_on_set(self):
-    #     @jsonclass(class_graph='test_eager_validator_4')
-    #     class User(JSONObject):
-    #         username: str = types.str.required
-    #         password: str = types.str.minlength(8).maxlength(16).transform(lambda s: s + '0x0x').required
-    #     user = User()
-    #     with self.assertRaises(ValidationException) as context:
-    #         user.set(password='123')
-    #         self.assertTrue("Value '123' at 'password' should have length not less than 8" in context.exception)
-
-    # def test_eager_validator_will_not_work_on_update(self):
-    #     @jsonclass(class_graph='test_eager_validator_5')
-    #     class User(JSONObject):
-    #         username: str = types.str.required
-    #         password: str = types.str.minlength(8).maxlength(16).transform(lambda s: s + '0x0x').required
-    #     user = User()
-    #     try:
-    #         user.update(password='123')
-    #     except ValidationException:
-    #         self.fail('eager validator should not perform on update.')
-
-    # def test_eager_validator_prevents_validators_before_it_to_work_on_validate(self):
-    #     @jsonclass(class_graph='test_eager_validator_6')
-    #     class User(JSONObject):
-    #         username: str = types.str.required
-    #         password: str = types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x').required
-    #     user = User(username='john', password='1234')
-    #     try:
-    #         user.validate()
-    #     except ValidationException:
-    #         self.fail('eager validator should prevent validators before it to work on validate.')
 
     # def test_eager_validator_should_validate_and_transform_inside_list(self):
     #     @jsonclass(class_graph='test_eager_validator_7')
