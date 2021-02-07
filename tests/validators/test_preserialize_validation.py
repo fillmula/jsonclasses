@@ -172,26 +172,3 @@ class TestPreserializeValidator(TestCase):
             user._setonsave()
         exception = context.exception
         self.assertEqual(exception.keypath_messages['counts.b'], "Value at 'counts.b' should not be None.")
-
-
-    # def test_eager_validator_should_validate_and_transform_inside_shape(self):
-    #     @jsonclass(class_graph='test_eager_validator_11')
-    #     class User(JSONObject):
-    #         passwords: dict[str, str] = types.shape({
-    #             'a': types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x'),
-    #             'b': types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x')
-    #         })
-    #     try:
-    #         _user = User(passwords={'a': '123', 'b': '456'})
-    #     except:
-    #         self.fail('eager validator should not throw if value is valid')
-
-    # def test_eager_validator_should_validate_and_throw_inside_shape(self):
-    #     @jsonclass(class_graph='test_eager_validator_12')
-    #     class User(JSONObject):
-    #         passwords: dict[str, str] = types.shape({
-    #             'a': types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x'),
-    #             'b': types.str.minlength(2).maxlength(4).transform(lambda s: s + '0x0x0x0x')
-    #         })
-    #     with self.assertRaises(ValidationException):
-    #         _user = User(passwords={'a': '123xxx', 'b': '456xxx'})
