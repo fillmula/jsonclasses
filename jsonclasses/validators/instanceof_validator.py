@@ -237,6 +237,8 @@ class InstanceOfValidator(Validator):
                 continue
             if fd.read_rule == ReadRule.NO_READ and not ignore_writeonly:
                 continue
+            if fd.is_temp_field:
+                continue
             item_context = context.new(
                 value=field_value,
                 entity_chain=[*entity_chain, cls_name])

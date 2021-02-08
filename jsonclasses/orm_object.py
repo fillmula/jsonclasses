@@ -3,7 +3,6 @@ This module contains `ORMObject`, the abstract base class for interacting with
 ORMs.
 """
 from __future__ import annotations
-from jsonclasses.object_graph import ObjectGraph
 from typing import TypeVar, Any
 from .jsonclass import jsonclass
 from .json_object import JSONObject
@@ -11,6 +10,8 @@ from .owned_dict import OwnedDict
 from .owned_list import OwnedList
 from .validators.instanceof_validator import InstanceOfValidator
 from .contexts import TransformingContext
+from .object_graph import ObjectGraph
+from .fields import get_fields, field
 
 
 @jsonclass
@@ -90,6 +91,15 @@ class ORMObject(JSONObject):
         return self._modified_fields
 
     @property
+    def modified_fields_p(self: T) -> set[str]:
+        """Permanent fields which need to update the database record.
+        """
+        if self.is_new:
+            return {field.field_name for field in get_fields(self)}
+        return {name for name in self.modified_fields
+                if not field(self, name).fdesc.is_temp_field}
+
+    @property
     def is_deleted(self: T) -> bool:
         """This property marks if the object is deleted from the database.
         """
@@ -120,6 +130,12 @@ class ORMObject(JSONObject):
 
     def _database_write(self: T) -> None:
         raise NotImplementedError('please override _database_write')
+
+    def _clear_temp_fields(self: T) -> None:
+        fields = get_fields(self)
+        for f in fields:
+            if f.fdesc.is_temp_field:
+                setattr(self, f.field_name, None)
 
     def save(self: T,
              validate_all_fields: bool = False,
