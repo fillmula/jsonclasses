@@ -20,10 +20,10 @@ from .validators import (UseForValidator, BoolValidator, ChainedValidator,
                          ReadwriteValidator, RefereeValidator,
                          ReferrerValidator, RequiredValidator,
                          SetOnSaveValidator, ShapeValidator, StrValidator,
-                         StrictValidator, TransformValidator, TrimValidator,
-                         TruncateValidator, UniqueValidator, ValidateValidator,
-                         Validator, WriteNonnullValidator, WriteonceValidator,
-                         WriteonlyValidator)
+                         StrictValidator, TempValidator, TransformValidator,
+                         TrimValidator, TruncateValidator, UniqueValidator,
+                         ValidateValidator, Validator, WriteNonnullValidator,
+                         WriteonceValidator, WriteonlyValidator)
 
 Str = str
 Int = int
@@ -84,8 +84,8 @@ class Types:
     def readonly(self) -> Types:
         """Fields marked with readonly will not be able to go through
         initialization and set method. You can update value of these fields
-        directly or through update method. This prevents client side to post data
-        directly into these fields.
+        directly or through update method. This prevents client side to post
+        data directly into these fields.
 
         `writeonce`, `readonly` and `writenonnull` cannot be presented
         together.
@@ -94,24 +94,25 @@ class Types:
 
     @property
     def writeonly(self) -> Types:
-        """Fields marked with writeonly will not be available in outgoing json form.
-        Users' password is a great example of writeonly.
+        """Fields marked with writeonly will not be available in outgoing json
+        form. Users' password is a great example of writeonly.
         """
         return Types(self, WriteonlyValidator())
 
     @property
     def readwrite(self) -> Types:
-        """Fields marked with readwrite will be presented in both inputs and outputs.
-        This is the default behavior. And this specifier can be omitted.
+        """Fields marked with readwrite will be presented in both inputs and
+        outputs. This is the default behavior. And this specifier can be
+        omitted.
         """
         return Types(self, ReadwriteValidator())
 
     @property
     def writeonce(self) -> Types:
-        """Fields marked with writeonce can only be set once through initialization
-        and set method. You can update value of these fields directly or through
-        update method. This is suitable for e.g. dating app user gender. Gender
-        should not be changed once set.
+        """Fields marked with writeonce can only be set once through
+        initialization and set method. You can update value of these fields
+        directly or through update method. This is suitable for e.g. dating app
+        user gender. Gender should not be changed once set.
 
         `writeonce`, `readonly` and `writenonnull` cannot be presented
         together.
@@ -138,6 +139,15 @@ class Types:
         return Types(self, ReadonlyValidator(), WriteonlyValidator())
 
     @property
+    def temp(self) -> Types:
+        """Fields marked with temp won't be written into database. As soon as
+        database writing happens, value of this field is cleared and set to
+        None. Examples of it's use cases are authentication code validation,
+        input validation, etc.
+        """
+        return Types(self, TempValidator())
+
+    @property
     def index(self) -> Types:
         """Fields marked with index are picked up by ORM integrations to setup
         database column index for you. This marker doesn't have any effect
@@ -148,14 +158,14 @@ class Types:
     @property
     def unique(self) -> Types:
         """Fields marked with unique are picked up by ORM integrations to setup
-        database column unique index for you. This marker doesn't have any effect
-        around transforming and validating. When database engine raises an
-        exception, jsonclasses's web framework integration will catch it and return
-        400 automatically.
+        database column unique index for you. This marker doesn't have any
+        effect around transforming and validating. When database engine raises
+        an exception, jsonclasses's web framework integration will catch it and
+        return 400 automatically.
 
         If you are implementing jsonclasses ORM integration, you should use
-        UniqueFieldException provided by jsonclasses.exceptions to keep consistency
-        with other jsonclasses integrations.
+        UniqueFieldException provided by jsonclasses.exceptions to keep
+        consistency with other jsonclasses integrations.
         """
         return Types(self, UniqueValidator())
 
@@ -174,15 +184,15 @@ class Types:
         return Types(self, LinkToValidator())
 
     def linkedby(self, foreign_key: str) -> Types:
-        """In a database relationship, fields marked with linkedby find reference
-        from the destination table.
+        """In a database relationship, fields marked with linkedby find
+        reference from the destination table.
         """
         return Types(self, LinkedByValidator(foreign_key))
 
     def linkedthru(self, foreign_key: str) -> Types:
         """In a database relationship, fields marked with linkedthru save
-        relationships to a designated association table and find references through
-        it.
+        relationships to a designated association table and find references
+        through it.
         """
         return Types(self, LinkedThruValidator(foreign_key))
 
@@ -193,15 +203,15 @@ class Types:
         return Types(self, LinkedInValidator(cls))
 
     def referrer(self, referrer_key: str) -> Types:
-        """In a many to many database relationship, fields marked with referrer has
-        a provided custom key name in the association table.
+        """In a many to many database relationship, fields marked with referrer
+        has a provided custom key name in the association table.
         """
         return Types(self, ReferrerValidator(referrer_key))
 
     def referee(self, referee_key: str) -> Types:
         """In a many to many database relationship, fields marked with referee
-        reference the other side of the relationship with this provided custom key
-        name.
+        reference the other side of the relationship with this provided custom
+        key name.
         """
         return Types(self, RefereeValidator(referee_key))
 
@@ -218,14 +228,14 @@ class Types:
         return Types(self, MatchValidator(pattern))
 
     def oneof(self, str_list: list[Str]) -> Types:
-        """This is the enum equivalent for jsonclasses. Values in the provided list
-        are considered valid values.
+        """This is the enum equivalent for jsonclasses. Values in the provided
+        list are considered valid values.
         """
         return Types(self, OneOfValidator(str_list))
 
     def minlength(self, length: int) -> Types:
-        """Values at fields marked with minlength should have a length which is not
-        less than length.
+        """Values at fields marked with minlength should have a length which is
+        not less than length.
 
         Args:
           length (int): The minimum length required for the value.
@@ -236,8 +246,8 @@ class Types:
         return Types(self, MinlengthValidator(length))
 
     def maxlength(self, length: int) -> Types:
-        """Values at fields marked with maxlength should have a length which is not
-        greater than length.
+        """Values at fields marked with maxlength should have a length which is
+        not greater than length.
 
         Args:
           length (int): The minimum length required for the value.
@@ -248,9 +258,9 @@ class Types:
         return Types(self, MaxlengthValidator(length))
 
     def length(self, minlength: int, maxlength: Optional[int] = None) -> Types:
-        """Fields marked with length should have a length which is between the two
-        arguments. If only one argument is provided, the value length should be
-        exactly that length.
+        """Fields marked with length should have a length which is between the
+        two arguments. If only one argument is provided, the value length
+        should be exactly that length.
 
         Args:
           minlength (int): The minimum length required for the value.
@@ -324,20 +334,20 @@ class Types:
         return Types(self, DatetimeValidator())
 
     def listof(self, item_types: Any) -> Types:
-        """Fields marked with listof should be a list of the given type. This is a
-        type marker.
+        """Fields marked with listof should be a list of the given type. This
+        is a type marker.
         """
         return Types(self, ListOfValidator(item_types))
 
     def dictof(self, item_types: Any) -> Types:
-        """Fields marked with listof should be a str keyed dict of the given type.
-        This is a type marker.
+        """Fields marked with listof should be a str keyed dict of the given
+        type. This is a type marker.
         """
         return Types(self, DictOfValidator(item_types))
 
     def shape(self, item_types_map: dict[Str, Any]) -> Types:
-        """Fields marked with shape are objects shaped with given shape. This is a
-        type marker.
+        """Fields marked with shape are objects shaped with given shape. This
+        is a type marker.
         """
         return Types(self, ShapeValidator(item_types_map))
 
@@ -359,8 +369,7 @@ class Types:
 
     @property
     def required(self) -> Types:
-        """Fields marked with required are invalid when value is not presented aka
-        None.
+        """Fields marked with required are invalid when value is None.
 
         Returns:
           Types: A new types chained with this marker.
@@ -404,13 +413,13 @@ class Types:
         return Types(self, PresentWithoutValidator(referring_keys))
 
     def validate(self, validate_callable) -> Types:
-        """The validate field mark takes a validator callable as its sole argument.
-        Use this to define custom field value validations.
+        """The validate field mark takes a validator callable as its sole
+        argument. Use this to define custom field value validations.
 
         Args:
-          validate_callable (Callable): The validate callable tasks 3 arguments,
-          value, key_path, and root. Returning None means the value is valid, while
-          returning a str message means the validation failed.
+          validate_callable (Callable): The validate callable tasks 3
+          arguments, value, key_path, and root. Returning None means the value
+          is valid, while returning a str message means the validation failed.
 
         Returns:
           Types: A new types chained with this marker.
@@ -420,12 +429,12 @@ class Types:
     # transformers
 
     def default(self, value: Any) -> Types:
-        """During initialization, if values of fields with default are not provided.
-        The default value is used instead of leaving blank.
+        """During initialization, if values of fields with default are not
+        provided. The default value is used instead of leaving blank.
 
         Args:
-          value (any): The default value of this field. If the value is callable,
-          it's return value is used.
+          value (any): The default value of this field. If the value is
+          callable, it's return value is used.
 
         Returns:
           Types: A new types chained with this marker.

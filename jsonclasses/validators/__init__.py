@@ -12,6 +12,7 @@ from .writeonce_validator import WriteonceValidator
 from .writenonnull_validator import WriteNonnullValidator
 from .readonly_validator import ReadonlyValidator
 from .readwrite_validator import ReadwriteValidator
+from .temp_validator import TempValidator
 
 # database index command markers
 from .index_validator import IndexValidator

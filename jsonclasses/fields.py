@@ -115,6 +115,7 @@ class FieldDescription():  # pylint: disable=too-many-instance-attributes
 
     read_rule: ReadRule = ReadRule.UNLIMITED
     write_rule: WriteRule = WriteRule.UNLIMITED
+    is_temp_field: bool = False
 
     # collection and collection items null rules
     collection_nullability: Nullability = Nullability.NULLABLE
