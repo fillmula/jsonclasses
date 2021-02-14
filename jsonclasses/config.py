@@ -44,6 +44,11 @@ SOFT_DELETE = False
 """When deleting, if no delete rule specified, default to hard delete.
 """
 
+ABSTRACT = False
+"""This config option prevents objects of the class being created and used.
+Classes marked with abstract should be used as superclasses.
+"""
+
 
 @dataclass
 class Config:
@@ -57,6 +62,7 @@ class Config:
     local_key: Optional[LocalKey] = None
     validate_all_fields: Optional[bool] = None
     soft_delete: Optional[bool] = None
+    abstract: Optional[bool] = None
 
     linked_class: Optional[type[JSONObject]] = None
 
@@ -73,6 +79,8 @@ class Config:
             self.validate_all_fields = VALIDATE_ALL_FIELDS
         if self.soft_delete is None:
             self.soft_delete = SOFT_DELETE
+        if self.abstract is None:
+            self.abstract = ABSTRACT
 
     def install_on_class(self, cls: type[JSONObject]):
         """Install config object onto a JSONObject class.
