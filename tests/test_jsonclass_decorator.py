@@ -1,3 +1,4 @@
+from __future__ import annotations
 from unittest import TestCase
 from jsonclasses import jsonclass, JSONObject
 from jsonclasses.class_graph import class_graph_map, JSONClassRedefinitionError
@@ -106,3 +107,17 @@ class TestJsonClassDecorator(TestCase):
         config = MyClassThatConfigLinks.config
         self.assertTrue(isinstance(config, Config))
         self.assertIs(config.linked_class, MyClassThatConfigLinks)
+
+    def test_jsonclass_decorator_call_loaded_callback_if_it_is_defined(self):
+        value = {'a': 0}
+
+        @jsonclass(class_graph='test_jsonclass_decorator_30')
+        class ClassWithCallback(JSONObject):
+            str_field: str
+            int_field: int
+
+            @classmethod
+            def __loaded__(self: type[ClassWithCallback],
+                           class_: type[ClassWithCallback]):
+                value['a'] = 1
+        self.assertEqual(value['a'], 1)
