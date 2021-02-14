@@ -1,11 +1,11 @@
 """JSON Class exceptions."""
-from typing import Any
+from typing import Any, Type
 
 
 class ObjectNotFoundException(Exception):
     """ObjectNotFoundException is designed to be raised by jsonclasses ORM
-    integration implementations. Server authors and jsonclasses server integration
-    authors should catch this to present error to frontend clients.
+    integration implementations. Server authors and jsonclasses server
+    integration authors should catch this to present error to frontend clients.
     """
 
     def __init__(self, message: str):
@@ -15,19 +15,20 @@ class ObjectNotFoundException(Exception):
 
 class UniqueFieldException(Exception):
     """UniqueFieldException is designed to be raised by JSON Classes ORM
-    integration implementations. When saving objects into the database, if object
-    violates the uniqueness rule, this exception should be raised.
+    integration implementations. When saving objects into the database, if
+    object violates the uniqueness rule, this exception should be raised.
     """
 
     def __init__(self, value: Any, field: str, obj: Any):
-        self.message = f'Value \'{value}\' of field \'{field}\' of object {obj} exists in database.'
+        self.message = (f'Value \'{value}\' of field \'{field}\' of object '
+                        '{obj} exists in database.')
         super().__init__(self.message)
 
 
 class ValidationException(Exception):
-    """ValidationException is throwed on jsonclass object validation or on eager
-    validation. Server authors and jsonclasses server integration authors should
-    catch this to present error to frontend clients.
+    """ValidationException is throwed on jsonclass object validation or on
+    eager validation. Server authors and jsonclasses server integration authors
+    should catch this to present error to frontend clients.
     """
 
     def __init__(self, keypath_messages: dict[str, str], root: Any):
@@ -42,3 +43,15 @@ class ValidationException(Exception):
         for k, v in self.keypath_messages.items():
             retval += f'  \'{k}\': {v}\n'
         return retval
+
+
+class AbstractJSONClassException(Exception):
+    """Abstract class should not be initialized nor serialized into database.
+    When an abstract JSON class is initialized, this error should be raised.
+    """
+
+    def __init__(self, class_: Type) -> None:
+        self.class_ = class_
+        self.message = (f'{class_.__name__} is an abstract class and should '
+                        'not be initialized')
+        super().__init__(self.message)

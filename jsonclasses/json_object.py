@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import Any, Optional, ClassVar, Union, TypeVar
 from dataclasses import dataclass, fields as dataclass_fields
 from .config import Config
-from .exceptions import ValidationException
+from .exceptions import ValidationException, AbstractJSONClassException
 from .fields import (FieldType, Field, get_fields, other_field, field,
                      is_reference_field, updated_at_field)
 from .validators.instanceof_validator import InstanceOfValidator
@@ -53,6 +53,8 @@ class JSONObject:
         validation and transformation are applied during the initialization
         process.
         """
+        if self.__class__.config.abstract:
+            raise AbstractJSONClassException(self.__class__)
         for f in dataclass_fields(self):
             setattr(self, f.name, None)
         self.__set(fill_blanks=True, **kwargs)
