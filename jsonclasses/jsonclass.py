@@ -78,9 +78,10 @@ def jsonclass(
             abstract=abstract)
         config.install_on_class(cls)
         dataclass_cls = dataclass(init=False)(cls)
+        class_graph_map.graph(cast(str, class_graph)).add(dataclass_cls)
         if hasattr(dataclass_cls, '__loaded__'):
             getattr(dataclass_cls, '__loaded__')(dataclass_cls)
-        return class_graph_map.graph(cast(str, class_graph)).add(dataclass_cls)
+        return dataclass_cls
     else:
         def parametered_jsonclass(cls):
             return jsonclass(
