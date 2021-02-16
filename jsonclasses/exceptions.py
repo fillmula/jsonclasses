@@ -13,15 +13,19 @@ class ObjectNotFoundException(Exception):
         super().__init__(self.message)
 
 
-class UniqueFieldException(Exception):
-    """UniqueFieldException is designed to be raised by JSON Classes ORM
+class UniqueConstraintException(Exception):
+    """UniqueConstraintException is designed to be raised by JSON Classes ORM
     integration implementations. When saving objects into the database, if
     object violates the uniqueness rule, this exception should be raised.
     """
 
-    def __init__(self, value: Any, field: str, obj: Any):
-        self.message = (f'Value \'{value}\' of field \'{field}\' of object '
-                        '{obj} exists in database.')
+    def __init__(self, value: Any, field: str):
+        self.field = field
+        self.value = value
+        self.message = (f'Value \'{value}\' at \'{field}\' is not unique.')
+        self.keypath_messages = {
+            field: self.message
+        }
         super().__init__(self.message)
 
 

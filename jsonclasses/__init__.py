@@ -13,7 +13,7 @@
 from .jsonclass import jsonclass
 from .types import types, Types
 from .types_resolver import resolve_types
-from .exceptions import (ObjectNotFoundException, UniqueFieldException,
+from .exceptions import (ObjectNotFoundException, UniqueConstraintException,
                          ValidationException, AbstractJSONClassException)
 from .config import Config
 from .fields import (Field, FieldDescription, FieldType, FieldStorage,
