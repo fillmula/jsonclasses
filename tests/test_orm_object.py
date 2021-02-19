@@ -252,3 +252,78 @@ class TestORMObject(TestCase):
         setattr(obj, '_is_new', False)
         obj.list_field.append(4)
         self.assertEqual(obj.previous_values, {'list_field': [1, 2, 3]})
+
+    def test_orm_object_records_previous_dict_value(self):
+
+        @jsonclass(class_graph='test_orm_12')
+        class Data(ORMObject):
+            str_field: Optional[str]
+            int_field: Optional[int]
+            list_field: Optional[list[str]]
+            dict_field: Optional[dict[str, list[int]]]
+
+        obj = Data(dict_field={'a': [1, 2, 3], 'b': [4, 5, 6]})
+        setattr(obj, '_is_new', False)
+        obj.dict_field['a'].append(4)
+        self.assertEqual(obj.previous_values, {'dict_field': {'a': [1, 2, 3], 'b': [4, 5, 6]}})
+
+    def test_orm_object_resets_previous_str_value(self):
+
+        @jsonclass(class_graph='test_orm_13')
+        class Data(ORMObject):
+            str_field: Optional[str]
+            int_field: Optional[int]
+            list_field: Optional[list[str]]
+            dict_field: Optional[dict[str, list[int]]]
+
+        obj = Data(str_field='123', int_field=123)
+        setattr(obj, '_is_new', False)
+        obj.str_field = '234'
+        obj.reset()
+        self.assertEqual(obj, Data(str_field='123', int_field=123))
+
+    def test_orm_object_resets_previous_optional_int_value(self):
+
+        @jsonclass(class_graph='test_orm_14')
+        class Data(ORMObject):
+            str_field: Optional[str]
+            int_field: Optional[int]
+            list_field: Optional[list[str]]
+            dict_field: Optional[dict[str, list[int]]]
+
+        obj = Data(str_field='123')
+        setattr(obj, '_is_new', False)
+        obj.str_field = '234'
+        obj.int_field = 123
+        obj.reset()
+        self.assertEqual(obj, Data(str_field='123'))
+
+    def test_orm_object_resets_previous_list_value(self):
+
+        @jsonclass(class_graph='test_orm_15')
+        class Data(ORMObject):
+            str_field: Optional[str]
+            int_field: Optional[int]
+            list_field: Optional[list[str]]
+            dict_field: Optional[dict[str, list[int]]]
+
+        obj = Data(list_field=[1, 2, 3])
+        setattr(obj, '_is_new', False)
+        obj.list_field.append(4)
+        obj.reset()
+        self.assertEqual(obj, Data(list_field=[1, 2, 3]))
+
+    def test_orm_object_resets_previous_dict_value(self):
+
+        @jsonclass(class_graph='test_orm_16')
+        class Data(ORMObject):
+            str_field: Optional[str]
+            int_field: Optional[int]
+            list_field: Optional[list[str]]
+            dict_field: Optional[dict[str, list[int]]]
+
+        obj = Data(dict_field={'a': [1, 2, 3], 'b': [4, 5, 6]})
+        setattr(obj, '_is_new', False)
+        obj.dict_field['a'].append(4)
+        obj.reset()
+        self.assertEqual(obj, Data(dict_field={'a': [1, 2, 3], 'b': [4, 5, 6]}))

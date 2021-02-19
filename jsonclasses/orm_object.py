@@ -138,6 +138,7 @@ class ORMObject(JSONObject):
             setattr(self, k, v)
         self._modified_fields = set()
         self._is_modified = False
+        self._previous_values = {}
 
     @property
     def is_deleted(self: T) -> bool:
