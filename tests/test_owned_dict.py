@@ -24,6 +24,9 @@ class Owner(Generic[KT, VT]):
         self.add_records: list[AddRecord] = []
         self.del_records: list[DelRecord] = []
 
+    def __odict_will_change__(self, olist: OwnedDict) -> None:
+        pass
+
     def __odict_add__(self, odict: OwnedDict, key: KT, val: VT) -> None:
         self.add_records.append(AddRecord(odict, key, val))
 

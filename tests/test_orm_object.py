@@ -251,4 +251,4 @@ class TestORMObject(TestCase):
         obj = Data(list_field=[1, 2, 3])
         setattr(obj, '_is_new', False)
         obj.list_field.append(4)
-        # self.assertEqual(obj.previous_values, {'list_field': [1, 2, 3]})
+        self.assertEqual(obj.previous_values, {'list_field': [1, 2, 3]})

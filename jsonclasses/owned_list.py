@@ -17,12 +17,15 @@ class ListOwner(Protocol[T_contra]):
 
     def __olist_sor__(self, olist: OwnedList) -> None: ...
 
+    def __olist_will_change__(self, olist: OwnedList) -> None: ...
+
 
 def is_list_owner(obj: Any):
     has_add = hasattr(obj, '__olist_add__')
     has_del = hasattr(obj, '__olist_del__')
     has_sor = hasattr(obj, '__olist_sor__')
-    return has_add and has_del and has_sor
+    has_change = hasattr(obj, '__olist_will_change__')
+    return has_add and has_del and has_sor and has_change
 
 
 class OwnedList(list, MutableSequence[_T], Generic[_T]):
@@ -44,11 +47,14 @@ class OwnedList(list, MutableSequence[_T], Generic[_T]):
         self._keypath = val
 
     def append(self, value: _T) -> None:
+        self.owner.__olist_will_change__(self)
         super().append(value)
         self.owner.__olist_add__(self, len(self) - 1, value)
 
     def extend(self, values: Iterable[_T]) -> None:
         curlen = len(self)
+        if len(values) > 0:
+            self.owner.__olist_will_change__(self)
         super().extend(values)
         for v in values:
             self.owner.__olist_add__(self, curlen, v)
@@ -56,30 +62,36 @@ class OwnedList(list, MutableSequence[_T], Generic[_T]):
 
     def insert(self, index: int, value: _T) -> None:
         curlen = len(self)
+        self.owner.__olist_will_change__(self)
         super().insert(index, value)
         idx = min(curlen, index)
         self.owner.__olist_add__(self, idx, value)
 
     def remove(self, value: _T) -> None:
+        self.owner.__olist_will_change__(self)
         super().remove(value)
         self.owner.__olist_del__(self, value)
 
     def sort(self, **kwargs) -> None:  # TODO: fix argument type hint
+        self.owner.__olist_will_change__(self)
         super().sort(**kwargs)
         self.owner.__olist_sor__(self)
 
     def clear(self) -> None:
         items = [item for item in self]
+        self.owner.__olist_will_change__(self)
         super().clear()
         for item in items:
             self.owner.__olist_del__(self, item)
 
     def pop(self, *args) -> _T:  # TODO: fix argument type hint
+        self.owner.__olist_will_change__(self)
         retval = super().pop(*args)
         self.owner.__olist_del__(self, retval)
         return retval
 
     def reverse(self) -> None:
+        self.owner.__olist_will_change__(self)
         super().reverse()
         self.owner.__olist_sor__(self)
 
@@ -87,6 +99,8 @@ class OwnedList(list, MutableSequence[_T], Generic[_T]):
         return super().__add__(x)
 
     def __iadd__(self, x: Iterable[_T]) -> OwnedList[_T]:
+        if len(x) > 0:
+            self.owner.__olist_will_change__(self)
         curlen = len(self)
         retval = super().__iadd__(x)
         for v in x:
@@ -110,6 +124,8 @@ class OwnedList(list, MutableSequence[_T], Generic[_T]):
                 for item in self:
                     add_list.append(item)
             len_self = len(self)
+        if len(remove_list) > 0 or len(add_list) > 0:
+            self.owner.__olist_will_change__(self)
         retval = super().__imul__(n)
         for item in remove_list:
             self.owner.__olist_del__(self, item)
@@ -125,6 +141,7 @@ class OwnedList(list, MutableSequence[_T], Generic[_T]):
             if idx < 0:
                 idx = len_self + idx
             val = self[idx] if 0 <= idx < len_self else None
+            self.owner.__olist_will_change__(self)
             super().__setitem__(*args)
             self.owner.__olist_del__(self, val)
             self.owner.__olist_add__(self, idx, args[1])
@@ -136,6 +153,7 @@ class OwnedList(list, MutableSequence[_T], Generic[_T]):
             if start < 0:
                 start = len_self + start
             start = min(max(0, start), len_self)
+            self.owner.__olist_will_change__(self)
             super().__setitem__(*args)
             for item in remove_list:
                 self.owner.__olist_del__(self, item)
@@ -152,11 +170,13 @@ class OwnedList(list, MutableSequence[_T], Generic[_T]):
             if idx < 0:
                 idx = len_self + idx
             val = self[idx] if 0 <= idx < len_self else None
+            self.owner.__olist_will_change__(self)
             super().__delitem__(*args)
             self.owner.__olist_del__(self, val)
         elif isinstance(args[0], slice):
             slc: slice = args[0]
             remove_list = self[slc]
+            self.owner.__olist_will_change__(self)
             super().__delitem__(*args)
             for item in remove_list:
                 self.owner.__olist_del__(self, item)

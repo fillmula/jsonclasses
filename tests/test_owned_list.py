@@ -26,6 +26,9 @@ class Owner:
         self.del_records: list[DelRecord] = []
         self.sor_records: list[SorRecord] = []
 
+    def __olist_will_change__(self, olist: OwnedList) -> None:
+        pass
+
     def __olist_add__(self, olist: OwnedList, idx: int, val: Any) -> None:
         self.add_records.append(AddRecord(olist, idx, val))
 

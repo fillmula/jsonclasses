@@ -363,6 +363,9 @@ class JSONObject:
             return
         super().__setattr__(name, value)  # json class normal field
 
+    def __odict_will_change__(self, odict: OwnedDict) -> None:
+        pass
+
     def __odict_add__(self, odict: OwnedDict, key: str, val: Any) -> None:
         if isinstance(val, dict):
             odict[key] = self._owned_dict(val,
@@ -372,6 +375,9 @@ class JSONObject:
                                           concat_keypath(odict.keypath, key))
 
     def __odict_del__(self, odict: OwnedDict, val: Any) -> None:
+        pass
+
+    def __olist_will_change__(self, olist: OwnedList) -> None:
         pass
 
     def __olist_add__(self, olist: OwnedList, idx: int, val: Any) -> None:
