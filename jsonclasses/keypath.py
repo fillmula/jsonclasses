@@ -30,5 +30,11 @@ def initial_keypaths(keypaths: set[str]) -> set[str]:
     """
     retval = set()
     for keypath in keypaths:
-        retval.add(keypath.split('.')[0])
+        retval.add(initial_keypath(keypath))
     return retval
+
+
+def initial_keypath(keypath: str) -> str:
+    """Returns the initial keypath item from the keypath.
+    """
+    return keypath.split('.')[0]

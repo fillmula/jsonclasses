@@ -59,3 +59,12 @@ class AbstractJSONClassException(Exception):
         self.message = (f'{class_.__name__} is an abstract class and should '
                         'not be initialized')
         super().__init__(self.message)
+
+
+class JSONClassResetError(Exception):
+    """This error is raised when an ORM object is new and thus cannot be reset.
+    """
+
+    def __init__(self) -> None:
+        self.message = 'object is new and cannot be reset'
+        super().__init__(self.message)

@@ -11,7 +11,10 @@ from .owned_list import OwnedList
 from .validators.instanceof_validator import InstanceOfValidator
 from .contexts import TransformingContext
 from .object_graph import ObjectGraph
-from .fields import get_fields, field
+from .fields import FieldType, get_fields, field, is_pure_local_field
+from .exceptions import JSONClassResetError
+from .keypath import initial_keypath
+from .unowned_copy import unowned_copy_list, unowned_copy_dict
 
 
 @jsonclass
@@ -27,43 +30,86 @@ class ORMObject(JSONObject):
         super().__init__(**kwargs)
         setattr(self, '_is_modified', False)
         setattr(self, '_modified_fields', set())
+        setattr(self, '_previous_values', {})
 
     def __setattr__(self: T, name: str, value: Any) -> None:
         # only mark modified fields for public properties
         if name[0] != '_' and not self.is_new:
             setattr(self, '_is_modified', True)
             self.modified_fields.add(name)
+            if name not in self.previous_values:
+                self.previous_values[name] = getattr(self, name)
         super().__setattr__(name, value)
 
     def __odict_add__(self, odict: OwnedDict, key: str, val: Any) -> None:
-        super().__odict_add__(odict, key, val)
         if not self.is_new:
             setattr(self, '_is_modified', True)
             self.modified_fields.add(odict.keypath)
+            name = initial_keypath(odict.keypath)
+            main_field = field(self, name)
+            if is_pure_local_field(self, main_field):
+                if name not in self.previous_values:
+                    if main_field.fdesc.field_type == FieldType.DICT:
+                        self.previous_values[name] = unowned_copy_dict(getattr(self, name))
+                    if main_field.fdesc.field_type == FieldType.LIST:
+                        self.previous_values[name] = unowned_copy_list(getattr(self, name))
+        super().__odict_add__(odict, key, val)
 
     def __odict_del__(self, odict: OwnedDict, val: Any) -> None:
-        super().__odict_del__(odict, val)
         if not self.is_new:
             setattr(self, '_is_modified', True)
             self.modified_fields.add(odict.keypath)
+            name = initial_keypath(odict.keypath)
+            main_field = field(self, name)
+            if is_pure_local_field(self, main_field):
+                if name not in self.previous_values:
+                    if main_field.fdesc.field_type == FieldType.DICT:
+                        self.previous_values[name] = unowned_copy_dict(getattr(self, name))
+                    if main_field.fdesc.field_type == FieldType.LIST:
+                        self.previous_values[name] = unowned_copy_list(getattr(self, name))
+        super().__odict_del__(odict, val)
 
     def __olist_add__(self, olist: OwnedList, idx: int, val: Any) -> None:
-        super().__olist_add__(olist, idx, val)
         if not self.is_new:
             setattr(self, '_is_modified', True)
             self.modified_fields.add(olist.keypath)
+            name = initial_keypath(olist.keypath)
+            main_field = field(self, name)
+            if is_pure_local_field(self, main_field):
+                if name not in self.previous_values:
+                    if main_field.fdesc.field_type == FieldType.DICT:
+                        self.previous_values[name] = unowned_copy_dict(getattr(self, name))
+                    if main_field.fdesc.field_type == FieldType.LIST:
+                        self.previous_values[name] = unowned_copy_list(getattr(self, name))
+        super().__olist_add__(olist, idx, val)
 
     def __olist_del__(self, olist: OwnedList, val: Any) -> None:
-        super().__olist_del__(olist, val)
         if not self.is_new:
             setattr(self, '_is_modified', True)
             self.modified_fields.add(olist.keypath)
+            name = initial_keypath(olist.keypath)
+            main_field = field(self, name)
+            if is_pure_local_field(self, main_field):
+                if name not in self.previous_values:
+                    if main_field.fdesc.field_type == FieldType.DICT:
+                        self.previous_values[name] = unowned_copy_dict(getattr(self, name))
+                    if main_field.fdesc.field_type == FieldType.LIST:
+                        self.previous_values[name] = unowned_copy_list(getattr(self, name))
+        super().__olist_del__(olist, val)
 
     def __olist_sor__(self, olist: OwnedList) -> None:
-        super().__olist_sor__(olist)
         if not self.is_new:
             setattr(self, '_is_modified', True)
             self.modified_fields.add(olist.keypath)
+            name = initial_keypath(olist.keypath)
+            main_field = field(self, name)
+            if is_pure_local_field(self, main_field):
+                if name not in self.previous_values:
+                    if main_field.fdesc.field_type == FieldType.DICT:
+                        self.previous_values[name] = unowned_copy_dict(getattr(self, name))
+                    if main_field.fdesc.field_type == FieldType.LIST:
+                        self.previous_values[name] = unowned_copy_list(getattr(self, name))
+        super().__olist_sor__(olist)
 
     @property
     def is_new(self: T) -> bool:
@@ -98,6 +144,20 @@ class ORMObject(JSONObject):
             return {field.field_name for field in get_fields(self)}
         return {name for name in self.modified_fields
                 if not field(self, name).fdesc.is_temp_field}
+
+    @property
+    def previous_values(self: T) -> dict[str, Any]:
+        if not hasattr(self, '_previous_values'):
+            self._previous_values: dict[str, Any] = {}
+        return self._previous_values
+
+    def reset(self: T) -> None:
+        if self.is_new:
+            raise JSONClassResetError()
+        for k, v in self.previous_values.items():
+            setattr(self, k, v)
+        self._modified_fields = set()
+        self._is_modified = False
 
     @property
     def is_deleted(self: T) -> bool:

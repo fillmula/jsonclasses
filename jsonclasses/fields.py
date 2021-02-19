@@ -252,6 +252,26 @@ def is_reference_field(field: Field) -> bool:
     return False
 
 
+def is_pure_local_fdesc(cori: Union[JSONObject, type[JSONObject]],
+                        fdesc: FieldDescription) -> bool:
+    if fdesc.field_storage == FieldStorage.LOCAL_KEY:
+        return False
+    if fdesc.field_storage == FieldStorage.FOREIGN_KEY:
+        return False
+    if fdesc.field_type == FieldType.LIST:
+        item_type = resolve_types(fdesc.raw_item_types, cori)
+        return is_pure_local_fdesc(cori, item_type.fdesc)
+    if fdesc.field_type == FieldType.DICT:
+        item_type = resolve_types(fdesc.raw_item_types, cori)
+        return is_pure_local_fdesc(cori, item_type.fdesc)
+    return True
+
+
+def is_pure_local_field(cori: Union[JSONObject, type[JSONObject]],
+                        field: Field) -> bool:
+    return is_pure_local_fdesc(cori, field.fdesc)
+
+
 def is_embedded_instance_field(cori: Union[JSONObject, type[JSONObject]],
                                field: Field) -> bool:
     from .json_object import JSONObject

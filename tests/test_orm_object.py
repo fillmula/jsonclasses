@@ -1,11 +1,11 @@
 from __future__ import annotations
-from jsonclasses.exceptions import ValidationException
-from typing import List, Dict
-import unittest
+from typing import Optional
+from unittest import TestCase
 from jsonclasses import jsonclass, ORMObject, types
+from jsonclasses.exceptions import ValidationException
 
 
-class TestORMObject(unittest.TestCase):
+class TestORMObject(TestCase):
 
     def test_orm_object_has_is_new_and_defaults_to_true(self):
         object = ORMObject()
@@ -92,7 +92,7 @@ class TestORMObject(unittest.TestCase):
         @jsonclass(class_graph='test_orm_4')
         class Product(ORMObject):
             name: str
-            variants: List[str]
+            variants: list[str]
         product = Product(name='p', variants=['xs', 's'])
         setattr(product, '_is_new', False)
         self.assertEqual(product.is_modified, False)
@@ -117,7 +117,7 @@ class TestORMObject(unittest.TestCase):
         @jsonclass(class_graph='test_orm_4_2')
         class Product(ORMObject):
             name: str
-            variants: Dict[str, str]
+            variants: dict[str, str]
         product = Product(name='p', variants={'xs': 'xs', 's': 's'})
         setattr(product, '_is_new', False)
         self.assertEqual(product.is_modified, False)
@@ -209,3 +209,46 @@ class TestORMObject(unittest.TestCase):
         self.assertEqual(product.is_modified, False)
         self.assertEqual(product.modified_fields, set())
         self.assertRaisesRegex(ValidationException, "Value at 'user\\.name' should not be None\\.", product.validate)
+
+    def test_orm_object_records_previous_str_value(self):
+
+        @jsonclass(class_graph='test_orm_9')
+        class Data(ORMObject):
+            str_field: Optional[str]
+            int_field: Optional[int]
+            list_field: Optional[list[str]]
+            dict_field: Optional[dict[str, list[int]]]
+
+        obj = Data(str_field='123', int_field=123)
+        setattr(obj, '_is_new', False)
+        obj.str_field = '234'
+        self.assertEqual(obj.previous_values, {'str_field': '123'})
+
+    def test_orm_object_records_previous_optional_int_value(self):
+
+        @jsonclass(class_graph='test_orm_10')
+        class Data(ORMObject):
+            str_field: Optional[str]
+            int_field: Optional[int]
+            list_field: Optional[list[str]]
+            dict_field: Optional[dict[str, list[int]]]
+
+        obj = Data(str_field='123')
+        setattr(obj, '_is_new', False)
+        obj.str_field = '234'
+        obj.int_field = 123
+        self.assertEqual(obj.previous_values, {'str_field': '123', 'int_field': None})
+
+    def test_orm_object_records_previous_list_value(self):
+
+        @jsonclass(class_graph='test_orm_11')
+        class Data(ORMObject):
+            str_field: Optional[str]
+            int_field: Optional[int]
+            list_field: Optional[list[str]]
+            dict_field: Optional[dict[str, list[int]]]
+
+        obj = Data(list_field=[1, 2, 3])
+        setattr(obj, '_is_new', False)
+        obj.list_field.append(4)
+        # self.assertEqual(obj.previous_values, {'list_field': [1, 2, 3]})
