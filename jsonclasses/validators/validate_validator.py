@@ -23,11 +23,14 @@ class ValidateValidator(Validator):
             result = self.validate_callable(context.value,
                                             context.keypath_parent,
                                             context.parent)
-        else:
+        elif params_len == 4:
             result = self.validate_callable(context.value,
                                             context.keypath_parent,
                                             context.parent,
                                             context)
+        else:
+            raise ValueError('wrong number of arguments provided to validate '
+                             'validator.')
         if result is not None:
             raise ValidationException(
                 keypath_messages={context.keypath_root: result},

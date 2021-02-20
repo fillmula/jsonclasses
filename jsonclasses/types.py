@@ -4,8 +4,9 @@ from typing import Callable, Any, Optional, Union, Literal
 from copy import deepcopy
 from .fields import FieldDescription
 from .validators import (UseForValidator, BoolValidator, ChainedValidator,
-                         DateValidator, DatetimeValidator, DefaultValidator,
-                         DictOfValidator, EagerValidator, EmbeddedValidator,
+                         CompareValidator, DateValidator, DatetimeValidator,
+                         DefaultValidator, DictOfValidator, EagerValidator,
+                         EmbeddedValidator,
                          FloatValidator, IndexValidator, InstanceOfValidator,
                          IntValidator, InvalidValidator, LengthValidator,
                          LinkedByValidator, LinkedInValidator,
@@ -18,7 +19,7 @@ from .validators import (UseForValidator, BoolValidator, ChainedValidator,
                          PresentWithoutValidator, PreserializeValidator,
                          PrimaryValidator, RangeValidator, ReadonlyValidator,
                          ReadwriteValidator, RefereeValidator,
-                         ReferrerValidator, RequiredValidator,
+                         ReferrerValidator, RequiredValidator, ResetValidator,
                          SetOnSaveValidator, ShapeValidator, StrValidator,
                          StrictValidator, TempValidator, TransformValidator,
                          TrimValidator, TruncateValidator, UniqueValidator,
@@ -417,14 +418,33 @@ class Types:
         argument. Use this to define custom field value validations.
 
         Args:
-          validate_callable (Callable): The validate callable tasks 3
-          arguments, value, key_path, and root. Returning None means the value
-          is valid, while returning a str message means the validation failed.
+            validate_callable (Callable): The validate callable tasks up to 4
+            arguments, which are value, key path, root and context. Returning
+            None means the value is valid, while returning a str message means
+            validation failed.
 
         Returns:
-          Types: A new types chained with this marker.
+            Types: A new types chained with this marker.
         """
         return Types(self, ValidateValidator(validate_callable))
+
+    def compare(self, compare_callable: Callable) -> Types:
+        """The compare field mark takes a validator callable as its sole
+        argument. If value of compared fields are changed, this validator is
+        called with 2 to 5 arguments.
+
+        Args:
+            compare_callable (Callable): The compare callable. Arg 1 is the old
+            value, arg 2 is the new value, arg 3 is key path, arg 4 is the
+            object, arg 5 is the context. Returning None means the value is
+            valid, while returning a str message means validation failed.
+
+        Returns:
+            Types: A new types chained with this marker.
+        """
+        return Types(self,
+                     ResetValidator(),
+                     CompareValidator(compare_callable))
 
     # transformers
 

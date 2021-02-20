@@ -82,6 +82,10 @@ from .presentwithout_validator import PresentWithoutValidator
 # custom validator
 from .validate_validator import ValidateValidator
 
+# comparing validator and callback
+from .reset_validator import ResetValidator
+from .compare_validator import CompareValidator
+
 # default transformer
 from .default_validator import DefaultValidator
 
