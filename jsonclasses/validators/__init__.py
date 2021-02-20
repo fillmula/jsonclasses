@@ -98,5 +98,6 @@ from .nonnull_validator import NonnullValidator
 # chained validator
 from .chained_validator import ChainedValidator
 
-# setonsave setter
+# setonsave setter, onsave callback
 from .setonsave_validator import SetOnSaveValidator
+from .onsave_validator import OnSaveValidator

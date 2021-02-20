@@ -14,7 +14,7 @@ from .validators import (UseForValidator, BoolValidator, ChainedValidator,
                          MatchValidator, MaxValidator, MaxlengthValidator,
                          MinValidator, MinlengthValidator, NegativeValidator,
                          NonnullValidator, NullableValidator, OneOfValidator,
-                         OneOfTypeValidator, PositiveValidator,
+                         OneOfTypeValidator, OnSaveValidator, PositiveValidator,
                          PresentValidator, PresentWithValidator,
                          PresentWithoutValidator, PreserializeValidator,
                          PrimaryValidator, RangeValidator, ReadonlyValidator,
@@ -509,6 +509,19 @@ class Types:
           Types: A new types chained with this marker.
         """
         return Types(self, PreserializeValidator(), SetOnSaveValidator(setter))
+
+    def onsave(self, callback: Callable) -> Types:
+        """Onsave inserts a callback into the validator chain. If save action
+        is triggered, the callback is called with the current value.
+
+        Args:
+          callback (Callable): This callback function takes one argument
+          which is the current value of the field.
+
+        Returns:
+          Types: A new types chained with this marker.
+        """
+        return Types(self, OnSaveValidator(callback))
 
     @property
     def nonnull(self) -> Types:
