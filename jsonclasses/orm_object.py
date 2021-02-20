@@ -12,7 +12,7 @@ from .validators.instanceof_validator import InstanceOfValidator
 from .contexts import TransformingContext
 from .object_graph import ObjectGraph
 from .fields import FieldType, get_fields, field, is_pure_local_field
-from .exceptions import JSONClassResetError
+from .exceptions import JSONClassResetError, JSONClassResetNotEnabledError
 from .keypath import initial_keypath
 from .unowned_copy import unowned_copy_list, unowned_copy_dict
 
@@ -37,19 +37,23 @@ class ORMObject(JSONObject):
         if name[0] != '_' and not self.is_new:
             setattr(self, '_is_modified', True)
             self.modified_fields.add(name)
-            if name not in self.previous_values:
-                self.previous_values[name] = getattr(self, name)
+            if self.__class__.config.reset_all_fields or \
+                    field(self, name).fdesc.has_reset_validator:
+                if name not in self.previous_values:
+                    self.previous_values[name] = getattr(self, name)
         super().__setattr__(name, value)
 
     def __odict_will_change__(self, odict: OwnedDict) -> None:
         name = initial_keypath(odict.keypath)
         main_field = field(self, name)
-        if is_pure_local_field(self, main_field):
-            if name not in self.previous_values:
-                if main_field.fdesc.field_type == FieldType.DICT:
-                    self.previous_values[name] = unowned_copy_dict(getattr(self, name))
-                if main_field.fdesc.field_type == FieldType.LIST:
-                    self.previous_values[name] = unowned_copy_list(getattr(self, name))
+        if self.__class__.config.reset_all_fields or \
+                field(self, name).fdesc.has_reset_validator:
+            if is_pure_local_field(self, main_field):
+                if name not in self.previous_values:
+                    if main_field.fdesc.field_type == FieldType.DICT:
+                        self.previous_values[name] = unowned_copy_dict(getattr(self, name))
+                    if main_field.fdesc.field_type == FieldType.LIST:
+                        self.previous_values[name] = unowned_copy_list(getattr(self, name))
 
     def __odict_add__(self, odict: OwnedDict, key: str, val: Any) -> None:
         super().__odict_add__(odict, key, val)
@@ -66,12 +70,14 @@ class ORMObject(JSONObject):
     def __olist_will_change__(self, olist: OwnedList) -> None:
         name = initial_keypath(olist.keypath)
         main_field = field(self, name)
-        if is_pure_local_field(self, main_field):
-            if name not in self.previous_values:
-                if main_field.fdesc.field_type == FieldType.DICT:
-                    self.previous_values[name] = unowned_copy_dict(getattr(self, name))
-                if main_field.fdesc.field_type == FieldType.LIST:
-                    self.previous_values[name] = unowned_copy_list(getattr(self, name))
+        if self.__class__.config.reset_all_fields or \
+                field(self, name).fdesc.has_reset_validator:
+            if is_pure_local_field(self, main_field):
+                if name not in self.previous_values:
+                    if main_field.fdesc.field_type == FieldType.DICT:
+                        self.previous_values[name] = unowned_copy_dict(getattr(self, name))
+                    if main_field.fdesc.field_type == FieldType.LIST:
+                        self.previous_values[name] = unowned_copy_list(getattr(self, name))
 
     def __olist_add__(self, olist: OwnedList, idx: int, val: Any) -> None:
         super().__olist_add__(olist, idx, val)
@@ -132,6 +138,8 @@ class ORMObject(JSONObject):
         return self._previous_values
 
     def reset(self: T) -> None:
+        if not self.__class__.config.reset_all_fields:
+            raise JSONClassResetNotEnabledError()
         if self.is_new:
             raise JSONClassResetError()
         for k, v in self.previous_values.items():

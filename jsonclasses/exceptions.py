@@ -68,3 +68,13 @@ class JSONClassResetError(Exception):
     def __init__(self) -> None:
         self.message = 'object is new and cannot be reset'
         super().__init__(self.message)
+
+
+class JSONClassResetNotEnabledError(Exception):
+    """This error is raised when calling reset on an object which class doesn't
+    enable `reset_all_fields`.
+    """
+
+    def __init__(self) -> None:
+        self.message = 'reset called on a reset disabled object'
+        super().__init__(self.message)
