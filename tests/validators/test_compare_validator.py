@@ -82,7 +82,7 @@ class TestCompareValidator(TestCase):
         user.age = 60
         self.assertRaisesRegex(ValidationException, 'invalid', user.validate)
 
-    def test_compare_throws_if_callable_returns_a_string_4(self):
+    def test_compare_throws_if_callable_returns_a_string_5(self):
 
         def compare(old: int, new: int, key_path: str, obj: User, context: ValidatingContext):
             return "invalid"
@@ -95,48 +95,50 @@ class TestCompareValidator(TestCase):
         user.age = 60
         self.assertRaisesRegex(ValidationException, 'invalid', user.validate)
 
+    def test_compare_takes_keypath(self):
 
-    # def test_validate_throws__with_two_args_when_value_is_invalid(self):
-    #     @jsonclass(class_graph='test_validate_4')
-    #     class User(JSONObject):
-    #         email: str = types.str.validate(lambda e, k: None if len(e) == 3 else f'totally wrong {k}').required
-    #     user = User(email='abcd')
-    #     self.assertRaisesRegex(ValidationException, 'totally wrong email', user.validate)
+        val = {'val': '123'}
 
-    # def test_validate_is_fine_with_three_args_when_value_is_valid(self):
-    #     @jsonclass(class_graph='test_validate_5')
-    #     class User(JSONObject):
-    #         phone: str = '9'
-    #         email: str = types.str.validate(lambda e, k, p: None if p.phone == '9' else f'totally wrong {k}').required
-    #     user = User(email='abc')
-    #     try:
-    #         user.validate()
-    #     except ValidationException:
-    #         self.fail('validate should be fine if value is valid')
+        def compare(old: int, new: int, key_path: str):
+            val['val'] = key_path
 
-    # def test_validate_throws__with_three_args_when_value_is_invalid(self):
-    #     @jsonclass(class_graph='test_validate_6')
-    #     class User(JSONObject):
-    #         phone: str = '9'
-    #         email: str = types.str.validate(lambda e, k, p: None if p.phone != '9' else f'totally wrong {k}').required
-    #     user = User(email='abcd')
-    #     self.assertRaisesRegex(ValidationException, 'totally wrong email', user.validate)
+        @jsonclass(class_graph='test_compare_7')
+        class User(ORMObject):
+            age: Optional[int] = types.int.compare(compare).required
+        user = User(age=1)
+        setattr(user, '_is_new', False)
+        user.age = 60
+        user.validate()
+        self.assertEqual(val, {'val': 'age'})
 
-    # def test_validate_is_fine_with_four_args_when_value_is_valid(self):
-    #     @jsonclass(class_graph='test_validate_7')
-    #     class User(JSONObject):
-    #         phone: str = '9'
-    #         email: str = types.str.validate(lambda e, k, p, c: None if c.root.phone == '9' else f'totally wrong {k}').required
-    #     user = User(email='abc')
-    #     try:
-    #         user.validate()
-    #     except ValidationException:
-    #         self.fail('validate should be fine if value is valid')
+    def test_compare_takes_obj(self):
 
-    # def test_validate_throws__with_four_args_when_value_is_invalid(self):
-    #     @jsonclass(class_graph='test_validate_8')
-    #     class User(JSONObject):
-    #         phone: str = '9'
-    #         email: str = types.str.validate(lambda e, k, p, c: None if c.root.phone != '9' else f'totally wrong {k}').required
-    #     user = User(email='abcd')
-    #     self.assertRaisesRegex(ValidationException, 'totally wrong email', user.validate)
+        val = {'val': '123'}
+
+        def compare(old: int, new: int, key_path: str, obj: User):
+            val['val'] = obj
+
+        @jsonclass(class_graph='test_compare_8')
+        class User(ORMObject):
+            age: Optional[int] = types.int.compare(compare).required
+        user = User(age=1)
+        setattr(user, '_is_new', False)
+        user.age = 60
+        user.validate()
+        self.assertEqual(val, {'val': user})
+
+    def test_compare_takes_obj(self):
+
+        val = {'val': '123'}
+
+        def compare(old: int, new: int, key_path: str, obj: User, ctx: ValidatingContext):
+            val['val'] = ctx
+
+        @jsonclass(class_graph='test_compare_9')
+        class User(ORMObject):
+            age: Optional[int] = types.int.compare(compare).required
+        user = User(age=1)
+        setattr(user, '_is_new', False)
+        user.age = 60
+        user.validate()
+        self.assertTrue(isinstance(val['val'], ValidatingContext))
