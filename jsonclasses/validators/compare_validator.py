@@ -20,24 +20,24 @@ class CompareValidator(Validator):
         if name not in parent.previous_values:
             return
         prev_value = parent.previous_values[name]
-        params_len = len(signature(self.validate_callable).parameters)
+        params_len = len(signature(self.compare_callable).parameters)
         if params_len == 2:
             result = self.compare_callable(prev_value, context.value)
         elif params_len == 3:
-            result = self.validate_callable(prev_value,
-                                            context.value,
-                                            context.keypath_parent)
+            result = self.compare_callable(prev_value,
+                                           context.value,
+                                           context.keypath_parent)
         elif params_len == 4:
-            result = self.validate_callable(prev_value,
-                                            context.value,
-                                            context.keypath_parent,
-                                            context.parent)
+            result = self.compare_callable(prev_value,
+                                           context.value,
+                                           context.keypath_parent,
+                                           context.parent)
         elif params_len == 5:
-            result = self.validate_callable(prev_value,
-                                            context.value,
-                                            context.keypath_parent,
-                                            context.parent,
-                                            context)
+            result = self.compare_callable(prev_value,
+                                           context.value,
+                                           context.keypath_parent,
+                                           context.parent,
+                                           context)
         else:
             raise ValueError('wrong number of arguments provided to compare '
                              'validator.')
