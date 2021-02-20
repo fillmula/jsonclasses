@@ -127,7 +127,7 @@ class TestCompareValidator(TestCase):
         user.validate()
         self.assertEqual(val, {'val': user})
 
-    def test_compare_takes_obj(self):
+    def test_compare_takes_ctx(self):
 
         val = {'val': '123'}
 
