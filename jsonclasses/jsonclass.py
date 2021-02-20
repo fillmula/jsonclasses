@@ -24,7 +24,8 @@ def jsonclass(
     local_key: Optional[LocalKey] = None,
     validate_all_fields: Optional[bool] = None,
     soft_delete: Optional[bool] = None,
-    abstract: Optional[bool] = None
+    abstract: Optional[bool] = None,
+    reset_all_fields: Optional[bool] = None
 ) -> Callable[[type[T]], type[T]]: ...
 
 
@@ -38,7 +39,8 @@ def jsonclass(
     local_key: Optional[LocalKey] = None,
     validate_all_fields: Optional[bool] = None,
     soft_delete: Optional[bool] = None,
-    abstract: Optional[bool] = None
+    abstract: Optional[bool] = None,
+    reset_all_fields: Optional[bool] = None
 ) -> type[T]: ...
 
 
@@ -51,7 +53,8 @@ def jsonclass(
     local_key: Optional[LocalKey] = None,
     validate_all_fields: Optional[bool] = None,
     soft_delete: Optional[bool] = None,
-    abstract: Optional[bool] = None
+    abstract: Optional[bool] = None,
+    reset_all_fields: Optional[bool] = None
 ) -> Union[Callable[[type[T]], type[T]], type[T]]:
     """The jsonclass object class decorator. To declare a jsonclass class, use
     this syntax:
@@ -75,7 +78,8 @@ def jsonclass(
             local_key=local_key,
             validate_all_fields=validate_all_fields,
             soft_delete=soft_delete,
-            abstract=abstract)
+            abstract=abstract,
+            reset_all_fields=reset_all_fields)
         config.install_on_class(cls)
         dataclass_cls = dataclass(init=False)(cls)
         class_graph_map.graph(cast(str, class_graph)).add(dataclass_cls)
@@ -93,5 +97,6 @@ def jsonclass(
                 local_key=local_key,
                 validate_all_fields=validate_all_fields,
                 soft_delete=soft_delete,
-                abstract=abstract)
+                abstract=abstract,
+                reset_all_fields=reset_all_fields)
         return parametered_jsonclass

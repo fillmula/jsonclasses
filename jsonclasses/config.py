@@ -49,6 +49,11 @@ ABSTRACT = False
 Classes marked with abstract should be used as superclasses.
 """
 
+RESET_ALL_FIELDS = False
+"""This config option makes every field in a class recordable and resetable.
+This config option enables the `reset` method.
+"""
+
 
 @dataclass
 class Config:
@@ -63,6 +68,7 @@ class Config:
     validate_all_fields: Optional[bool] = None
     soft_delete: Optional[bool] = None
     abstract: Optional[bool] = None
+    reset_all_fields: Optional[bool] = None
 
     linked_class: Optional[type[JSONObject]] = None
 
@@ -81,6 +87,8 @@ class Config:
             self.soft_delete = SOFT_DELETE
         if self.abstract is None:
             self.abstract = ABSTRACT
+        if self.reset_all_fields is None:
+            self.reset_all_fields = RESET_ALL_FIELDS
 
     def install_on_class(self, cls: type[JSONObject]):
         """Install config object onto a JSONObject class.
