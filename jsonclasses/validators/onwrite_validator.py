@@ -24,6 +24,18 @@ class OnWriteValidator(Validator):
             self.callback()
         elif params_len == 1:
             self.callback(context.value)
+        elif params_len == 2:
+            self.callback(context.value,
+                          context.keypath_parent)
+        elif params_len == 3:
+            self.callback(context.value,
+                          context.keypath_parent,
+                          context.parent)
+        elif params_len == 4:
+            self.callback(context.value,
+                          context.keypath_parent,
+                          context.parent,
+                          context)
         else:
             raise ValueError('wrong number of arguments provided to onwrite '
                              'validator.')
