@@ -3,7 +3,7 @@ from unittest import TestCase
 from jsonclasses import jsonclass, ORMObject, types
 
 
-class TestSetOnSaveVailidator(TestCase):
+class TestOnSaveVailidator(TestCase):
 
     def test_orm_objects_if_new_triggers_on_save(self):
 

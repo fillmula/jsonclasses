@@ -1,5 +1,6 @@
 """This modules contains the JSON Class types marker."""
 from __future__ import annotations
+from jsonclasses.validators.onupdate_validator import OnUpdateValidator
 from typing import Callable, Any, Optional, Union, Literal
 from copy import deepcopy
 from .fields import FieldDescription
@@ -515,13 +516,25 @@ class Types:
         is triggered, the callback is called with the current value.
 
         Args:
-          callback (Callable): This callback function takes one argument
-          which is the current value of the field.
+            callback (Callable): This callback function takes one argument
+            which is the current value of the field.
 
         Returns:
-          Types: A new types chained with this marker.
+            Types: A new types chained with this marker.
         """
         return Types(self, OnSaveValidator(callback))
+
+    def onupdate(self, callback: Callable) -> Types:
+        """Onupdate is a callback validator. If value updated when saving, this
+        callback is called with the current value or both values.
+
+        Args:
+            callback (Callable): A callable which takes arguments.
+
+        Returns:
+            Types: A new types chained with this marker.
+        """
+        return Types(self, ResetValidator(), OnUpdateValidator(callback))
 
     @property
     def nonnull(self) -> Types:

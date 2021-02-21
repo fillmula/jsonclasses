@@ -101,3 +101,4 @@ from .chained_validator import ChainedValidator
 # setonsave setter, onsave callback
 from .setonsave_validator import SetOnSaveValidator
 from .onsave_validator import OnSaveValidator
+from .onupdate_validator import OnUpdateValidator

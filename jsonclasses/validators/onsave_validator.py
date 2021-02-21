@@ -1,4 +1,4 @@
-"""module for setonsave validator."""
+"""module for onsave validator."""
 from typing import Callable, Any
 from inspect import signature
 from .validator import Validator
