@@ -1,5 +1,4 @@
-"""
-This module defines `Config`. Each JSON class has its own configuration. The
+"""This module defines `Config`. Each JSON class has its own configuration. The
 configuration object tweaks the behavior of JSON classes.
 """
 from __future__ import annotations
@@ -25,7 +24,8 @@ class Config:
                  soft_delete: Optional[bool],
                  abstract: Optional[bool],
                  reset_all_fields: Optional[bool]) -> None:
-        """Initialize a new configuration object.
+        """
+        Initialize a new configuration object.
 
         Args:
             class_graph (Optional[str]): The name of the class graph on which \
