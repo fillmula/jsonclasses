@@ -13,6 +13,11 @@ class OnSaveValidator(Validator):
 
     def serialize(self, context: TransformingContext) -> Any:
         params_len = len(signature(self.callback).parameters)
-        if params_len == 1:
+        if params_len == 0:
+            self.callback()
+        elif params_len == 1:
             self.callback(context.value)
+        else:
+            raise ValueError('wrong number of arguments provided to onsave '
+                             'validator.')
         return context.value
