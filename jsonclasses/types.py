@@ -1,6 +1,5 @@
 """This modules contains the JSON Class types marker."""
 from __future__ import annotations
-from jsonclasses.validators.onupdate_validator import OnUpdateValidator
 from typing import Callable, Any, Optional, Union, Literal
 from copy import deepcopy
 from .fields import FieldDescription
@@ -15,7 +14,8 @@ from .validators import (UseForValidator, BoolValidator, ChainedValidator,
                          MatchValidator, MaxValidator, MaxlengthValidator,
                          MinValidator, MinlengthValidator, NegativeValidator,
                          NonnullValidator, NullableValidator, OneOfValidator,
-                         OneOfTypeValidator, OnSaveValidator, PositiveValidator,
+                         OneOfTypeValidator, OnWriteValidator, OnSaveValidator,
+                         OnUpdateValidator, PositiveValidator,
                          PresentValidator, PresentWithValidator,
                          PresentWithoutValidator, PreserializeValidator,
                          PrimaryValidator, RangeValidator, ReadonlyValidator,
@@ -535,6 +535,18 @@ class Types:
             Types: A new types chained with this marker.
         """
         return Types(self, ResetValidator(), OnUpdateValidator(callback))
+
+    def onwrite(self, callback: Callable) -> Types:
+        """Onwrite is a callback validator. Whenever a new value is being
+        serialized into the database, this is called.
+
+        Args:
+            callback (Callable): A callable which takes arguments.
+
+        Returns:
+            Types: A new types chained with this marker.
+        """
+        return Types(self, OnWriteValidator(callback))
 
     @property
     def nonnull(self) -> Types:
