@@ -18,7 +18,7 @@ class OnUpdateValidator(Validator):
         name = context.keypath_parent
         parent = cast(ORMObject, context.parent)
         if name not in parent.previous_values:
-            return
+            return context.value
         prev_value = parent.previous_values[name]
         params_len = len(signature(self.callback).parameters)
         if params_len == 0:

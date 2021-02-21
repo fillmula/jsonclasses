@@ -20,6 +20,7 @@ class TestOnWriteVailidator(TestCase):
         item.a = 'b'
         item._setonsave()
         self.assertEqual(val, {'val': 1})
+        self.assertEqual(item.b, 1)
 
     def test_orm_objects_if_only_other_field_modified_do_not_trigger_onwrite(self):
         val = {'val': 0}
@@ -36,6 +37,7 @@ class TestOnWriteVailidator(TestCase):
         item.a = 'b'
         item._setonsave()
         self.assertEqual(val, {'val': 0})
+        self.assertEqual(item.b, 1)
 
     def test_orm_objects_if_field_modified_trigger_onwrite(self):
         val = {'val': 0}

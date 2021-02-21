@@ -18,7 +18,7 @@ class OnWriteValidator(Validator):
         name = context.keypath_parent
         parent = cast(ORMObject, context.parent)
         if not parent.is_new and name not in parent.modified_fields:
-            return
+            return context.value
         params_len = len(signature(self.callback).parameters)
         if params_len == 0:
             self.callback()
