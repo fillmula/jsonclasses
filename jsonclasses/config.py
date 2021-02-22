@@ -1,97 +1,132 @@
-"""This module contains JSON Class `config` aka configuration object."""
+"""This module defines `Config`. Each JSON class has its own configuration. The
+configuration object tweaks the behavior of JSON classes.
+"""
 from __future__ import annotations
-from typing import Optional, Callable, TYPE_CHECKING
-from dataclasses import dataclass
-from .fields import FieldType
+from typing import Optional, Callable, final, TYPE_CHECKING
 if TYPE_CHECKING:
-    from .json_object import JSONObject
-
-CAMELIZE_JSON_KEYS = True
-"""When initializing, setting values, updating values, and serializing,
-whether automatically camelize json keys or not. Most of the times, JSON
-keys are camelized since this is a data transfering format. Most of other
-programming languages have camelized naming convensions. Python is an
-exception. Use `config.CAMELIZE_JSON_KEYS = False` to disable this behavior
-globally.
-"""
-
-CAMELIZE_DB_KEYS = True
-"""When integrating with ORMs, whether camelize keys and save to database. This
-is automatically on by default. Use `config.CAMELIZE_DB_KEYS = False` to
-disable this behavior globally.
-"""
-
-STRICT_INPUT = True
-"""When initializing JSON Class objects and set values, strict input classes
-raises if invalid key value pairs are received.
-"""
-
-LocalKey = Callable[[str, FieldType], str]
+    from .jsonclass_field import JSONClassField
+    from .class_graph import JSONClassGraph
 
 
-def LOCAL_KEY(field_name: str, field_type: FieldType) -> str:
-    """The default local_key resolve function."""
-    if field_type == FieldType.LIST:
-        return field_name + '_ids'
-    return field_name + '_id'
-
-
-VALIDATE_ALL_FIELDS = True
-"""When validating, if no validate rule specified, default to all fields.
-"""
-
-SOFT_DELETE = False
-"""When deleting, if no delete rule specified, default to hard delete.
-"""
-
-ABSTRACT = False
-"""This config option prevents objects of the class being created and used.
-Classes marked with abstract should be used as superclasses.
-"""
-
-RESET_ALL_FIELDS = False
-"""This config option makes every field in a class recordable and resetable.
-This config option enables the `reset` method.
-"""
-
-
-@dataclass
+@final
 class Config:
-    """The Config class contains user's settings for a JSON Class.
+    """The configuration of JSON classes. Each JSON class has its own
+    configuration that each instance shares. This object tweaks the behavior of
+    JSON classes.
     """
 
-    class_graph: str = 'default'
-    camelize_json_keys: Optional[bool] = None
-    camelize_db_keys: Optional[bool] = None
-    strict_input: Optional[bool] = None
-    local_key: Optional[LocalKey] = None
-    validate_all_fields: Optional[bool] = None
-    soft_delete: Optional[bool] = None
-    abstract: Optional[bool] = None
-    reset_all_fields: Optional[bool] = None
-
-    linked_class: Optional[type[JSONObject]] = None
-
-    def __post_init__(self):
-        if self.camelize_json_keys is None:
-            self.camelize_json_keys = CAMELIZE_JSON_KEYS
-        if self.camelize_db_keys is None:
-            self.camelize_db_keys = CAMELIZE_DB_KEYS
-        if self.strict_input is None:
-            self.strict_input = STRICT_INPUT
-        if self.local_key is None:
-            self.local_key = LOCAL_KEY
-        if self.validate_all_fields is None:
-            self.validate_all_fields = VALIDATE_ALL_FIELDS
-        if self.soft_delete is None:
-            self.soft_delete = SOFT_DELETE
-        if self.abstract is None:
-            self.abstract = ABSTRACT
-        if self.reset_all_fields is None:
-            self.reset_all_fields = RESET_ALL_FIELDS
-
-    def install_on_class(self, cls: type[JSONObject]):
-        """Install config object onto a JSONObject class.
+    def __init__(self: Config,
+                 class_graph: Optional[str],
+                 camelize_json_keys: Optional[bool],
+                 camelize_db_keys: Optional[bool],
+                 strict_input: Optional[bool],
+                 key_transformer: Optional[Callable[[JSONClassField], str]],
+                 validate_all_fields: Optional[bool],
+                 soft_delete: Optional[bool],
+                 abstract: Optional[bool],
+                 reset_all_fields: Optional[bool]) -> None:
         """
-        cls.config = self
-        self.linked_class = cls
+        Initialize a new configuration object.
+
+        Args:
+            class_graph (Optional[str]): The name of the class graph on which \
+                the JSON class is defined.
+            camelize_json_keys (Optional[bool]): Whether camelize keys when \
+                outputing JSON.
+            camelize_db_keys (Optional[bool]): Whether camelize keys when \
+                serializing into database.
+            strict_input (Optional[bool]): Whether raise errors on receiving \
+                invalid input keys.
+            key_transformer (Optional[Callable[[JSONClassField], str]]): The \
+                reference field local key conversion function.
+            validate_all_fields (Optional[bool]): The default field \
+                validating method when performing saving and validating.
+            soft_delete (Optional[bool]): Whether perform soft delete on \
+                deletion.
+            abstract: (Optional[bool]): Instance of abstract classes cannot \
+                be initialized.
+            reset_all_fields: (Optional[bool]): Whether record all previous \
+                values of an object and enable reset functionality.
+        """
+        self._class_graph = class_graph or 'default'
+        self._camelize_json_keys = camelize_json_keys
+        self._camelize_db_keys = camelize_db_keys
+        self._strict_input = strict_input
+        self._key_transformer = key_transformer
+        self._validate_all_fields = validate_all_fields
+        self._soft_delete = soft_delete
+        self._abstract = abstract
+        self._reset_all_fields = reset_all_fields
+
+    @property
+    def class_graph(self: Config) -> JSONClassGraph:
+        """The name of the class graph on which the JSON class is defined.
+        """
+        from .jsonclass_graph import JSONClassGraph
+        return JSONClassGraph(self._class_graph)
+
+    @property
+    def camelize_json_keys(self: Config) -> bool:
+        """Whether camelize keys when outputing JSON.
+        """
+        if self._camelize_json_keys is None:
+            return self.class_graph.default_config.camelize_json_keys
+        return self._camelize_json_keys
+
+    @property
+    def camelize_db_keys(self: Config) -> bool:
+        """Whether camelize keys when serializing into database.
+        """
+        if self._camelize_db_keys is None:
+            return self.class_graph.default_config.camelize_db_keys
+        return self._camelize_db_keys
+
+    @property
+    def strict_input(self: Config) -> bool:
+        """Whether raise errors on receiving invalid input keys.
+        """
+        if self._strict_input is None:
+            return self.class_graph.default_config.strict_input
+        return self._strict_input
+
+    @property
+    def key_transformer(self: Config) -> Callable[[JSONClassField], str]:
+        """The reference field local key conversion function.
+        """
+        if self._key_transformer is None:
+            return self.class_graph.default_config.key_transformer
+        return self._key_transformer
+
+    @property
+    def validate_all_fields(self: Config) -> bool:
+        """The default field validating method when performing saving and
+        validating.
+        """
+        if self._validate_all_fields is None:
+            return self.class_graph.default_config.validate_all_fields
+        return self._validate_all_fields
+
+    @property
+    def soft_delete(self: Config) -> bool:
+        """Whether perform soft delete on deletion.
+        """
+        if self._soft_delete is None:
+            return self.class_graph.default_config.soft_delete
+        return self._soft_delete
+
+    @property
+    def abstract(self: Config) -> bool:
+        """Instance of abstract classes cannot be initialized.
+        """
+        if self._abstract is None:
+            return self.class_graph.default_config.abstract
+        return self._abstract
+
+    @property
+    def reset_all_fields(self: Config) -> bool:
+        """Whether record all previous values of an object and enable reset
+        functionality.
+        """
+        if self._reset_all_fields is None:
+            return self.class_graph.default_config.reset_all_fields
+        return self._reset_all_fields

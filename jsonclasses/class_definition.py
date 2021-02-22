@@ -10,10 +10,10 @@ from dataclasses import fields, Field
 from inflection import camelize
 from .jsonclass_field import JSONClassField
 from .fields import FieldDescription, FieldStorage, FieldType
-from .new_types_resolver import TypesResolver
+from .types_resolver import TypesResolver
 from .exceptions import LinkedFieldUnmatchException
 if TYPE_CHECKING:
-    from .new_config import Config
+    from .config import Config
     from .types import Types
 
 

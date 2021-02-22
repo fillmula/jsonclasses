@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Union, final, TYPE_CHECKING
 
-from .new_config import Config
+from .config import Config
 from .keypath_utils import reference_key
 from .exceptions import (JSONClassRedefinitionException,
                          JSONClassNotFoundException)
