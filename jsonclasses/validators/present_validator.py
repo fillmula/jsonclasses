@@ -1,5 +1,5 @@
 """module for required validator."""
-from ..field_definitionimport FieldDefinition
+from ..field_definition import FieldDefinition
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..contexts import ValidatingContext

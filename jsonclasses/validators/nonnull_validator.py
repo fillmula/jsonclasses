@@ -1,6 +1,6 @@
 """module for nonnull validator."""
 from .validator import Validator
-from ..field_definitionimport FieldDefinition, Nullability
+from ..field_definition import FieldDefinition, Nullability
 
 
 class NonnullValidator(Validator):

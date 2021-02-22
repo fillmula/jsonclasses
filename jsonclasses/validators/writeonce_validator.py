@@ -1,5 +1,5 @@
 """module for writeonce validator."""
-from ..field_definitionimport FieldDefinition, WriteRule
+from ..field_definition import FieldDefinition, WriteRule
 from .validator import Validator
 
 

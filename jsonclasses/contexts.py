@@ -4,7 +4,7 @@ from typing import Any, NamedTuple, TypeVar, Optional, Union, TYPE_CHECKING
 from .object_graph import ObjectGraph
 if TYPE_CHECKING:
     from .config import Config
-    from .field_definitionimport FieldDefinition
+    from .field_definition import FieldDefinition
     from .json_object import JSONObject
     T = TypeVar('T', bound=JSONObject)
 

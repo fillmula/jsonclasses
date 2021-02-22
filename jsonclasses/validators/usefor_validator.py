@@ -1,5 +1,5 @@
 """module for readonly validator."""
-from ..field_definitionimport FieldDefinition
+from ..field_definition import FieldDefinition
 from .validator import Validator
 
 

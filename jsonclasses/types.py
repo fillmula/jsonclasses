@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Callable, Any, Optional, Union, Literal
 from copy import deepcopy
-from .field_definitionimport FieldDefinition
+from .field_definition import FieldDefinition
 from .validators import (UseForValidator, BoolValidator, ChainedValidator,
                          CompareValidator, DateValidator, DatetimeValidator,
                          DefaultValidator, DictOfValidator, EagerValidator,

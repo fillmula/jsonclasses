@@ -1,6 +1,6 @@
 """module for validator validator."""
 from ..exceptions import ValidationException
-from ..field_definitionimport FieldDefinition, FieldType
+from ..field_definition import FieldDefinition, FieldType
 from ..contexts import ValidatingContext
 from .validator import Validator
 

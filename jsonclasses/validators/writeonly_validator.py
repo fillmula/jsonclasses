@@ -1,5 +1,5 @@
 """module for writeonly validator."""
-from ..field_definitionimport FieldDefinition, ReadRule
+from ..field_definition import FieldDefinition, ReadRule
 from .validator import Validator
 
 

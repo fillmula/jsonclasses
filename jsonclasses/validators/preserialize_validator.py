@@ -1,6 +1,6 @@
 """module for preserialize validator."""
 from .validator import Validator
-from ..field_definitionimport FieldDefinition
+from ..field_definition import FieldDefinition
 
 
 class PreserializeValidator(Validator):

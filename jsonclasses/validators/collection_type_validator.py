@@ -1,7 +1,7 @@
 """module for listof validator."""
 from __future__ import annotations
 from typing import Any, Collection, Iterable, TypeVar, Union, cast, TYPE_CHECKING
-from ..field_definitionimport FieldDefinition, Nullability
+from ..field_definition import FieldDefinition, Nullability
 from ..config import Config
 from ..exceptions import ValidationException
 from .type_validator import TypeValidator

@@ -9,7 +9,7 @@ from typing import Optional, final, cast, TYPE_CHECKING
 from dataclasses import fields, Field
 from inflection import camelize
 from .jsonclass_field import JSONClassField
-from .field_definitionimport FieldDefinition, FieldStorage, FieldType
+from .field_definition import FieldDefinition, FieldStorage, FieldType
 from .types_resolver import TypesResolver
 from .exceptions import LinkedFieldUnmatchException
 if TYPE_CHECKING:

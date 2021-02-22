@@ -4,7 +4,7 @@ from ..exceptions import ValidationException
 from .validator import Validator
 from ..contexts import ValidatingContext
 from ..types_resolver import resolve_types
-from ..field_definitionimport FieldDefinition, FieldType
+from ..field_definition import FieldDefinition, FieldType
 
 
 class OneOfTypeValidator(Validator):

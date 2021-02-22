@@ -1,5 +1,5 @@
 """module for readwrite validator."""
-from ..field_definitionimport FieldDefinition, WriteRule, ReadRule
+from ..field_definition import FieldDefinition, WriteRule, ReadRule
 from .validator import Validator
 
 

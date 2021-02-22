@@ -1,5 +1,5 @@
 """module for linkedthru validator."""
-from ..field_definitionimport FieldDefinition, FieldStorage
+from ..field_definition import FieldDefinition, FieldStorage
 from .validator import Validator
 
 

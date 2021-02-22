@@ -1,6 +1,6 @@
 """module for strict validator."""
 from .validator import Validator
-from ..field_definitionimport FieldDefinition, Strictness
+from ..field_definition import FieldDefinition, Strictness
 
 
 class StrictValidator(Validator):

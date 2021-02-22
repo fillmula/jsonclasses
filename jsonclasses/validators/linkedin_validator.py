@@ -1,6 +1,6 @@
 """module for linkedin validator."""
 from typing import Any
-from ..field_definitionimport FieldDefinition, FieldStorage
+from ..field_definition import FieldDefinition, FieldStorage
 from .validator import Validator
 
 

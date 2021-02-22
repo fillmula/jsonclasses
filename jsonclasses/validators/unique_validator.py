@@ -1,5 +1,5 @@
 """module for unique validator."""
-from ..field_definitionimport FieldDefinition
+from ..field_definition import FieldDefinition
 from .validator import Validator
 
 

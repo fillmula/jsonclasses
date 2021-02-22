@@ -1,7 +1,7 @@
 """module for shape validator."""
 from typing import Any, Sequence, cast
 from inflection import underscore, camelize
-from ..field_definitionimport FieldDefinition, FieldType, Nullability, Strictness
+from ..field_definition import FieldDefinition, FieldType, Nullability, Strictness
 from ..exceptions import ValidationException
 from ..config import Config
 from ..keypath import concat_keypath

@@ -1,7 +1,7 @@
 """module for instanceof validator."""
 from __future__ import annotations
 from typing import Any, Sequence, Type, Union, cast, TYPE_CHECKING
-from ..field_definitionimport (Field, FieldDefinition, FieldStorage, FieldType,
+from ..field_definition import (Field, FieldDefinition, FieldStorage, FieldType,
                       Nullability, WriteRule, ReadRule, Strictness,
                       is_reference_field, is_embedded_instance_field)
 from ..exceptions import ValidationException

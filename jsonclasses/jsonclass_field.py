@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import NamedTuple, Any, TYPE_CHECKING
 if TYPE_CHECKING:
     from .types import Types
-    from .field_definitionimport FieldDefinition
+    from .field_definition import FieldDefinition
     from .validators import ChainedValidator
 
 

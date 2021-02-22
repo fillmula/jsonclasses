@@ -1,6 +1,6 @@
 """module for validator validator."""
 from typing import Any
-from ..field_definitionimport FieldDefinition
+from ..field_definition import FieldDefinition
 from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 
 

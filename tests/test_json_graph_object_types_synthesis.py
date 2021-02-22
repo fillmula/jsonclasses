@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import cast
-from jsonclasses.field_definitionimport FieldType, FieldStorage, field
+from jsonclasses.field_definition import FieldType, FieldStorage, field
 from unittest import TestCase
 from jsonclasses import (jsonclass, JSONObject, Types,
                          Link, linkto, linkedby, linkedthru)

@@ -1,5 +1,5 @@
 """module for str validator."""
-from ..field_definitionimport FieldType
+from ..field_definition import FieldType
 from .type_validator import TypeValidator
 
 
