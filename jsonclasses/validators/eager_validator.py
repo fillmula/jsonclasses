@@ -1,6 +1,6 @@
 """module for eager validator."""
 from .validator import Validator
-from ..fields import FieldDescription
+from ..field_definitionimport FieldDefinition
 
 
 class EagerValidator(Validator):
@@ -8,5 +8,5 @@ class EagerValidator(Validator):
     This is used usually before heavy transforming validators.
     """
 
-    def define(self, fdesc: FieldDescription) -> None:
+    def define(self, fdesc: FieldDefinition) -> None:
         fdesc.has_eager_validator = True

@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import NamedTuple, Any, TYPE_CHECKING
 if TYPE_CHECKING:
     from .types import Types
-    from .fields import FieldDescription
+    from .field_definitionimport FieldDefinition
     from .validators import ChainedValidator
 
 
@@ -36,7 +36,7 @@ class JSONClassField(NamedTuple):
     definition.
     """
 
-    definition: FieldDescription
+    definition: FieldDefinition
     """The detailed field definition defined with the types chain.
     """
 

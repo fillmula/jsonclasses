@@ -9,7 +9,7 @@ from typing import Optional, final, cast, TYPE_CHECKING
 from dataclasses import fields, Field
 from inflection import camelize
 from .jsonclass_field import JSONClassField
-from .fields import FieldDescription, FieldStorage, FieldType
+from .field_definitionimport FieldDefinition, FieldStorage, FieldType
 from .types_resolver import TypesResolver
 from .exceptions import LinkedFieldUnmatchException
 if TYPE_CHECKING:
@@ -97,7 +97,7 @@ class ClassDefinition:
             return TypesResolver().to_types(field.type, config)
 
     def _def_class_match(self: ClassDefinition,
-                         definition: FieldDescription,
+                         definition: FieldDefinition,
                          class_: type) -> bool:
         resolver = TypesResolver()
         if definition.field_type == FieldType.LIST:

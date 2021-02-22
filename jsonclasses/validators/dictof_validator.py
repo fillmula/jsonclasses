@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any, Iterable, Collection
 from inflection import underscore, camelize
-from ..fields import FieldType
+from ..field_definitionimport FieldType
 from ..config import Config
 from .collection_type_validator import CollectionTypeValidator
 

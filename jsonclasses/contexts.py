@@ -4,7 +4,7 @@ from typing import Any, NamedTuple, TypeVar, Optional, Union, TYPE_CHECKING
 from .object_graph import ObjectGraph
 if TYPE_CHECKING:
     from .config import Config
-    from .fields import FieldDescription
+    from .field_definitionimport FieldDefinition
     from .json_object import JSONObject
     T = TypeVar('T', bound=JSONObject)
 
@@ -24,7 +24,7 @@ class ValidatingContext(NamedTuple):
     config_owner: Config
     keypath_parent: Union[str, int]  # key relative to parent
     parent: Any  # the direct parent of this field
-    fdesc: Optional[FieldDescription] = None
+    fdesc: Optional[FieldDefinition] = None
     all_fields: Optional[bool] = None
     object_graph: ObjectGraph = ObjectGraph()  # Override this, this is a placeholder
 
@@ -88,7 +88,7 @@ class TransformingContext(NamedTuple):
     config_owner: Config
     keypath_parent: Union[str, int]  # key relative to parent
     parent: Any  # the direct parent of this field
-    fdesc: Optional[FieldDescription] = None
+    fdesc: Optional[FieldDefinition] = None
     all_fields: Optional[bool] = None
     dest: Optional[JSONObject] = None
     fill_dest_blanks: bool = True

@@ -1,5 +1,5 @@
 """module for linkedthru validator."""
-from ..fields import FieldDescription, FieldStorage
+from ..field_definitionimport FieldDefinition, FieldStorage
 from .validator import Validator
 
 
@@ -9,7 +9,7 @@ class LinkedThruValidator(Validator):
     def __init__(self, foreign_key: str) -> None:
         self.foreign_key = foreign_key
 
-    def define(self, fdesc: FieldDescription) -> None:
+    def define(self, fdesc: FieldDefinition) -> None:
         fdesc.field_storage = FieldStorage.FOREIGN_KEY
         fdesc.foreign_key = self.foreign_key
         fdesc.use_join_table = True

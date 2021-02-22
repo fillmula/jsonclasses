@@ -1,7 +1,7 @@
 """module for datetime validator."""
 from typing import Any
 from datetime import datetime
-from ..fields import FieldType
+from ..field_definitionimport FieldType
 from ..exceptions import ValidationException
 from .type_validator import TypeValidator
 from ..contexts import TransformingContext, ToJSONContext

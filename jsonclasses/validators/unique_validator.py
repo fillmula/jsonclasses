@@ -1,10 +1,10 @@
 """module for unique validator."""
-from ..fields import FieldDescription
+from ..field_definitionimport FieldDefinition
 from .validator import Validator
 
 
 class UniqueValidator(Validator):
     """Unique validator marks a column should be unique."""
 
-    def define(self, fdesc: FieldDescription) -> None:
+    def define(self, fdesc: FieldDefinition) -> None:
         fdesc.unique = True

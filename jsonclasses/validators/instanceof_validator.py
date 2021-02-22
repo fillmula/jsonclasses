@@ -1,7 +1,7 @@
 """module for instanceof validator."""
 from __future__ import annotations
 from typing import Any, Sequence, Type, Union, cast, TYPE_CHECKING
-from ..fields import (Field, FieldDescription, FieldStorage, FieldType,
+from ..field_definitionimport (Field, FieldDefinition, FieldStorage, FieldType,
                       Nullability, WriteRule, ReadRule, Strictness,
                       is_reference_field, is_embedded_instance_field)
 from ..exceptions import ValidationException
@@ -21,7 +21,7 @@ class InstanceOfValidator(Validator):
     def __init__(self, raw_type: InstanceOfType) -> None:
         self.raw_type = raw_type
 
-    def define(self, fdesc: FieldDescription) -> None:
+    def define(self, fdesc: FieldDefinition) -> None:
         fdesc.field_type = FieldType.INSTANCE
         fdesc.instance_types = self.raw_type
 

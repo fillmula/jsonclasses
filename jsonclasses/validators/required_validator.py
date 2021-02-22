@@ -1,16 +1,16 @@
 """module for required validator."""
-from ..fields import FieldDescription
+from ..field_definitionimport FieldDefinition
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..contexts import ValidatingContext
-from ..fields import FieldStorage, FieldType
+from ..field_definitionimport FieldStorage, FieldType
 from ..config import Config
 
 
 class RequiredValidator(Validator):
     """Mark a field as required."""
 
-    def define(self, fdesc: FieldDescription) -> None:
+    def define(self, fdesc: FieldDefinition) -> None:
         fdesc.required = True
 
     def validate(self, context: ValidatingContext) -> None:

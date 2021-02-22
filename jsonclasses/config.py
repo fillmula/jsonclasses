@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Optional, Callable, final, TYPE_CHECKING
 if TYPE_CHECKING:
     from .jsonclass_field import JSONClassField
-    from .class_graph import JSONClassGraph
+    from .jsonclass_graph import JSONClassGraph
 
 
 @final

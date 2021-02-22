@@ -1,6 +1,6 @@
 from typing import Optional, Union
 from unittest import TestCase
-from jsonclasses.fields import FieldType, field
+from jsonclasses.field_definitionimport FieldType, field
 from jsonclasses import jsonclass, JSONObject, ValidationException
 from datetime import datetime, date
 

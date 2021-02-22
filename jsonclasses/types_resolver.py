@@ -55,7 +55,7 @@ class TypesResolver:
         Returns:
             Types: The types with link specifier applied.
         """
-        from .fields import FieldType
+        from .field_definitionimport FieldType
         if match("^linkto", specifier):
             return types.linkto
         elif match("^linkedby\\('", specifier):

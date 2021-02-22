@@ -16,7 +16,7 @@ from .types_resolver import resolve_types
 from .exceptions import (ObjectNotFoundException, UniqueConstraintException,
                          ValidationException, AbstractJSONClassException)
 from .config import Config
-from .fields import (Field, FieldDescription, FieldType, FieldStorage,
+from .field_definitionimport (Field, FieldDefinition, FieldType, FieldStorage,
                      get_fields)
 from .object_graph import ObjectGraph
 from .json_object import JSONObject

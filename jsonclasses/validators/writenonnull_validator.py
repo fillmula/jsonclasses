@@ -1,5 +1,5 @@
 """module for writenonnull validator."""
-from ..fields import FieldDescription, WriteRule
+from ..field_definitionimport FieldDefinition, WriteRule
 from .validator import Validator
 
 
@@ -8,5 +8,5 @@ class WriteNonnullValidator(Validator):
     allowed to be modified. However, nil value won't be set.
     """
 
-    def define(self, fdesc: FieldDescription) -> None:
+    def define(self, fdesc: FieldDefinition) -> None:
         fdesc.write_rule = WriteRule.WRITE_NONNULL

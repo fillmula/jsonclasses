@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Callable, Any, Optional, Union, Literal
 from copy import deepcopy
-from .fields import FieldDescription
+from .field_definitionimport FieldDefinition
 from .validators import (UseForValidator, BoolValidator, ChainedValidator,
                          CompareValidator, DateValidator, DatetimeValidator,
                          DefaultValidator, DictOfValidator, EagerValidator,
@@ -44,7 +44,7 @@ class Types:
         *args: Validator
     ) -> None:
         if not original:
-            self.fdesc = FieldDescription()
+            self.fdesc = FieldDefinition()
             self.validator = ChainedValidator()
         else:
             self.fdesc = deepcopy(original.fdesc)

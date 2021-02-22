@@ -1,7 +1,7 @@
 """module for shape validator."""
 from typing import Any, Sequence, cast
 from inflection import underscore, camelize
-from ..fields import FieldDescription, FieldType, Nullability, Strictness
+from ..field_definitionimport FieldDefinition, FieldType, Nullability, Strictness
 from ..exceptions import ValidationException
 from ..config import Config
 from ..keypath import concat_keypath
@@ -20,7 +20,7 @@ class ShapeValidator(TypeValidator):
         self.shape_types = shape_types
         self.exact_type = False
 
-    def define(self, fdesc: FieldDescription) -> None:
+    def define(self, fdesc: FieldDefinition) -> None:
         super().define(fdesc)
         fdesc.shape_types = self.shape_types
 
@@ -90,7 +90,7 @@ class ShapeValidator(TypeValidator):
 
     def transform(self, context: TransformingContext) -> Any:
         value = context.value
-        fd = cast(FieldDescription, context.fdesc)
+        fd = cast(FieldDefinition, context.fdesc)
         if fd.collection_nullability == Nullability.NONNULL and value is None:
             value = {}
         if value is None:

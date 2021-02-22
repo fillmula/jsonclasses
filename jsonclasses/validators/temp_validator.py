@@ -1,6 +1,6 @@
 """module for temp validator."""
 from .validator import Validator
-from ..fields import FieldDescription
+from ..field_definitionimport FieldDefinition
 
 
 class TempValidator(Validator):
@@ -9,5 +9,5 @@ class TempValidator(Validator):
     temporary fields' values are set to None.
     """
 
-    def define(self, fdesc: FieldDescription) -> None:
+    def define(self, fdesc: FieldDefinition) -> None:
         fdesc.is_temp_field = True

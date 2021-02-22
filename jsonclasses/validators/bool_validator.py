@@ -1,5 +1,5 @@
 """module for bool validator."""
-from ..fields import FieldType
+from ..field_definitionimport FieldType
 from .type_validator import TypeValidator
 
 

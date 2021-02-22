@@ -1,6 +1,6 @@
 """This is an internal module."""
 from __future__ import annotations
-from typing import Any, Optional, Union, TypeVar, TYPE_CHECKING
+from typing import Any, Optional, Union, TYPE_CHECKING
 from enum import Enum
 from dataclasses import dataclass
 if TYPE_CHECKING:
@@ -72,7 +72,7 @@ class Strictness(Enum):
 
 
 @dataclass
-class FieldDescription():  # pylint: disable=too-many-instance-attributes
+class FieldDefinition:  # pylint: disable=too-many-instance-attributes
     """The description of a JSON Class field. It is generated as specifying the
     marks.
     """
@@ -130,7 +130,7 @@ class FieldDescription():  # pylint: disable=too-many-instance-attributes
 
 
 # def is_pure_local_fdesc(cori: Union[JSONObject, type[JSONObject]],
-#                         fdesc: FieldDescription) -> bool:
+#                         fdesc: FieldDefinition) -> bool:
 #     if fdesc.field_storage == FieldStorage.LOCAL_KEY:
 #         return False
 #     if fdesc.field_storage == FieldStorage.FOREIGN_KEY:

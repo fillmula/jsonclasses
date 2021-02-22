@@ -1,7 +1,7 @@
 """module for listof validator."""
 from __future__ import annotations
 from typing import Any, Collection, Iterable
-from ..fields import FieldType
+from ..field_definitionimport FieldType
 from .collection_type_validator import CollectionTypeValidator
 
 

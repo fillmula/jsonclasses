@@ -1,7 +1,7 @@
 """module for listof validator."""
 from __future__ import annotations
 from typing import Any, Collection, Iterable, TypeVar, Union, cast, TYPE_CHECKING
-from ..fields import FieldDescription, Nullability
+from ..field_definitionimport FieldDefinition, Nullability
 from ..config import Config
 from ..exceptions import ValidationException
 from .type_validator import TypeValidator
@@ -23,7 +23,7 @@ class CollectionTypeValidator(TypeValidator):
         self.raw_item_types = raw_item_types
         self.exact_type = False
 
-    def define(self, fdesc: FieldDescription) -> None:
+    def define(self, fdesc: FieldDefinition) -> None:
         super().define(fdesc)
         fdesc.raw_item_types = self.raw_item_types
 
@@ -81,7 +81,7 @@ class CollectionTypeValidator(TypeValidator):
                 root=context.root)
 
     def transform(self, context: TransformingContext) -> Any:
-        fdesc = cast(FieldDescription, context.fdesc)
+        fdesc = cast(FieldDefinition, context.fdesc)
         if context.value is None:
             if fdesc.collection_nullability == Nullability.NONNULL:
                 return self.empty_collection()

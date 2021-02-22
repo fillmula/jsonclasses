@@ -1,7 +1,7 @@
 """This module defines utility functions for working with keypaths."""
 from __future__ import annotations
 from typing import Union, TYPE_CHECKING
-from .fields import FieldStorage, FieldType
+from .field_definitionimport FieldStorage, FieldType
 if TYPE_CHECKING:
     from .jsonclass_field import JSONClassField
 

@@ -11,7 +11,7 @@ from .owned_list import OwnedList
 from .validators.instanceof_validator import InstanceOfValidator
 from .contexts import TransformingContext
 from .object_graph import ObjectGraph
-from .fields import FieldType, get_fields, field, is_pure_local_field
+from .field_definitionimport FieldType, get_fields, field, is_pure_local_field
 from .exceptions import JSONClassResetError, JSONClassResetNotEnabledError
 from .keypath import initial_keypath
 from .unowned_copy import unowned_copy_list, unowned_copy_dict

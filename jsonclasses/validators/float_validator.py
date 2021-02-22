@@ -1,7 +1,7 @@
 """module for float validator."""
 from typing import Any
 from .type_validator import TypeValidator
-from ..fields import FieldType
+from ..field_definitionimport FieldType
 from ..contexts import TransformingContext
 
 
