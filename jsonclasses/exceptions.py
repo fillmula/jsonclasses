@@ -1,5 +1,45 @@
-"""JSON Class exceptions."""
-from typing import Any, Type
+"""This module defines all exceptions that JSON classes uses."""
+from __future__ import annotations
+from typing import Any
+from inspect import getmodule
+
+
+class JSONClassRedefinitionException(Exception):
+    """This exception is raised when user defines a JSON class with a name that
+    exists before in the same graph.
+    """
+
+    def __init__(self, new_class: type, exist_class: type) -> None:
+        """Create an exception that notifies the user that a class with
+        duplicated name is defined twice.
+
+        Args:
+            new_class (type): The new class which is putting on the graph.
+            exist_class(type): The existing class which the user defined.
+        """
+        name = new_class.__name__
+        original_module = getmodule(exist_class)
+        assert original_module is not None
+        original_file = original_module.__file__
+        new_module = getmodule(new_class)
+        assert new_module is not None
+        new_file = new_module.__file__
+        graph = exist_class.config.class_graph
+        message = (f'Existing JSON Class \'{name}\' in graph \'{graph}\' is '
+                   f'defined at \'{original_file}\'. Cannot define new JSON '
+                   f'class with same name in same graph \'{graph}\' at '
+                   f'\'{new_file}\'.')
+        super().__init__(message)
+
+
+class JSONClassNotFoundException(Exception):
+    """This exception is raised when a JSON class with name is not found on a
+    graph.
+    """
+    def __init__(self, class_name: str, graph_name: str):
+        message = (f'JSON Class with name \'{class_name}\' in graph '
+                   f'\'{graph_name}\' is not found.')
+        super().__init__(message)
 
 
 class ObjectNotFoundException(Exception):
@@ -54,7 +94,7 @@ class AbstractJSONClassException(Exception):
     When an abstract JSON class is initialized, this error should be raised.
     """
 
-    def __init__(self, class_: Type) -> None:
+    def __init__(self, class_: type) -> None:
         self.class_ = class_
         self.message = (f'{class_.__name__} is an abstract class and should '
                         'not be initialized')

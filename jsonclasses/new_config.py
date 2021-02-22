@@ -4,7 +4,8 @@ configuration object tweaks the behavior of JSON classes.
 from __future__ import annotations
 from typing import Optional, Callable, final, TYPE_CHECKING
 if TYPE_CHECKING:
-    from .fields import FieldType
+    from .jsonclass_field import JSONClassField
+    from .new_class_graph import JSONClassGraph
 
 
 @final
@@ -19,7 +20,7 @@ class Config:
                  camelize_json_keys: Optional[bool],
                  camelize_db_keys: Optional[bool],
                  strict_input: Optional[bool],
-                 key_transformer: Optional[Callable[[str, FieldType], str]],
+                 key_transformer: Optional[Callable[[JSONClassField], str]],
                  validate_all_fields: Optional[bool],
                  soft_delete: Optional[bool],
                  abstract: Optional[bool],
@@ -36,7 +37,7 @@ class Config:
                 serializing into database.
             strict_input (Optional[bool]): Whether raise errors on receiving \
                 invalid input keys.
-            key_transformer (Optional[Callable[[str, FieldType], str]]): The \
+            key_transformer (Optional[Callable[[JSONClassField], str]]): The \
                 reference field local key conversion function.
             validate_all_fields (Optional[bool]): The default field \
                 validating method when performing saving and validating.
@@ -58,17 +59,18 @@ class Config:
         self._reset_all_fields = reset_all_fields
 
     @property
-    def class_graph(self: Config) -> str:
+    def class_graph(self: Config) -> JSONClassGraph:
         """The name of the class graph on which the JSON class is defined.
         """
-        return self._class_graph
+        from .new_class_graph import JSONClassGraph
+        return JSONClassGraph(self._class_graph)
 
     @property
     def camelize_json_keys(self: Config) -> bool:
         """Whether camelize keys when outputing JSON.
         """
         if self._camelize_json_keys is None:
-            return None
+            return self.class_graph.default_config.camelize_json_keys
         return self._camelize_json_keys
 
     @property
@@ -76,7 +78,7 @@ class Config:
         """Whether camelize keys when serializing into database.
         """
         if self._camelize_db_keys is None:
-            return None
+            return self.class_graph.default_config.camelize_db_keys
         return self._camelize_db_keys
 
     @property
@@ -84,15 +86,15 @@ class Config:
         """Whether raise errors on receiving invalid input keys.
         """
         if self._strict_input is None:
-            return None
+            return self.class_graph.default_config.strict_input
         return self._strict_input
 
     @property
-    def key_transformer(self: Config) -> Callable[[str, FieldType], str]:
+    def key_transformer(self: Config) -> Callable[[JSONClassField], str]:
         """The reference field local key conversion function.
         """
         if self._key_transformer is None:
-            return None
+            return self.class_graph.default_config.key_transformer
         return self._key_transformer
 
     @property
@@ -101,7 +103,7 @@ class Config:
         validating.
         """
         if self._validate_all_fields is None:
-            return None
+            return self.class_graph.default_config.validate_all_fields
         return self._validate_all_fields
 
     @property
@@ -109,7 +111,7 @@ class Config:
         """Whether perform soft delete on deletion.
         """
         if self._soft_delete is None:
-            return None
+            return self.class_graph.default_config.soft_delete
         return self._soft_delete
 
     @property
@@ -117,7 +119,7 @@ class Config:
         """Instance of abstract classes cannot be initialized.
         """
         if self._abstract is None:
-            return None
+            return self.class_graph.default_config.abstract
         return self._abstract
 
     @property
@@ -126,5 +128,5 @@ class Config:
         functionality.
         """
         if self._reset_all_fields is None:
-            return None
+            return self.class_graph.default_config.reset_all_fields
         return self._reset_all_fields

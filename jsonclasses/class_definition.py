@@ -33,7 +33,8 @@ class ClassDefinition:
                 created.
             config (Config): The configuration object for the targeted class.
         """
-        self._class_name: str = class_.__name__
+        self._cls: type = class_
+        self._name: str = class_.__name__
         self._config: Config = config
         self._list_fields: list[JSONClassField] = []
         self._dict_fields: dict[str, JSONClassField] = {}
@@ -94,11 +95,17 @@ class ClassDefinition:
             return TypesResolver().to_types(field.type, config)
 
     @property
-    def class_name(self: ClassDefinition) -> str:
+    def cls(self: ClassDefinition) -> type:
+        """The JSON class on which this class definition is defined.
+        """
+        return self._cls
+
+    @property
+    def name(self: ClassDefinition) -> str:
         """The name of the JSON class on which this class definition is
         defined.
         """
-        return self._class_name
+        return self._name
 
     @property
     def config(self: ClassDefinition) -> Config:
@@ -181,3 +188,5 @@ class ClassDefinition:
             foreign_types = resolver.resolve_types(
                 instance_types, self.config)
         foreign_class = cast(type, foreign_types.fdesc.instance_types)
+        foreign_definition = self.config.class_graph.fetch(foreign_class)
+        foreign_definition.
