@@ -38,7 +38,8 @@ class ClassDefinition:
         self._config: Config = config
         self._list_fields: list[JSONClassField] = []
         self._dict_fields: dict[str, JSONClassField] = {}
-        self._foreign_fields: dict[str, tuple[ClassDefinition, str]] = {}
+        self._foreign_fields: dict[str, Optional[tuple[ClassDefinition, str]]]\
+            = {}
         self._primary_field: Optional[JSONClassField] = None
         self._created_at_field: Optional[JSONClassField] = None
         self._updated_at_field: Optional[JSONClassField] = None
@@ -70,7 +71,6 @@ class ClassDefinition:
                 validator=types.validator)
             self._list_fields.append(jsonclass_field)
             self._dict_fields[name] = jsonclass_field
-            types.fdesc
             if types.fdesc.primary:
                 self._primary_field = jsonclass_field
             if types.fdesc.usage == 'created_at':
@@ -79,6 +79,7 @@ class ClassDefinition:
                 self._updated_at_field = jsonclass_field
             elif types.fdesc.usage == 'deleted_at':
                 self._deleted_at_field = jsonclass_field
+        self._tuple_fields: tuple[JSONClassField] = tuple(self._list_fields)
 
     def _get_types(self: ClassDefinition,
                    field: Field,
@@ -132,6 +133,13 @@ class ClassDefinition:
         return self._dict_fields[name]
 
     @property
+    def fields(self: ClassDefinition) -> tuple[JSONClassField]:
+        """Get the fields of this class definition as a tuple. This is useful
+        for looping and iterating.
+        """
+        return self._tuple_fields
+
+    @property
     def created_at_field(self: ClassDefinition) -> Optional[JSONClassField]:
         """
         The class definition's field which represents the created at field.
@@ -171,8 +179,11 @@ class ClassDefinition:
                           name: str) -> Optional[tuple[ClassDefinition, str]]:
         """
         """
-        if self._foreign_fields.get(name):
-            return self._foreign_fields.get(name)
+        if name in self._foreign_fields:
+            field_tuple = self._foreign_fields[name]
+            if field_tuple is None:
+                return None
+            return field_tuple[0].field_named(field_tuple[1])
         local_field = self.field_named(name)
         definition = local_field.definition
         resolver = TypesResolver()
@@ -189,4 +200,29 @@ class ClassDefinition:
                 instance_types, self.config)
         foreign_class = cast(type, foreign_types.fdesc.instance_types)
         foreign_definition = self.config.class_graph.fetch(foreign_class)
-        foreign_definition.
+        accepted: list[tuple(FieldStorage, bool)] = []
+        if definition.field_storage == FieldStorage.LOCAL_KEY:
+            foreign_storage = FieldStorage.FOREIGN_KEY
+            use_join_table = False
+            accepted.append((foreign_storage, use_join_table))
+        elif definition.field_storage == FieldStorage.FOREIGN_KEY:
+            foreign_storage = FieldStorage.LOCAL_KEY
+            use_join_table = False
+            accepted.append((foreign_storage, use_join_table))
+            if definition.field_type == FieldType.LIST:
+                foreign_storage = FieldStorage.FOREIGN_KEY
+                use_join_table = True
+                accepted.append((foreign_storage, use_join_table))
+            elif definition.field_type == FieldType.INSTANCE:
+                pass
+        for field in foreign_definition.fields:
+            for (storage, use_join) in accepted:
+                if storage == FieldStorage.LOCAL_KEY:
+                    if definition.foreign_key == field.name:
+                        pass
+                elif storage == FieldStorage.FOREIGN_KEY:
+                    if local_field.name == field.definition.foreign_key:
+                        if use_join == field.definition.use_join_table:
+                            pass
+        self._foreign_fields[name] = None
+        return None

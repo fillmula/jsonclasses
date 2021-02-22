@@ -288,19 +288,7 @@ def is_embedded_instance_field(cori: Union[JSONObject, type[JSONObject]],
     return False
 
 
-def created_at_field(
-        cori: Union[JSONObject, type[JSONObject]]) -> Optional[Field]:
-    tfields = get_fields(cori)
-    return next((f for f in tfields if f.fdesc.usage == 'created_at'), None)
-
-
 def updated_at_field(
         cori: Union[JSONObject, type[JSONObject]]) -> Optional[Field]:
     tfields = get_fields(cori)
     return next((f for f in tfields if f.fdesc.usage == 'updated_at'), None)
-
-
-def deleted_at_field(
-        cori: Union[JSONObject, type[JSONObject]]) -> Optional[Field]:
-    tfields = get_fields(cori)
-    return next((f for f in tfields if f.fdesc.usage == 'deleted_at'), None)
