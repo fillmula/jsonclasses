@@ -42,6 +42,16 @@ class JSONClassNotFoundException(Exception):
         super().__init__(message)
 
 
+class LinkedFieldUnmatchException(Exception):
+    """This exception is raised when a JSON class reference field doesn't match
+    the counterpart on the other side.
+    """
+    def __init__(self, class1: str, field1: str, class2: str, field2: str):
+        message = (f"unmatched linked field {class1}.{field1} and "
+                   f"{class2}.{field2}")
+        super().__init__(message)
+
+
 class ObjectNotFoundException(Exception):
     """ObjectNotFoundException is designed to be raised by jsonclasses ORM
     integration implementations. Server authors and jsonclasses server

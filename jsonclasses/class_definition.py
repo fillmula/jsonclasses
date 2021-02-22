@@ -9,8 +9,9 @@ from typing import Optional, final, cast, TYPE_CHECKING
 from dataclasses import fields, Field
 from inflection import camelize
 from .jsonclass_field import JSONClassField
-from .fields import FieldStorage, FieldType
+from .fields import FieldDescription, FieldStorage, FieldType
 from .new_types_resolver import TypesResolver
+from .exceptions import LinkedFieldUnmatchException
 if TYPE_CHECKING:
     from .new_config import Config
     from .types import Types
@@ -95,6 +96,19 @@ class ClassDefinition:
         else:
             return TypesResolver().to_types(field.type, config)
 
+    def _def_class_match(self: ClassDefinition,
+                         definition: FieldDescription,
+                         class_: type) -> bool:
+        resolver = TypesResolver()
+        if definition.field_type == FieldType.LIST:
+            item_types = resolver.to_types(definition.raw_item_types,
+                                           self.config)
+            return self._def_class_match(item_types.fdesc, self.config)
+        elif definition.field_type == FieldType.INSTANCE:
+            types = resolver.to_types(definition.instance_types, self.config)
+            return types.fdesc.instance_types == class_
+        return False
+
     @property
     def cls(self: ClassDefinition) -> type:
         """The JSON class on which this class definition is defined.
@@ -177,7 +191,19 @@ class ClassDefinition:
     @property
     def foreign_field_for(self: ClassDefinition,
                           name: str) -> Optional[tuple[ClassDefinition, str]]:
-        """
+        """Get the linked foreign field for local field named `name`.
+
+        Args:
+            name (str): The name of the local field.
+
+        Returns:
+            Optional[tuple[ClassDefinition, str]]: A tuple which is a \
+            combination of foreign class definition and foreign field name or \
+            None if not found.
+
+        Raises:
+            LinkedFieldUnmatchException: A foreign field which is linked by \
+            the field definition is found, however the properties don't match.
         """
         if name in self._foreign_fields:
             field_tuple = self._foreign_fields[name]
@@ -219,10 +245,43 @@ class ClassDefinition:
             for (storage, use_join) in accepted:
                 if storage == FieldStorage.LOCAL_KEY:
                     if definition.foreign_key == field.name:
-                        pass
+                        local_matches = self._def_class_match(
+                            definition, foreign_class)
+                        foreign_matches = self._def_class_match(
+                            foreign_definition, self.cls)
+                        if local_matches and foreign_matches:
+                            foreign_tuple = (foreign_definition, field.name)
+                            self._foreign_fields[name] = foreign_tuple
+                            local_tuple = (self, name)
+                            foreign_definition._foreign_fields[field.name] = \
+                                local_tuple
+                            return self._foreign_fields[name]
+                        else:
+                            raise LinkedFieldUnmatchException(
+                                self.cls.__name__, local_field.name,
+                                foreign_class.__name__, field.name)
                 elif storage == FieldStorage.FOREIGN_KEY:
                     if local_field.name == field.definition.foreign_key:
                         if use_join == field.definition.use_join_table:
-                            pass
+                            local_matches = self._def_class_match(
+                                definition, foreign_class)
+                            foreign_matches = self._def_class_match(
+                                foreign_definition, self.cls)
+                            if local_matches and foreign_matches:
+                                foreign_tuple = \
+                                    (foreign_definition, field.name)
+                                self._foreign_fields[name] = foreign_tuple
+                                local_tuple = (self, name)
+                                foreign_definition._foreign_fields[field.name]\
+                                    = local_tuple
+                                return self._foreign_fields[name]
+                            else:
+                                raise LinkedFieldUnmatchException(
+                                    self.cls.__name__, local_field.name,
+                                    foreign_class.__name__, field.name)
+                        else:
+                            raise LinkedFieldUnmatchException(
+                                self.cls.__name__, local_field.name,
+                                foreign_class.__name__, field.name)
         self._foreign_fields[name] = None
         return None
