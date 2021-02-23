@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name='jsonclasses',
-    version='1.3.2',
+    version='2.0.0',
     description=('The Modern Declarative Data Flow and Data Graph Framework '
                  'for the AI Empowered Generation.'),
     long_description=README,
@@ -18,7 +18,7 @@ setup(
     author='Wiosoft Crafts',
     author_email='wiosoftvictor@163.com',
     license='MIT',
-    packages=find_packages(exclude=('tests', 'benchmarks', 'examples')),
+    packages=find_packages(exclude=('tests')),
     package_data={'jsonclasses': ['py.typed']},
     zip_safe=False,
     url='https://github.com/Wiosoft-Crafts/jsonclasses',
