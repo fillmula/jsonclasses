@@ -2,14 +2,20 @@
 confirm to.
 """
 from __future__ import annotations
-from typing import Any, TypeVar, Optional, Protocol
-
+from typing import Any, TypeVar, Optional, ClassVar, Protocol, TYPE_CHECKING
+if TYPE_CHECKING:
+    from .class_definition import ClassDefinition
 T = TypeVar('T', bound='JSONClassObject')
 
 
 class JSONClassObject(Protocol):
     """The `JSONClassObject` protocol defines methods a qualified JSON class
     should implement.
+    """
+
+    definition: ClassVar[ClassDefinition]
+    """The configuration user passed to JSON class through the jsonclass
+    decorator.
     """
 
     def __init__(self: T, **kwargs: dict[str, Any]) -> None:
@@ -71,7 +77,7 @@ class JSONClassObject(Protocol):
     def is_detached(self: T) -> bool: ...
 
     @property
-    def modified_fields(self: T) -> str[str]: ...
+    def modified_fields(self: T) -> set[str]: ...
 
     @property
     def previous_values(self: T) -> dict[str, Any]: ...

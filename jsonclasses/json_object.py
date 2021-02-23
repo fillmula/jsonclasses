@@ -1,9 +1,9 @@
 """This module contains `JSONObject`, the main base class of JSON Classes.
 """
 from __future__ import annotations
+from jsonclasses.class_definition import ClassDefinition
 from typing import Any, Optional, ClassVar, Union, TypeVar
 from dataclasses import dataclass, fields as dataclass_fields
-from .config import Config
 from .exceptions import ValidationException, AbstractJSONClassException
 from .field_definition import (FieldType, Field, get_fields, other_field, field,
                      is_reference_field, updated_at_field)
@@ -30,22 +30,7 @@ class JSONObject:
         my_field_two: int = types.int.range(0, 10).required
     """
 
-    config: ClassVar[Config]
-
-    @classmethod
-    def fields(cls: type[T]) -> list[Field]:
-        """Returns all JSON fields of this JSON class.
-        """
-        return get_fields(cls)
-
-    @classmethod
-    def primary_field(cls: type[T]) -> Optional[Field]:
-        k = '_primary_fields'
-        if hasattr(cls, k) and getattr(cls, k) is not None:
-            return getattr(cls, k)
-        pf = next((f for f in cls.fields() if f.fdesc.primary is True), None)
-        setattr(cls, k, pf)
-        return pf
+    definition: ClassVar[ClassDefinition]
 
     def __init__(self: T, **kwargs: Any) -> None:
         """Initialize a new jsonclass object from keyed arguments or a dict.
@@ -58,13 +43,6 @@ class JSONObject:
         for f in dataclass_fields(self):
             setattr(self, f.name, None)
         self.__set(fill_blanks=True, **kwargs)
-
-    @property
-    def _id(self: T) -> Optional[Union[str, int]]:
-        primary_field = self.__class__.primary_field()
-        if primary_field is None:
-            return None
-        return getattr(self, primary_field.field_name)
 
     def set(self: T, **kwargs: Any) -> T:
         """Set object values in a batch. This method is suitable for web and

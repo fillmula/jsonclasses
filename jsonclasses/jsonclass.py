@@ -79,6 +79,7 @@ def jsonclass(
         dataclass_cls = dataclass(init=False)(cls)
         jsonclass_cls = jsonclassify(dataclass_cls)
         definition = ClassDefinition(jsonclass_cls, config)
+        cls.definition = definition
         config.class_graph.put(definition)
         return jsonclass_cls
     else:
