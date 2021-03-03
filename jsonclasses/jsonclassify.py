@@ -26,7 +26,7 @@ def __init__(self: JSONClassObject, **kwargs: dict[str, Any]) -> None:
     self._set(fill_blanks=True, **kwargs)
 
 
-def set(self: JSONClassObject, **kwargs: dict[str, Any]) -> T:
+def set(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClassObject:
     """Set object values in a batch. This method is suitable for web and
     fraud inputs. This method takes accessor marks into consideration,
     means readonly and internal field values will be just ignored.
