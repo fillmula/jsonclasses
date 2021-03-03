@@ -57,6 +57,7 @@ class ClassDefinition:
             else:
                 db_name = name
             types = self._get_types(field, config)
+            types.fdesc.class_definition = self
             if isinstance(field.default, Types):
                 default = None
             elif field.default == field.default_factory:

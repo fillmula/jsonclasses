@@ -3,8 +3,10 @@ from __future__ import annotations
 from typing import Any, Optional, Union, TYPE_CHECKING
 from enum import Enum
 from dataclasses import dataclass
+from .types_resolver import TypesResolver
 if TYPE_CHECKING:
     from .types import Types
+    from .class_definition import ClassDefinition
 
 
 class FieldType(Enum):
@@ -77,6 +79,8 @@ class FieldDefinition:  # pylint: disable=too-many-instance-attributes
     marks.
     """
 
+    class_definition: ClassDefinition = None
+
     field_type: Optional[FieldType] = None
     field_storage: FieldStorage = FieldStorage.EMBEDDED
 
@@ -127,6 +131,17 @@ class FieldDefinition:  # pylint: disable=too-many-instance-attributes
             return True
         return False
 
+    @property
+    def is_inst(self: FieldDefinition) -> bool:
+        if self.field_type == FieldType.INSTANCE:
+            return True
+        if self.field_type == FieldType.LIST:
+            item_types = TypesResolver().resolve_types(
+                self.raw_item_types,
+                self.class_definition.config)
+            if item_types.fdesc.field_type == FieldType.INSTANCE:
+                return True
+        return False
 
 
 # def is_pure_local_fdesc(cori: Union[JSONObject, type[JSONObject]],
@@ -147,18 +162,3 @@ class FieldDefinition:  # pylint: disable=too-many-instance-attributes
 # def is_pure_local_field(cori: Union[JSONObject, type[JSONObject]],
 #                         field: Field) -> bool:
 #     return is_pure_local_fdesc(cori, field.fdesc)
-
-
-# def is_embedded_instance_field(cori: Union[JSONObject, type[JSONObject]],
-#                                field: Field) -> bool:
-#     from .json_object import JSONObject
-#     if field.fdesc.field_type == FieldType.INSTANCE:
-#         return True
-#     if field.fdesc.field_type == FieldType.LIST:
-#         if isinstance(cori, JSONObject):
-#             cori = cori.__class__
-#         item_types = resolve_types(field.fdesc.raw_item_types,
-#                                    cast(type[JSONObject], cori))
-#         if item_types.fdesc.field_type == FieldType.INSTANCE:
-#             return True
-#     return False
