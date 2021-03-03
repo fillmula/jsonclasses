@@ -245,33 +245,31 @@ class InstanceOfValidator(Validator):
         return retval
 
     def serialize(self, context: TransformingContext) -> Any:
-        from ..orm_object import ORMObject
-        if context.value is None:
+        value = cast(JSONClassObject, context.value)
+        if value is None:
             return None
-        exist_item = context.object_graph.get(context.value)
+        exist_item = context.object_graph.get(value)
         if exist_item is not None:  # Don't do twice for an object
-            return context.value
-        context.object_graph.put(context.value)
+            return value
+        context.object_graph.put(value)
         should_update = True
-        if isinstance(context.value, ORMObject):
-            orm_value = cast(ORMObject, context.value)
-            if not orm_value.is_modified and not orm_value.is_new:
-                should_update = False
-        for field in context.value.__class__.fields():
-            if (is_reference_field(field)
-                    or is_embedded_instance_field(context.value, field)
+        if not value.is_modified and not value.is_new:
+            should_update = False
+        for field in value.__class__.definition.fields:
+            if (field.definition.is_ref
+                    or field.definition.is_inst
                     or should_update):
-                field_value = getattr(context.value, field.name)
+                field_value = getattr(value, field.name)
                 field_context = context.new(
                     value=field_value,
                     keypath_root=concat_keypath(context.keypath_root,
                                                 field.name),
                     keypath_owner=field.name,
-                    owner=context.value,
-                    config_owner=context.value.config,
+                    owner=value,
+                    config_owner=value.__class__.definition.config,
                     keypath_parent=field.name,
-                    parent=context.value,
+                    parent=value,
                     fdesc=field.fdesc)
                 tsfmd = field.types.validator.serialize(field_context)
-                setattr(context.value, field.name, tsfmd)
-        return context.value
+                setattr(value, field.name, tsfmd)
+        return value
