@@ -5,8 +5,8 @@ from ..field_definition import FieldDefinition, Nullability
 from ..config import Config
 from ..exceptions import ValidationException
 from .type_validator import TypeValidator
-from ..keypath import concat_keypath
-from ..types_resolver import resolve_types
+from ..keypath_utils import concat_keypath
+from ..types_resolver import TypesResolver
 from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 if TYPE_CHECKING:
     from ..json_object import JSONObject
@@ -31,7 +31,9 @@ class CollectionTypeValidator(TypeValidator):
         if hasattr(self, '_item_types'):
             return getattr(self, '_item_types')
         else:
-            itypes = resolve_types(self.raw_item_types, owner_cls)
+            itypes = TypesResolver().resolve_types(
+                self.raw_item_types,
+                owner_cls.definition.config)
             if itypes.fdesc.item_nullability == Nullability.UNDEFINED:
                 itypes = itypes.required
             setattr(self, '_item_types', itypes)

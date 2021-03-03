@@ -26,7 +26,7 @@ def __init__(self: JSONClassObject, **kwargs: dict[str, Any]) -> None:
     self._set(fill_blanks=True, **kwargs)
 
 
-def set(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClassObject:
+def j_set(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClassObject:
     """Set object values in a batch. This method is suitable for web and
     fraud inputs. This method takes accessor marks into consideration,
     means readonly and internal field values will be just ignored.
@@ -42,7 +42,7 @@ def set(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClassObject:
 def _set(self: JSONClassObject, fill_blanks: bool = False, **kwargs: dict[str, Any]) -> None:
     """Set values of a JSON Class object internally."""
     validator = InstanceOfValidator(self.__class__)
-    config = self.__class__.config
+    config = self.__class__.definition.config
     context = TransformingContext(
         value=kwargs,
         keypath_root='',
@@ -135,6 +135,7 @@ def validate(self: JSONClassObject,
     return self
 
 
+@property
 def is_valid(self: JSONClassObject) -> bool:
     """Test whether the jsonclass object is valid or not. This method
     triggers object validation.
@@ -149,6 +150,7 @@ def is_valid(self: JSONClassObject) -> bool:
     return True
 
 
+@property
 def is_new(self: JSONClassObject) -> bool:
     """This property is true if this object is newly created and not persisted
     yet.
@@ -156,6 +158,7 @@ def is_new(self: JSONClassObject) -> bool:
     return self._is_new
 
 
+@property
 def is_modified(self: JSONClassObject) -> bool:
     """This property indicates this object is modified and it's a new version
     comparing to the persisted one in the database. Calling save will cause
@@ -164,6 +167,7 @@ def is_modified(self: JSONClassObject) -> bool:
     return self._is_modified
 
 
+@property
 def is_detached(self: JSONClassObject) -> bool:
     """If a JSON class object is detached. This object cannot be used anymore
     since it represents an outdated state of the same database record.
@@ -171,11 +175,13 @@ def is_detached(self: JSONClassObject) -> bool:
     return self._is_detached
 
 
+@property
 def is_deleted(self: JSONClassObject) -> bool:
     """This property records whether this object is deleted."""
     return self._is_deleted
 
 
+@property
 def modified_fields(self: JSONClassObject) -> tuple[str]:
     """A tuple of string represents the modified field names which need
     validation.
@@ -183,6 +189,7 @@ def modified_fields(self: JSONClassObject) -> tuple[str]:
     return tuple(self._modified_fields)
 
 
+@property
 def persisted_modified_fields(self: JSONClassObject) -> tuple[str]:
     """This is similar to `modified_fields`. This property doesn't include
     temporary fields. Thus, use `persisted_modified_fields` when updating the
@@ -196,6 +203,7 @@ def persisted_modified_fields(self: JSONClassObject) -> tuple[str]:
     return tuple(retval)
 
 
+@property
 def previous_values(self: JSONClassObject) -> dict[str, Any]:
     """
     """
@@ -238,6 +246,7 @@ def _set_initial_status(self: JSONClassObject) -> None:
     setattr(self, '_is_detached', False)
     setattr(self, '_is_deleted', False)
     setattr(self, '_previous_values', {})
+    setattr(self, '_graph', ObjectGraph())
 
 
 def __is_private_attr__(name: str) -> bool:
@@ -258,7 +267,7 @@ def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
         return
     # this is a JSON class field attribute
     self._ensure_not_detached()
-    if value == getattr(self, name):
+    if hasattr(self, name) and value == getattr(self, name):
         return
     # make list and dict assignments owned and monitored
     if isinstance(value, list):
@@ -340,8 +349,11 @@ def jsonclassify(class_: type) -> JSONClassObject:
     Returns:
         JSONClassObject: A class that confirms to `JSONClassObject`.
     """
+    # type marks
+    class_.__is_jsonclass__ = True
+    # public methods
     class_.__init__ = __init__
-    class_.set = set
+    class_.set = j_set
     class_._set = _set
     class_.update = update
     class_.tojson = tojson
@@ -353,10 +365,12 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_.is_deleted = is_deleted
     class_.modified_fields = modified_fields
     class_.persisted_modified_fields = persisted_modified_fields
+    # protected methods
     class_._ensure_not_detached = _ensure_not_detached
     class_._data_dict = _data_dict
     class_._mark_new = _mark_new
     class_._set_initial_status = _set_initial_status
+    # private methods
     class_.__original_setattr__ = class_.__setattr__
     class_.__setattr__ = __setattr__
     class_.__odict_will_change__ = __odict_will_change__

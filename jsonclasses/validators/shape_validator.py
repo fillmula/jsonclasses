@@ -4,8 +4,8 @@ from inflection import underscore, camelize
 from ..field_definition import FieldDefinition, FieldType, Nullability, Strictness
 from ..exceptions import ValidationException
 from ..config import Config
-from ..keypath import concat_keypath
-from ..types_resolver import resolve_types
+from ..keypath_utils import concat_keypath
+from ..types_resolver import TypesResolver
 from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 from .type_validator import TypeValidator
 
@@ -37,7 +37,7 @@ class ShapeValidator(TypeValidator):
                 value_at_key = context.value[k]
             except KeyError:
                 value_at_key = None
-            types = resolve_types(t, context.config_owner.linked_class)
+            types = TypesResolver().resolve_types(t, context.config_owner)
             if types:
                 try:
                     types.validator.validate(context.new(
@@ -106,7 +106,7 @@ class ShapeValidator(TypeValidator):
                                      list(value.keys()),
                                      context.config_owner):
                 fv = self._get_field_value(fk, value, context.config_owner)
-            types = resolve_types(ft, context.config_owner.linked_class)
+            types = TypesResolver().resolve_types(ft, context.config_owner)
             retval[fk] = types.validator.transform(context.new(
                 value=fv,
                 keypath_root=concat_keypath(context.keypath_root, fk),
@@ -125,7 +125,7 @@ class ShapeValidator(TypeValidator):
         for k, t in self.shape_types.items():
             key = camelize(k, False) if context.config.camelize_json_keys else k
             value_at_key = context.value.get(k)
-            types = resolve_types(t, context.config.linked_class)
+            types = TypesResolver().resolve_types(t, context.config)
             if types:
                 retval[key] = types.validator.tojson(context.new(value=value_at_key))
             else:

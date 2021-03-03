@@ -7,7 +7,6 @@ from typing import (Any, Optional, Union, Annotated, final, get_args,
                     get_origin, TYPE_CHECKING)
 from datetime import date, datetime
 from re import match, split
-from .class_graph import class_graph_map
 if TYPE_CHECKING:
     from .types import Types
     from .config import Config
@@ -163,8 +162,8 @@ class TypesResolver:
             types = self.str_to_types(instance_type, config, optional)
             return self.apply_link_specifier(types, link_specifier)
         else:
-            graph_name = config.class_graph
-            cls = class_graph_map.graph(graph_name).get(any_types)
+            graph = config.class_graph
+            cls = graph.fetch(any_types)
             instance_type = types.instanceof(cls)
             return instance_type if optional else instance_type.required
 
@@ -183,7 +182,6 @@ class TypesResolver:
         Returns:
             Types: A types which describes the field.
         """
-        from .json_object import JSONObject
         from .types import types
         if isinstance(any_types, str):
             return self.str_to_types(any_types, config)
@@ -239,7 +237,7 @@ class TypesResolver:
                 item_types[k] = self.to_types(t, config)
             shape_types = types.shape(item_types)
             return shape_types if optional else shape_types.required
-        elif issubclass(any_types, JSONObject):
+        elif hasattr(any_types, '__is_jsonclass__'):
             instance_type = types.instanceof(any_types)
             return instance_type if optional else instance_type.required
         else:

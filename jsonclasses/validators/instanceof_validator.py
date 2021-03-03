@@ -1,18 +1,18 @@
 """module for instanceof validator."""
 from __future__ import annotations
+from jsonclasses.jsonclass_field import JSONClassField
 from typing import Any, Sequence, Type, Union, cast, TYPE_CHECKING
-from ..field_definition import (Field, FieldDefinition, FieldStorage, FieldType,
-                      Nullability, WriteRule, ReadRule, Strictness,
-                      is_reference_field, is_embedded_instance_field)
+from ..field_definition import (FieldDefinition, FieldStorage, FieldType,
+                                Nullability, WriteRule, ReadRule, Strictness)
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..keypath import concat_keypath, initial_keypaths
-from ..types_resolver import resolve_types
+from ..keypath_utils import concat_keypath, initial_keypaths
+from ..types_resolver import TypesResolver
 from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 if TYPE_CHECKING:
-    from ..json_object import JSONObject
+    from ..jsonclass_object import JSONClassObject
     from ..types import Types
-    InstanceOfType = Union[Types, str, Type[JSONObject]]
+    InstanceOfType = Union[Types, str, Type[JSONClassObject]]
 
 
 class InstanceOfValidator(Validator):
@@ -26,12 +26,11 @@ class InstanceOfValidator(Validator):
         fdesc.instance_types = self.raw_type
 
     def validate(self, context: ValidatingContext) -> None:
-        from ..json_object import JSONObject
-        from ..orm_object import ORMObject
+        from ..jsonclass_object import JSONClassObject
         if context.value is None:
             return
-        types = resolve_types(self.raw_type, context.config_owner.linked_class)
-        cls = cast(Type[JSONObject], types.fdesc.instance_types)
+        types = TypesResolver().resolve_types(self.raw_type, context.config_owner)
+        cls = cast(Type[JSONClassObject], types.fdesc.instance_types)
         all_fields = context.all_fields
         if all_fields is None:
             all_fields = cls.config.validate_all_fields
@@ -46,13 +45,13 @@ class InstanceOfValidator(Validator):
         context.object_graph.put(context.value)
         only_validate_modified = False
         modified_fields = []
-        if isinstance(context.value, ORMObject) and not context.value.is_new:
+        if not context.value.is_new:
             only_validate_modified = True
             modified_fields = list(initial_keypaths((context.value
                                                      .modified_fields)))
         keypath_messages = {}
         for field in context.value.__class__.fields():
-            fname = field.field_name
+            fname = field.name
             fd = field.fdesc
             bypass = False
             if fd.field_storage == FieldStorage.EMBEDDED:
@@ -61,7 +60,7 @@ class InstanceOfValidator(Validator):
             if bypass:
                 continue
             try:
-                field.field_types.validator.validate(context.new(
+                field.types.validator.validate(context.new(
                     value=getattr(context.value, fname),
                     keypath_root=concat_keypath(context.keypath_root, fname),
                     keypath_owner=fname,
@@ -82,13 +81,13 @@ class InstanceOfValidator(Validator):
 
     def _strictness_check(self,
                           context: TransformingContext,
-                          dest: JSONObject) -> None:
+                          dest: JSONClassObject) -> None:
         if context.config_owner.camelize_json_keys:
-            available_name_pairs = [(field.field_name, field.json_field_name)
-                                    for field in dest.__class__.fields()]
+            available_name_pairs = [(field.name, field.json_name)
+                                    for field in dest.__class__.definition.fields]
             available_names = list({e for pair in available_name_pairs for e in pair})
         else:
-            available_names = [field.field_name for field in dest.__class__.fields()]
+            available_names = [field.name for field in dest.__class__.definition.fields]
         for k in context.value.keys():
             if k not in available_names:
                 kp = concat_keypath(context.keypath_root, k)
@@ -99,50 +98,50 @@ class InstanceOfValidator(Validator):
                 raise ValidationException({kp: msg}, context.root)
 
     def _fill_default_value(self,
-                            field: Field,
-                            dest: JSONObject,
+                            field: JSONClassField,
+                            dest: JSONClassObject,
                             context: TransformingContext,
-                            cls: Type[JSONObject]):
-        if field.assigned_default_value is not None:
-            setattr(dest, field.field_name, field.assigned_default_value)
+                            cls: Type[JSONClassObject]):
+        if field.default is not None:
+            setattr(dest, field.name, field.default)
         else:
-            tsfmd = field.field_types.validator.transform(context.new(
+            tsfmd = field.types.validator.transform(context.new(
                 value=None,
-                keypath_root=concat_keypath(context.keypath_root, field.field_name),
-                keypath_owner=field.field_name,
+                keypath_root=concat_keypath(context.keypath_root, field.name),
+                keypath_owner=field.name,
                 owner=context.value,
-                config_owner=cls.config,
-                keypath_parent=field.field_name,
+                config_owner=cls.definition.config,
+                keypath_parent=field.name,
                 parent=context.value,
-                fdesc=field.fdesc))
-            setattr(dest, field.field_name, tsfmd)
+                fdesc=field.definition))
+            setattr(dest, field.name, tsfmd)
 
-    def _has_field_value(self, field: Field, keys: Sequence[str]) -> bool:
-        return field.json_field_name in keys or field.field_name in keys
+    def _has_field_value(self, field: JSONClassField, keys: Sequence[str]) -> bool:
+        return field.json_name in keys or field.name in keys
 
     def _get_field_value(self,
-                         field: Field,
+                         field: JSONClassField,
                          context: TransformingContext) -> Any:
-        field_value = context.value.get(field.json_field_name)
+        field_value = context.value.get(field.json_name)
         if field_value is None and context.config_owner.camelize_json_keys:
-            field_value = context.value.get(field.field_name)
+            field_value = context.value.get(field.name)
         return field_value
 
     # pylint: disable=arguments-differ, too-many-locals, too-many-branches
     def transform(self, context: TransformingContext) -> Any:
         from ..types import Types
-        from ..json_object import JSONObject
+        from ..jsonclass_object import JSONClassObject
         # handle non normal value
         if context.value is None:
             return context.dest
         if not isinstance(context.value, dict):
             return context.dest if context.dest is not None else context.value
         # figure out types, cls and dest
-        types = resolve_types(self.raw_type, context.config_owner.linked_class)
-        cls = cast(Type[JSONObject], types.fdesc.instance_types)
-        this_pk_field = cls.primary_field()
+        types = TypesResolver().resolve_types(self.raw_type, context.config_owner)
+        cls = cast(Type[JSONClassObject], types.fdesc.instance_types)
+        this_pk_field = cls.definition.primary_field
         if this_pk_field:
-            pk = this_pk_field.field_name
+            pk = this_pk_field.name
             pk_value = cast(Union[str, int], context.value.get(pk))
         else:
             pk_value = None
@@ -165,7 +164,7 @@ class InstanceOfValidator(Validator):
         dest._graph = context.object_graph
 
         # strictness check
-        strictness = cast(bool, cls.config.strict_input)
+        strictness = cast(bool, cls.definition.config.strict_input)
         if context.fdesc is not None:
             if context.fdesc.strictness == Strictness.STRICT:
                 strictness = True
@@ -176,13 +175,13 @@ class InstanceOfValidator(Validator):
         # fill values
         dict_keys = list(context.value.keys())
         nonnull_ref_lists: list[str] = []
-        for field in dest.__class__.fields():
+        for field in dest.__class__.definition.fields:
             if not self._has_field_value(field, dict_keys):
-                if is_reference_field(field):
+                if field.definition.is_ref:
                     fdesc = field.fdesc
                     if fdesc.field_type == FieldType.LIST:
                         if fdesc.collection_nullability == Nullability.NONNULL:
-                            nonnull_ref_lists.append(field.field_name)
+                            nonnull_ref_lists.append(field.name)
                     pass
                 elif context.fill_dest_blanks and not soft_apply_mode:
                     self._fill_default_value(field, dest, context, cls)
@@ -192,7 +191,7 @@ class InstanceOfValidator(Validator):
             if field.fdesc.write_rule == WriteRule.NO_WRITE:
                 allow_write_field = False
             if field.fdesc.write_rule == WriteRule.WRITE_ONCE:
-                cfv = getattr(dest, field.field_name)
+                cfv = getattr(dest, field.name)
                 if (cfv is not None) and (not isinstance(cfv, Types)):
                     allow_write_field = False
             if field.fdesc.write_rule == WriteRule.WRITE_NONNULL:
@@ -205,15 +204,15 @@ class InstanceOfValidator(Validator):
             field_context = context.new(
                 value=field_value,
                 keypath_root=concat_keypath(context.keypath_root,
-                                            field.field_name),
-                keypath_owner=field.field_name,
+                                            field.name),
+                keypath_owner=field.name,
                 owner=context.value,
                 config_owner=cls.config,
-                keypath_parent=field.field_name,
+                keypath_parent=field.name,
                 parent=context.value,
                 fdesc=field.fdesc)
-            tsfmd = field.field_types.validator.transform(field_context)
-            setattr(dest, field.field_name, tsfmd)
+            tsfmd = field.types.validator.transform(field_context)
+            setattr(dest, field.name, tsfmd)
         for cname in nonnull_ref_lists:
             if getattr(dest, cname) is None:
                 setattr(dest, cname, [])
@@ -227,9 +226,9 @@ class InstanceOfValidator(Validator):
         cls_name = context.value.__class__.__name__
         no_key_refs = cls_name in entity_chain
         for field in context.value.__class__.fields():
-            field_value = getattr(context.value, field.field_name)
-            fd = field.field_types.fdesc
-            jf_name = field.json_field_name
+            field_value = getattr(context.value, field.name)
+            fd = field.types.fdesc
+            jf_name = field.json_name
             ignore_writeonly = context.ignore_writeonly
             if fd.field_storage == FieldStorage.LOCAL_KEY and no_key_refs:
                 continue
@@ -242,7 +241,7 @@ class InstanceOfValidator(Validator):
             item_context = context.new(
                 value=field_value,
                 entity_chain=[*entity_chain, cls_name])
-            retval[jf_name] = field.field_types.validator.tojson(item_context)
+            retval[jf_name] = field.types.validator.tojson(item_context)
         return retval
 
     def serialize(self, context: TransformingContext) -> Any:
@@ -262,17 +261,17 @@ class InstanceOfValidator(Validator):
             if (is_reference_field(field)
                     or is_embedded_instance_field(context.value, field)
                     or should_update):
-                field_value = getattr(context.value, field.field_name)
+                field_value = getattr(context.value, field.name)
                 field_context = context.new(
                     value=field_value,
                     keypath_root=concat_keypath(context.keypath_root,
-                                                field.field_name),
-                    keypath_owner=field.field_name,
+                                                field.name),
+                    keypath_owner=field.name,
                     owner=context.value,
                     config_owner=context.value.config,
-                    keypath_parent=field.field_name,
+                    keypath_parent=field.name,
                     parent=context.value,
                     fdesc=field.fdesc)
-                tsfmd = field.field_types.validator.serialize(field_context)
-                setattr(context.value, field.field_name, tsfmd)
+                tsfmd = field.types.validator.serialize(field_context)
+                setattr(context.value, field.name, tsfmd)
         return context.value

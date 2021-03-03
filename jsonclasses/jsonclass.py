@@ -7,6 +7,7 @@ from .config import Config
 from .jsonclass_field import JSONClassField
 from .class_definition import ClassDefinition
 from .jsonclassify import jsonclassify
+from .jsonclass_object import JSONClassObject
 
 
 @overload
@@ -25,7 +26,7 @@ def jsonclass(
     soft_delete: Optional[bool] = None,
     abstract: Optional[bool] = None,
     reset_all_fields: Optional[bool] = None
-) -> Callable[[type], type]: ...
+) -> Callable[[type], type[JSONClassObject]]: ...
 
 
 @overload
@@ -40,7 +41,7 @@ def jsonclass(
     soft_delete: Optional[bool] = None,
     abstract: Optional[bool] = None,
     reset_all_fields: Optional[bool] = None
-) -> type: ...
+) -> type[JSONClassObject]: ...
 
 
 def jsonclass(
@@ -54,7 +55,7 @@ def jsonclass(
     soft_delete: Optional[bool] = None,
     abstract: Optional[bool] = None,
     reset_all_fields: Optional[bool] = None
-) -> Union[Callable[[type[T]], type[T]], type[T]]:
+) -> Union[Callable[[type], type[JSONClassObject]], type[JSONClassObject]]:
     """The jsonclass object class decorator. To declare a jsonclass class, use
     this syntax:
 

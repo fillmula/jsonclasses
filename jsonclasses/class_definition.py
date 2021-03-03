@@ -34,6 +34,7 @@ class ClassDefinition:
                 created.
             config (Config): The configuration object for the targeted class.
         """
+        from .types import Types
         self._cls: type = class_
         self._name: str = class_.__name__
         self._config: Config = config
@@ -55,7 +56,7 @@ class ClassDefinition:
                 db_name = camelize(name, False)
             else:
                 db_name = name
-            types = self._get_types(field, config.linked_class)
+            types = self._get_types(field, config)
             if isinstance(field.default, Types):
                 default = None
             elif field.default == field.default_factory:

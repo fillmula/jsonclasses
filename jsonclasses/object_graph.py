@@ -2,8 +2,8 @@
 from __future__ import annotations
 from typing import Iterator, TypeVar, Union, Optional, TYPE_CHECKING
 if TYPE_CHECKING:
-    from .json_object import JSONObject
-    T = TypeVar('T', bound=JSONObject)
+    from .jsonclass_object import JSONClassObject
+    T = TypeVar('T', bound=JSONClassObject)
 
 
 class ClassTable:

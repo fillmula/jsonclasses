@@ -4,7 +4,7 @@ that encodes JSON Classes objects.
 """
 from typing import Any
 from json.encoder import JSONEncoder as PythonDefaultJSONEncoder
-from .json_object import JSONObject
+from .jsonclass_object import JSONClassObject
 
 
 class JSONEncoder(PythonDefaultJSONEncoder):
@@ -18,4 +18,5 @@ class JSONEncoder(PythonDefaultJSONEncoder):
     """
 
     def default(self, o: Any):
-        return o.tojson() if isinstance(o, JSONObject) else super().default(o)
+        return o.tojson() if isinstance(o, JSONClassObject) \
+            else super().default(o)
