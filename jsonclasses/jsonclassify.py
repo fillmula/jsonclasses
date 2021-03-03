@@ -5,6 +5,10 @@ from .jsonclass_object import JSONClassObject
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
 from .validators.instanceof_validator import InstanceOfValidator
 from .object_graph import ObjectGraph
+from .owned_dict import OwnedDict
+from .owned_list import OwnedList
+from .owned_collection_utils import to_owned_dict, to_owned_list
+from .keypath_utils import concat_keypath
 from .exceptions import AbstractJSONClassException, ValidationException
 
 
@@ -73,7 +77,7 @@ def update(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClassObject:
     if unallowed_keys_length > 0:
         keys_list = "', '".join(list(unallowed_keys))
         raise ValueError(f"'{keys_list}' not allowed in "
-                            f"{self.__class__.__name__}.")
+                         f"{self.__class__.__name__}.")
     for key, item in kwargs.items():
         setattr(self, key, item)
     return self
@@ -207,6 +211,7 @@ def _ensure_not_detached(self: JSONClassObject) -> None:
     if self.is_detached:
         raise ValueError(f'JSON class object {self} is detached')
 
+
 @property
 def _data_dict(self: JSONClassObject) -> dict[str, Any]:
     """A dict which is a subview of __dict__ that only contains public data
@@ -235,6 +240,97 @@ def _set_initial_status(self: JSONClassObject) -> None:
     setattr(self, '_previous_values', {})
 
 
+def __is_private_attr__(name: str) -> bool:
+    """Returns true if the attribute name indicates private attribute."""
+    return name.startswith('_')
+
+
+def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
+    # use original setattr for private fields
+    if __is_private_attr__(name):
+        self.__original_setattr__(name, value)
+        return
+    # use original setattr for non JSON class fields
+    try:
+        field = self.__class__.definition.field_named(name)
+    except ValueError:
+        self.__original_setattr__(name, value)
+        return
+    # this is a JSON class field attribute
+    self._ensure_not_detached()
+    if value == getattr(self, name):
+        return
+    # make list and dict assignments owned and monitored
+    if isinstance(value, list):
+        value = to_owned_list(self, value, name)
+    if isinstance(value, dict):
+        value = to_owned_dict(self, value, name)
+    if field.definition.is_ref:
+        self.__unlink_field__(field, getattr(self, name))
+        self.__original_setattr__(name, value)
+        self.__link_field__(field, value)
+    else:
+        self.__original_setattr__(name, value)
+
+
+def __odict_will_change__(self, odict: OwnedDict) -> None:
+    pass
+
+
+def __odict_add__(self, odict: OwnedDict, key: str, val: Any) -> None:
+    if isinstance(val, dict):
+        odict[key] = to_owned_dict(self, val,
+                                   concat_keypath(odict.keypath, key))
+    if isinstance(val, list):
+        odict[key] = to_owned_list(self, val,
+                                   concat_keypath(odict.keypath, key))
+
+
+def __odict_del__(self, odict: OwnedDict, val: Any) -> None:
+    pass
+
+
+def __olist_will_change__(self, olist: OwnedList) -> None:
+    pass
+
+
+def __olist_add__(self: JSONClassObject,
+                  olist: OwnedList,
+                  idx: int,
+                  val: Any) -> None:
+    class_definition = self.__class__.definition
+    try:
+        field = class_definition.field_named(olist.keypath)
+    except ValueError:
+        field = None
+    if field is not None and field.definition.is_ref:
+        self.__link_field__(field, [val])
+        return
+    if isinstance(val, dict):
+        olist[idx] = to_owned_dict(self, val,
+                                   concat_keypath(olist.keypath, idx))
+    if isinstance(val, list):
+        olist[idx] = to_owned_list(self, val,
+                                   concat_keypath(olist.keypath, idx))
+
+
+def __olist_del__(self: JSONClassObject, olist: OwnedList, val: Any) -> None:
+    class_definition = self.__class__.definition
+    try:
+        field = class_definition.field_named(olist.keypath)
+    except ValueError:
+        field = None
+    if field is None:
+        return
+    if not field.definition.is_ref:
+        return
+    self.__unlink_field__(field, [val])
+
+
+def __olist_sor__(self, olist: OwnedList) -> None:
+    pass
+
+
 def jsonclassify(class_: type) -> JSONClassObject:
     """Make a declared class into JSON class.
 
@@ -261,4 +357,13 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_._data_dict = _data_dict
     class_._mark_new = _mark_new
     class_._set_initial_status = _set_initial_status
+    class_.__original_setattr__ = class_.__setattr__
+    class_.__setattr__ = __setattr__
+    class_.__odict_will_change__ = __odict_will_change__
+    class_.__odict_add__ = __odict_add__
+    class_.__odict_del__ = __odict_del__
+    class_.__olist_will_change__ = __olist_will_change__
+    class_.__olist_add__ = __olist_add__
+    class_.__olist_del__ = __olist_del__
+    class_.__olist_sor__ = __olist_sor__
     return class_

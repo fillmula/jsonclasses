@@ -120,13 +120,13 @@ class FieldDefinition:  # pylint: disable=too-many-instance-attributes
     has_reset_validator: bool = False
     has_preserialize_validator: bool = False
 
+    @property
+    def is_ref(self: FieldDefinition) -> bool:
+        if self.field_storage in \
+                [FieldStorage.LOCAL_KEY, FieldStorage.FOREIGN_KEY]:
+            return True
+        return False
 
-# def is_reference_field(field: Field) -> bool:
-#     if field.fdesc.field_storage == FieldStorage.LOCAL_KEY:
-#         return True
-#     if field.fdesc.field_storage == FieldStorage.FOREIGN_KEY:
-#         return True
-#     return False
 
 
 # def is_pure_local_fdesc(cori: Union[JSONObject, type[JSONObject]],
