@@ -1,6 +1,6 @@
 """module for datetime validator."""
 from typing import Any
-from datetime import datetime
+from datetime import date, datetime
 from ..field_definition import FieldType
 from ..exceptions import ValidationException
 from .type_validator import TypeValidator
@@ -25,6 +25,10 @@ class DatetimeValidator(TypeValidator):
                 raise ValidationException({
                     context.keypath_root: 'Datetime string format error.'
                 }, context.root)
+        elif type(context.value) is date:
+            return datetime(context.value.year,
+                            context.value.month,
+                            context.value.day, 0, 0, 0)
         else:
             return context.value
 
