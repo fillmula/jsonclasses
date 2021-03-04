@@ -5,6 +5,7 @@ from tests.classes.simple_book import SimpleBook
 from tests.classes.simple_deadline import SimpleDeadline
 from tests.classes.simple_article import SimpleArticle
 
+
 class TestSet(TestCase):
 
     def test_set_without_arguments_wont_change_anything(self):
