@@ -1,3 +1,4 @@
+from __future__ import annotations
 from unittest import TestCase
 from jsonclasses import AbstractJSONClassException
 from tests.classes.abstract_object import (AbstractObject, MyObject,

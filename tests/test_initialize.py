@@ -1,4 +1,6 @@
+from __future__ import annotations
 from unittest import TestCase
+from jsonclasses.exceptions import ValidationException
 from tests.classes.simple_article import SimpleArticle
 from tests.classes.simple_order import SimpleOrder
 
@@ -16,3 +18,10 @@ class TestInitialize(TestCase):
     def test_initialize_simple_object_with_default_values(self):
         order = SimpleOrder(name='Oi Tik')
         self.assertEqual(order._data_dict, {'name': 'Oi Tik', 'quantity': 1})
+
+    def test_initialize_do_not_accept_undefined_keys_by_default(self):
+        with self.assertRaises(ValidationException) as context:
+            SimpleArticle(dzimsikai='Ku Piang Hoê')
+        self.assertTrue(len(context.exception.keypath_messages) == 1)
+        self.assertEqual(context.exception.keypath_messages['dzimsikai'],
+                         "Key 'dzimsikai' is not allowed.")

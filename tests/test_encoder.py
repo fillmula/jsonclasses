@@ -1,3 +1,4 @@
+from __future__ import annotations
 from unittest import TestCase
 from jsonclasses import JSONEncoder
 from json import dumps
