@@ -1,10 +1,13 @@
 """This module defines the `jsonclassify` function."""
 from __future__ import annotations
+from jsonclasses.field_definition import FieldType
 from typing import Any, Optional, Union
 from datetime import datetime
 from .jsonclass_object import JSONClassObject
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
 from .validators.instanceof_validator import InstanceOfValidator
+from .jsonclass_field import JSONClassField
+from .isjsonclass import isjsonobject, isjsonclass
 from .object_graph import ObjectGraph
 from .owned_dict import OwnedDict
 from .owned_list import OwnedList
@@ -373,6 +376,40 @@ def __olist_sor__(self, olist: OwnedList) -> None:
     pass
 
 
+def __unlink_field__(self: JSONClassObject,
+                     field: JSONClassField,
+                     value: Any) -> None:
+    pass
+
+
+def __link_field__(self: JSONClassObject,
+                   field: JSONClassField,
+                   value: Any) -> None:
+    items: list[JSONClassObject] = []
+    if field.definition.field_type == FieldType.INSTANCE:
+        if not isjsonobject(value):
+            return
+        items = [value]
+    if field.definition.field_type == FieldType.LIST:
+        if not isinstance(value, list):
+            return
+        items = value
+    for item in items:
+        other_field = field.foreign_field
+        if other_field is None:
+            return
+        if other_field.definition.field_type == FieldType.INSTANCE:
+            if getattr(item, other_field.name) != self:
+                setattr(item, other_field.name, self)
+        elif other_field.definition.field_type == FieldType.LIST:
+            if not isinstance(getattr(item, other_field.name), list):
+                setattr(item, other_field.name, [self])
+            else:
+                if self not in getattr(item, other_field.name):
+                    getattr(item, other_field.name).append(self)
+    self.__link_graph__(item)
+
+
 def jsonclassify(class_: type) -> JSONClassObject:
     """Make a declared class into JSON class.
 
@@ -420,4 +457,6 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_.__olist_add__ = __olist_add__
     class_.__olist_del__ = __olist_del__
     class_.__olist_sor__ = __olist_sor__
+    class_.__unlink_field__ = __unlink_field__
+    class_.__link_field__ = __link_field__
     return class_

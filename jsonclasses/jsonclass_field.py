@@ -2,7 +2,7 @@
 records the detailed information of a JSON class field.
 """
 from __future__ import annotations
-from typing import NamedTuple, Any, TYPE_CHECKING
+from typing import NamedTuple, Any, Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from .types import Types
     from .field_definition import FieldDefinition
@@ -43,3 +43,14 @@ class JSONClassField(NamedTuple):
     validator: ChainedValidator
     """The chained validator of the field.
     """
+
+    @property
+    def foreign_field(self: JSONClassField) -> Optional[JSONClassField]:
+        """The foreign field defined on the referenced object.
+        """
+        info = self.definition.class_definition.foreign_field_for(self.name)
+        if info:
+            foreign_class_definition = info[0]
+            foreign_field_name = info[1]
+            return foreign_class_definition.field_named(foreign_field_name)
+        return None

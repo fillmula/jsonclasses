@@ -7,6 +7,7 @@ from .types_resolver import TypesResolver
 if TYPE_CHECKING:
     from .types import Types
     from .class_definition import ClassDefinition
+    from .jsonclass_field import JSONClassField
 
 
 class FieldType(Enum):
@@ -142,7 +143,6 @@ class FieldDefinition:  # pylint: disable=too-many-instance-attributes
             if item_types.fdesc.field_type == FieldType.INSTANCE:
                 return True
         return False
-
 
 # def is_pure_local_fdesc(cori: Union[JSONObject, type[JSONObject]],
 #                         fdesc: FieldDefinition) -> bool:
