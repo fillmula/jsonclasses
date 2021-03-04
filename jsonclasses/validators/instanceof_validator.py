@@ -33,7 +33,7 @@ class InstanceOfValidator(Validator):
         cls = cast(Type[JSONClassObject], types.fdesc.instance_types)
         all_fields = context.all_fields
         if all_fields is None:
-            all_fields = cls.config.validate_all_fields
+            all_fields = cls.definition.config.validate_all_fields
         if not isinstance(context.value, cls):
             raise ValidationException({
                 context.keypath_root: (f"Value at '{context.keypath_root}' "
@@ -50,7 +50,7 @@ class InstanceOfValidator(Validator):
             modified_fields = list(initial_keypaths((context.value
                                                      .modified_fields)))
         keypath_messages = {}
-        for field in context.value.__class__.fields():
+        for field in context.value.__class__.definition.fields:
             fname = field.name
             fd = field.definition
             bypass = False
@@ -65,7 +65,7 @@ class InstanceOfValidator(Validator):
                     keypath_root=concat_keypath(context.keypath_root, fname),
                     keypath_owner=fname,
                     owner=context.value,
-                    config_owner=context.value.__class__.config,
+                    config_owner=context.value.__class__.definition.config,
                     keypath_parent=fname,
                     parent=context.value,
                     fdesc=field.definition))

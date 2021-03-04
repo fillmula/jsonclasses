@@ -1,6 +1,7 @@
 """This module defines the `jsonclassify` function."""
 from __future__ import annotations
-from typing import Any, Optional
+from typing import Any, Optional, Union
+from datetime import datetime
 from .jsonclass_object import JSONClassObject
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
 from .validators.instanceof_validator import InstanceOfValidator
@@ -117,7 +118,7 @@ def validate(self: JSONClassObject,
         None: upon successful validation, returns nothing.
     """
     self._ensure_not_detached()
-    config = self.__class__.config
+    config = self.__class__.definition.config
     context = ValidatingContext(
         value=self,
         keypath_root='',
@@ -249,6 +250,38 @@ def _set_initial_status(self: JSONClassObject) -> None:
     setattr(self, '_graph', ObjectGraph())
 
 
+@property
+def _id(self: JSONClassObject) -> Union[str, int, None]:
+    field = self.__class__.definition.primary_field
+    if not field:
+        return None
+    return getattr(self, field.name)
+
+
+@property
+def _created_at(self: JSONClassObject) -> datetime:
+    field = self.__class__.definition.created_at_field
+    if not field:
+        return None
+    return getattr(self, field.name)
+
+
+@property
+def _updated_at(self: JSONClassObject) -> datetime:
+    field = self.__class__.definition.updated_at_field
+    if not field:
+        return None
+    return getattr(self, field.name)
+
+
+@property
+def _deleted_at(self: JSONClassObject) -> datetime:
+    field = self.__class__.definition.deleted_at_field
+    if not field:
+        return None
+    return getattr(self, field.name)
+
+
 def __is_private_attr__(name: str) -> bool:
     """Returns true if the attribute name indicates private attribute."""
     return name.startswith('_')
@@ -373,6 +406,10 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_._data_dict = _data_dict
     class_._mark_new = _mark_new
     class_._set_initial_status = _set_initial_status
+    class_._id = _id
+    class_._created_at = _created_at
+    class_._updated_at = _updated_at
+    class_._deleted_at = _deleted_at
     # private methods
     class_.__original_setattr__ = class_.__setattr__
     class_.__setattr__ = __setattr__

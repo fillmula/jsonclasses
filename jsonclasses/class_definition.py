@@ -166,7 +166,7 @@ class ClassDefinition:
         return self._created_at_field
 
     @property
-    def updated_at(self: ClassDefinition) -> Optional[JSONClassField]:
+    def updated_at_field(self: ClassDefinition) -> Optional[JSONClassField]:
         """The class definition's field which represents the updated at field.
 
         This is used by the framework to locate the correct field to find the
