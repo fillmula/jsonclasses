@@ -3,6 +3,7 @@ from unittest import TestCase
 from jsonclasses.exceptions import ValidationException
 from tests.classes.simple_article import SimpleArticle
 from tests.classes.simple_order import SimpleOrder
+from tests.classes.simple_address import SimpleAddress
 
 
 class TestInitialize(TestCase):
@@ -25,3 +26,8 @@ class TestInitialize(TestCase):
         self.assertTrue(len(context.exception.keypath_messages) == 1)
         self.assertEqual(context.exception.keypath_messages['dzimsikai'],
                          "Key 'dzimsikai' is not allowed.")
+
+    def test_initialize_underscore_key_cases_by_default(self):
+        address = SimpleAddress(**{'lineOne': 'NgouOu', 'lineTwo': 'Sihai'})
+        self.assertEqual(address._data_dict,
+                         {'line_one': 'NgouOu', 'line_two': 'Sihai'})
