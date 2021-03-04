@@ -52,7 +52,7 @@ class InstanceOfValidator(Validator):
         keypath_messages = {}
         for field in context.value.__class__.fields():
             fname = field.name
-            fd = field.fdesc
+            fd = field.definition
             bypass = False
             if fd.field_storage == FieldStorage.EMBEDDED:
                 if only_validate_modified and fname not in modified_fields:
@@ -68,7 +68,7 @@ class InstanceOfValidator(Validator):
                     config_owner=context.value.__class__.config,
                     keypath_parent=fname,
                     parent=context.value,
-                    fdesc=field.fdesc))
+                    fdesc=field.definition))
             except ValidationException as exception:
                 if all_fields:
                     keypath_messages.update(exception.keypath_messages)
@@ -178,7 +178,7 @@ class InstanceOfValidator(Validator):
         for field in dest.__class__.definition.fields:
             if not self._has_field_value(field, dict_keys):
                 if field.definition.is_ref:
-                    fdesc = field.fdesc
+                    fdesc = field.definition
                     if fdesc.field_type == FieldType.LIST:
                         if fdesc.collection_nullability == Nullability.NONNULL:
                             nonnull_ref_lists.append(field.name)
@@ -188,13 +188,13 @@ class InstanceOfValidator(Validator):
                 continue
             field_value = self._get_field_value(field, context)
             allow_write_field = True
-            if field.fdesc.write_rule == WriteRule.NO_WRITE:
+            if field.definition.write_rule == WriteRule.NO_WRITE:
                 allow_write_field = False
-            if field.fdesc.write_rule == WriteRule.WRITE_ONCE:
+            if field.definition.write_rule == WriteRule.WRITE_ONCE:
                 cfv = getattr(dest, field.name)
                 if (cfv is not None) and (not isinstance(cfv, Types)):
                     allow_write_field = False
-            if field.fdesc.write_rule == WriteRule.WRITE_NONNULL:
+            if field.definition.write_rule == WriteRule.WRITE_NONNULL:
                 if field_value is None:
                     allow_write_field = False
             if not allow_write_field:
@@ -207,10 +207,10 @@ class InstanceOfValidator(Validator):
                                             field.name),
                 keypath_owner=field.name,
                 owner=context.value,
-                config_owner=cls.config,
+                config_owner=cls.definition.config,
                 keypath_parent=field.name,
                 parent=context.value,
-                fdesc=field.fdesc)
+                fdesc=field.definition)
             tsfmd = field.types.validator.transform(field_context)
             setattr(dest, field.name, tsfmd)
         for cname in nonnull_ref_lists:
@@ -269,7 +269,7 @@ class InstanceOfValidator(Validator):
                     config_owner=value.__class__.definition.config,
                     keypath_parent=field.name,
                     parent=value,
-                    fdesc=field.fdesc)
+                    fdesc=field.definition)
                 tsfmd = field.types.validator.serialize(field_context)
                 setattr(value, field.name, tsfmd)
         return value

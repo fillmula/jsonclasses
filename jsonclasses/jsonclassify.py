@@ -349,6 +349,9 @@ def jsonclassify(class_: type) -> JSONClassObject:
     Returns:
         JSONClassObject: A class that confirms to `JSONClassObject`.
     """
+    # do not install methods for subclasses
+    if hasattr(class_, '__is_jsonclass__'):
+        return class_
     # type marks
     class_.__is_jsonclass__ = True
     # public methods
