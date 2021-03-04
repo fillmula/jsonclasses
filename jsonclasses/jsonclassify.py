@@ -379,7 +379,27 @@ def __olist_sor__(self, olist: OwnedList) -> None:
 def __unlink_field__(self: JSONClassObject,
                      field: JSONClassField,
                      value: Any) -> None:
-    pass
+    items: list[JSONClassObject] = []
+    if field.definition.field_type == FieldType.INSTANCE:
+        if not isjsonobject(value):
+            return
+        items = [value]
+    if field.definition.field_type == FieldType.LIST:
+        if not isinstance(value, list):
+            return
+        items = list(value)
+    for item in items:
+        other_field = field.foreign_field
+        if other_field is None:
+            return
+        if other_field.definition.field_type == FieldType.INSTANCE:
+            if getattr(item, other_field.name) is self:
+                item.__original_setattr__(other_field.name, None)
+        elif other_field.definition.field_type == FieldType.LIST:
+            other_list = getattr(item, other_field.name)
+            if isinstance(other_list, list):
+                if self in other_list:
+                    other_list.remove(self)
 
 
 def __link_field__(self: JSONClassObject,
