@@ -2,8 +2,6 @@ from __future__ import annotations
 from unittest import TestCase
 from jsonclasses.exceptions import ValidationException
 from tests.classes.simple_article import SimpleArticle
-from tests.classes.simple_order import SimpleOrder
-from tests.classes.simple_address import SimpleAddress
 
 
 class TestStr(TestCase):
