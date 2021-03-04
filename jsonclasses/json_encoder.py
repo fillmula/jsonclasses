@@ -18,5 +18,5 @@ class JSONEncoder(PythonDefaultJSONEncoder):
     """
 
     def default(self, o: Any):
-        return o.tojson() if isinstance(o, JSONClassObject) \
+        return o.tojson() if hasattr(o.__class__, '__is_jsonclass__') \
             else super().default(o)

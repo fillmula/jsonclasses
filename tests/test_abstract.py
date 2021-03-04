@@ -1,6 +1,5 @@
 from unittest import TestCase
-from datetime import datetime
-from jsonclasses import jsonclass, AbstractJSONClassException
+from jsonclasses import AbstractJSONClassException
 from tests.classes.abstract_object import (AbstractObject, MyObject,
                                            NonAbstractObject,
                                            DefaultNonAbstractObject)

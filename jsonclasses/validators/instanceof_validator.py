@@ -225,7 +225,7 @@ class InstanceOfValidator(Validator):
         entity_chain = context.entity_chain
         cls_name = context.value.__class__.__name__
         no_key_refs = cls_name in entity_chain
-        for field in context.value.__class__.fields():
+        for field in context.value.__class__.definition.fields:
             field_value = getattr(context.value, field.name)
             fd = field.types.fdesc
             jf_name = field.json_name

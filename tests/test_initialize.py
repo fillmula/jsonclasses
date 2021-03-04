@@ -11,3 +11,5 @@ class TestInitialize(TestCase):
     def test_initialize_simple_object_with_arguments(self):
         article = SimpleArticle(title='Oi', content='Tik')
         self.assertEqual(article._data_dict, {'title': 'Oi', 'content': 'Tik'})
+
+    # def test_initialize
