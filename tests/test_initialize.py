@@ -1,10 +1,12 @@
 from __future__ import annotations
 from unittest import TestCase
+from datetime import date
 from jsonclasses.exceptions import ValidationException
 from tests.classes.simple_article import SimpleArticle
 from tests.classes.simple_order import SimpleOrder
 from tests.classes.simple_address import SimpleAddress
 from tests.classes.simple_student import SimpleStudent
+from tests.classes.simple_deadline import SimpleDeadline
 
 
 class TestInitialize(TestCase):
@@ -40,3 +42,7 @@ class TestInitialize(TestCase):
         address = SimpleAddress(**{'lineOne': 'NgouOu', 'lineTwo': 'Sihai'})
         self.assertEqual(address._data_dict,
                          {'line_one': 'NgouOu', 'line_two': 'Sihai'})
+
+    def test_initialize_triggers_transform(self):
+        deadline = SimpleDeadline(ended_at='2021-06-30')
+        self.assertEqual(deadline.ended_at, date(2021, 6, 30))
