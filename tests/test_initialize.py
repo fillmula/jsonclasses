@@ -4,6 +4,7 @@ from jsonclasses.exceptions import ValidationException
 from tests.classes.simple_article import SimpleArticle
 from tests.classes.simple_order import SimpleOrder
 from tests.classes.simple_address import SimpleAddress
+from tests.classes.simple_student import SimpleStudent
 
 
 class TestInitialize(TestCase):
@@ -16,9 +17,17 @@ class TestInitialize(TestCase):
         article = SimpleArticle(title='Oi', content='Tik')
         self.assertEqual(article._data_dict, {'title': 'Oi', 'content': 'Tik'})
 
-    def test_initialize_simple_object_with_default_values(self):
+    def test_initialize_simple_object_with_types_default_values(self):
         order = SimpleOrder(name='Oi Tik')
         self.assertEqual(order._data_dict, {'name': 'Oi Tik', 'quantity': 1})
+
+    def test_initialize_simple_object_with_assigned_default_values(self):
+        student = SimpleStudent()
+        self.assertEqual(student._data_dict, {'age': 20, 'graduated': False})
+
+    def test_initialize_with_value_passed_in_rather_than_default_value(self):
+        student = SimpleStudent(graduated=True, age=24)
+        self.assertEqual(student._data_dict, {'age': 24, 'graduated': True})
 
     def test_initialize_do_not_accept_undefined_keys_by_default(self):
         with self.assertRaises(ValidationException) as context:
