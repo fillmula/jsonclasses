@@ -145,7 +145,7 @@ def is_valid(self: JSONClassObject) -> bool:
         bool: the validity of the object.
     """
     try:
-        self.validate(all_fields=False)
+        self.validate(validate_all_fields=False)
     except ValidationException:
         return False
     return True

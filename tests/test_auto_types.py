@@ -1,376 +1,376 @@
 from typing import Optional, Union
 from unittest import TestCase
-from jsonclasses.field_definition import FieldType, field
-from jsonclasses import jsonclass, JSONObject, ValidationException
 from datetime import datetime, date
+from jsonclasses.field_definition import FieldType
+from jsonclasses import jsonclass, ValidationException
 
 
-class TestJSONObjectTypesSynthesis(TestCase):
+class TestAutoTypes(TestCase):
 
     def test_auto_generates_required_str(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestStr(JSONObject):
+        class TestStr:
             val: str
         object = TestStr()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_str(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionalStr(JSONObject):
+        class TestOptionalStr:
             val: Optional[str]
         object = TestOptionalStr()
         object.validate()
 
     def test_auto_generates_required_str_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestStrStrType(JSONObject):
+        class TestStrStrType:
             val: 'str'
         object = TestStrStrType()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_str_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionalStrStrType(JSONObject):
+        class TestOptionalStrStrType:
             val: 'Optional[str]'
         object = TestOptionalStrStrType()
         object.validate()
 
     def test_auto_generates_required_int(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestInt(JSONObject):
+        class TestInt:
             val: int
         object = TestInt()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_int(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionalInt(JSONObject):
+        class TestOptionalInt:
             val: Optional[int]
         object = TestOptionalInt()
         object.validate()
 
     def test_auto_generates_required_int_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestIntStrType(JSONObject):
+        class TestIntStrType:
             val: 'int'
         object = TestIntStrType()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_int_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionalIntStrType(JSONObject):
+        class TestOptionalIntStrType:
             val: 'Optional[int]'
         object = TestOptionalIntStrType()
         object.validate()
 
     def test_auto_generates_required_float(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestFloat(JSONObject):
+        class TestFloat:
             val: float
         object = TestFloat()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_float(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionalfloat(JSONObject):
+        class TestOptionalfloat:
             val: Optional[float]
         object = TestOptionalfloat()
         object.validate()
 
     def test_auto_generates_required_float_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestFloatStrType(JSONObject):
+        class TestFloatStrType:
             val: 'float'
         object = TestFloatStrType()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_float_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionalFloatStrType(JSONObject):
+        class TestOptionalFloatStrType:
             val: 'Optional[float]'
         object = TestOptionalFloatStrType()
         object.validate()
 
     def test_auto_generates_required_bool(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestBool(JSONObject):
+        class TestBool:
             val: bool
         object = TestBool()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_bool(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionalbool(JSONObject):
+        class TestOptionalbool:
             val: Optional[bool]
         object = TestOptionalbool()
         object.validate()
 
     def test_auto_generates_required_bool_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestboolStrType(JSONObject):
+        class TestboolStrType:
             val: 'bool'
         object = TestboolStrType()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_bool_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionalboolStrType(JSONObject):
+        class TestOptionalboolStrType:
             val: 'Optional[bool]'
         object = TestOptionalboolStrType()
         object.validate()
 
     def test_auto_generates_required_date(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class Testdate(JSONObject):
+        class Testdate:
             val: date
         object = Testdate()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_date(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionaldate(JSONObject):
+        class TestOptionaldate:
             val: Optional[date]
         object = TestOptionaldate()
         object.validate()
 
     def test_auto_generates_required_date_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestdateStrType(JSONObject):
+        class TestdateStrType:
             val: 'date'
         object = TestdateStrType()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_date_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionaldateStrType(JSONObject):
+        class TestOptionaldateStrType:
             val: 'Optional[date]'
         object = TestOptionaldateStrType()
         object.validate()
 
     def test_auto_generates_required_datetime(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class Testdatetime(JSONObject):
+        class Testdatetime:
             val: datetime
         object = Testdatetime()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_datetime(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionaldatetime(JSONObject):
+        class TestOptionaldatetime:
             val: Optional[datetime]
         object = TestOptionaldatetime()
         object.validate()
 
     def test_auto_generates_required_datetime_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestdatetimeStrType(JSONObject):
+        class TestdatetimeStrType:
             val: 'datetime'
         object = TestdatetimeStrType()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_datetime_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionaldatetimeStrType(JSONObject):
+        class TestOptionaldatetimeStrType:
             val: 'Optional[datetime]'
         object = TestOptionaldatetimeStrType()
         object.validate()
 
     def test_auto_generates_required_list(self):
         @jsonclass(class_graph='test_marker_auto_gen_2')
-        class Testlist(JSONObject):
+        class Testlist:
             val: list[str]
         object = Testlist()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_list(self):
         @jsonclass(class_graph='test_marker_auto_gen_2')
-        class TestOptionallist(JSONObject):
+        class TestOptionallist:
             val: Optional[list[str]]
         object = TestOptionallist()
         object.validate()
 
     def test_auto_generates_required_list_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen_2')
-        class TestlistStrType(JSONObject):
+        class TestlistStrType:
             val: 'list[str]'
         object = TestlistStrType()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_list_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen_2')
-        class TestOptionallistStrType(JSONObject):
+        class TestOptionallistStrType:
             val: 'Optional[list[str]]'
         object = TestOptionallistStrType()
         object.validate()
 
     def test_auto_generates_required_list_capitalized(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class Testlist(JSONObject):
+        class Testlist:
             val: list[str]
         object = Testlist()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_list_capitalized(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionallist(JSONObject):
+        class TestOptionallist:
             val: Optional[list[str]]
         object = TestOptionallist()
         object.validate()
 
     def test_auto_generates_required_list_with_str_type_capitalized(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestlistStrType(JSONObject):
+        class TestlistStrType:
             val: 'list[str]'
         object = TestlistStrType()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_list_with_str_type_capitalized(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionallistStrType(JSONObject):
+        class TestOptionallistStrType:
             val: 'Optional[list[str]]'
         object = TestOptionallistStrType()
         object.validate()
 
     def test_auto_generates_required_dict(self):
         @jsonclass(class_graph='test_marker_auto_gen_2')
-        class Testdict(JSONObject):
+        class Testdict:
             val: dict[str, str]
         object = Testdict()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_dict(self):
         @jsonclass(class_graph='test_marker_auto_gen_2')
-        class TestOptionaldict(JSONObject):
+        class TestOptionaldict:
             val: Optional[dict[str, str]]
         object = TestOptionaldict()
         object.validate()
 
     def test_auto_generates_required_dict_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen_2')
-        class TestdictStrType(JSONObject):
+        class TestdictStrType:
             val: 'dict[str, str]'
         object = TestdictStrType()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_dict_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen_2')
-        class TestOptionaldictStrType(JSONObject):
+        class TestOptionaldictStrType:
             val: 'Optional[dict[str, str]]'
         object = TestOptionaldictStrType()
         object.validate()
 
     def test_auto_generates_required_dict_capitalized(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class Testdict(JSONObject):
+        class Testdict:
             val: dict[str, str]
         object = Testdict()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_dict_capitalized(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionaldict(JSONObject):
+        class TestOptionaldict:
             val: Optional[dict[str, str]]
         object = TestOptionaldict()
         object.validate()
 
     def test_auto_generates_required_dict_with_str_type_capitalized(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestdictStrType(JSONObject):
+        class TestdictStrType:
             val: 'dict[str, str]'
         object = TestdictStrType()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_dict_with_str_type_capitalized(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionaldictStrType(JSONObject):
+        class TestOptionaldictStrType:
             val: 'Optional[dict[str, str]]'
         object = TestOptionaldictStrType()
         object.validate()
 
     def test_auto_generates_required_instance(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestinstanceReferenced(JSONObject):
+        class TestinstanceReferenced:
             val: Optional[str]
 
         @jsonclass(class_graph='test_marker_auto_gen')
-        class Testinstance(JSONObject):
+        class Testinstance:
             val: TestinstanceReferenced
         object = Testinstance()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_instance(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestoptionalinstanceReferenced(JSONObject):
+        class TestoptionalinstanceReferenced:
             val: Optional[str]
 
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionalInstance(JSONObject):
+        class TestOptionalInstance:
             val: Optional[TestoptionalinstanceReferenced]
         object = TestOptionalInstance()
         object.validate()
 
     def test_auto_generates_required_instance_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestinstanceReferencedWithStrType(JSONObject):
+        class TestinstanceReferencedWithStrType:
             val: Optional[str]
 
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestinstanceWithStrType(JSONObject):
+        class TestinstanceWithStrType:
             val: 'TestinstanceReferencedWithStrType'
         object = TestinstanceWithStrType()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_instance_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestoptionalinstanceReferencedWithStrType(JSONObject):
+        class TestoptionalinstanceReferencedWithStrType:
             val: Optional[str]
 
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionalInstanceWithStrType(JSONObject):
+        class TestOptionalInstanceWithStrType:
             val: 'Optional[TestoptionalinstanceReferencedWithStrType]'
         object = TestOptionalInstanceWithStrType()
         object.validate()
 
     def test_auto_generates_required_union(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestUnion(JSONObject):
+        class TestUnion:
             val: Union[str, bool]
         object = TestUnion()
-        self.assertFalse(object.is_valid())
+        self.assertFalse(object.is_valid)
 
     def test_auto_generates_optional_union(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionalUnion(JSONObject):
+        class TestOptionalUnion:
             val: Optional[Union[str, bool]]
         object = TestOptionalUnion()
         object.validate()
 
     def test_auto_generates_required_union_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestUnionStrType(JSONObject):
+        class TestUnionStrType:
             val: 'Union[str, int]'
         object = TestUnionStrType()
         self.assertRaises(ValidationException, object.validate)
 
     def test_auto_generates_optional_union_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionalUnionStrType(JSONObject):
+        class TestOptionalUnionStrType:
             val: 'Optional[Union[int, float]]'
         object = TestOptionalUnionStrType()
         object.validate()
 
     def test_auto_generates_required_union_with_dict_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestUnionDictType(JSONObject):
+        class TestUnionDictType:
             val: 'Union[dict[str, int], int]'
-        cfield = field(TestUnionDictType, 'val')
-        utypes = cfield.fdesc.union_types
+        cfield = TestUnionDictType.definition.field_named('val')
+        utypes = cfield.definition.union_types
         self.assertEqual(utypes[0].fdesc.field_type, FieldType.DICT)
         self.assertEqual(utypes[1].fdesc.field_type, FieldType.INT)
 
     def test_auto_generates_optional_union_with_dict_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
-        class TestOptionalUnionDictType(JSONObject):
+        class TestOptionalUnionDictType:
             val: 'Optional[Union[dict[str, bool], float]]'
         object = TestOptionalUnionDictType()
         object.validate()

@@ -169,7 +169,7 @@ class TypesResolver:
 
     def to_types(self: TypesResolver,
                  any_types: Any,
-                 config: Config,
+                 config: Optional[Config] = None,
                  optional: bool = False) -> Types:
         """
         Convert any types that user specified to types.
@@ -245,7 +245,7 @@ class TypesResolver:
 
     def resolve_types(self: TypesResolver,
                       any_types: Any,
-                      config: Config) -> Types:
+                      config: Optional[Config] = None) -> Types:
         """
         Get field types from any types that users can specify.
 
