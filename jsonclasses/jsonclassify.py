@@ -232,6 +232,19 @@ def reset(self: JSONClassObject) -> None:
         self._previous_values = {}
 
 
+def save(self: JSONClassObject,
+         validate_all_fields: bool = False,
+         skip_validation: bool = False) -> JSONClassObject:
+    """Save this object into database. This will not write if no storage
+    modifier is used.
+    """
+    if not skip_validation:
+        self.validate(all_fields=validate_all_fields)
+    self._setonsave()
+    self._database_write()
+    return self
+
+
 def _ensure_not_detached(self: JSONClassObject) -> None:
     """Raises if this JSON class object is detached.
 
@@ -270,6 +283,37 @@ def _set_initial_status(self: JSONClassObject) -> None:
     setattr(self, '_previous_values', {})
     setattr(self, '_graph', ObjectGraph(self))
 
+
+def _set_on_save(self: JSONClassObject) -> None:
+    """Update fields with setonsave marks if this object is modified. This
+    is a graph operation. Objects chained with the saving object will also
+    get setonsave called and saved.
+    """
+    validator = InstanceOfValidator(self.__class__)
+    config = self.__class__.definition.config
+    context = TransformingContext(
+        value=self,
+        keypath_root='',
+        root=self,
+        config_root=config,
+        keypath_owner='',
+        owner=self,
+        config_owner=config,
+        keypath_parent='',
+        parent=self,
+        fdesc=None,
+        object_graph=ObjectGraph())
+    validator.serialize(context)
+
+
+def _clear_temp_fields(self: JSONClassObject) -> None:
+    for field in self.__class__.definition.fields:
+        if field.definition.is_temp_field:
+            setattr(self, field.name, None)
+
+
+def _database_write(self: JSONClassObject) -> None:
+    pass
 
 @property
 def _id(self: JSONClassObject) -> Union[str, int, None]:
@@ -525,11 +569,15 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_.modified_fields = modified_fields
     class_.persisted_modified_fields = persisted_modified_fields
     class_.reset = reset
+    class_.save = save
     # protected methods
     class_._ensure_not_detached = _ensure_not_detached
     class_._data_dict = _data_dict
     class_._mark_new = _mark_new
     class_._set_initial_status = _set_initial_status
+    class_._set_on_save = _set_on_save
+    class_._clear_temp_fields = _clear_temp_fields
+    class_._database_write = _database_write
     class_._id = _id
     class_._created_at = _created_at
     class_._updated_at = _updated_at
