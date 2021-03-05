@@ -1,10 +1,23 @@
 """This module defineds the JSON Class object mapping graph."""
 from __future__ import annotations
-from typing import Iterator, Union, Optional, TYPE_CHECKING
+from jsonclasses.obsolete_json_object import JSONObject
+from jsonclasses.jsonclassify import is_modified
+from typing import Iterator, NamedTuple, Union, Optional, TYPE_CHECKING
 from .isjsonclass import isjsonobject
-from .exceptions import UnlinkableJSONClassException
+from .exceptions import (UnlinkableJSONClassException,
+                         JSONClassGraphMergeConflictException)
 if TYPE_CHECKING:
     from .jsonclass_object import JSONClassObject
+
+
+class CompareResult(NamedTuple):
+    """When merging object graph, conflicted objects will be compared. One will
+    be kept and one will be detached.
+    """
+    kept: JSONClassObject
+    """The updated one to keep."""
+    detached: JSONClassObject
+    """The obsolete one to remove."""
 
 
 class ObjectGraph:
@@ -81,3 +94,67 @@ class ObjectGraph:
             for name, obj in map.items():
                 new_graph._maps[key][name] = obj
         return new_graph
+
+    def compare(self: ObjectGraph,
+                obj1: JSONClassObject,
+                obj2: JSONClassObject) -> CompareResult:
+        if obj1.is_new and obj2.is_new:
+            raise JSONClassGraphMergeConflictException('both objects are new')
+        elif obj1.is_new or obj2.is_new:
+            raise JSONClassGraphMergeConflictException('1 object is new')
+        if obj1._updated_at == obj2._updated_at:
+            if obj1.is_modified and obj2.is_modified:
+                raise JSONClassGraphMergeConflictException('both objects are '
+                                                           'modified')
+            elif obj2.is_modified:
+                return CompareResult(kept=obj2, detached=obj1)
+            else:
+                return CompareResult(kept=obj1, detached=obj2)
+        elif obj1._updated_at is None:
+            return CompareResult(kept=obj2, detached=obj1)
+        elif obj2._updated_at is None:
+            return CompareResult(kept=obj1, detached=obj2)
+        elif obj1._updated_at > obj2._updated_at:
+            return CompareResult(kept=obj1, detached=obj2)
+        else:
+            return CompareResult(kept=obj2, detached=obj1)
+
+    def merged_graph(self: ObjectGraph, graph2: ObjectGraph) -> ObjectGraph:
+        """Get a new graph which is a combination of two graphs.
+        """
+        pool: set[CompareResult] = set()
+        graph = self.copy()
+        for object in graph2:
+            if not graph.has(object):
+                graph.put(object)
+            else:
+                result = self.compare(graph.get(object), object)
+                graph.put(result.kept)
+                pool.add(result)
+        for result in pool:
+            self.alter_links(result)
+        for object in graph:
+            object._graph = graph
+        return graph
+
+    def alter_links(self: ObjectGraph, result: CompareResult) -> None:
+        """Alter all linked objects reference to the new object.
+        """
+        for field in result.detached.__class__.definition.fields:
+            if not field.definition.is_ref:
+                continue
+            item_or_items = getattr(result.detached, field.name)
+            items: list[JSONObject] = []
+            if isjsonobject(item_or_items):
+                items = [item_or_items]
+            elif isinstance(item_or_items, list):
+                items = item_or_items
+            for item in items:
+                item_field = field.foreign_field
+                item_value = getattr(item, item_field.name)
+                if item_value is result.detached:
+                    setattr(item, item_field.name, result.kept)
+                elif isinstance(item_value, list):
+                    index = item_value.index(result.detached)
+                    item_value[index] = result.kept
+        result.detached._is_detached = True

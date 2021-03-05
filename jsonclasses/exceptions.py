@@ -152,3 +152,13 @@ class JSONClassResetNotEnabledError(Exception):
     def __init__(self) -> None:
         self.message = 'reset called on a reset disabled object'
         super().__init__(self.message)
+
+
+class JSONClassGraphMergeConflictException(Exception):
+    """This exception is raised when there is an object conflict when linking
+    jsonclass objects.
+    """
+
+    def __init__(self, message: str) -> None:
+        self.message = message
+        super().__init__(f'cannot merge graph: {self.message}')

@@ -250,7 +250,7 @@ def _set_initial_status(self: JSONClassObject) -> None:
     setattr(self, '_is_detached', False)
     setattr(self, '_is_deleted', False)
     setattr(self, '_previous_values', {})
-    setattr(self, '_graph', ObjectGraph())
+    setattr(self, '_graph', ObjectGraph(self))
 
 
 @property
