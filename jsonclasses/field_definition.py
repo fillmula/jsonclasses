@@ -7,7 +7,6 @@ from .types_resolver import TypesResolver
 if TYPE_CHECKING:
     from .types import Types
     from .class_definition import ClassDefinition
-    from .jsonclass_field import JSONClassField
 
 
 class FieldType(Enum):
@@ -144,21 +143,15 @@ class FieldDefinition:  # pylint: disable=too-many-instance-attributes
                 return True
         return False
 
-# def is_pure_local_fdesc(cori: Union[JSONObject, type[JSONObject]],
-#                         fdesc: FieldDefinition) -> bool:
-#     if fdesc.field_storage == FieldStorage.LOCAL_KEY:
-#         return False
-#     if fdesc.field_storage == FieldStorage.FOREIGN_KEY:
-#         return False
-#     if fdesc.field_type == FieldType.LIST:
-#         item_type = resolve_types(fdesc.raw_item_types, cori)
-#         return is_pure_local_fdesc(cori, item_type.fdesc)
-#     if fdesc.field_type == FieldType.DICT:
-#         item_type = resolve_types(fdesc.raw_item_types, cori)
-#         return is_pure_local_fdesc(cori, item_type.fdesc)
-#     return True
-
-
-# def is_pure_local_field(cori: Union[JSONObject, type[JSONObject]],
-#                         field: Field) -> bool:
-#     return is_pure_local_fdesc(cori, field.fdesc)
+    @property
+    def has_linked(self: FieldDefinition) -> bool:
+        if self.field_storage == FieldStorage.LOCAL_KEY:
+            return True
+        if self.field_storage == FieldStorage.FOREIGN_KEY:
+            return True
+        if self.field_type == FieldType.LIST or \
+                self.field_type == FieldType.DICT:
+            item_type = TypesResolver() \
+                .resolve_types(self.raw_item_types,
+                               self.class_definition.config)
+            return item_type.fdesc.has_linked

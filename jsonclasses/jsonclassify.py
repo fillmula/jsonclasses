@@ -7,13 +7,15 @@ from .jsonclass_object import JSONClassObject
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
 from .validators.instanceof_validator import InstanceOfValidator
 from .jsonclass_field import JSONClassField
-from .isjsonclass import isjsonobject, isjsonclass
+from .isjsonclass import isjsonobject
 from .object_graph import ObjectGraph
 from .owned_dict import OwnedDict
 from .owned_list import OwnedList
-from .owned_collection_utils import to_owned_dict, to_owned_list
-from .keypath_utils import concat_keypath
-from .exceptions import AbstractJSONClassException, ValidationException
+from .owned_collection_utils import (to_owned_dict, to_owned_list,
+                                     unowned_copy_dict, unowned_copy_list)
+from .keypath_utils import concat_keypath, initial_keypath
+from .exceptions import (AbstractJSONClassException, ValidationException,
+                         JSONClassResetError, JSONClassResetNotEnabledError)
 
 
 def __init__(self: JSONClassObject, **kwargs: dict[str, Any]) -> None:
@@ -30,7 +32,7 @@ def __init__(self: JSONClassObject, **kwargs: dict[str, Any]) -> None:
     self._set(fill_blanks=True, **kwargs)
 
 
-def j_set(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClassObject:
+def jsonobject_set(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClassObject:
     """Set object values in a batch. This method is suitable for web and
     fraud inputs. This method takes accessor marks into consideration,
     means readonly and internal field values will be just ignored.
@@ -209,9 +211,25 @@ def persisted_modified_fields(self: JSONClassObject) -> tuple[str]:
 
 @property
 def previous_values(self: JSONClassObject) -> dict[str, Any]:
-    """
+    """This field records values to be reset to. This is only used for fields
+    with compare mark or `reset_all_fields` is defined in the class
+    configuration.
     """
     return self._previous_values
+
+
+def reset(self: JSONClassObject) -> None:
+    """Reset this object to it's unmodified status.
+    """
+    if not self.__class__.definition.config.reset_all_fields:
+        raise JSONClassResetNotEnabledError()
+    if self.is_new:
+        raise JSONClassResetError()
+    for k, v in self.previous_values.items():
+        setattr(self, k, v)
+        self._modified_fields = set()
+        self._is_modified = False
+        self._previous_values = {}
 
 
 def _ensure_not_detached(self: JSONClassObject) -> None:
@@ -305,6 +323,14 @@ def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
     self._ensure_not_detached()
     if hasattr(self, name) and value == getattr(self, name):
         return
+    # track modified and previous value
+    if not self.is_new:
+        setattr(self, '_is_modified', True)
+        self.modified_fields.add(name)
+        if self.__class__.config.reset_all_fields or \
+                field.definition.has_reset_validator:
+            if name not in self.previous_values:
+                self.previous_values[name] = getattr(self, name)
     # make list and dict assignments owned and monitored
     if isinstance(value, list):
         value = to_owned_list(self, value, name)
@@ -318,8 +344,21 @@ def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
         self.__original_setattr__(name, value)
 
 
-def __odict_will_change__(self, odict: OwnedDict) -> None:
-    pass
+def __odict_will_change__(self: JSONClassObject, odict: OwnedDict) -> None:
+    # record previous value
+    name = initial_keypath(odict.keypath)
+    field = self.__class__.definition.field_named(name)
+    if self.__class__.definition.config.reset_all_fields or \
+            field.definition.has_reset_validator:
+        if field.definition.has_linked:
+            return
+        if name not in self.previous_values:
+            if field.definition.field_type == FieldType.DICT:
+                self.previous_values[name] = unowned_copy_dict(
+                    getattr(self, name))
+            if field.definition.field_type == FieldType.LIST:
+                self.previous_values[name] = unowned_copy_list(
+                    getattr(self, name))
 
 
 def __odict_add__(self, odict: OwnedDict, key: str, val: Any) -> None:
@@ -329,14 +368,34 @@ def __odict_add__(self, odict: OwnedDict, key: str, val: Any) -> None:
     if isinstance(val, list):
         odict[key] = to_owned_list(self, val,
                                    concat_keypath(odict.keypath, key))
+    # record modified
+    if not self.is_new:
+        setattr(self, '_is_modified', True)
+        self.modified_fields.add(odict.keypath)
 
 
 def __odict_del__(self, odict: OwnedDict, val: Any) -> None:
-    pass
+    # record modified
+    if not self.is_new:
+        setattr(self, '_is_modified', True)
+        self.modified_fields.add(odict.keypath)
 
 
 def __olist_will_change__(self, olist: OwnedList) -> None:
-    pass
+    # record previous value
+    name = initial_keypath(olist.keypath)
+    field = self.__class__.definition.field_named(name)
+    if self.__class__.definition.config.reset_all_fields or \
+            field.definition.has_reset_validator:
+        if field.definition.has_linked:
+            return
+        if name not in self.previous_values:
+            if field.definition.field_type == FieldType.DICT:
+                self.previous_values[name] = unowned_copy_dict(
+                    getattr(self, name))
+            if field.definition.field_type == FieldType.LIST:
+                self.previous_values[name] = unowned_copy_list(
+                    getattr(self, name))
 
 
 def __olist_add__(self: JSONClassObject,
@@ -350,13 +409,16 @@ def __olist_add__(self: JSONClassObject,
         field = None
     if field is not None and field.definition.is_ref:
         self.__link_field__(field, [val])
-        return
     if isinstance(val, dict):
         olist[idx] = to_owned_dict(self, val,
                                    concat_keypath(olist.keypath, idx))
     if isinstance(val, list):
         olist[idx] = to_owned_list(self, val,
                                    concat_keypath(olist.keypath, idx))
+    # record modified
+    if not self.is_new:
+        setattr(self, '_is_modified', True)
+        self.modified_fields.add(olist.keypath)
 
 
 def __olist_del__(self: JSONClassObject, olist: OwnedList, val: Any) -> None:
@@ -365,15 +427,19 @@ def __olist_del__(self: JSONClassObject, olist: OwnedList, val: Any) -> None:
         field = class_definition.field_named(olist.keypath)
     except ValueError:
         field = None
-    if field is None:
-        return
-    if not field.definition.is_ref:
-        return
-    self.__unlink_field__(field, [val])
+    if field and field.definition.is_ref:
+        self.__unlink_field__(field, [val])
+    # record modified
+    if not self.is_new:
+        setattr(self, '_is_modified', True)
+        self.modified_fields.add(olist.keypath)
 
 
 def __olist_sor__(self, olist: OwnedList) -> None:
-    pass
+    # record modified
+    if not self.is_new:
+        setattr(self, '_is_modified', True)
+        self.modified_fields.add(olist.keypath)
 
 
 def __unlink_field__(self: JSONClassObject,
@@ -446,7 +512,7 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_.__is_jsonclass__ = True
     # public methods
     class_.__init__ = __init__
-    class_.set = j_set
+    class_.set = jsonobject_set
     class_._set = _set
     class_.update = update
     class_.tojson = tojson
@@ -458,6 +524,7 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_.is_deleted = is_deleted
     class_.modified_fields = modified_fields
     class_.persisted_modified_fields = persisted_modified_fields
+    class_.reset = reset
     # protected methods
     class_._ensure_not_detached = _ensure_not_detached
     class_._data_dict = _data_dict
