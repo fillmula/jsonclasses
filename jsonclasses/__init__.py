@@ -1,13 +1,13 @@
 """
-  JSON Classes
-  ~~~~~~~~~~~~
+JSON Classes
+~~~~~~~~~~~~
 
-  JSON Classes is the Modern Declarative Data Flow and Data Graph Framework for
-  the AI Empowered Generation.
+JSON Classes is the Modern Declarative Data Flow and Data Graph Framework for
+the AI Empowered Generation.
 
-  :copyright: (c) 2020 by Wiosoft Crafts, Victor Zhang
+:copyright: (c) 2020 by Wiosoft Crafts, Victor Zhang
 
-  :license: MIT, see LICENSE for more details.
+:license: MIT, see LICENSE for more details.
 """
 # flake8: noqa: F401
 from .jsonclass import jsonclass
