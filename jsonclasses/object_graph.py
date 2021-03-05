@@ -1,8 +1,7 @@
 """This module defineds the JSON Class object mapping graph."""
 from __future__ import annotations
 from jsonclasses.obsolete_json_object import JSONObject
-from jsonclasses.jsonclassify import is_modified
-from typing import Iterator, NamedTuple, Union, Optional, TYPE_CHECKING
+from typing import Iterator, NamedTuple, Union, TYPE_CHECKING
 from .isjsonclass import isjsonobject
 from .exceptions import (UnlinkableJSONClassException,
                          JSONClassGraphMergeConflictException)
