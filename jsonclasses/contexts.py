@@ -1,12 +1,11 @@
 """This module defines JSON Class context objects."""
 from __future__ import annotations
-from typing import Any, NamedTuple, TypeVar, Optional, Union, TYPE_CHECKING
-from .object_graph import ObjectGraph
+from typing import Any, NamedTuple, Optional, Union, TYPE_CHECKING
+from .mark_graph import MarkGraph
 if TYPE_CHECKING:
     from .config import Config
     from .field_definition import FieldDefinition
-    from .json_object import JSONObject
-    T = TypeVar('T', bound=JSONObject)
+    from .jsonclass_object import JSONClassObject
 
 
 class ValidatingContext(NamedTuple):
@@ -26,7 +25,7 @@ class ValidatingContext(NamedTuple):
     parent: Any  # the direct parent of this field
     fdesc: Optional[FieldDefinition] = None
     all_fields: Optional[bool] = None
-    object_graph: ObjectGraph = ObjectGraph()  # Override this, this is a placeholder
+    mark_graph: MarkGraph = MarkGraph()
 
     def new(self, **kwargs):
         """Return a new validating context by replacing provided values."""
@@ -50,8 +49,8 @@ class ValidatingContext(NamedTuple):
             fdesc=kwargs['fdesc'] if 'fdesc' in keys else self.fdesc,
             all_fields=(kwargs['all_fields']
                         if 'all_fields' in keys else self.all_fields),
-            object_graph=(kwargs['object_graph']
-                          if 'object_graph' in keys else self.object_graph))
+            mark_graph=(kwargs['mark_graph']
+                        if 'mark_graph' in keys else self.mark_graph))
 
     def transforming_context(self):
         """Return a new transforming context by converting."""
@@ -67,7 +66,7 @@ class ValidatingContext(NamedTuple):
             parent=self.parent,
             fdesc=self.fdesc,
             all_fields=self.all_fields,
-            object_graph=self.object_graph)
+            mark_graph=self.mark_graph)
 
 
 class TransformingContext(NamedTuple):
@@ -90,9 +89,9 @@ class TransformingContext(NamedTuple):
     parent: Any  # the direct parent of this field
     fdesc: Optional[FieldDefinition] = None
     all_fields: Optional[bool] = None
-    dest: Optional[JSONObject] = None
+    dest: Optional[JSONClassObject] = None
     fill_dest_blanks: bool = True
-    object_graph: ObjectGraph = ObjectGraph()  # Override this, this is a placeholder
+    mark_graph: MarkGraph = MarkGraph()  # Override this, this is a placeholder
 
     def new(self, **kwargs):
         """Return a new transforming context by replacing provided values."""
@@ -116,8 +115,8 @@ class TransformingContext(NamedTuple):
             fdesc=kwargs['fdesc'] if 'fdesc' in keys else self.fdesc,
             all_fields=(kwargs['all_fields']
                         if 'all_fields' in keys else self.all_fields),
-            object_graph=(kwargs['object_graph']
-                          if 'object_graph' in keys else self.object_graph))
+            mark_graph=(kwargs['mark_graph']
+                        if 'mark_graph' in keys else self.mark_graph))
 
     def validating_context(self):
         """Return a new validating context by converting."""
@@ -133,7 +132,7 @@ class TransformingContext(NamedTuple):
             parent=self.parent,
             fdesc=self.fdesc,
             all_fields=self.all_fields,
-            object_graph=self.object_graph)
+            mark_graph=self.mark_graph)
 
 
 class ToJSONContext(NamedTuple):

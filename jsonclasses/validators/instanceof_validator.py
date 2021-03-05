@@ -40,9 +40,9 @@ class InstanceOfValidator(Validator):
                                        f"should be instance of "
                                        f"'{cls.__name__}'.")
             }, context.root)
-        if context.object_graph.has(context.value):
+        if context.mark_graph.has(context.value):
             return
-        context.object_graph.put(context.value)
+        context.mark_graph.put(context.value)
         only_validate_modified = False
         modified_fields = []
         if not context.value.is_new:
@@ -149,19 +149,19 @@ class InstanceOfValidator(Validator):
         if context.dest is not None:
             dest = context.dest
             if pk_value is not None:
-                context.object_graph.putp(pk_value, dest)
+                context.mark_graph.putp(pk_value, dest)
         elif pk_value is not None:
-            exist_item = context.object_graph.getp(cls, pk_value)
+            exist_item = context.mark_graph.getp(cls, pk_value)
             if exist_item is not None:
                 dest = exist_item
                 soft_apply_mode = True
             else:
                 dest = cls()
-                context.object_graph.putp(pk_value, dest)
+                context.mark_graph.putp(pk_value, dest)
         else:
             dest = cls()
-            context.object_graph.put(dest)
-        dest._graph = context.object_graph
+            context.mark_graph.put(dest)
+        dest._graph = context.mark_graph
 
         # strictness check
         strictness = cast(bool, cls.definition.config.strict_input)
@@ -248,10 +248,10 @@ class InstanceOfValidator(Validator):
         value = cast(JSONClassObject, context.value)
         if value is None:
             return None
-        exist_item = context.object_graph.get(value)
+        exist_item = context.mark_graph.get(value)
         if exist_item is not None:  # Don't do twice for an object
             return value
-        context.object_graph.put(value)
+        context.mark_graph.put(value)
         should_update = True
         if not value.is_modified and not value.is_new:
             should_update = False

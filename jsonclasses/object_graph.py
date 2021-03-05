@@ -1,6 +1,5 @@
 """This module defineds the JSON Class object mapping graph."""
 from __future__ import annotations
-from jsonclasses.obsolete_json_object import JSONObject
 from typing import Iterator, NamedTuple, Union, TYPE_CHECKING
 from .isjsonclass import isjsonobject
 from .exceptions import (UnlinkableJSONClassException,
@@ -143,7 +142,7 @@ class ObjectGraph:
             if not field.definition.is_ref:
                 continue
             item_or_items = getattr(result.detached, field.name)
-            items: list[JSONObject] = []
+            items: list[JSONClassObject] = []
             if isjsonobject(item_or_items):
                 items = [item_or_items]
             elif isinstance(item_or_items, list):

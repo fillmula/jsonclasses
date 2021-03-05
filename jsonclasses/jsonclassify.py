@@ -1,13 +1,14 @@
 """This module defines the `jsonclassify` function."""
 from __future__ import annotations
-from jsonclasses.field_definition import FieldType
 from typing import Any, Optional, Union
 from datetime import datetime
 from .jsonclass_object import JSONClassObject
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
+from .field_definition import FieldType
 from .validators.instanceof_validator import InstanceOfValidator
 from .jsonclass_field import JSONClassField
 from .isjsonclass import isjsonobject
+from .mark_graph import MarkGraph
 from .object_graph import ObjectGraph
 from .owned_dict import OwnedDict
 from .owned_list import OwnedList
@@ -63,7 +64,7 @@ def _set(self: JSONClassObject, fill_blanks: bool = False, **kwargs: dict[str, A
         all_fields=True,
         dest=self,
         fill_dest_blanks=fill_blanks,
-        object_graph=self._graph)
+        mark_graph=MarkGraph())
     validator.transform(context)
 
 
@@ -136,7 +137,7 @@ def validate(self: JSONClassObject,
         parent=self,
         fdesc=None,
         all_fields=validate_all_fields,
-        object_graph=ObjectGraph())
+        mark_graph=MarkGraph())
     InstanceOfValidator(self.__class__).validate(context)
     return self
 
@@ -302,7 +303,7 @@ def _set_on_save(self: JSONClassObject) -> None:
         keypath_parent='',
         parent=self,
         fdesc=None,
-        object_graph=ObjectGraph())
+        mark_graph=MarkGraph())
     validator.serialize(context)
 
 
