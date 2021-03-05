@@ -4,6 +4,30 @@ from typing import Any
 from inspect import getmodule
 
 
+class UnlinkableJSONClassException(Exception):
+    """This exception is raised when jsonclass objects are linked and no unique
+    primary key value is found.
+    """
+
+    def __init__(self, class_: type, has_field: bool) -> None:
+        """Create an exception that represents an object is not valid for
+        putting into object graph, thus cannot be linked.
+
+        Args:
+            has_field (bool): Whether this class defined primary field.
+            class_ (type): The jsonclass class.
+        """
+        self.has_field = has_field
+        self.class_ = class_
+        class_name = class_.__name__
+        if not has_field:
+            self.message = f"please define a primary field on `{class_name}`"
+        else:
+            self.message = (f"primary key value not found on `{class_name}` "
+                            "object")
+        super().__init__(self.message)
+
+
 class JSONClassRedefinitionException(Exception):
     """This exception is raised when user defines a JSON class with a name that
     exists before in the same graph.
