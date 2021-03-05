@@ -27,6 +27,13 @@ class ObjectGraph:
         except UnlinkableJSONClassException:
             return
 
+    def __iter__(self) -> Iterator[JSONClassObject]:
+        lst: list[JSONClassObject] = []
+        for table in self._maps.values():
+            for obj in table.values():
+                lst.append(obj)
+        return lst.__iter__()
+
     def _object_map(self: ObjectGraph,
                     name: str) -> dict[str, JSONClassObject]:
         if self._maps.get(name) is None:
