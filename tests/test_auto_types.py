@@ -1,8 +1,9 @@
 from typing import Optional, Union
 from unittest import TestCase
 from datetime import datetime, date
+from jsonclasses import jsonclass
 from jsonclasses.field_definition import FieldType
-from jsonclasses import jsonclass, ValidationException
+from jsonclasses.exceptions import ValidationException
 
 
 class TestAutoTypes(TestCase):
