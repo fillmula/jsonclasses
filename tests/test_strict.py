@@ -40,6 +40,10 @@ class TestStrict(TestCase):
             tenant.update(host='Emily')
 
     def test_strict_uses_object_config_in_nested_init(self):
-        Author(name='Nge', articles=[
+        author = Author(name='Nge', articles=[
             {'title': 'A1', 'content': 'C1', 'published': True},
             {'title': 'A2', 'content': 'C2', 'published': True}])
+        self.assertEqual(author.articles[0]._data_dict,
+                         {'title': 'A1', 'content': 'C1', 'author': author})
+        self.assertEqual(author.articles[1]._data_dict,
+                         {'title': 'A2', 'content': 'C2', 'author': author})
