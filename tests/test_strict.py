@@ -3,7 +3,6 @@ from unittest import TestCase
 from jsonclasses.exceptions import ValidationException
 from tests.classes.simple_article import SimpleArticle
 from tests.classes.simple_tenant import SimpleTenant
-from tests.classes.article import Article
 from tests.classes.author import Author
 
 

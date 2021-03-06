@@ -541,6 +541,11 @@ def __link_field__(self: JSONClassObject,
     self.__link_graph__(item)
 
 
+def __link_graph__(self: JSONClassObject, other: JSONClassObject) -> None:
+    """
+    """
+    self._graph.merged_graph(other._graph)
+
 def jsonclassify(class_: type) -> JSONClassObject:
     """Make a declared class into JSON class.
 
@@ -595,4 +600,5 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_.__olist_sor__ = __olist_sor__
     class_.__unlink_field__ = __unlink_field__
     class_.__link_field__ = __link_field__
+    class_.__link_graph__ = __link_graph__
     return class_

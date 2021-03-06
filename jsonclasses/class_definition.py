@@ -106,7 +106,7 @@ class ClassDefinition:
         if definition.field_type == FieldType.LIST:
             item_types = resolver.to_types(definition.raw_item_types,
                                            self.config)
-            return self._def_class_match(item_types.definition, self.config)
+            return self._def_class_match(item_types.definition, class_)
         elif definition.field_type == FieldType.INSTANCE:
             types = resolver.to_types(definition.instance_types, self.config)
             return types.definition.instance_types == class_
@@ -211,7 +211,7 @@ class ClassDefinition:
             field_tuple = self._foreign_fields[name]
             if field_tuple is None:
                 return None
-            return field_tuple[0].field_named(field_tuple[1])
+            return field_tuple
         local_field = self.field_named(name)
         definition = local_field.definition
         resolver = TypesResolver()
