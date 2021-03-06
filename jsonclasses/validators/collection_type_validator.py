@@ -9,7 +9,7 @@ from ..keypath_utils import concat_keypath
 from ..types_resolver import TypesResolver
 from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 if TYPE_CHECKING:
-    from ..json_object import JSONObject
+    from ..jsonclass_object import JSONClassObject
     from ..types import Types
 
 T = TypeVar('T', bound=Collection)
@@ -27,14 +27,14 @@ class CollectionTypeValidator(TypeValidator):
         super().define(fdesc)
         fdesc.raw_item_types = self.raw_item_types
 
-    def item_types(self, owner_cls: type[JSONObject]) -> Types:
+    def item_types(self, owner_cls: type[JSONClassObject]) -> Types:
         if hasattr(self, '_item_types'):
             return getattr(self, '_item_types')
         else:
             itypes = TypesResolver().resolve_types(
                 self.raw_item_types,
                 owner_cls.definition.config)
-            if itypes.fdesc.item_nullability == Nullability.UNDEFINED:
+            if itypes.definition.item_nullability == Nullability.UNDEFINED:
                 itypes = itypes.required
             setattr(self, '_item_types', itypes)
             return itypes
@@ -58,7 +58,7 @@ class CollectionTypeValidator(TypeValidator):
         if context.value is None:
             return
         super().validate(context)
-        types = self.item_types(context.config_owner.linked_class)
+        types = self.item_types(context.config_owner.cls)
         all_fields = next(b for b in [
             context.all_fields,
             context.config_owner.validate_all_fields] if b is not None)
@@ -71,7 +71,7 @@ class CollectionTypeValidator(TypeValidator):
                     keypath_owner=concat_keypath(context.keypath_owner, i),
                     keypath_parent=i,
                     parent=context.value,
-                    fdesc=types.fdesc))
+                    definition=types.definition))
             except ValidationException as exception:
                 if all_fields:
                     keypath_messages.update(exception.keypath_messages)
@@ -83,7 +83,7 @@ class CollectionTypeValidator(TypeValidator):
                 root=context.root)
 
     def transform(self, context: TransformingContext) -> Any:
-        fdesc = cast(FieldDefinition, context.fdesc)
+        fdesc = cast(FieldDefinition, context.definition)
         if context.value is None:
             if fdesc.collection_nullability == Nullability.NONNULL:
                 return self.empty_collection()
@@ -91,7 +91,7 @@ class CollectionTypeValidator(TypeValidator):
                 return None
         if not isinstance(context.value, self.cls):
             return context.value
-        itypes = self.item_types(context.config_owner.linked_class)
+        itypes = self.item_types(context.config_owner.cls)
         retval = self.empty_collection()
         for i, v in self.enumerator(context.value):
             transformed = itypes.validator.transform(context.new(
@@ -100,7 +100,7 @@ class CollectionTypeValidator(TypeValidator):
                 keypath_owner=concat_keypath(context.keypath_owner, i),
                 keypath_parent=i,
                 parent=context.value,
-                fdesc=itypes.fdesc))
+                definition=itypes.definition))
             self.append_value(
                 self.to_object_key(i, context.config_owner),
                 transformed,
@@ -112,7 +112,7 @@ class CollectionTypeValidator(TypeValidator):
             return None
         if not isinstance(context.value, self.cls):
             return context.value
-        itypes = self.item_types(context.config.linked_class)
+        itypes = self.item_types(context.config.cls)
         retval = self.empty_collection()
         for i, v in self.enumerator(context.value):
             transformed = itypes.validator.tojson(context.new(value=v))
@@ -127,7 +127,7 @@ class CollectionTypeValidator(TypeValidator):
             return None
         if not isinstance(context.value, self.cls):
             return context.value
-        itypes = self.item_types(context.config_owner.linked_class)
+        itypes = self.item_types(context.config_owner.cls)
         retval = self.empty_collection()
         for i, v in self.enumerator(context.value):
             transformed = itypes.validator.serialize(context.new(
@@ -136,7 +136,7 @@ class CollectionTypeValidator(TypeValidator):
                 keypath_owner=concat_keypath(context.keypath_owner, i),
                 keypath_parent=i,
                 parent=context.value,
-                fdesc=itypes.fdesc))
+                definition=itypes.definition))
             self.append_value(
                 self.to_json_key(i, context.config_owner),
                 transformed,

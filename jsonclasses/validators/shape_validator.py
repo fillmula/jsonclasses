@@ -46,7 +46,7 @@ class ShapeValidator(TypeValidator):
                         keypath_owner=concat_keypath(context.keypath_owner, k),
                         keypath_parent=k,
                         parent=context.value,
-                        fdesc=types.fdesc))
+                        definition=types.definition))
                 except ValidationException as exception:
                     if all_fields:
                         keypath_messages.update(exception.keypath_messages)
@@ -90,7 +90,7 @@ class ShapeValidator(TypeValidator):
 
     def transform(self, context: TransformingContext) -> Any:
         value = context.value
-        fd = cast(FieldDefinition, context.fdesc)
+        fd = cast(FieldDefinition, context.definition)
         if fd.collection_nullability == Nullability.NONNULL and value is None:
             value = {}
         if value is None:
@@ -113,7 +113,7 @@ class ShapeValidator(TypeValidator):
                 keypath_owner=concat_keypath(context.keypath_owner, fk),
                 keypath_parent=fk,
                 parent=value,
-                fdesc=types.fdesc))
+                definition=types.definition))
         return retval
 
     def tojson(self, context: ToJSONContext) -> Any:
@@ -140,7 +140,7 @@ class ShapeValidator(TypeValidator):
         retval = {}
         for key, raw_types in self.shape_types.items():
             value_at_key = context.value.get(key)
-            types = resolve_types(raw_types, context.config_owner.linked_class)
+            types = resolve_types(raw_types, context.config_owner.cls)
             if types:
                 retval[key] = types.validator.serialize(context.new(
                     value=value_at_key,
@@ -148,7 +148,7 @@ class ShapeValidator(TypeValidator):
                     keypath_owner=concat_keypath(context.keypath_owner, key),
                     keypath_parent=key,
                     parent=context.value,
-                    fdesc=types.fdesc))
+                    definition=types.definition))
             else:
                 retval[key] = value_at_key
         return retval

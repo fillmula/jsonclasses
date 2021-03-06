@@ -36,6 +36,7 @@ class ClassDefinition:
         """
         from .types import Types
         self._cls: type = class_
+        config._cls = class_
         self._name: str = class_.__name__
         self._config: Config = config
         self._list_fields: list[JSONClassField] = []
@@ -57,7 +58,7 @@ class ClassDefinition:
             else:
                 db_name = name
             types = self._get_types(field, config)
-            types.fdesc.class_definition = self
+            types.definition.class_definition = self
             if isinstance(field.default, Types):
                 default = None
             elif field.default == field.default_factory:
@@ -70,17 +71,17 @@ class ClassDefinition:
                 db_name=db_name,
                 default=default,
                 types=types,
-                definition=types.fdesc,
+                definition=types.definition,
                 validator=types.validator)
             self._list_fields.append(jsonclass_field)
             self._dict_fields[name] = jsonclass_field
-            if types.fdesc.primary:
+            if types.definition.primary:
                 self._primary_field = jsonclass_field
-            if types.fdesc.usage == 'created_at':
+            if types.definition.usage == 'created_at':
                 self._created_at_field = jsonclass_field
-            elif types.fdesc.usage == 'updated_at':
+            elif types.definition.usage == 'updated_at':
                 self._updated_at_field = jsonclass_field
-            elif types.fdesc.usage == 'deleted_at':
+            elif types.definition.usage == 'deleted_at':
                 self._deleted_at_field = jsonclass_field
         self._tuple_fields: tuple[JSONClassField] = tuple(self._list_fields)
 
@@ -105,10 +106,10 @@ class ClassDefinition:
         if definition.field_type == FieldType.LIST:
             item_types = resolver.to_types(definition.raw_item_types,
                                            self.config)
-            return self._def_class_match(item_types.fdesc, self.config)
+            return self._def_class_match(item_types.definition, self.config)
         elif definition.field_type == FieldType.INSTANCE:
             types = resolver.to_types(definition.instance_types, self.config)
-            return types.fdesc.instance_types == class_
+            return types.definition.instance_types == class_
         return False
 
     @property
@@ -190,7 +191,6 @@ class ClassDefinition:
         """
         return self._primary_field
 
-    @property
     def foreign_field_for(self: ClassDefinition,
                           name: str) -> Optional[tuple[ClassDefinition, str]]:
         """Get the linked foreign field for local field named `name`.
@@ -226,7 +226,7 @@ class ClassDefinition:
                 definition.raw_item_types, self.config)
             foreign_types = resolver.resolve_types(
                 instance_types, self.config)
-        foreign_class = cast(type, foreign_types.fdesc.instance_types)
+        foreign_class = cast(type, foreign_types.definition.instance_types)
         foreign_definition = self.config.class_graph.fetch(foreign_class)
         accepted: list[tuple(FieldStorage, bool)] = []
         if definition.field_storage == FieldStorage.LOCAL_KEY:
@@ -248,9 +248,9 @@ class ClassDefinition:
                 if storage == FieldStorage.LOCAL_KEY:
                     if definition.foreign_key == field.name:
                         local_matches = self._def_class_match(
-                            definition, foreign_class)
+                            local_field.definition, foreign_class)
                         foreign_matches = self._def_class_match(
-                            foreign_definition, self.cls)
+                            field.definition, self.cls)
                         if local_matches and foreign_matches:
                             foreign_tuple = (foreign_definition, field.name)
                             self._foreign_fields[name] = foreign_tuple
@@ -266,9 +266,9 @@ class ClassDefinition:
                     if local_field.name == field.definition.foreign_key:
                         if use_join == field.definition.use_join_table:
                             local_matches = self._def_class_match(
-                                definition, foreign_class)
+                                local_field.definition, foreign_class)
                             foreign_matches = self._def_class_match(
-                                foreign_definition, self.cls)
+                                field.definition, self.cls)
                             if local_matches and foreign_matches:
                                 foreign_tuple = \
                                     (foreign_definition, field.name)

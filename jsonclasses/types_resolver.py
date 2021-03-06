@@ -61,7 +61,7 @@ class TypesResolver:
             match_data = match("^linkedby\\('(.+)'\\)", specifier)
             assert match_data is not None
             fk = match_data.group(1)
-            if types.fdesc.field_type == FieldType.LIST:
+            if types.definition.field_type == FieldType.LIST:
                 return types.nonnull.linkedby(fk)
             else:
                 return types.linkedby(fk)
@@ -163,8 +163,8 @@ class TypesResolver:
             return self.apply_link_specifier(types, link_specifier)
         else:
             graph = config.class_graph
-            cls = graph.fetch(any_types)
-            instance_type = types.instanceof(cls)
+            definition = graph.fetch(any_types)
+            instance_type = types.instanceof(definition.cls)
             return instance_type if optional else instance_type.required
 
     def to_types(self: TypesResolver,

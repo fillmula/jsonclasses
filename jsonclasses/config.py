@@ -6,6 +6,7 @@ from typing import Optional, Callable, Any, cast, final, TYPE_CHECKING
 if TYPE_CHECKING:
     from .jsonclass_field import JSONClassField
     from .jsonclass_graph import JSONClassGraph
+    from .jsonclass_object import JSONClassObject
 
 
 @final
@@ -48,6 +49,7 @@ class Config:
             reset_all_fields: (Optional[bool]): Whether record all previous \
                 values of an object and enable reset functionality.
         """
+        self._cls = None
         self._class_graph = class_graph or 'default'
         self._camelize_json_keys = camelize_json_keys
         self._camelize_db_keys = camelize_db_keys
@@ -82,6 +84,11 @@ class Config:
             return False
         return True
 
+    @property
+    def cls(self: Config) -> type[JSONClassObject]:
+        """The JSON class on which this class config is defined.
+        """
+        return self._cls
 
     @property
     def class_graph(self: Config) -> JSONClassGraph:

@@ -366,8 +366,8 @@ class TestAutoTypes(TestCase):
             val: 'Union[dict[str, int], int]'
         cfield = TestUnionDictType.definition.field_named('val')
         utypes = cfield.definition.union_types
-        self.assertEqual(utypes[0].fdesc.field_type, FieldType.DICT)
-        self.assertEqual(utypes[1].fdesc.field_type, FieldType.INT)
+        self.assertEqual(utypes[0].definition.field_type, FieldType.DICT)
+        self.assertEqual(utypes[1].definition.field_type, FieldType.INT)
 
     def test_auto_generates_optional_union_with_dict_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')

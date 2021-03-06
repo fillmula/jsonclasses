@@ -60,7 +60,7 @@ def _set(self: JSONClassObject, fill_blanks: bool = False, **kwargs: dict[str, A
         config_owner=config,
         keypath_parent='',
         parent=self,
-        fdesc=None,
+        definition=None,
         all_fields=True,
         dest=self,
         fill_dest_blanks=fill_blanks,
@@ -135,7 +135,7 @@ def validate(self: JSONClassObject,
         config_owner=config,
         keypath_parent='',
         parent=self,
-        fdesc=None,
+        definition=None,
         all_fields=validate_all_fields,
         mark_graph=MarkGraph())
     InstanceOfValidator(self.__class__).validate(context)
@@ -302,7 +302,7 @@ def _set_on_save(self: JSONClassObject) -> None:
         config_owner=config,
         keypath_parent='',
         parent=self,
-        fdesc=None,
+        definition=None,
         mark_graph=MarkGraph())
     validator.serialize(context)
 

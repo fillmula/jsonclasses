@@ -6,14 +6,6 @@ from datetime import datetime, date
 
 class TestJSONObjectInitialize(unittest.TestCase):
 
-    def test_initialize_strict_raises_on_unallowed_keys(self):
-        @jsonclass(class_graph='test_initialize_16', strict_input=True)
-        class Timer(JSONObject):
-            expired_at: datetime
-        expired_at = datetime.fromisoformat('2020-10-10T05:03:02.999888')
-        with self.assertRaisesRegex(ValidationException, "'boom': Key 'boom' is not allowed."):
-            Timer(**{'expiredAt': expired_at, 'boom': True})
-
     def test_initialize_strict_raises_on_nested_unallowed_keys(self):
         @jsonclass(class_graph='test_initialize_16', strict_input=True)
         class Friend(JSONObject):

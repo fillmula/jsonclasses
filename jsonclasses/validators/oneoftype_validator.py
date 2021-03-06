@@ -21,7 +21,7 @@ class OneOfTypeValidator(Validator):
     def validate(self, context: ValidatingContext) -> None:
         if context.value is None:
             return
-        for types in context.fdesc.union_types:
+        for types in context.definition.union_types:
             try:
                 types.validator.validate(context)
                 return

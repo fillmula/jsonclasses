@@ -139,7 +139,7 @@ class FieldDefinition:  # pylint: disable=too-many-instance-attributes
             item_types = TypesResolver().resolve_types(
                 self.raw_item_types,
                 self.class_definition.config)
-            if item_types.fdesc.field_type == FieldType.INSTANCE:
+            if item_types.definition.field_type == FieldType.INSTANCE:
                 return True
         return False
 
@@ -154,4 +154,4 @@ class FieldDefinition:  # pylint: disable=too-many-instance-attributes
             item_type = TypesResolver() \
                 .resolve_types(self.raw_item_types,
                                self.class_definition.config)
-            return item_type.fdesc.has_linked
+            return item_type.definition.has_linked

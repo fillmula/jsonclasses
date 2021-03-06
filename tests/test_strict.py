@@ -3,16 +3,18 @@ from unittest import TestCase
 from jsonclasses.exceptions import ValidationException
 from tests.classes.simple_article import SimpleArticle
 from tests.classes.simple_tenant import SimpleTenant
+from tests.classes.article import Article
+from tests.classes.author import Author
 
 
 class TestStrict(TestCase):
 
     def test_strict_raises_in_init_on_unallowed_keys(self):
         with self.assertRaises(ValidationException) as context:
-            SimpleArticle(authur='Victor Teo')
+            SimpleArticle(author='Victor Teo')
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['authur'],
-                         "Key 'authur' is not allowed.")
+        self.assertEqual(context.exception.keypath_messages['author'],
+                         "Key 'author' is not allowed.")
 
     def test_without_strict_nothing_raises_in_init_on_unallowed_keys(self):
         tenant = SimpleTenant(name='Victor Teo', host='Emily Ho')
@@ -22,10 +24,10 @@ class TestStrict(TestCase):
     def test_strict_raises_in_set_on_unallowed_keys(self):
         article = SimpleArticle(title='Tshio Ue', content='Mai Tshio')
         with self.assertRaises(ValidationException) as context:
-            article.set(authur='Victor Teo')
+            article.set(author='Victor Teo')
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['authur'],
-                         "Key 'authur' is not allowed.")
+        self.assertEqual(context.exception.keypath_messages['author'],
+                         "Key 'author' is not allowed.")
 
     def test_without_strict_nothing_raises_in_set_on_unallowed_keys(self):
         tenant = SimpleTenant(name='Victor Teo', host='Emily Ho')
@@ -37,3 +39,8 @@ class TestStrict(TestCase):
         tenant = SimpleTenant(name='Victor Teo', age=30)
         with self.assertRaises(ValueError):
             tenant.update(host='Emily')
+
+    def test_strict_uses_object_config_in_nested_init(self):
+        Author(name='Nge', articles=[
+            {'title': 'A1', 'content': 'C1', 'published': True},
+            {'title': 'A2', 'content': 'C2', 'published': True}])

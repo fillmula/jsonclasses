@@ -16,9 +16,9 @@ class RequiredValidator(Validator):
     def validate(self, context: ValidatingContext) -> None:
         storage = FieldStorage.EMBEDDED
         list_field = False
-        if context.fdesc is not None:
-            storage = context.fdesc.field_storage
-            list_field = context.fdesc.field_type == FieldType.LIST
+        if context.definition is not None:
+            storage = context.definition.field_storage
+            list_field = context.definition.field_type == FieldType.LIST
         if storage == FieldStorage.FOREIGN_KEY:  # we don't check foreign key
             return
         if storage == FieldStorage.LOCAL_KEY:

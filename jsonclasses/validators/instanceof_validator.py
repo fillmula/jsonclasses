@@ -30,7 +30,7 @@ class InstanceOfValidator(Validator):
         if context.value is None:
             return
         types = TypesResolver().resolve_types(self.raw_type, context.config_owner)
-        cls = cast(Type[JSONClassObject], types.fdesc.instance_types)
+        cls = cast(Type[JSONClassObject], types.definition.instance_types)
         all_fields = context.all_fields
         if all_fields is None:
             all_fields = cls.definition.config.validate_all_fields
@@ -68,7 +68,7 @@ class InstanceOfValidator(Validator):
                     config_owner=context.value.__class__.definition.config,
                     keypath_parent=fname,
                     parent=context.value,
-                    fdesc=field.definition))
+                    definition=field.definition))
             except ValidationException as exception:
                 if all_fields:
                     keypath_messages.update(exception.keypath_messages)
@@ -113,7 +113,7 @@ class InstanceOfValidator(Validator):
                 config_owner=cls.definition.config,
                 keypath_parent=field.name,
                 parent=context.value,
-                fdesc=field.definition))
+                definition=field.definition))
             setattr(dest, field.name, tsfmd)
 
     def _has_field_value(self, field: JSONClassField, keys: Sequence[str]) -> bool:
@@ -138,7 +138,7 @@ class InstanceOfValidator(Validator):
             return context.dest if context.dest is not None else context.value
         # figure out types, cls and dest
         types = TypesResolver().resolve_types(self.raw_type, context.config_owner)
-        cls = cast(Type[JSONClassObject], types.fdesc.instance_types)
+        cls = cast(Type[JSONClassObject], types.definition.instance_types)
         this_pk_field = cls.definition.primary_field
         if this_pk_field:
             pk = this_pk_field.name
@@ -165,10 +165,10 @@ class InstanceOfValidator(Validator):
 
         # strictness check
         strictness = cast(bool, cls.definition.config.strict_input)
-        if context.fdesc is not None:
-            if context.fdesc.strictness == Strictness.STRICT:
+        if context.definition is not None:
+            if context.definition.strictness == Strictness.STRICT:
                 strictness = True
-            elif context.fdesc.strictness == Strictness.UNSTRICT:
+            elif context.definition.strictness == Strictness.UNSTRICT:
                 strictness = False
         if strictness:
             self._strictness_check(context, dest)
@@ -210,7 +210,7 @@ class InstanceOfValidator(Validator):
                 config_owner=cls.definition.config,
                 keypath_parent=field.name,
                 parent=context.value,
-                fdesc=field.definition)
+                definition=field.definition)
             tsfmd = field.types.validator.transform(field_context)
             setattr(dest, field.name, tsfmd)
         for cname in nonnull_ref_lists:
@@ -227,7 +227,7 @@ class InstanceOfValidator(Validator):
         no_key_refs = cls_name in entity_chain
         for field in context.value.__class__.definition.fields:
             field_value = getattr(context.value, field.name)
-            fd = field.types.fdesc
+            fd = field.types.definition
             jf_name = field.json_name
             ignore_writeonly = context.ignore_writeonly
             if fd.field_storage == FieldStorage.LOCAL_KEY and no_key_refs:
@@ -269,7 +269,7 @@ class InstanceOfValidator(Validator):
                     config_owner=value.__class__.definition.config,
                     keypath_parent=field.name,
                     parent=value,
-                    fdesc=field.definition)
+                    definition=field.definition)
                 tsfmd = field.types.validator.serialize(field_context)
                 setattr(value, field.name, tsfmd)
         return value
