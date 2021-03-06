@@ -55,6 +55,9 @@ class JSONClassGraph:
         self.__class__._initialized_map[name] = True
         return None
 
+    def __repr__(self) -> str:
+        return f'[{self._name}]'
+
     @property
     def name(self: JSONClassGraph) -> str:
         """The name of this class graph."""

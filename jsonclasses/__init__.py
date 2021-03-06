@@ -14,3 +14,4 @@ from .jsonclass import jsonclass
 from .types import types
 from .typing import Link, linkto, linkedby, linkedthru
 from .json_encoder import JSONEncoder
+from .isjsonclass import isjsonclass, isjsonobject

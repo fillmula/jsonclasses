@@ -1,7 +1,7 @@
 from __future__ import annotations
 from unittest import TestCase
 from jsonclasses import jsonclass, JSONObject
-from jsonclasses.class_graph import class_graph_map, JSONClassRedefinitionError
+from jsonclasses.class_graph import class_graph_map, JSONClassRedefinitionException
 from jsonclasses.config import Config
 
 
@@ -92,7 +92,7 @@ class TestJsonClassDecorator(TestCase):
         self.assertEqual(config, Config(class_graph='my-secret-graph-087', camelize_json_keys=True, camelize_db_keys=False))
 
     def test_json_class_decorator_throws_if_defined_duplicate_name_class_on_same_graph(self):
-        with self.assertRaisesRegex(JSONClassRedefinitionError, 'Cannot define new JSON Class with same name in same graph'):
+        with self.assertRaisesRegex(JSONClassRedefinitionException, 'Cannot define new JSON Class with same name in same graph'):
             @jsonclass(class_graph='my-secret-graph-087', camelize_json_keys=False)
             class MyClassThatHasConfigWithJSONKey(JSONObject):
                 str_field: str

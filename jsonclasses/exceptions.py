@@ -1,7 +1,7 @@
 """This module defines all exceptions that JSON classes uses."""
 from __future__ import annotations
 from typing import Any
-from inspect import getmodule
+from inspect import getmodule, getsourcelines
 
 
 class UnlinkableJSONClassException(Exception):
@@ -45,14 +45,16 @@ class JSONClassRedefinitionException(Exception):
         original_module = getmodule(exist_class)
         assert original_module is not None
         original_file = original_module.__file__
+        original_line = getsourcelines(exist_class)[1]
         new_module = getmodule(new_class)
         assert new_module is not None
         new_file = new_module.__file__
-        graph = exist_class.config.class_graph
-        message = (f'Existing JSON Class \'{name}\' in graph \'{graph}\' is '
-                   f'defined at \'{original_file}\'. Cannot define new JSON '
-                   f'class with same name in same graph \'{graph}\' at '
-                   f'\'{new_file}\'.')
+        new_line = getsourcelines(new_class)[1]
+        graph = exist_class.definition.config.class_graph
+        message = (f'jsonclass name conflict in graph `{graph}`: '
+                   f'exist `{name}` defined at '
+                   f'`{original_file}:{original_line}`, '
+                   f'new `{name}` defined at `{new_file}:{new_line}`')
         super().__init__(message)
 
 
