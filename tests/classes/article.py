@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from tests.classes.author import Author
 
 
-@jsonclass(strict_input=False)
+@jsonclass(strict_input=False, validate_all_fields=True)
 class Article:
     title: str
     content: str
