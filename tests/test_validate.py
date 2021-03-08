@@ -186,3 +186,27 @@ class TestValidate(TestCase):
                          "Value at 'articles.1.title' should not be None.")
         self.assertEqual(exception.keypath_messages['articles.1.content'],
                          "Value at 'articles.1.content' should not be None.")
+
+    def test_validate_only_validate_modified_fields_for_non_new_object(self):
+        article = SimpleArticle(title='my', content='side')
+        article._mark_not_new()
+        article.content = None
+        article._modified_fields = []
+        article.validate(validate_all_fields=True)
+
+    def test_validate_validates_linked_objects_anyway(self):
+        author = Author(name='Tsit Tiu',
+                        articles=[{'title': 'Khua Tioh Sê Kai',
+                                   'content': 'Ai Gua Tsuê'},
+                                  {'title': 'Thên Ha Si Lan Ê',
+                                   'content': 'Tsiu Ho Lang Tsai'}])
+        author._mark_not_new()
+        author.articles[0]._mark_not_new()
+        author.articles[1]._mark_not_new()
+        author.articles[0].content = None
+        with self.assertRaises(ValidationException) as context:
+            author.validate()
+        exception = context.exception
+        self.assertEqual(len(exception.keypath_messages), 1)
+        self.assertEqual(exception.keypath_messages['articles.0.content'],
+                         "Value at 'articles.0.content' should not be None.")

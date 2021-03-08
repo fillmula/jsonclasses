@@ -1,67 +1,11 @@
 from __future__ import annotations
 from typing import Optional
 from unittest import TestCase
-from jsonclasses import jsonclass, ORMObject, types
-from jsonclasses.exceptions import ValidationException, JSONClassResetNotEnabledError
+from jsonclasses import jsonclass, ORMObject
+from jsonclasses.exceptions import JSONClassResetNotEnabledError
 
 
 class TestORMObject(TestCase):
-
-    def test_existing_orm_object_only_validate_modified_fields(self):
-        @jsonclass(class_graph='test_orm_6')
-        class Product(ORMObject):
-            name: str
-            stock: int
-        product = Product(name='p', stock=1)
-        setattr(product, '_is_new', False)
-        product.stock = 5
-        product.name = None
-        setattr(product, '_modified_fields', {'stock'})
-        product.validate()
-
-    def test_new_orm_object_validate_all_fields(self):
-        @jsonclass(class_graph='test_orm_7')
-        class Product(ORMObject):
-            name: str
-            stock: int
-        product = Product(name='p', stock=1)
-        product.stock = None
-        product.name = None
-        try:
-            product.validate()
-        except ValidationException as e:
-            self.assertEqual(e.keypath_messages['name'], "Value at 'name' should not be None.")
-            self.assertEqual(e.keypath_messages['stock'], "Value at 'stock' should not be None.")
-
-    def test_orm_object_reference_fields_on_root_are_validated_anyway(self):
-
-        @jsonclass(class_graph='test_orm_8')
-        class User(ORMObject):
-            id: int = types.int.primary
-            name: str
-            product: Product = types.instanceof('Product').linkedby('user')
-
-        @jsonclass(class_graph='test_orm_8')
-        class Product(ORMObject):
-            id: int = types.int.primary
-            name: str
-            stock: int
-            user: User = types.linkto.instanceof('User').required
-
-        product = Product(**{
-            'id': 1,
-            'name': '2',
-            'stock': 5,
-            'user': {
-                'id': 1,
-                'name': 'u'
-            }
-        })
-        setattr(product, '_is_new', False)
-        product.user.name = None
-        self.assertEqual(product.is_modified, False)
-        self.assertEqual(product.modified_fields, set())
-        self.assertRaisesRegex(ValidationException, "Value at 'user\\.name' should not be None\\.", product.validate)
 
     def test_orm_object_records_previous_str_value(self):
 
