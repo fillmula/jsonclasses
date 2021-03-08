@@ -269,7 +269,7 @@ def _data_dict(self: JSONClassObject) -> dict[str, Any]:
 
 
 def _mark_new(self: JSONClassObject) -> None:
-    """Mark the JSON class object as a new object."""
+    """Mark the jsonclass object as a new object."""
     setattr(self, '_is_new', True)
     setattr(self, '_is_modified', False)
     setattr(self, '_modified_fields', set())
@@ -283,6 +283,11 @@ def _set_initial_status(self: JSONClassObject) -> None:
     setattr(self, '_is_deleted', False)
     setattr(self, '_previous_values', {})
     setattr(self, '_graph', ObjectGraph(self))
+
+
+def _mark_not_new(self: JSONClassObject) -> None:
+    """Mark the jsonclass object as not a new object."""
+    setattr(self, '_is_new', False)
 
 
 def _set_on_save(self: JSONClassObject) -> None:
@@ -371,8 +376,8 @@ def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
     # track modified and previous value
     if not self.is_new:
         setattr(self, '_is_modified', True)
-        self.modified_fields.add(name)
-        if self.__class__.config.reset_all_fields or \
+        self._modified_fields.add(name)
+        if self.__class__.definition.config.reset_all_fields or \
                 field.definition.has_reset_validator:
             if name not in self.previous_values:
                 self.previous_values[name] = getattr(self, name)
@@ -416,14 +421,14 @@ def __odict_add__(self, odict: OwnedDict, key: str, val: Any) -> None:
     # record modified
     if not self.is_new:
         setattr(self, '_is_modified', True)
-        self.modified_fields.add(odict.keypath)
+        self._modified_fields.add(odict.keypath)
 
 
 def __odict_del__(self, odict: OwnedDict, val: Any) -> None:
     # record modified
     if not self.is_new:
         setattr(self, '_is_modified', True)
-        self.modified_fields.add(odict.keypath)
+        self._modified_fields.add(odict.keypath)
 
 
 def __olist_will_change__(self, olist: OwnedList) -> None:
@@ -463,7 +468,7 @@ def __olist_add__(self: JSONClassObject,
     # record modified
     if not self.is_new:
         setattr(self, '_is_modified', True)
-        self.modified_fields.add(olist.keypath)
+        self._modified_fields.add(olist.keypath)
 
 
 def __olist_del__(self: JSONClassObject, olist: OwnedList, val: Any) -> None:
@@ -477,14 +482,14 @@ def __olist_del__(self: JSONClassObject, olist: OwnedList, val: Any) -> None:
     # record modified
     if not self.is_new:
         setattr(self, '_is_modified', True)
-        self.modified_fields.add(olist.keypath)
+        self._modified_fields.add(olist.keypath)
 
 
 def __olist_sor__(self, olist: OwnedList) -> None:
     # record modified
     if not self.is_new:
         setattr(self, '_is_modified', True)
-        self.modified_fields.add(olist.keypath)
+        self._modified_fields.add(olist.keypath)
 
 
 def __unlink_field__(self: JSONClassObject,
@@ -581,6 +586,7 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_._data_dict = _data_dict
     class_._mark_new = _mark_new
     class_._set_initial_status = _set_initial_status
+    class_._mark_not_new = _mark_not_new
     class_._set_on_save = _set_on_save
     class_._clear_temp_fields = _clear_temp_fields
     class_._database_write = _database_write
