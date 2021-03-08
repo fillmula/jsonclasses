@@ -7,32 +7,6 @@ from jsonclasses.exceptions import ValidationException, JSONClassResetNotEnabled
 
 class TestORMObject(TestCase):
 
-    def test_orm_object_triggers_is_modified_on_nested_list_update(self):
-        @jsonclass(class_graph='test_orm_4_4')
-        class Product(ORMObject):
-            name: str
-            variants: dict[str, list[str]]
-        variants = {'a': [1, 2], 'b': [3, 4]}
-        product = Product(name='p', variants=variants)
-        setattr(product, '_is_new', False)
-        self.assertEqual(product.is_modified, False)
-        product.variants['b'][1] = 3
-        self.assertEqual(product.is_modified, True)
-        self.assertEqual(product.modified_fields, {'variants.b'})
-
-    def test_orm_object_triggers_is_modified_on_nested_dict_update(self):
-        @jsonclass(class_graph='test_orm_4_3')
-        class Product(ORMObject):
-            name: str
-            variants: list[dict[str, str]]
-        variants = [{'xs': 1, 's': 2}, {'xs': 4, 's': 9}]
-        product = Product(name='p', variants=variants)
-        setattr(product, '_is_new', False)
-        self.assertEqual(product.is_modified, False)
-        product.variants[0]['s'] = 3
-        self.assertEqual(product.is_modified, True)
-        self.assertEqual(product.modified_fields, {'variants.0'})
-
     def test_existing_orm_object_only_validate_modified_fields(self):
         @jsonclass(class_graph='test_orm_6')
         class Product(ORMObject):

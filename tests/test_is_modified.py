@@ -5,6 +5,7 @@ from tests.classes.simple_project import SimpleProject
 from tests.classes.simple_chart import SimpleChart
 from tests.classes.simple_setting import SimpleSetting
 from tests.classes.author import Author
+from tests.classes.nested_object import NestedDict, NestedList
 
 
 class TestIsModified(TestCase):
@@ -61,3 +62,17 @@ class TestIsModified(TestCase):
         self.assertEqual(author.modified_fields, ())
         self.assertEqual(author.articles[0].is_modified, True)
         self.assertEqual(author.articles[0].modified_fields, ('title',))
+
+    def test_jsonclass_object_is_modified_if_nested_list_is_modified(self):
+        nlst = NestedList(id='1', value={'a': ['1', '2'], 'b': ['1', '2']})
+        nlst._mark_not_new()
+        nlst.value['b'].append('3')
+        self.assertEqual(nlst.is_modified, True)
+        self.assertEqual(nlst.modified_fields, ('value.b',))
+
+    def test_jsonclass_object_is_modified_if_nested_dict_is_modified(self):
+        ndct = NestedDict(id='1', value=[{'a': '1'}, {'b': '1'}])
+        ndct._mark_not_new()
+        ndct.value[1]['c'] = '2'
+        self.assertEqual(ndct.is_modified, True)
+        self.assertEqual(ndct.modified_fields, ('value.1',))
