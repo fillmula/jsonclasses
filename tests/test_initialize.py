@@ -7,6 +7,8 @@ from tests.classes.simple_order import SimpleOrder
 from tests.classes.simple_address import SimpleAddress
 from tests.classes.simple_student import SimpleStudent
 from tests.classes.simple_deadline import SimpleDeadline
+from tests.classes.author import Author
+from tests.classes.article import Article
 
 
 class TestInitialize(TestCase):
@@ -46,3 +48,15 @@ class TestInitialize(TestCase):
     def test_initialize_triggers_transform(self):
         deadline = SimpleDeadline(ended_at='2021-06-30')
         self.assertEqual(deadline.ended_at, date(2021, 6, 30))
+
+    def test_initialize_accepts_object_list(self):
+        article = Article(title='Khi Sit', content='Ua Sim Lai Tsa Tiu E Tsai')
+        author = Author(name='Hun', articles=[article])
+        self.assertEqual(author.articles, [article])
+
+    def test_initialize_accepts_object(self):
+        author = Author(name='Kieng')
+        article = Article(title='E Sai',
+                          content='Tsê Tioh Si Kim Sieng Ua Ê Tsuê Ai',
+                          author=author)
+        self.assertEqual(author, article.author)

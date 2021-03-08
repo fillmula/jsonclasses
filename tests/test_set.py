@@ -4,6 +4,8 @@ from jsonclasses.exceptions import ValidationException
 from tests.classes.simple_book import SimpleBook
 from tests.classes.simple_deadline import SimpleDeadline
 from tests.classes.simple_article import SimpleArticle
+from tests.classes.article import Article
+from tests.classes.author import Author
 
 
 class TestSet(TestCase):
@@ -63,3 +65,16 @@ class TestSet(TestCase):
         self.assertTrue(len(context.exception.keypath_messages) == 1)
         self.assertEqual(context.exception.keypath_messages['makcêcê'],
                          "Key 'makcêcê' is not allowed.")
+
+    def test_set_accepts_object_list(self):
+        article = Article(title='Khi Sit', content='Ua Sim Lai Tsa Tiu E Tsai')
+        author = Author(name='Hun')
+        author.set(articles=[article])
+        self.assertEqual(author.articles, [article])
+
+    def test_set_accepts_object(self):
+        author = Author(name='Kieng')
+        article = Article(title='E Sai',
+                          content='Tsê Tioh Si Kim Sieng Ua Ê Tsuê Ai')
+        article.set(author=author)
+        self.assertEqual(author, article.author)
