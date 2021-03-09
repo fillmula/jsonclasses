@@ -228,6 +228,9 @@ class ClassDefinition:
             foreign_types = resolver.resolve_types(
                 instance_types, self.config)
         foreign_class = cast(type, foreign_types.definition.instance_types)
+        foreign_class = TypesResolver().resolve_types(foreign_class,
+                                                      self.config)
+        foreign_class = foreign_class.definition.instance_types
         foreign_definition = self.config.class_graph.fetch(foreign_class)
         accepted: list[tuple(FieldStorage, bool)] = []
         if definition.field_storage == FieldStorage.LOCAL_KEY:
