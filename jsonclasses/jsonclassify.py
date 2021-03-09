@@ -282,12 +282,37 @@ def _set_initial_status(self: JSONClassObject) -> None:
     setattr(self, '_is_detached', False)
     setattr(self, '_is_deleted', False)
     setattr(self, '_previous_values', {})
+    setattr(self, '_detached_objects', {})
     setattr(self, '_graph', ObjectGraph(self))
 
 
 def _mark_not_new(self: JSONClassObject) -> None:
     """Mark the jsonclass object as not a new object."""
     setattr(self, '_is_new', False)
+
+
+def _add_detached_object(self: JSONClassObject,
+                         field_name: str,
+                         obj: JSONClassObject) -> None:
+    """Add an object into detached objects pool."""
+    if not self._detached_objects.get(field_name):
+        self._detached_objects[field_name] = set()
+    self._detached_objects[field_name].add(obj)
+
+
+def _del_detached_object(self: JSONClassObject,
+                         field_name: str,
+                         obj: JSONClassObject) -> None:
+    """Remove an object from detached objects pool."""
+    if not self._detached_objects.get(field_name):
+        self._detached_objects[field_name] = set()
+    if obj in self._detached_objects[field_name]:
+        self._detached_objects[field_name].remove(obj)
+
+
+def _clear_detached_object(self: JSONClassObject) -> None:
+    """Clear and reset all detached objects."""
+    self._detached_objects = {}
 
 
 def _set_on_save(self: JSONClassObject) -> None:
@@ -588,6 +613,9 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_._mark_new = _mark_new
     class_._set_initial_status = _set_initial_status
     class_._mark_not_new = _mark_not_new
+    class_._add_detached_object = _add_detached_object
+    class_._del_detached_object = _del_detached_object
+    class_._clear_detached_object = _clear_detached_object
     class_._set_on_save = _set_on_save
     class_._clear_temp_fields = _clear_temp_fields
     class_._database_write = _database_write
