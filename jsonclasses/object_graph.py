@@ -155,4 +155,10 @@ class ObjectGraph:
                 elif isinstance(item_value, list):
                     index = item_value.index(result.detached)
                     item_value[index] = result.kept
+            if result.detached._detached_objects.get(field.name) is not None:
+                detached_items = result.detached._detached_objects. \
+                    get(field.name)
+                for item in detached_items:
+                    result.kept._add_detached_object(field.name, item)
+                del result.detached._detached_objects[field.name]
         result.detached._is_detached = True
