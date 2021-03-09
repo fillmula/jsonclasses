@@ -1,9 +1,15 @@
+from tests.classes.linked_profile import LinkedProfile
 from typing import Optional, Union
 from unittest import TestCase
 from datetime import datetime, date
 from jsonclasses import jsonclass
-from jsonclasses.field_definition import FieldType
+from jsonclasses.field_definition import FieldType, FieldStorage
 from jsonclasses.exceptions import ValidationException
+from tests.classes.linked_author import LinkedAuthor
+from tests.classes.linked_article import LinkedArticle
+from tests.classes.linked_user import LinkedUser
+from tests.classes.linked_product import LinkedProduct
+from tests.classes.linked_customer import LinkedCustomer
 
 
 class TestAutoTypes(TestCase):
@@ -375,3 +381,50 @@ class TestAutoTypes(TestCase):
             val: 'Optional[Union[dict[str, bool], float]]'
         object = TestOptionalUnionDictType()
         object.validate()
+
+    def test_auto_generates_1_to_1_links(self):
+        profile_field = LinkedUser.definition.field_named('profile')
+        self.assertEqual(profile_field.definition.field_type,
+                         FieldType.INSTANCE)
+        self.assertEqual(profile_field.definition.field_storage,
+                         FieldStorage.FOREIGN_KEY)
+        self.assertEqual(profile_field.definition.foreign_key, 'user')
+        self.assertEqual(profile_field.definition.use_join_table, False)
+
+        user_field = LinkedProfile.definition.field_named('user')
+        self.assertEqual(user_field.definition.field_type,
+                         FieldType.INSTANCE)
+        self.assertEqual(user_field.definition.field_storage,
+                         FieldStorage.LOCAL_KEY)
+        self.assertEqual(user_field.definition.foreign_key, None)
+        self.assertEqual(user_field.definition.use_join_table, None)
+
+    def test_auto_generates_1_to_many_links(self):
+        articles_field = LinkedAuthor.definition.field_named('articles')
+        self.assertEqual(articles_field.definition.field_type,
+                         FieldType.LIST)
+        self.assertEqual(articles_field.definition.field_storage,
+                         FieldStorage.FOREIGN_KEY)
+        self.assertEqual(articles_field.definition.foreign_key, 'author')
+        self.assertEqual(articles_field.definition.use_join_table, False)
+
+        author_field = LinkedArticle.definition.field_named('author')
+        self.assertEqual(author_field.definition.field_type,
+                         FieldType.INSTANCE)
+        self.assertEqual(author_field.definition.field_storage,
+                         FieldStorage.LOCAL_KEY)
+        self.assertEqual(author_field.definition.foreign_key, None)
+        self.assertEqual(author_field.definition.use_join_table, None)
+
+    def test_auto_generates_many_to_many_links(self):
+        customer1 = LinkedCustomer(name='C1')
+        customer2 = LinkedCustomer(name='C2')
+        product1 = LinkedProduct(name='P1')
+        product2 = LinkedProduct(name='P2')
+        customer1.products.append(product1)
+        customer1.products.append(product2)
+        product1.customers.append(customer2)
+        self.assertEqual(customer1.products, [product1, product2])
+        self.assertEqual(product1.customers, [customer1, customer2])
+        self.assertEqual(customer2.products, [product1])
+        self.assertEqual(product2.customers, [customer1])

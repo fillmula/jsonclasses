@@ -387,7 +387,8 @@ def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
     if isinstance(value, dict):
         value = to_owned_dict(self, value, name)
     if field.definition.is_ref:
-        self.__unlink_field__(field, getattr(self, name))
+        if hasattr(self, name):
+            self.__unlink_field__(field, getattr(self, name))
         self.__original_setattr__(name, value)
         self.__link_field__(field, value)
     else:
@@ -543,7 +544,7 @@ def __link_field__(self: JSONClassObject,
             else:
                 if self not in getattr(item, other_field.name):
                     getattr(item, other_field.name).append(self)
-    self.__link_graph__(item)
+        self.__link_graph__(item)
 
 
 def __link_graph__(self: JSONClassObject, other: JSONClassObject) -> None:

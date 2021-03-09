@@ -104,3 +104,20 @@ class JSONClassGraph:
             return self._map[name]
         except KeyError:
             raise JSONClassNotFoundException(name, self.name)
+
+    def has(self: JSONClassGraph,
+            name_or_class: Union[str, type]) -> bool:
+        """Test if class with name is registered in the graph.
+
+        Args:
+            name_or_class (Union[str, type]): The name of the class to be \
+                fetched or the class itself.
+
+        Returns:
+            bool: Returns True if this class is registered in the graph.
+        """
+        if isinstance(name_or_class, type):
+            name = name_or_class.__name__
+        else:
+            name = name_or_class
+        return self._map.get(name) is not None

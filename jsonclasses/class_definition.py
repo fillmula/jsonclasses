@@ -97,18 +97,19 @@ class ClassDefinition:
         if isinstance(field.default, Types):
             return field.default
         else:
-            return TypesResolver().to_types(field.type, config)
+            return TypesResolver().resolve_types(field.type, config)
 
     def _def_class_match(self: ClassDefinition,
                          definition: FieldDefinition,
                          class_: type) -> bool:
         resolver = TypesResolver()
         if definition.field_type == FieldType.LIST:
-            item_types = resolver.to_types(definition.raw_item_types,
-                                           self.config)
+            item_types = resolver.resolve_types(definition.raw_item_types,
+                                                self.config)
             return self._def_class_match(item_types.definition, class_)
         elif definition.field_type == FieldType.INSTANCE:
-            types = resolver.to_types(definition.instance_types, self.config)
+            types = resolver.resolve_types(definition.instance_types,
+                                           self.config)
             return types.definition.instance_types == class_
         return False
 

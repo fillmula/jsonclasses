@@ -163,8 +163,11 @@ class TypesResolver:
             return self.apply_link_specifier(types, link_specifier)
         else:
             graph = config.class_graph
-            definition = graph.fetch(any_types)
-            instance_type = types.instanceof(definition.cls)
+            if graph.has(any_types):
+                definition = graph.fetch(any_types)
+                instance_type = types.instanceof(definition.cls)
+            elif isinstance(any_types, str):
+                instance_type = types.instanceof(any_types)
             return instance_type if optional else instance_type.required
 
     def to_types(self: TypesResolver,
@@ -230,7 +233,7 @@ class TypesResolver:
                                 f'expect 2, got {len_args}'))
             types = self.to_types(annotated_args[0], config, optional)
             return self.apply_link_specifier(types, annotated_args[1])
-        elif issubclass(any_types, dict):
+        elif type(any_types) is type and issubclass(any_types, dict):
             anno_dict: dict[str, Any] = any_types.__annotations__
             item_types: dict[str, Types] = {}
             for k, t in anno_dict.items():
