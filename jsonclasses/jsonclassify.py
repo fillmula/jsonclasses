@@ -296,8 +296,9 @@ def _add_detached_object(self: JSONClassObject,
                          obj: JSONClassObject) -> None:
     """Add an object into detached objects pool."""
     if not self._detached_objects.get(field_name):
-        self._detached_objects[field_name] = set()
-    self._detached_objects[field_name].add(obj)
+        self._detached_objects[field_name] = []
+    if obj not in self._detached_objects[field_name]:
+        self._detached_objects[field_name].append(obj)
 
 
 def _del_detached_object(self: JSONClassObject,
@@ -305,7 +306,7 @@ def _del_detached_object(self: JSONClassObject,
                          obj: JSONClassObject) -> None:
     """Remove an object from detached objects pool."""
     if not self._detached_objects.get(field_name):
-        self._detached_objects[field_name] = set()
+        self._detached_objects[field_name] = []
     if obj in self._detached_objects[field_name]:
         self._detached_objects[field_name].remove(obj)
 
@@ -345,6 +346,7 @@ def _clear_temp_fields(self: JSONClassObject) -> None:
 
 def _database_write(self: JSONClassObject) -> None:
     pass
+
 
 @property
 def _id(self: JSONClassObject) -> Union[str, int, None]:
@@ -531,17 +533,20 @@ def __unlink_field__(self: JSONClassObject,
             return
         items = list(value)
     for item in items:
+        self._add_detached_object(field.name, item)
         other_field = field.foreign_field
         if other_field is None:
             return
         if other_field.definition.field_type == FieldType.INSTANCE:
             if getattr(item, other_field.name) is self:
                 item.__original_setattr__(other_field.name, None)
+                item._add_detached_object(other_field.name, self)
         elif other_field.definition.field_type == FieldType.LIST:
             other_list = getattr(item, other_field.name)
             if isinstance(other_list, list):
                 if self in other_list:
                     other_list.remove(self)
+                    item._add_detached_object(other_field.name, self)
 
 
 def __link_field__(self: JSONClassObject,
@@ -557,18 +562,22 @@ def __link_field__(self: JSONClassObject,
             return
         items = value
     for item in items:
+        self._del_detached_object(field.name, item)
         other_field = field.foreign_field
         if other_field is None:
             return
         if other_field.definition.field_type == FieldType.INSTANCE:
             if getattr(item, other_field.name) != self:
                 setattr(item, other_field.name, self)
+                item._del_detached_object(other_field.name, self)
         elif other_field.definition.field_type == FieldType.LIST:
             if not isinstance(getattr(item, other_field.name), list):
                 setattr(item, other_field.name, [self])
+                item._del_detached_object(other_field.name, self)
             else:
                 if self not in getattr(item, other_field.name):
                     getattr(item, other_field.name).append(self)
+                    item._del_detached_object(other_field.name, self)
         self.__link_graph__(item)
 
 
@@ -576,6 +585,7 @@ def __link_graph__(self: JSONClassObject, other: JSONClassObject) -> None:
     """
     """
     self._graph.merged_graph(other._graph)
+
 
 def jsonclassify(class_: type) -> JSONClassObject:
     """Make a declared class into JSON class.
