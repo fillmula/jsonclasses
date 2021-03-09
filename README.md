@@ -1,6 +1,6 @@
 <img src="https://github.com/WiosoftCrafts/jsonclasses/blob/master/resources/logo.png" alt="Logo" width="auto" height="88">
 
-JSON Classes
+JSONClasses
 ===========
 [![Pypi][pypi-image]][pypi-url]
 [![Python Version][python-image]][python-url]
@@ -8,24 +8,24 @@ JSON Classes
 [![License][license-image]][license-url]
 [![PR Welcome][pr-image]][pr-url]
 
-The Modern Declarative Data Flow and Data Graph Framework for the AI Empowered
-Generation.
+The modern declarative data flow and data graph framework for the AI empowered
+generation.
 
-JSON Classes eliminates the separation and redundant coding of data
-sanitization, data validation, data format converting, data serialization and
-data persistent storage.
+JSONClasses eliminates the separated and redundant coding of data sanitization,
+data validation, data format converting, data serialization and data persistent
+storage.
 
-JSON Classes transforms all the redundant procedures into declarative
-annotations and markers defined right on the data classes.
+JSONClasses transforms all the redundant procedures into declarative
+annotations and markers defined right on the dataclasses.
 
-Just like how React.js changed the paradigms of frontend development, JSON
-Classes aims leading the transforming of the insdustry backend development
+Just like how React.js changed the paradigms of frontend development,
+JSONClasses aims leading the transforming of the insdustry backend development
 standards.
 
-## How JSON Classes Works?
+## How JSONClasses Works?
 
-JSON Classes is built on top of Python Data Classes. With the great
-metaprogramming functionalities that Python Data Classes offers, we can easily
+JSONClasses is built on top of Python dataclasses. With the great
+metaprogramming functionalities that Python dataclasses offers, we can easily
 extend it into a great DSL for declaring data structures, transforming rules
 and validation rules.
 
@@ -42,8 +42,8 @@ new Swift language features for SwiftUI.
 
 Python is the programming language which is nearest to AI areas. This is an era
 and a generation empowered by AI. AI algorithms empower products with
-unimaginable stunning features. A great product should adapt to some level of AI
-to continue providing great functions for it's targeting audience.
+unimaginable stunning features. A great product should adapt to some level of
+AI to continue providing great functions for it's targeting audience.
 
 ## Business Examples
 
@@ -127,7 +127,7 @@ The sanic async web framework integration.
 
 ## Supported Python Versions
 
-`jsonclasses` supports `Python >= 3.8`.
+`jsonclasses` supports `Python >= 3.9.0`.
 
 ## License
 
