@@ -6,7 +6,7 @@ from jsonclasses.exceptions import ValidationException
 
 
 @jsonclass(class_graph='test_instanceof_22')
-class User(JSONObject):
+class User:
     id: int = types.int.primary
     name: str
     posts: List[Post] = types.listof('Post').linkedby('user').required
@@ -14,7 +14,7 @@ class User(JSONObject):
 
 
 @jsonclass(class_graph='test_instanceof_22')
-class Post(JSONObject):
+class Post:
     id: int = types.int.primary
     name: str
     user: User = types.linkto.instanceof('User').required
@@ -22,7 +22,7 @@ class Post(JSONObject):
 
 
 @jsonclass(class_graph='test_instanceof_22')
-class Comment(JSONObject):
+class Comment:
     id: int = types.int.primary
     content: str
     post: Post = types.linkto.instanceof('Post').required
@@ -99,12 +99,12 @@ class TestInstanceOfValidator(TestCase):
 
     def test_instanceof_validator_creates_instanceof_designated_class_on_transforming(self):
         @jsonclass(class_graph='test_instanceof_1')
-        class Address(JSONObject):
+        class Address:
             line1: str = types.str
             line2: str = types.str
 
         @jsonclass(class_graph='test_instanceof_1')
-        class User(JSONObject):
+        class User:
             name: str = types.str
             address: Address = types.instanceof(Address)
         user = User(**{'name': 'John', 'address': {'line1': 'London', 'line2': 'Road'}})
@@ -112,12 +112,12 @@ class TestInstanceOfValidator(TestCase):
 
     def test_instanceof_validator_fill_children_defaults(self):
         @jsonclass(class_graph='test_instanceof_1_0')
-        class Address(JSONObject):
+        class Address:
             line1: str = types.str.default('Line1').required
             line2: str = types.str.default('Line2').required
 
         @jsonclass(class_graph='test_instanceof_1_0')
-        class User(JSONObject):
+        class User:
             name: str = types.str.required
             address: Address = types.instanceof(Address).required
         user = User(**{'name': 'John', 'address': {}})
@@ -126,17 +126,17 @@ class TestInstanceOfValidator(TestCase):
 
     def test_instanceof_validator_raises_if_type_doesnt_match(self):
         @jsonclass(class_graph='test_instanceof_1_2')
-        class Address(JSONObject):
+        class Address:
             line1: str = types.str.required
             line2: str = types.str.required
 
         @jsonclass(class_graph='test_instanceof_1_2')
-        class NewAddress(JSONObject):
+        class NewAddress:
             line3: str = types.str.required
             line4: str = types.str.required
 
         @jsonclass(class_graph='test_instanceof_1_2')
-        class User(JSONObject):
+        class User:
             name: str = types.str.required
             address: Address = types.instanceof(Address).required
         user = User(name='John')
@@ -148,12 +148,12 @@ class TestInstanceOfValidator(TestCase):
 
     def test_instanceof_validator_validates_using_validator_inside(self):
         @jsonclass(class_graph='test_instanceof_2')
-        class Address(JSONObject):
+        class Address:
             line1: str = types.str.required
             line2: str = types.str
 
         @jsonclass(class_graph='test_instanceof_2')
-        class User(JSONObject):
+        class User:
             name: str = types.str
             address: Address = types.instanceof(Address)
         user = User(**{'name': 'John', 'address': {'line2': 'Road'}})
@@ -161,12 +161,12 @@ class TestInstanceOfValidator(TestCase):
 
     def test_instanceof_validator_convert_subfields_to_json(self):
         @jsonclass(class_graph='test_instanceof_3')
-        class Address(JSONObject):
+        class Address:
             line1: str = types.str.required
             line2: str = types.str
 
         @jsonclass(class_graph='test_instanceof_3')
-        class User(JSONObject):
+        class User:
             name: str = types.str
             address: Address = types.instanceof(Address)
         user = User(**{'name': 'John', 'address': {'line2': 'Road', 'line1': 'OK'}})
@@ -175,12 +175,12 @@ class TestInstanceOfValidator(TestCase):
 
     def test_instanceof_validator_creates_instances_inside_list(self):
         @jsonclass(class_graph='test_instanceof_4')
-        class Address(JSONObject):
+        class Address:
             line1: str = types.str
             line2: str = types.str
 
         @jsonclass(class_graph='test_instanceof_4')
-        class User(JSONObject):
+        class User:
             name: str = types.str
             addresses: List[Address] = types.listof(types.instanceof(Address))
         user = User(**{'name': 'John', 'addresses': [
@@ -195,12 +195,12 @@ class TestInstanceOfValidator(TestCase):
 
     def test_instanceof_validator_validates_instances_inside_list(self):
         @jsonclass(class_graph='test_instanceof_5')
-        class Address(JSONObject):
+        class Address:
             line1: str = types.str.required
             line2: str = types.str.required
 
         @jsonclass(class_graph='test_instanceof_5')
-        class User(JSONObject):
+        class User:
             name: str = types.str
             addresses: List[Address] = types.listof(types.instanceof(Address))
         user = User(**{'name': 'John', 'addresses': [
@@ -211,12 +211,12 @@ class TestInstanceOfValidator(TestCase):
 
     def test_instanceof_validator_converts_to_json_inside_list(self):
         @jsonclass(class_graph='test_instanceof_6')
-        class Address(JSONObject):
+        class Address:
             line1: str = types.str
             line2: str = types.str
 
         @jsonclass(class_graph='test_instanceof_6')
-        class User(JSONObject):
+        class User:
             name: str = types.str
             addresses: List[Address] = types.listof(types.instanceof(Address))
         user = User(**{'name': 'John', 'addresses': [
@@ -229,13 +229,13 @@ class TestInstanceOfValidator(TestCase):
 
     def test_instanceof_validator_allow_argument_to_be_string(self):
         @jsonclass(class_graph='test_instanceof_7')
-        class Post(JSONObject):
+        class Post:
             title: str = types.str
             content: str = types.str
             author: User = types.instanceof('User')
 
         @jsonclass(class_graph='test_instanceof_7')
-        class User(JSONObject):
+        class User:
             name: str = types.str
             posts: List[Post] = types.listof(types.instanceof('Post'))
         user = User(**{'name': 'John', 'posts': [
@@ -256,12 +256,12 @@ class TestInstanceOfValidator(TestCase):
 
     def test_instanceof_works_without_assigning_a_types(self):
         @jsonclass(class_graph='test_instanceof_8')
-        class Staff(JSONObject):
+        class Staff:
             position: str
             user: User
 
         @jsonclass(class_graph='test_instanceof_8')
-        class User(JSONObject):
+        class User:
             name: str = types.str
             staff: Staff
         user = User(**{'name': 'John', 'staff': {'position': 'CEO'}})
@@ -273,12 +273,12 @@ class TestInstanceOfValidator(TestCase):
 
     def test_instanceof_works_in_list_without_assigning_a_types(self):
         @jsonclass(class_graph='test_instanceof_9')
-        class Staff(JSONObject):
+        class Staff:
             position: str
             users: List[User]
 
         @jsonclass(class_graph='test_instanceof_9')
-        class User(JSONObject):
+        class User:
             name: str
             staffs: List[Staff]
         user = User(**{'name': 'John', 'staffs': [{'position': 'CEO'}, {'position': 'CSO'}]})
@@ -290,12 +290,12 @@ class TestInstanceOfValidator(TestCase):
 
     def test_instanceof_works_in_dict_without_assigning_a_types(self):
         @jsonclass(class_graph='test_instanceof_10')
-        class Staff(JSONObject):
+        class Staff:
             position: str
             users: Dict[str, User]
 
         @jsonclass(class_graph='test_instanceof_10')
-        class User(JSONObject):
+        class User:
             name: str
             staffs: Dict[str, Staff]
         user = User(**{'name': 'John', 'staffs': {'a': {'position': 'CEO'}, 'b': {'position': 'CSO'}}})
@@ -307,12 +307,12 @@ class TestInstanceOfValidator(TestCase):
 
     def test_instanceof_validates_in_list_without_assigning_a_types(self):
         @jsonclass(class_graph='test_instanceof_11')
-        class Staff(JSONObject):
+        class Staff:
             position: str
             users: List[User]
 
         @jsonclass(class_graph='test_instanceof_11')
-        class User(JSONObject):
+        class User:
             name: str
             staffs: List[Staff]
         user = User(**{'name': 'John', 'staffs': [{'position': 'CEO'}, None, {'position': 'CSO'}]})
@@ -321,12 +321,12 @@ class TestInstanceOfValidator(TestCase):
 
     def test_instanceof_validates_in_dict_without_assigning_a_types(self):
         @jsonclass(class_graph='test_instanceof_12')
-        class Staff(JSONObject):
+        class Staff:
             position: str
             users: Dict[str, User]
 
         @jsonclass(class_graph='test_instanceof_12')
-        class User(JSONObject):
+        class User:
             name: str
             staffs: Dict[str, Staff]
         user = User(**{'name': 'John', 'staffs': {'a': {'position': 'CEO'}, 'b': None, 'c': {'position': 'CSO'}}})
@@ -336,12 +336,12 @@ class TestInstanceOfValidator(TestCase):
     def test_instance_of_accepts_object(self):
 
         @jsonclass(class_graph='test_instanceof__1')
-        class Staff(JSONObject):
+        class Staff:
             position: str
             user: User = types.linkto.instanceof('User').required
 
         @jsonclass(class_graph='test_instanceof__1')
-        class User(JSONObject):
+        class User:
             name: str
             staff: Staff = types.instanceof('Staff').linkedby('user').required
 
@@ -351,12 +351,12 @@ class TestInstanceOfValidator(TestCase):
 
     def test_instanceof_raises_if_strict_specified(self):
         @jsonclass(class_graph='test_instanceof_13')
-        class Staff(JSONObject):
+        class Staff:
             position: str
             user: User = types.instanceof('User').required
 
         @jsonclass(class_graph='test_instanceof_13')
-        class User(JSONObject):
+        class User:
             name: str
             staff: Staff = types.instanceof('Staff').strict.required
         with self.assertRaisesRegex(ValidationException, "Key 'boom' at 'staff' is not allowed\\."):
@@ -364,12 +364,12 @@ class TestInstanceOfValidator(TestCase):
 
     def test_instanceof_raises_if_strict_instance(self):
         @jsonclass(class_graph='test_instanceof_14', strict_input=True)
-        class Staff(JSONObject):
+        class Staff:
             position: str
             user: User = types.instanceof('User').required
 
         @jsonclass(class_graph='test_instanceof_14')
-        class User(JSONObject):
+        class User:
             name: str
             staff: Staff = types.instanceof('Staff').required
         with self.assertRaisesRegex(ValidationException, "Key 'boom' at 'staff' is not allowed\\."):
@@ -378,13 +378,13 @@ class TestInstanceOfValidator(TestCase):
     def test_instanceof_create_circular_ref_for_local_and_foreign_binding(self):
 
         @jsonclass(class_graph='test_instanceof_15')
-        class Staff(JSONObject):
+        class Staff:
             id: int = types.int.primary
             position: str
             user: User = types.linkto.instanceof('User').required
 
         @jsonclass(class_graph='test_instanceof_15')
-        class User(JSONObject):
+        class User:
             id: int = types.int.primary
             name: str
             staff: Staff = types.instanceof('Staff').linkedby('user').required
@@ -395,12 +395,12 @@ class TestInstanceOfValidator(TestCase):
     def test_instanceof_create_circular_ref_for_foreign_and_local_binding(self):
 
         @jsonclass(class_graph='test_instanceof_16')
-        class Staff(JSONObject):
+        class Staff:
             position: str
             user: User = types.instanceof('User').linkedby('staff').required
 
         @jsonclass(class_graph='test_instanceof_16')
-        class User(JSONObject):
+        class User:
             name: str
             staff: Staff = types.linkto.instanceof('Staff').required
 
@@ -410,12 +410,12 @@ class TestInstanceOfValidator(TestCase):
     def test_instanceof_create_circular_ref_for_foreign_list_and_local_binding(self):
 
         @jsonclass(class_graph='test_instanceof_17')
-        class Post(JSONObject):
+        class Post:
             title: str
             user: User = types.linkto.instanceof('User').required
 
         @jsonclass(class_graph='test_instanceof_17')
-        class User(JSONObject):
+        class User:
             name: str
             posts: List[Post] = types.listof('Post').linkedby('user').required
 
@@ -426,12 +426,12 @@ class TestInstanceOfValidator(TestCase):
     def test_instanceof_create_circular_ref_for_local_list_and_foreign_binding(self):
 
         @jsonclass(class_graph='test_instanceof_18')
-        class Post(JSONObject):
+        class Post:
             title: str
             user: User = types.instanceof('User').linkedby('posts').required
 
         @jsonclass(class_graph='test_instanceof_18')
-        class User(JSONObject):
+        class User:
             name: str
             posts: List[Post] = types.linkto.listof('Post').required
 
@@ -442,12 +442,12 @@ class TestInstanceOfValidator(TestCase):
     def test_instanceof_create_circular_ref_for_foreign_item_and_local_list_binding(self):
 
         @jsonclass(class_graph='test_instanceof_19')
-        class Post(JSONObject):
+        class Post:
             title: str
             user: User = types.linkto.instanceof('User').required
 
         @jsonclass(class_graph='test_instanceof_19')
-        class User(JSONObject):
+        class User:
             name: str
             posts: List[Post] = types.listof('Post').linkedby('user').required
         post = Post(**{'title': 'A', 'user': {'name': 'B'}})
@@ -456,12 +456,12 @@ class TestInstanceOfValidator(TestCase):
     def test_instanceof_create_circular_ref_for_local_list_and_foreign_item_binding(self):
 
         @jsonclass(class_graph='test_instanceof_20')
-        class Post(JSONObject):
+        class Post:
             title: str
             user: User = types.instanceof('User').linkedby('posts').required
 
         @jsonclass(class_graph='test_instanceof_20')
-        class User(JSONObject):
+        class User:
             name: str
             posts: List[Post] = types.linkto.listof('Post').required
 
@@ -471,12 +471,12 @@ class TestInstanceOfValidator(TestCase):
     def test_instanceof_create_circular_ref_for_many_to_many(self):
 
         @jsonclass(class_graph='test_instanceof_21')
-        class Book(JSONObject):
+        class Book:
             title: str
             users: List[User] = types.listof('User').linkedthru('books').required
 
         @jsonclass(class_graph='test_instanceof_21')
-        class User(JSONObject):
+        class User:
             name: str
             books: List[Book] = types.listof('Book').linkedthru('users').required
 

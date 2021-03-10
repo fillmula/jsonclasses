@@ -7,14 +7,14 @@ class TestPresentWithoutValidator(TestCase):
 
     def test_presentwithout_validator_throws_when_it_should_throw_single(self):
         @jsonclass(class_graph='test_presentwithout_1')
-        class User(JSONObject):
+        class User:
             email: str = types.str.presentwithout('phone_number')
             phone_number: str = types.str.presentwithout('email')
         self.assertRaises(ValidationException, User().validate)
 
     def test_presentwith_validator_dont_throw_when_it_shouldnt_throw_single(self):
         @jsonclass(class_graph='test_presentwithout_2')
-        class User(JSONObject):
+        class User:
             email: str = types.str.presentwithout('phone_number')
             phone_number: str = types.str.presentwithout('email')
         User(email='a@g.com').validate()
@@ -22,7 +22,7 @@ class TestPresentWithoutValidator(TestCase):
 
     def test_presentwithout_validator_throws_when_it_should_throw_multiple(self):
         @jsonclass(class_graph='test_presentwithout_3')
-        class User(JSONObject):
+        class User:
             a: str = types.str.presentwithout(['b', 'c'])
             b: str = types.str.presentwithout(['a', 'c'])
             c: str = types.str.presentwithout(['b', 'c'])
@@ -30,7 +30,7 @@ class TestPresentWithoutValidator(TestCase):
 
     def test_presentwith_validator_dont_throw_when_it_shouldnt_throw_multiple(self):
         @jsonclass(class_graph='test_presentwithout_4')
-        class User(JSONObject):
+        class User:
             a: str = types.str.presentwithout(['b', 'c'])
             b: str = types.str.presentwithout(['a', 'c'])
             c: str = types.str.presentwithout(['a', 'b'])

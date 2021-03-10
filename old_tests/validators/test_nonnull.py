@@ -7,11 +7,11 @@ class TestNonnullValidator(TestCase):
 
     def test_nonnull_ref_list_has_default_value_empty_array(self):
         @jsonclass(class_graph='test_nonnull_1')
-        class Item(JSONObject):
+        class Item:
             box: 'Annotated[Box, linkto]'
 
         @jsonclass(class_graph='test_nonnull_1')
-        class Box(JSONObject):
+        class Box:
             items: Annotated[list[Item], linkedby('box')]
 
         box = Box()
@@ -20,7 +20,7 @@ class TestNonnullValidator(TestCase):
     def test_nonnull_list_has_default_value_empty_array(self):
 
         @jsonclass(class_graph='test_nonnull_2')
-        class Box(JSONObject):
+        class Box:
             items: list[str] = types.nonnull.listof(str)
 
         box = Box()
@@ -29,7 +29,7 @@ class TestNonnullValidator(TestCase):
     def test_nonnull_dict_has_default_value_empty_dict(self):
 
         @jsonclass(class_graph='test_nonnull_3')
-        class Box(JSONObject):
+        class Box:
             items: dict[str, str] = types.nonnull.dictof(str)
 
         box = Box()
@@ -42,7 +42,7 @@ class TestNonnullValidator(TestCase):
             item_b: Optional[int]
 
         @jsonclass(class_graph='test_nonnull_4')
-        class Box(JSONObject):
+        class Box:
             items: Items = types.nonnull.shape({
                 'item_a': types.str.required,
                 'item_b': types.int.required

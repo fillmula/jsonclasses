@@ -7,7 +7,7 @@ class TestWriteonlyValidator(unittest.TestCase):
 
     def test_writeonly_fields_will_be_ignored_in_output_json_object(self):
         @jsonclass(class_graph='test_writeonly_1')
-        class User(JSONObject):
+        class User:
             username: str = types.str.required
             password: str = types.str.writeonly.required
         user = User(username='John', password='123456')

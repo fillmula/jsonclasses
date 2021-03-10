@@ -4,14 +4,14 @@ from jsonclasses import jsonclass, JSONObject, types, ValidationException
 
 
 @jsonclass(class_graph='test_present_1')
-class Group(JSONObject):
+class Group:
     id: int = types.int.primary
     name: str
     template: Template = types.instanceof('Template').linkedby('group').present
 
 
 @jsonclass(class_graph='test_present_1')
-class Template(JSONObject):
+class Template:
     id: int = types.int.primary
     name: str
     group: Group = types.linkto.instanceof('Group').required

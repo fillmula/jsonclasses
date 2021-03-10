@@ -568,7 +568,7 @@ accessor annotation, validator annotation and transformer annotation, use types
 like this:
 
   @jsonclass
-  class MyObject(JSONObject):
+  class MyObject:
     my_field_one: bool = types.bool.readonly.required
     my_field_two: password = types.bool.writeonly.length(8, 16).transform(salt\
 ).required

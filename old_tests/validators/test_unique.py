@@ -8,7 +8,7 @@ class TestUniqueValidator(unittest.TestCase):
 
     def test_unique_is_fine_when_create_an_object(self):
         @jsonclass(class_graph='test_unique_1')
-        class TestUser(JSONObject):
+        class TestUser:
             password: str = types.str.writeonly.minlength(8).maxlength(16).transform(lambda p: p + '00xx').required
             phone_no: str
             username: str = types.str.writeonce.unique.required
@@ -30,7 +30,7 @@ class TestUniqueValidator(unittest.TestCase):
         }
 
         @jsonclass(class_graph='test_unique_2')
-        class User(JSONObject):
+        class User:
             username: str = types.str.writeonce.unique.required
             password: str = types.str.writeonly.minlength(8).maxlength(16).transform(lambda v: v + 'z').required
             nickname: str = types.str.maxlength(30).required

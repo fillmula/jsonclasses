@@ -111,7 +111,7 @@ class TestSetOnSaveVailidator(TestCase):
             books: list[Book] = types.nonnull.listof('Book').embedded.required
 
         @jsonclass(class_graph='test_setonsave_5')
-        class Book(JSONObject):
+        class Book:
             id: int = types.int.primary.required
             name: str = types.str.required
             value: int = types.int.setonsave(lambda x: x + 1).required
@@ -140,7 +140,7 @@ class TestSetOnSaveVailidator(TestCase):
             books: list[Book] = types.nonnull.listof('Book').embedded.required
 
         @jsonclass(class_graph='test_setonsave_6')
-        class Book(JSONObject):
+        class Book:
             id: int = types.int.primary.required
             name: str = types.str.required
             value: int = types.int.setonsave(lambda x: x + 1).required
@@ -170,7 +170,7 @@ class TestSetOnSaveVailidator(TestCase):
             book: Book = types.instanceof('Book').embedded.required
 
         @jsonclass(class_graph='test_setonsave_7')
-        class Book(JSONObject):
+        class Book:
             id: int = types.int.primary.required
             name: str = types.str.required
             value: int = types.int.setonsave(lambda x: x + 1).required

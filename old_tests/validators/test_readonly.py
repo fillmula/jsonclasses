@@ -7,7 +7,7 @@ class TestReadonlyValidator(unittest.TestCase):
 
     def test_readonly_fields_will_not_be_set_through_initialization(self):
         @jsonclass(class_graph='test_readonly_1')
-        class User(JSONObject):
+        class User:
             username: str = types.str.required
             role: str = types.str.readonly.required
         user = User(username='John', role='I want to change haha XD')
@@ -15,7 +15,7 @@ class TestReadonlyValidator(unittest.TestCase):
 
     def test_readonly_fields_will_not_destroy_default_value_through_initialization(self):
         @jsonclass(class_graph='test_readonly_2')
-        class User(JSONObject):
+        class User:
             username: str = types.str.required
             role: str = types.str.readonly.default('normal').required
         user = User(username='John', role='I want to change haha XD')
@@ -23,7 +23,7 @@ class TestReadonlyValidator(unittest.TestCase):
 
     def test_readonly_fields_will_be_ok_when_not_provided(self):
         @jsonclass(class_graph='test_readonly_3')
-        class User(JSONObject):
+        class User:
             username: str = types.str.required
             role: str = types.str.readonly.default('normal').required
         user = User(username='John')
@@ -31,7 +31,7 @@ class TestReadonlyValidator(unittest.TestCase):
 
     def test_readonly_fields_will_not_be_set_through_set(self):
         @jsonclass(class_graph='test_readonly_4')
-        class User(JSONObject):
+        class User:
             username: str = types.str.required
             role: str = types.str.readonly.required
         user = User()
@@ -40,7 +40,7 @@ class TestReadonlyValidator(unittest.TestCase):
 
     def test_readonly_fields_will_not_be_erased_through_set(self):
         @jsonclass(class_graph='test_readonly_5')
-        class User(JSONObject):
+        class User:
             username: str = types.str.required
             role: str = types.str.readonly.default('normal').required
         user = User()
@@ -49,7 +49,7 @@ class TestReadonlyValidator(unittest.TestCase):
 
     def test_readonly_fields_can_be_modified_directly(self):
         @jsonclass(class_graph='test_readonly_6')
-        class User(JSONObject):
+        class User:
             username: str = types.str.required
             role: str = types.str.readonly.default('normal').required
         user = User()
@@ -59,7 +59,7 @@ class TestReadonlyValidator(unittest.TestCase):
 
     def test_readonly_fields_can_be_updated_through_update(self):
         @jsonclass(class_graph='test_readonly_7')
-        class User(JSONObject):
+        class User:
             username: str = types.str.required
             role: str = types.str.readonly.default('normal').required
         user = User()

@@ -8,7 +8,7 @@ class TestShapeValidator(unittest.TestCase):
 
     def test_shape_validator_validates_subfields(self):
         @jsonclass(class_graph='test_shape_1')
-        class User(JSONObject):
+        class User:
             address: dict = types.nonnull.shape({
                 'line1': types.str.required,
                 'line2': types.str
@@ -18,7 +18,7 @@ class TestShapeValidator(unittest.TestCase):
 
     def test_shape_validator_do_not_throw_if_subfields_are_ok(self):
         @jsonclass(class_graph='test_shape_2')
-        class User(JSONObject):
+        class User:
             address: dict = types.nonnull.shape({
                 'line1': types.str.required,
                 'line2': types.str
@@ -28,7 +28,7 @@ class TestShapeValidator(unittest.TestCase):
 
     def test_shape_validator_assigns_none_for_accessing(self):
         @jsonclass(class_graph='test_shape_3')
-        class User(JSONObject):
+        class User:
             address: dict = types.shape({
                 'line1': types.str,
                 'line2': types.str,
@@ -41,7 +41,7 @@ class TestShapeValidator(unittest.TestCase):
 
     def test_shape_validator_sanitizes_input(self):
         @jsonclass(class_graph='test_shape_4')
-        class User(JSONObject):
+        class User:
             address: dict = types.shape({
                 'line1': types.str,
                 'line2': types.str,
@@ -54,7 +54,7 @@ class TestShapeValidator(unittest.TestCase):
 
     def test_shape_should_camelize_keys_when_serializing_if_its_the_class_setting(self):
         @jsonclass(class_graph='test_shape_5', camelize_json_keys=True)
-        class Score(JSONObject):
+        class Score:
             scores: dict = types.shape({
                 'student_a': types.int,
                 'student_b': types.int
@@ -64,7 +64,7 @@ class TestShapeValidator(unittest.TestCase):
 
     def test_shape_should_not_camelize_keys_when_serializing_if_its_the_class_setting(self):
         @jsonclass(class_graph='test_shape_6', camelize_json_keys=False)
-        class Score(JSONObject):
+        class Score:
             scores: dict = types.shape({
                 'student_a': types.int,
                 'student_b': types.int
@@ -74,7 +74,7 @@ class TestShapeValidator(unittest.TestCase):
 
     def test_shape_should_handle_camelized_keys_when_initializing_if_its_the_class_setting(self):
         @jsonclass(class_graph='test_shape_7', camelize_json_keys=True)
-        class Score(JSONObject):
+        class Score:
             scores: dict = types.shape({
                 'student_a': types.int,
                 'student_b': types.int
@@ -84,7 +84,7 @@ class TestShapeValidator(unittest.TestCase):
 
     def test_shape_should_not_handle_camelized_keys_when_initializing_if_its_the_class_setting(self):
         @jsonclass(class_graph='test_shape_8', camelize_json_keys=False)
-        class Score(JSONObject):
+        class Score:
             scores: dict = types.shape({
                 'student_a': types.int,
                 'student_b': types.int
@@ -94,7 +94,7 @@ class TestShapeValidator(unittest.TestCase):
 
     def test_shape_produce_error_messages_for_all_items(self):
         @jsonclass(class_graph='test_shape_9')
-        class Quiz(JSONObject):
+        class Quiz:
             numbers: Dict[str, int] = types.shape({
                 'a': types.int.min(140),
                 'b': types.int.min(150)
@@ -104,7 +104,7 @@ class TestShapeValidator(unittest.TestCase):
 
     def test_strict_shape_raises_if_key_is_not_allowed(self):
         @jsonclass(class_graph='test_shape_10')
-        class Setting(JSONObject):
+        class Setting:
             info: Dict[str, Any] = types.strict.shape({
                 'ios': types.bool.required,
                 'android': types.bool.required
@@ -114,7 +114,7 @@ class TestShapeValidator(unittest.TestCase):
 
     def test_strict_shape_doesnt_raise_if_keys_are_ok(self):
         @jsonclass(class_graph='test_shape_11')
-        class Setting(JSONObject):
+        class Setting:
             info: Dict[str, Any] = types.strict.shape({
                 'ios': types.bool.required,
                 'android': types.bool.required
@@ -123,7 +123,7 @@ class TestShapeValidator(unittest.TestCase):
 
     def test_shape_accepts_shorthand_types(self):
         @jsonclass(class_graph='test_shape_12')
-        class User(JSONObject):
+        class User:
             address: dict = types.nonnull.shape({
                 'line1': str,
                 'line2': int
@@ -133,7 +133,7 @@ class TestShapeValidator(unittest.TestCase):
 
     def test_shape_accepts_optional_shorthand_types(self):
         @jsonclass(class_graph='test_shape_13')
-        class User(JSONObject):
+        class User:
             address: dict = types.nonnull.shape({
                 'line1': Optional[str],
                 'line2': Optional[int]
@@ -148,7 +148,7 @@ class TestShapeValidator(unittest.TestCase):
             name: str
 
         @jsonclass(class_graph='test_shape_14')
-        class User(JSONObject):
+        class User:
             settings: Settings = types.nonnull.shape({
                 'ios': types.bool.default(True).required,
                 'android': types.bool.default(True).required,
@@ -165,7 +165,7 @@ class TestShapeValidator(unittest.TestCase):
             name: str
 
         @jsonclass(class_graph='test_shape_15')
-        class User(JSONObject):
+        class User:
             settings: Settings = types.nonnull.shape({
                 'ios': types.bool.default(True).required,
                 'android': types.bool.default(True).required,
@@ -183,7 +183,7 @@ class TestShapeValidator(unittest.TestCase):
             name: str
 
         @jsonclass(class_graph='test_shape_16')
-        class User(JSONObject):
+        class User:
             settings: Settings
 
         user = User(settings={'ios': True})

@@ -66,7 +66,7 @@ Let's transform the requirements into code.
 from jsonclasses import jsonclass, JSONObject, types
 
 @jsonclass
-class User(JSONObject):
+class User:
   phone_no: str = types.str.unique.index.match(local_phone_no_regex).required #1
   email: str = types.str.match(email_regex)
   password: str = types.str.writeonly.length(8, 16).match(secure_password_regex).transform(salt).required #2
