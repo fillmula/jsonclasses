@@ -1,6 +1,6 @@
 from typing import Optional
 from unittest import TestCase
-from jsonclasses import jsonclass, ORMObject, types
+from jsonclasses import jsonclass, types
 from jsonclasses.exceptions import ValidationException
 
 
@@ -8,7 +8,7 @@ class TestTempValidator(TestCase):
 
     def test_temp_fields_do_not_go_to_json(self):
         @jsonclass(class_graph='test_temp_1')
-        class User(ORMObject):
+        class User:
             phone: str
             auth_code: Optional[str] = types.str.temp
         user = User(phone='123456', auth_code='0502')
@@ -19,7 +19,7 @@ class TestTempValidator(TestCase):
 
     def test_temp_fields_are_cleared_after_write(self):
         @jsonclass(class_graph='test_temp_2')
-        class User(ORMObject):
+        class User:
             phone: str
             auth_code: Optional[str] = types.str.temp
         user = User(phone='123456', auth_code='0502')
@@ -31,7 +31,7 @@ class TestTempValidator(TestCase):
 
     def test_temp_fields_are_validated(self):
         @jsonclass(class_graph='test_temp_3')
-        class User(ORMObject):
+        class User:
             phone: str
             auth_code: Optional[str] = types.str.temp.validate(lambda x: "wrong")
         user = User(phone='123456', auth_code='0502')

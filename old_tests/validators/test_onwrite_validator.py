@@ -1,6 +1,6 @@
 from __future__ import annotations
 from unittest import TestCase
-from jsonclasses import jsonclass, ORMObject, types
+from jsonclasses import jsonclass, types
 
 
 class TestOnWriteVailidator(TestCase):
@@ -13,7 +13,7 @@ class TestOnWriteVailidator(TestCase):
             val['val'] = val['val'] + 1
 
         @jsonclass(class_graph='test_onwrite_0')
-        class ClassOne(ORMObject):
+        class ClassOne:
             a: str = types.str.required
             b: int = types.int.onwrite(callback).required
         item = ClassOne(a='a', b=1)
@@ -29,7 +29,7 @@ class TestOnWriteVailidator(TestCase):
             val['val'] = val['val'] + 1
 
         @jsonclass(class_graph='test_onwrite_1')
-        class ClassOne(ORMObject):
+        class ClassOne:
             a: str = types.str.required
             b: int = types.int.onwrite(callback).required
         item = ClassOne(a='a', b=1)
@@ -47,7 +47,7 @@ class TestOnWriteVailidator(TestCase):
             val['value'] = value
 
         @jsonclass(class_graph='test_onwrite_2')
-        class ClassOne(ORMObject):
+        class ClassOne:
             a: str = types.str.required
             b: int = types.int.onwrite(callback).required
         item = ClassOne(a='a', b=1)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from unittest import TestCase
-from jsonclasses import jsonclass, ORMObject, types
+from jsonclasses import jsonclass, types
 
 
 class TestOnSaveVailidator(TestCase):
@@ -13,7 +13,7 @@ class TestOnSaveVailidator(TestCase):
             val['val'] = val['val'] + 1
 
         @jsonclass(class_graph='test_onsave_0')
-        class ClassOne(ORMObject):
+        class ClassOne:
             a: str = types.str.required
             b: int = types.int.onsave(callback).required
         item = ClassOne(a='a', b=1)
@@ -28,7 +28,7 @@ class TestOnSaveVailidator(TestCase):
             val['val'] = val['val'] + 1
 
         @jsonclass(class_graph='test_onsave_1')
-        class ClassOne(ORMObject):
+        class ClassOne:
             a: str = types.str.required
             b: int = types.int.onsave(callback).required
         item = ClassOne(a='a', b=1)
@@ -44,7 +44,7 @@ class TestOnSaveVailidator(TestCase):
             val['val'] = val['val'] + 1
 
         @jsonclass(class_graph='test_onsave_2')
-        class ClassOne(ORMObject):
+        class ClassOne:
             a: str = types.str.required
             b: int = types.int.onsave(callback).required
         item = ClassOne(a='a', b=1)
@@ -64,14 +64,14 @@ class TestOnSaveVailidator(TestCase):
             b1['b1'] += 1
 
         @jsonclass(class_graph='test_onsave_3')
-        class User(ORMObject):
+        class User:
             id: int = types.int.primary.required
             name: str = types.str.required
             value: int = types.int.onsave(ucallback).required
             books: list[Book] = types.nonnull.listof('Book').linkedby('user').required
 
         @jsonclass(class_graph='test_onsave_3')
-        class Book(ORMObject):
+        class Book:
             id: int = types.int.primary.required
             name: str = types.str.required
             value: int = types.int.onsave(b1callback).required

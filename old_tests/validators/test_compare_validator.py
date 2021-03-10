@@ -1,7 +1,7 @@
 from __future__ import annotations
 from unittest import TestCase
 from typing import Optional
-from jsonclasses import jsonclass, ORMObject, types
+from jsonclasses import jsonclass, types
 from jsonclasses.exceptions import ValidationException
 from jsonclasses.contexts import ValidatingContext
 
@@ -16,7 +16,7 @@ class TestCompareValidator(TestCase):
             val['val'] = 1
 
         @jsonclass(class_graph='test_compare_1')
-        class User(ORMObject):
+        class User:
             age: Optional[int] = types.int.compare(compare).required
         user = User(age=65)
         try:
@@ -34,7 +34,7 @@ class TestCompareValidator(TestCase):
             time['time'] = time['time'] + 1
 
         @jsonclass(class_graph='test_compare_2')
-        class User(ORMObject):
+        class User:
             age: Optional[int] = types.int.compare(compare).required
         user = User(age=65)
         setattr(user, '_is_new', False)
@@ -49,7 +49,7 @@ class TestCompareValidator(TestCase):
             return "invalid"
 
         @jsonclass(class_graph='test_compare_3')
-        class User(ORMObject):
+        class User:
             age: Optional[int] = types.int.compare(compare).required
         user = User(age=1)
         setattr(user, '_is_new', False)
@@ -62,7 +62,7 @@ class TestCompareValidator(TestCase):
             return "invalid"
 
         @jsonclass(class_graph='test_compare_4')
-        class User(ORMObject):
+        class User:
             age: Optional[int] = types.int.compare(compare).required
         user = User(age=1)
         setattr(user, '_is_new', False)
@@ -75,7 +75,7 @@ class TestCompareValidator(TestCase):
             return "invalid"
 
         @jsonclass(class_graph='test_compare_5')
-        class User(ORMObject):
+        class User:
             age: Optional[int] = types.int.compare(compare).required
         user = User(age=1)
         setattr(user, '_is_new', False)
@@ -88,7 +88,7 @@ class TestCompareValidator(TestCase):
             return "invalid"
 
         @jsonclass(class_graph='test_compare_6')
-        class User(ORMObject):
+        class User:
             age: Optional[int] = types.int.compare(compare).required
         user = User(age=1)
         setattr(user, '_is_new', False)
@@ -103,7 +103,7 @@ class TestCompareValidator(TestCase):
             val['val'] = key_path
 
         @jsonclass(class_graph='test_compare_7')
-        class User(ORMObject):
+        class User:
             age: Optional[int] = types.int.compare(compare).required
         user = User(age=1)
         setattr(user, '_is_new', False)
@@ -119,7 +119,7 @@ class TestCompareValidator(TestCase):
             val['val'] = obj
 
         @jsonclass(class_graph='test_compare_8')
-        class User(ORMObject):
+        class User:
             age: Optional[int] = types.int.compare(compare).required
         user = User(age=1)
         setattr(user, '_is_new', False)
@@ -135,7 +135,7 @@ class TestCompareValidator(TestCase):
             val['val'] = ctx
 
         @jsonclass(class_graph='test_compare_9')
-        class User(ORMObject):
+        class User:
             age: Optional[int] = types.int.compare(compare).required
         user = User(age=1)
         setattr(user, '_is_new', False)

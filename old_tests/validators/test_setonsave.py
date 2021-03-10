@@ -7,7 +7,7 @@ class TestSetOnSaveVailidator(TestCase):
 
     def test_orm_objects_if_new_trigger_setonsave(self):
         @jsonclass(class_graph='test_setonsave_0')
-        class ClassOne(ORMObject):
+        class ClassOne:
             a: str = types.str.required
             b: int = types.int.setonsave(lambda x: x + 1).required
         item = ClassOne(a='a', b=1)
@@ -18,7 +18,7 @@ class TestSetOnSaveVailidator(TestCase):
 
     def test_orm_objects_if_modified_trigger_setonsave(self):
         @jsonclass(class_graph='test_setonsave_1')
-        class ClassOne(ORMObject):
+        class ClassOne:
             a: str = types.str.required
             b: int = types.int.setonsave(lambda x: x + 1).required
         item = ClassOne(a='a', b=1)
@@ -32,7 +32,7 @@ class TestSetOnSaveVailidator(TestCase):
         x = 52
 
         @jsonclass(class_graph='test_setonsave_2')
-        class ClassOne(ORMObject):
+        class ClassOne:
             a: str = types.str.required
             b: int = types.int.setonsave(lambda: x).required
         item = ClassOne(a='a', b=1)
@@ -44,14 +44,14 @@ class TestSetOnSaveVailidator(TestCase):
 
     def test_orm_objects_setonsave_triggers_for_modified_linked_objects(self):
         @jsonclass(class_graph='test_setonsave_3')
-        class User(ORMObject):
+        class User:
             id: int = types.int.primary.required
             name: str = types.str.required
             value: int = types.int.setonsave(lambda x: x + 1).required
             books: list[Book] = types.nonnull.listof('Book').linkedby('user').required
 
         @jsonclass(class_graph='test_setonsave_3')
-        class Book(ORMObject):
+        class Book:
             id: int = types.int.primary.required
             name: str = types.str.required
             value: int = types.int.setonsave(lambda x: x + 1).required
@@ -73,14 +73,14 @@ class TestSetOnSaveVailidator(TestCase):
 
     def test_orm_objects_setonsave_triggers_even_root_is_not_modified(self):
         @jsonclass(class_graph='test_setonsave_4')
-        class User(ORMObject):
+        class User:
             id: int = types.int.primary.required
             name: str = types.str.required
             value: int = types.int.setonsave(lambda x: x + 1).required
             books: list[Book] = types.nonnull.listof('Book').linkedby('user').required
 
         @jsonclass(class_graph='test_setonsave_4')
-        class Book(ORMObject):
+        class Book:
             id: int = types.int.primary.required
             name: str = types.str.required
             value: int = types.int.setonsave(lambda x: x + 1).required
@@ -104,7 +104,7 @@ class TestSetOnSaveVailidator(TestCase):
 
     def test_json_objects_setonsave_triggers_anyway_if_owner_modified(self):
         @jsonclass(class_graph='test_setonsave_5')
-        class User(ORMObject):
+        class User:
             id: int = types.int.primary.required
             name: str = types.str.required
             value: int = types.int.setonsave(lambda x: x + 1).required
@@ -133,7 +133,7 @@ class TestSetOnSaveVailidator(TestCase):
 
     def test_json_objects_setonsave_triggers_anyway_if_owner_not_modified(self):
         @jsonclass(class_graph='test_setonsave_6')
-        class User(ORMObject):
+        class User:
             id: int = types.int.primary.required
             name: str = types.str.required
             value: int = types.int.setonsave(lambda x: x + 1).required
@@ -163,7 +163,7 @@ class TestSetOnSaveVailidator(TestCase):
 
     def test_json_object_setonsave_triggers_anyway_if_owner_not_modified(self):
         @jsonclass(class_graph='test_setonsave_7')
-        class User(ORMObject):
+        class User:
             id: int = types.int.primary.required
             name: str = types.str.required
             value: int = types.int.setonsave(lambda x: x + 1).required
