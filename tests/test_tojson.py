@@ -1,6 +1,8 @@
 from unittest import TestCase
 from tests.classes.simple_deadline import SimpleDeadline
 from tests.classes.simple_account import SimpleAccount
+from tests.classes.linked_profile import LinkedProfile
+from tests.classes.linked_user import LinkedUser
 
 
 class TestToJson(TestCase):
@@ -20,3 +22,12 @@ class TestToJson(TestCase):
         self.assertEqual(account.tojson(ignore_writeonly=True),
                          {'username': 'dobusiness',
                           'password': 'earnbigmoney'})
+
+    def test_tojson_linked_objects_do_not_go_to_infinite_loop(self):
+        profile = LinkedProfile(name='Tsit Po Po')
+        user = LinkedUser(name='Kia Tsiu Tai')
+        user.profile = profile
+        self.assertEqual(user.tojson(),
+                         {'name': 'Kia Tsiu Tai',
+                          'profile': {'name': 'Tsit Po Po',
+                                      'user': {'name': 'Kia Tsiu Tai'}}})

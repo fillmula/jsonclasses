@@ -244,6 +244,7 @@ class InstanceOfValidator(Validator):
         return retval
 
     def serialize(self, context: TransformingContext) -> Any:
+        from ..jsonclass_object import JSONClassObject
         value = cast(JSONClassObject, context.value)
         if value is None:
             return None

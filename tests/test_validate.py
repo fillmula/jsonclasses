@@ -7,6 +7,8 @@ from tests.classes.simple_project import SimpleProject
 from tests.classes.simple_chart import SimpleChart
 from tests.classes.simple_setting import SimpleSetting
 from tests.classes.author import Author
+from tests.classes.linked_profile import LinkedProfile
+from tests.classes.linked_user import LinkedUser
 
 
 class TestValidate(TestCase):
@@ -210,3 +212,9 @@ class TestValidate(TestCase):
         self.assertEqual(len(exception.keypath_messages), 1)
         self.assertEqual(exception.keypath_messages['articles.0.content'],
                          "Value at 'articles.0.content' should not be None.")
+
+    def test_validate_linked_objects_no_infinite_loop(self):
+        profile = LinkedProfile(name='Ua Bê Tshiu Pên')
+        user = LinkedUser(name='Tsuan Sê Kai')
+        user.profile = profile
+        user.validate()

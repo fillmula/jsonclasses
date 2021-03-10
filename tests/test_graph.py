@@ -1,7 +1,7 @@
 from __future__ import annotations
 from datetime import datetime
 from unittest import TestCase
-from tests.classes.blog import User, Post, Comment
+from tests.classes.blog import User, Post
 
 
 class TestGraph(TestCase):
