@@ -51,3 +51,24 @@ class TestGraph(TestCase):
         self.assertEqual(user.posts, [post_new])
         self.assertEqual(post.is_detached, True)
         self.assertEqual(post_new.is_detached, False)
+
+    def test_graph_on_conflict_keep_edited_one(self):
+        post = Post(id=1, name='M Tsai Tai Kha Kui Ê Lang',
+                    updated_at=datetime(2021, 3, 10, 0, 0, 0))
+        user = User(id=1, name='Phuê Ê')
+        user.posts = [post]
+        user._mark_not_new()
+        post._mark_not_new()
+        post_new = Post(id=1, name='Koh Kin Tiu Koh Tsin Ki Thai',
+                        updated_at=datetime(2021, 3, 10, 0, 0, 0))
+        post_new._mark_not_new()
+        user.posts = [post_new]
+        post_new.name = 'Tioh Si Bu Tai'
+        self.assertEqual(user._graph, post_new._graph)
+        self.assertEqual(user._graph.get(user), user)
+        self.assertEqual(user._graph.get(post), post_new)
+        objects = [object for object in user._graph]
+        self.assertEqual(objects, [post_new, user])
+        self.assertEqual(user.posts, [post_new])
+        self.assertEqual(post.is_detached, True)
+        self.assertEqual(post_new.is_detached, False)
