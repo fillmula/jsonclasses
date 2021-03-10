@@ -16,7 +16,8 @@ from .owned_collection_utils import (to_owned_dict, to_owned_list,
                                      unowned_copy_dict, unowned_copy_list)
 from .keypath_utils import concat_keypath, initial_keypath
 from .exceptions import (AbstractJSONClassException, ValidationException,
-                         JSONClassResetError, JSONClassResetNotEnabledError)
+                         JSONClassResetError, JSONClassResetNotEnabledError,
+                         UnlinkableJSONClassException)
 
 
 def __init__(self: JSONClassObject, **kwargs: dict[str, Any]) -> None:
@@ -30,7 +31,11 @@ def __init__(self: JSONClassObject, **kwargs: dict[str, Any]) -> None:
     self._set_initial_status()
     for field in self.__class__.definition.fields:
         setattr(self, field.name, None)
-    self._set(fill_blanks=True, **kwargs)
+    self._set(kwargs, fill_blanks=True)
+    try:
+        self._graph.put(self)
+    except UnlinkableJSONClassException:
+        pass
 
 
 def jsonobject_set(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClassObject:
@@ -42,12 +47,13 @@ def jsonobject_set(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClass
     self, thus you can chain calling with other instance methods.
     """
     self._ensure_not_detached()
-    self._set(fill_blanks=False, **kwargs)
+    self._set(kwargs, fill_blanks=False)
     return self
 
 
-def _set(self: JSONClassObject, fill_blanks: bool = False, **kwargs: dict[str, Any]) -> None:
-    """Set values of a JSON Class object internally."""
+def _set(self: JSONClassObject,
+         kwargs: dict[str, Any], fill_blanks: bool = False) -> None:
+    """Set values of a jsonclass object internally."""
     validator = InstanceOfValidator(self.__class__)
     config = self.__class__.definition.config
     context = TransformingContext(
@@ -283,7 +289,7 @@ def _set_initial_status(self: JSONClassObject) -> None:
     setattr(self, '_is_deleted', False)
     setattr(self, '_previous_values', {})
     setattr(self, '_detached_objects', {})
-    setattr(self, '_graph', ObjectGraph(self))
+    setattr(self, '_graph', ObjectGraph())
 
 
 def _mark_not_new(self: JSONClassObject) -> None:

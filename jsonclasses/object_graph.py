@@ -120,15 +120,22 @@ class ObjectGraph:
     def merged_graph(self: ObjectGraph, graph2: ObjectGraph) -> ObjectGraph:
         """Get a new graph which is a combination of two graphs.
         """
-        pool: set[CompareResult] = set()
+        if self is graph2:
+            return self
+        pool: list[CompareResult] = []
+        self_objs = [object for object in self]
+        g2_objs = [object for object in graph2]
         graph = self.copy()
         for object in graph2:
             if not graph.has(object):
                 graph.put(object)
+            elif graph.get(object) is object:
+                graph.put(object)
             else:
                 result = self.compare(graph.get(object), object)
                 graph.put(result.kept)
-                pool.add(result)
+                if result not in pool:
+                    pool.append(result)
         for result in pool:
             self.alter_links(result)
         for object in graph:
