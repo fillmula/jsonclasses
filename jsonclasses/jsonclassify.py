@@ -246,8 +246,8 @@ def save(self: JSONClassObject,
     modifier is used.
     """
     if not skip_validation:
-        self.validate(all_fields=validate_all_fields)
-    self._setonsave()
+        self.validate(validate_all_fields=validate_all_fields)
+    self._set_on_save()
     self._database_write()
     return self
 
