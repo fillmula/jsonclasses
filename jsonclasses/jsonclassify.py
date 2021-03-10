@@ -590,6 +590,11 @@ def __link_field__(self: JSONClassObject,
 def __link_graph__(self: JSONClassObject, other: JSONClassObject) -> None:
     """
     """
+    try:
+        if not self._graph.has(self):
+            self._graph.put(self)
+    except UnlinkableJSONClassException:
+        pass
     self._graph.merged_graph(other._graph)
 
 

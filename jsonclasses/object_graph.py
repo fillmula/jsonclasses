@@ -123,8 +123,6 @@ class ObjectGraph:
         if self is graph2:
             return self
         pool: list[CompareResult] = []
-        self_objs = [object for object in self]
-        g2_objs = [object for object in graph2]
         graph = self.copy()
         for object in graph2:
             if not graph.has(object):

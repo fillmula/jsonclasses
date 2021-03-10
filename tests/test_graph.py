@@ -23,14 +23,14 @@ class TestGraph(TestCase):
         self.assertEqual(objects, [post, user])
 
     def test_graph_is_merged_on_init(self):
-        post = Post(id=1, name='M Tsai Tai Kha Kui Ê Lang',
+        post = Post(id=1, name='Tsih Ma Khai Si',
                     updated_at=datetime(2021, 3, 10, 0, 0, 0))
-        user = User(id=1, name='Phuê Ê', posts=[post])
+        user = User(id=1, name='Tsu Iu Tsu Tsai', posts=[post])
         self.assertEqual(user._graph, post._graph)
         self.assertEqual(user._graph.get(user), user)
         self.assertEqual(user._graph.get(post), post)
         objects = [object for object in user._graph]
-        self.assertEqual(objects, [post, user])
+        self.assertEqual(objects, [user, post])
 
     def test_graph_on_conflict_keep_new_one(self):
         post = Post(id=1, name='M Tsai Tai Kha Kui Ê Lang',
