@@ -5,6 +5,7 @@ from .validator import Validator
 from ..contexts import ValidatingContext
 from ..field_definition import FieldStorage, FieldType
 from ..config import Config
+from ..isjsonclass import isjsonobject
 
 
 class RequiredValidator(Validator):
@@ -15,27 +16,23 @@ class RequiredValidator(Validator):
 
     def validate(self, context: ValidatingContext) -> None:
         storage = FieldStorage.EMBEDDED
-        list_field = False
         if context.definition is not None:
             storage = context.definition.field_storage
-            list_field = context.definition.field_type == FieldType.LIST
         if storage == FieldStorage.FOREIGN_KEY:  # we don't check foreign key
             return
         if storage == FieldStorage.LOCAL_KEY:
             if context.value is None:  # check key presence
-                config: Config = context.root.__class__.config
-                assert config.local_key is not None
-                local_key = config.local_key(
-                    context.keypath_root,
-                    FieldType.LIST if list_field else FieldType.INSTANCE)
-                from ..json_object import JSONObject
+                config: Config = context.owner.__class__.definition.config
+                ko = context.keypath_owner
+                field = context.owner.__class__.definition.field_named(ko)
+                local_key = config.key_transformer(field)
                 if isinstance(context.parent, dict):
                     if context.parent.get(local_key) is None:
                         raise ValidationException(
                             {context.keypath_root: f'Value at \'{context.keypath_root}\' should not be None.'},
                             context.root
                         )
-                elif isinstance(context.parent, JSONObject):
+                elif isjsonobject(context.parent):
                     try:
                         local_key_value = getattr(context.parent, local_key)
                     except AttributeError:
