@@ -1,9 +1,9 @@
-import unittest
-from jsonclasses import jsonclass, types
+from __future__ import annotations
+from unittest import TestCase
 from tests.classes.role_user import RoleUser
 
 
-class TestReadonlyValidator(unittest.TestCase):
+class TestReadonlyValidator(TestCase):
 
     def test_readonly_will_not_be_set_through_init(self):
         user = RoleUser(username='John', role='I want to change haha XD')
