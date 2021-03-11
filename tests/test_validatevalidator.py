@@ -1,8 +1,8 @@
 import unittest
-from jsonclasses import jsonclass, JSONObject, types
+from jsonclasses import jsonclass, types
 from jsonclasses.exceptions import ValidationException
 
-
+# TODO: rewrite this file
 class TestValidateValidator(unittest.TestCase):
 
     def test_validate_is_fine_when_value_is_valid(self):
