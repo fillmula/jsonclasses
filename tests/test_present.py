@@ -1,23 +1,10 @@
 from __future__ import annotations
 from unittest import TestCase
-from jsonclasses import jsonclass, JSONObject, types, ValidationException
+from jsonclasses.exceptions import ValidationException
+from tests.classes.group_template import Group, Template
 
 
-@jsonclass(class_graph='test_present_1')
-class Group:
-    id: int = types.int.primary
-    name: str
-    template: Template = types.instanceof('Template').linkedby('group').present
-
-
-@jsonclass(class_graph='test_present_1')
-class Template:
-    id: int = types.int.primary
-    name: str
-    group: Group = types.linkto.instanceof('Group').required
-
-
-class TestPresentValidator(TestCase):
+class TestPresent(TestCase):
 
     def test_present_raises_on_blank_foreign_keys(self):
         group = Group(name='group')
