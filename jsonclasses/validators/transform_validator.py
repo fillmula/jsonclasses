@@ -9,7 +9,7 @@ class TransformValidator(Validator):
 
     def __init__(self, transformer: Callable) -> None:
         if not callable(transformer):
-            raise ValueError(f'{transformer} is not a callable')
+            raise ValueError('transformer is not callable')
         self.transformer = transformer
 
     def transform(self, context: TransformingContext) -> Any:
