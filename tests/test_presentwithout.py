@@ -31,7 +31,7 @@ class TestPresentWithout(TestCase):
                          "Value at 'email' should be present since it's "
                          "referring values are not presented.")
 
-    def test_presentwithout_doesnt_raise_if_one_presented(self):
+    def test_presentwithout_doesnt_raise_if_one_of_many_presented(self):
         SimpleContact(email='a@g.com').validate()
         SimpleContact(phone_no='a@g.com').validate()
         SimpleContact(address='a@g.com').validate()
