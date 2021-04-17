@@ -9,6 +9,6 @@ class Settings(TypedDict):
 
 
 @jsonclass
-class DefaultShape:
+class DefaultShapeValue:
     settings: Settings = types.shape(Settings) \
         .default({'ios': False, 'android': True, 'name': 'set'})

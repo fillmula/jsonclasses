@@ -10,6 +10,9 @@ from tests.classes.default_datetime import DefaultDatetime
 from tests.classes.default_str import DefaultStr
 from tests.classes.default_list import DefaultList
 from tests.classes.default_dict import DefaultDict
+from tests.classes.default_shape_value import DefaultShapeValue
+from tests.classes.linked_default_user import LinkedDefaultUser
+from tests.classes.linked_default_post import LinkedDefaultPost
 
 
 class TestDefault(TestCase):
@@ -47,10 +50,16 @@ class TestDefault(TestCase):
         self.assertEqual(default_dict.value, {'a': '1', 'b': '2'})
 
     def test_default_value_appears_in_shape(self):
-        pass
+        default_shape = DefaultShapeValue()
+        self.assertEqual(default_shape.settings,
+                         {'ios': False, 'android': True, 'name': 'set'})
 
     def test_default_value_appears_in_linked_jsonobjects(self):
-        pass
+        user = LinkedDefaultUser(
+            posts=[LinkedDefaultPost(), LinkedDefaultPost()])
+        self.assertEqual(user.name, 'Default User')
+        self.assertEqual(user.posts[0].name, 'Untitled')
+        self.assertEqual(user.posts[1].name, 'Untitled')
 
     def test_nested_default_value_appears_in_shape(self):
         default_shape = DefaultShape(settings={'android': False})
