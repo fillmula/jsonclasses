@@ -38,7 +38,7 @@ class ShapeValidator(TypeValidator):
 
     def define(self, fdesc: FieldDefinition) -> None:
         super().define(fdesc)
-        fdesc.shape_types = self.shape_types
+        fdesc.shape_types = self.raw_types
 
     def validate(self, context: ValidatingContext) -> None:
         if context.value is None:

@@ -6,6 +6,7 @@ from tests.classes.simple_folder import SimpleFolder
 from tests.classes.simple_node import SimpleNode
 from tests.classes.simple_shape_setting import SimpleShapeSetting
 from tests.classes.simple_shorthand_setting import SimpleShorthandSetting
+from tests.classes.default_shape_value import DefaultShapeValue
 
 
 class TestShape(TestCase):
@@ -29,6 +30,14 @@ class TestShape(TestCase):
                                setting.validate)
         setting = SimpleShorthandSetting()
         setting.validate()
+
+    def test_shape_accepts_typed_dict_type(self):
+        value = DefaultShapeValue(
+            settings={'ios': '2', 'android': '2', 'name': '4'})
+        self.assertRaisesRegex(
+            ValidationException,
+            "Value '2' at 'settings.ios' should be bool.",
+            value.validate)
 
     def test_shape_validates_inner_fields(self):
         user = SimpleConfigUser(config={})
