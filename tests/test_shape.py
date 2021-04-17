@@ -4,9 +4,31 @@ from jsonclasses.exceptions import ValidationException
 from tests.classes.simple_config_user import SimpleConfigUser
 from tests.classes.simple_folder import SimpleFolder
 from tests.classes.simple_node import SimpleNode
+from tests.classes.simple_shape_setting import SimpleShapeSetting
+from tests.classes.simple_shorthand_setting import SimpleShorthandSetting
 
 
 class TestShape(TestCase):
+
+    def test_shape_accepts_shorthand_types(self):
+        setting = SimpleShapeSetting()
+        setting.email['auto_send'] = '5'
+        setting.email['receive_promotion'] = '5'
+        self.assertRaisesRegex(ValidationException,
+                               "Value '5' at 'email.auto_send' should be "
+                               "bool.",
+                               setting.validate)
+
+    def test_shape_accepts_optional_shorthand_types(self):
+        setting = SimpleShorthandSetting()
+        setting.email['auto_send'] = '5'
+        setting.email['receive_promotion'] = '5'
+        self.assertRaisesRegex(ValidationException,
+                               "Value '5' at 'email.auto_send' should be "
+                               "bool.",
+                               setting.validate)
+        setting = SimpleShorthandSetting()
+        setting.validate()
 
     def test_shape_validates_inner_fields(self):
         user = SimpleConfigUser(config={})

@@ -1,4 +1,3 @@
-from tests.classes.linked_profile import LinkedProfile
 from typing import Optional, Union
 from unittest import TestCase
 from datetime import datetime, date
@@ -10,6 +9,8 @@ from tests.classes.linked_article import LinkedArticle
 from tests.classes.linked_user import LinkedUser
 from tests.classes.linked_product import LinkedProduct
 from tests.classes.linked_customer import LinkedCustomer
+from tests.classes.linked_profile import LinkedProfile
+from tests.classes.auto_setting import AutoSetting
 
 
 class TestAutoTypes(TestCase):
@@ -381,6 +382,17 @@ class TestAutoTypes(TestCase):
             val: 'Optional[Union[dict[str, bool], float]]'
         object = TestOptionalUnionDictType()
         object.validate()
+
+    def test_auto_generates_nonnull_shape_with_typed_dict(self):
+        setting = AutoSetting()
+        self.assertRaisesRegex(
+            ValidationException,
+            "Value at 'preference.ios' should not be None.",
+            setting.validate)
+
+    def test_auto_generates_nonnull_shape_with_typed_dict_str_form(self):
+        # TODO @jsondict
+        pass
 
     def test_auto_generates_1_to_1_links(self):
         profile_field = LinkedUser.definition.field_named('profile')

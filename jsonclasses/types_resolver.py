@@ -233,12 +233,12 @@ class TypesResolver:
                                 f'expect 2, got {len_args}'))
             types = self.to_types(annotated_args[0], config, optional)
             return self.apply_link_specifier(types, annotated_args[1])
-        elif type(any_types) is type and issubclass(any_types, dict):
+        elif isinstance(any_types, type) and issubclass(any_types, dict):
             anno_dict: dict[str, Any] = any_types.__annotations__
             item_types: dict[str, Types] = {}
             for k, t in anno_dict.items():
                 item_types[k] = self.to_types(t, config)
-            shape_types = types.shape(item_types)
+            shape_types = types.nonnull.shape(item_types)
             return shape_types if optional else shape_types.required
         elif hasattr(any_types, '__is_jsonclass__'):
             instance_type = types.instanceof(any_types)
