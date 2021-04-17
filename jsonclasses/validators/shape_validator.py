@@ -1,5 +1,5 @@
 """module for shape validator."""
-from typing import Any, Sequence, cast
+from typing import Any, Sequence, Union, cast
 from inflection import underscore, camelize
 from ..field_definition import FieldDefinition, FieldType, Nullability, Strictness
 from ..exceptions import ValidationException
@@ -13,7 +13,7 @@ from .type_validator import TypeValidator
 class ShapeValidator(TypeValidator):
     """Shape validator validates a dict of values with defined shape."""
 
-    def __init__(self, shape_types: dict[str, Any]) -> None:
+    def __init__(self, shape_types: Union[dict[str, Any], str, type]) -> None:
         super().__init__()
         self.cls = dict
         self.field_type = FieldType.SHAPE
@@ -125,7 +125,7 @@ class ShapeValidator(TypeValidator):
         for k, t in self.shape_types.items():
             key = camelize(k, False) if context.config.camelize_json_keys else k
             value_at_key = context.value.get(k)
-            types = TypesResolver().resolve_types(t, context.config)
+            types = TypesResolver().resolve_types(t, context.config_owner)
             if types:
                 retval[key] = types.validator.tojson(context.new(value=value_at_key))
             else:
@@ -140,7 +140,8 @@ class ShapeValidator(TypeValidator):
         retval = {}
         for key, raw_types in self.shape_types.items():
             value_at_key = context.value.get(key)
-            types = resolve_types(raw_types, context.config_owner.cls)
+            types = TypesResolver() \
+                .resolve_types(raw_types, context.config_owner)
             if types:
                 retval[key] = types.validator.serialize(context.new(
                     value=value_at_key,

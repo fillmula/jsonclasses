@@ -8,6 +8,8 @@ from tests.classes.simple_book import SimpleBook
 from tests.classes.default_date import DefaultDate
 from tests.classes.default_datetime import DefaultDatetime
 from tests.classes.default_str import DefaultStr
+from tests.classes.default_list import DefaultList
+from tests.classes.default_dict import DefaultDict
 
 
 class TestDefault(TestCase):
@@ -37,10 +39,12 @@ class TestDefault(TestCase):
         self.assertEqual(default_date.value, date(2000, 1, 20))
 
     def test_default_value_appears_in_list(self):
-        pass
+        default_list = DefaultList()
+        self.assertEqual(default_list.value, ['1', '2', '3'])
 
     def test_default_value_appears_in_dict(self):
-        pass
+        default_dict = DefaultDict()
+        self.assertEqual(default_dict.value, {'a': '1', 'b': '2'})
 
     def test_default_value_appears_in_shape(self):
         pass
