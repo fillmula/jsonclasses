@@ -121,3 +121,14 @@ class JSONClassGraph:
         else:
             name = name_or_class
         return self._map.get(name) is not None
+
+    def put_dict(self: JSONClassGraph, dict_class: type[dict]) -> None:
+        pass
+
+    def fetch_dict(self: JSONClassGraph,
+                   dc_or_name: Union[type[dict], str]) -> type[dict]:
+        pass
+
+    def has_dict(self: JSONClassGraph,
+                 dc_or_name: Union[type[dict], str]) -> bool:
+        pass
