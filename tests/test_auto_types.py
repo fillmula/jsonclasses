@@ -11,6 +11,7 @@ from tests.classes.linked_product import LinkedProduct
 from tests.classes.linked_customer import LinkedCustomer
 from tests.classes.linked_profile import LinkedProfile
 from tests.classes.auto_setting import AutoSetting
+from tests.classes.auto_str_setting import AutoStrSetting
 
 
 class TestAutoTypes(TestCase):
@@ -391,8 +392,11 @@ class TestAutoTypes(TestCase):
             setting.validate)
 
     def test_auto_generates_nonnull_shape_with_typed_dict_str_form(self):
-        # TODO @jsondict
-        pass
+        setting = AutoStrSetting()
+        self.assertRaisesRegex(
+            ValidationException,
+            "Value at 'preference.ios' should not be None.",
+            setting.validate)
 
     def test_auto_generates_1_to_1_links(self):
         profile_field = LinkedUser.definition.field_named('profile')

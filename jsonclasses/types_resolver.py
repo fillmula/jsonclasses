@@ -3,8 +3,8 @@ auto synthenizer. This is used for figuring out a JSON class field's types
 definition.
 """
 from __future__ import annotations
-from typing import (Any, Optional, Union, Annotated, final, get_args,
-                    get_origin, TYPE_CHECKING)
+from typing import (Any, ForwardRef, Optional, Union, Annotated, final,
+                    get_args, get_origin, TYPE_CHECKING)
 from datetime import date, datetime
 from re import match, split
 if TYPE_CHECKING:
@@ -169,7 +169,7 @@ class TypesResolver:
                 return instance_type if optional else instance_type.required
             elif graph.has_dict(any_types):
                 dict_cls = graph.fetch_dict(any_types)
-                shape_type = types.shape(dict_cls)
+                shape_type = types.nonnull.shape(dict_cls)
                 return shape_type if optional else shape_type.required
             elif isinstance(any_types, str):
                 instance_type = types.instanceof(any_types)
@@ -248,6 +248,8 @@ class TypesResolver:
         elif hasattr(any_types, '__is_jsonclass__'):
             instance_type = types.instanceof(any_types)
             return instance_type if optional else instance_type.required
+        elif isinstance(any_types, ForwardRef):
+            return self.str_to_types(any_types.__forward_arg__, config)
         else:
             raise ValueError(f'{any_types} is not a valid JSON Class type.')
 
