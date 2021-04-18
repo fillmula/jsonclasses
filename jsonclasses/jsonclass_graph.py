@@ -46,6 +46,7 @@ class JSONClassGraph:
         self._name: str = name
         self._map: dict[str, ClassDefinition] = {}
         self._dict_map: dict[str, type[dict]] = {}
+        self._enum_map: dict[str, type] = {}
         self._default_config = Config(class_graph=self.name,
                                       camelize_json_keys=True,
                                       camelize_db_keys=True,
@@ -180,3 +181,58 @@ class JSONClassGraph:
         else:
             name = dc_or_name
         return self._dict_map.get(name) is not None
+
+    def put_enum(self: JSONClassGraph, enum_class: type) -> None:
+        """Put a enum class onto this class graph.
+
+        Args:
+            enum_class (type): The enum class which will be put onto this
+            graph.
+
+        Raises:
+            JSONClassRedefinitionException: This exception is raised if a \
+                new enum class with existing name is defined.
+        """
+        exist_def = self._enum_map.get(enum_class.__name__)
+        if exist_def:
+            raise JSONClassTypedDictRedefinitionException(enum_class,
+                                                          exist_def.cls)
+        self._enum_map[enum_class.__name__] = enum_class
+
+    def fetch_enum(self: JSONClassGraph,
+                   ec_or_name: Union[type[dict], str]) -> type[dict]:
+        """Fetch a enum class by it's name from this class graph.
+
+        Args:
+            ec_or_name (Union[type[dict], str]): The name of the enum class to
+            be fetched or the class itself.
+
+        Raises:
+            JSONClassNotFoundException: This exception is raised if a class \
+                definition with `name` is not found.
+        """
+        if isinstance(ec_or_name, type):
+            name = ec_or_name.__name__
+        else:
+            name = ec_or_name
+        try:
+            return self._enum_map[name]
+        except KeyError:
+            raise JSONClassTypedDictNotFoundException(name, self.name)
+
+    def has_enum(self: JSONClassGraph,
+                 ec_or_name: Union[type[dict], str]) -> bool:
+        """Test if a enum class with name is registered in the graph.
+
+        Args:
+            ec_or_name (Union[type[dict], str]): The name of the enum class to
+            be fetched or the class itself.
+
+        Returns:
+            bool: Returns True if this enum class is registered in the graph.
+        """
+        if isinstance(ec_or_name, type):
+            name = ec_or_name.__name__
+        else:
+            name = ec_or_name
+        return self._enum_map.get(name) is not None
