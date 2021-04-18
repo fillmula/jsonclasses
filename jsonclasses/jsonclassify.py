@@ -112,6 +112,7 @@ def tojson(self: JSONClassObject,
     config = self.__class__.definition.config
     context = ToJSONContext(value=self,
                             config=config,
+                            definition=None,
                             ignore_writeonly=ignore_writeonly)
     return validator.tojson(context)
 

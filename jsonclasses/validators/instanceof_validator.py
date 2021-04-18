@@ -239,6 +239,7 @@ class InstanceOfValidator(Validator):
                 continue
             item_context = context.new(
                 value=field_value,
+                definition=field.definition,
                 entity_chain=[*entity_chain, cls_name])
             retval[jf_name] = field.types.validator.tojson(item_context)
         return retval

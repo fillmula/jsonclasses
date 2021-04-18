@@ -1,7 +1,7 @@
 """This is an internal module."""
 from __future__ import annotations
 from typing import Any, Optional, Union, TYPE_CHECKING
-from enum import Enum
+from enum import Enum, Flag
 from dataclasses import dataclass
 from .types_resolver import TypesResolver
 if TYPE_CHECKING:
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 class FieldType(Enum):
-    """An Enum class represents JSON Class field's type.
+    """Defined field types of jsonclass fields.
     """
 
     STR = 'str'
@@ -19,6 +19,7 @@ class FieldType(Enum):
     BOOL = 'bool'
     DATE = 'date'
     DATETIME = 'datetime'
+    ENUM = 'enum'
     LIST = 'list'
     DICT = 'dict'
     SHAPE = 'shape'
@@ -28,7 +29,7 @@ class FieldType(Enum):
 
 
 class FieldStorage(Enum):
-    """An Enum class represents JSON Class field's storage.
+    """Defined field storage types of jsonclass fields.
     """
 
     EMBEDDED = 'embedded'
@@ -73,6 +74,22 @@ class Strictness(Enum):
     UNSTRICT = 'unstrict'
 
 
+class EnumInput(Flag):
+    NAME = 1
+    VALUE = 2
+    LOWERCASE_NAME = 4
+    NAME_VALUE = NAME | VALUE
+    ANYCASE_NAME = NAME | LOWERCASE_NAME
+    LOWERCASE_NAME_VALUE = LOWERCASE_NAME | VALUE
+    ALL = NAME | VALUE | LOWERCASE_NAME
+
+
+class EnumOutput(Enum):
+    NAME = 'name'
+    VALUE = 'value'
+    LOWERCASE_NAME = 'lowercase_name'
+
+
 @dataclass
 class FieldDefinition:  # pylint: disable=too-many-instance-attributes
     """The description of a JSON Class field. It is generated as specifying the
@@ -92,6 +109,11 @@ class FieldDefinition:  # pylint: disable=too-many-instance-attributes
     index: bool = False
     unique: bool = False
     required: bool = False
+
+    # enum marks
+    enum_class: Optional[Union[type, str]] = None
+    enum_input: Optional[EnumInput] = None
+    enum_output: Optional[EnumOutput] = None
 
     # union marks
     union_types: Optional[list[Types]] = None

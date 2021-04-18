@@ -141,6 +141,7 @@ class ToJSONContext(NamedTuple):
     """
     value: Any
     config: Config
+    definition: Optional[FieldDefinition] = None
     ignore_writeonly: bool = False
     entity_chain: list[str] = []  # for circular tojson strip duplicated refs
 
@@ -150,6 +151,9 @@ class ToJSONContext(NamedTuple):
         return ToJSONContext(
             value=kwargs['value'] if 'value' in keys else self.value,
             config=kwargs['config'] if 'config' in keys else self.config,
+            definition=(kwargs['definition']
+                        if 'definition' in keys
+                        else self.definition),
             ignore_writeonly=(kwargs['ignore_writeonly']
                               if 'ignore_writeonly' in keys
                               else self.ignore_writeonly),
