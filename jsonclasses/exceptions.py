@@ -58,12 +58,52 @@ class JSONClassRedefinitionException(Exception):
         super().__init__(message)
 
 
+class JSONClassTypedDictRedefinitionException(Exception):
+    """This exception is raised when user defines a typed dict with a name that
+    exists before in the same graph.
+    """
+
+    def __init__(self, new_class: type, exist_class: type) -> None:
+        """Create an exception that notifies the user that a typed dict class
+        with duplicated name is defined twice.
+
+        Args:
+            new_class (type): The new class which is putting on the graph.
+            exist_class(type): The existing class which the user defined.
+        """
+        name = new_class.__name__
+        original_module = getmodule(exist_class)
+        assert original_module is not None
+        original_file = original_module.__file__
+        original_line = getsourcelines(exist_class)[1]
+        new_module = getmodule(new_class)
+        assert new_module is not None
+        new_file = new_module.__file__
+        new_line = getsourcelines(new_class)[1]
+        graph = exist_class.definition.config.class_graph
+        message = (f'jsonclass typed dict name conflict in graph `{graph}`: '
+                   f'exist `{name}` defined at '
+                   f'`{original_file}:{original_line}`, '
+                   f'new `{name}` defined at `{new_file}:{new_line}`')
+        super().__init__(message)
+
+
 class JSONClassNotFoundException(Exception):
     """This exception is raised when a JSON class with name is not found on a
     graph.
     """
     def __init__(self, class_name: str, graph_name: str):
         message = (f'JSON Class with name \'{class_name}\' in graph '
+                   f'\'{graph_name}\' is not found.')
+        super().__init__(message)
+
+
+class JSONClassTypedDictNotFoundException(Exception):
+    """This exception is raised when a typed dict with name is not found on a
+    graph.
+    """
+    def __init__(self, class_name: str, graph_name: str):
+        message = (f'jsonclass typed dict with name \'{class_name}\' in graph '
                    f'\'{graph_name}\' is not found.')
         super().__init__(message)
 

@@ -166,9 +166,14 @@ class TypesResolver:
             if graph.has(any_types):
                 definition = graph.fetch(any_types)
                 instance_type = types.instanceof(definition.cls)
+                return instance_type if optional else instance_type.required
+            elif graph.has_dict(any_types):
+                dict_cls = graph.fetch_dict(any_types)
+                shape_type = types.shape(dict_cls)
+                return shape_type if optional else shape_type.required
             elif isinstance(any_types, str):
                 instance_type = types.instanceof(any_types)
-            return instance_type if optional else instance_type.required
+                return instance_type if optional else instance_type.required
 
     def to_types(self: TypesResolver,
                  any_types: Any,

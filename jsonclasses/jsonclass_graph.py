@@ -5,7 +5,9 @@ from typing import Union, final, TYPE_CHECKING
 from .config import Config
 from .keypath_utils import reference_key
 from .exceptions import (JSONClassRedefinitionException,
-                         JSONClassNotFoundException)
+                         JSONClassTypedDictRedefinitionException,
+                         JSONClassNotFoundException,
+                         JSONClassTypedDictNotFoundException)
 if TYPE_CHECKING:
     from .class_definition import ClassDefinition
 
@@ -43,6 +45,7 @@ class JSONClassGraph:
             return
         self._name: str = name
         self._map: dict[str, ClassDefinition] = {}
+        self._dict_map: dict[str, type[dict]] = {}
         self._default_config = Config(class_graph=self.name,
                                       camelize_json_keys=True,
                                       camelize_db_keys=True,
@@ -123,12 +126,57 @@ class JSONClassGraph:
         return self._map.get(name) is not None
 
     def put_dict(self: JSONClassGraph, dict_class: type[dict]) -> None:
-        pass
+        """Put a typed dict class onto this class graph.
+
+        Args:
+            dict_class (type): The typed dict class which will be put onto this
+            graph.
+
+        Raises:
+            JSONClassRedefinitionException: This exception is raised if a \
+                new typed dict class with existing name is defined.
+        """
+        exist_def = self._dict_map.get(dict_class.__name__)
+        if exist_def:
+            raise JSONClassTypedDictRedefinitionException(dict_class,
+                                                          exist_def.cls)
+        self._dict_map[dict_class.__name__] = dict_class
 
     def fetch_dict(self: JSONClassGraph,
                    dc_or_name: Union[type[dict], str]) -> type[dict]:
-        pass
+        """Fetch a typed dict class by it's name from this class graph.
+
+        Args:
+            dc_or_name (Union[type[dict], str]): The name of the typed dict
+            class to be fetched or the class itself.
+
+        Raises:
+            JSONClassNotFoundException: This exception is raised if a class \
+                definition with `name` is not found.
+        """
+        if isinstance(dc_or_name, type):
+            name = dc_or_name.__name__
+        else:
+            name = dc_or_name
+        try:
+            return self._dict_map[name]
+        except KeyError:
+            raise JSONClassTypedDictNotFoundException(name, self.name)
 
     def has_dict(self: JSONClassGraph,
                  dc_or_name: Union[type[dict], str]) -> bool:
-        pass
+        """Test if a typed dict class with name is registered in the graph.
+
+        Args:
+            dc_or_name (Union[type[dict], str]): The name of the typed dict
+            class to be fetched or the class itself.
+
+        Returns:
+            bool: Returns True if this typed dict class is registered in the
+            graph.
+        """
+        if isinstance(dc_or_name, type):
+            name = dc_or_name.__name__
+        else:
+            name = dc_or_name
+        return self._dict_map.get(name) is not None
