@@ -60,6 +60,16 @@ from .bool_validator import BoolValidator
 from .date_validator import DateValidator
 from .datetime_validator import DatetimeValidator
 
+# enum validators
+from .enum_validator import EnumValidator
+from .inputvalue_validator import InputValueValidator
+from .inputname_validator import InputNameValidator
+from .inputlname_validator import InputLnameValidator
+from .inputall_validator import InputAllValidator
+from .outputvalue_validator import OutputValueValidator
+from .outputname_validator import OutputNameValidator
+from .outputlname_validator import OutputLnameValidator
+
 # collection validators
 from .listof_validator import ListOfValidator
 from .dictof_validator import DictOfValidator

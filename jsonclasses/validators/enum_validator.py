@@ -1,4 +1,4 @@
-"""module for date validator."""
+"""module for enum validator."""
 from typing import Any, Union
 from ..field_definition import (FieldType, FieldDefinition, EnumInput,
                                 EnumOutput)

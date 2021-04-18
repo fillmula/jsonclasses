@@ -6,8 +6,10 @@ from .field_definition import FieldDefinition
 from .validators import (UseForValidator, BoolValidator, ChainedValidator,
                          CompareValidator, DateValidator, DatetimeValidator,
                          DefaultValidator, DictOfValidator, EagerValidator,
-                         EmbeddedValidator,
-                         FloatValidator, IndexValidator, InstanceOfValidator,
+                         EmbeddedValidator, EnumValidator,
+                         FloatValidator, IndexValidator, InputAllValidator,
+                         InputNameValidator, InputLnameValidator,
+                         InputValueValidator, InstanceOfValidator,
                          IntValidator, InvalidValidator, LengthValidator,
                          LinkedByValidator, LinkedInValidator,
                          LinkedThruValidator, LinkToValidator, ListOfValidator,
@@ -15,17 +17,19 @@ from .validators import (UseForValidator, BoolValidator, ChainedValidator,
                          MinValidator, MinlengthValidator, NegativeValidator,
                          NonnullValidator, NullableValidator, OneOfValidator,
                          OneOfTypeValidator, OnWriteValidator, OnSaveValidator,
-                         OnUpdateValidator, PositiveValidator,
-                         PresentValidator, PresentWithValidator,
-                         PresentWithoutValidator, PreserializeValidator,
-                         PrimaryValidator, RangeValidator, ReadonlyValidator,
-                         ReadwriteValidator, RefereeValidator,
-                         ReferrerValidator, RequiredValidator, ResetValidator,
-                         SetOnSaveValidator, ShapeValidator, StrValidator,
-                         StrictValidator, TempValidator, TransformValidator,
-                         TrimValidator, TruncateValidator, UniqueValidator,
-                         ValidateValidator, Validator, WriteNonnullValidator,
-                         WriteonceValidator, WriteonlyValidator)
+                         OnUpdateValidator, OutputLnameValidator,
+                         OutputNameValidator, OutputValueValidator,
+                         PositiveValidator, PresentValidator,
+                         PresentWithValidator, PresentWithoutValidator,
+                         PreserializeValidator, PrimaryValidator,
+                         RangeValidator, ReadonlyValidator, ReadwriteValidator,
+                         RefereeValidator, ReferrerValidator,
+                         RequiredValidator, ResetValidator, SetOnSaveValidator,
+                         ShapeValidator, StrValidator, StrictValidator,
+                         TempValidator, TransformValidator, TrimValidator,
+                         TruncateValidator, UniqueValidator, ValidateValidator,
+                         Validator, WriteNonnullValidator, WriteonceValidator,
+                         WriteonlyValidator)
 
 Str = str
 Int = int
@@ -334,6 +338,59 @@ class Types:
         marker.
         """
         return Types(self, DatetimeValidator())
+
+    def enum(self, enum_class: Union[type, str]) -> Types:
+        """Fields marked with enum should be enum value of provided enum type.
+        This is a type marker.
+        """
+        return Types(self, EnumValidator(enum_class))
+
+    @property
+    def inputall(self) -> Types:
+        """Inputall makes enum field to accept all kinds of acceptable enum
+        values in any forms.
+        """
+        return Types(self, InputAllValidator())
+
+    @property
+    def inputlname(self) -> Types:
+        """Inputlname makes enum field to accept enum's lowercase name as
+        input.
+        """
+        return Types(self, InputLnameValidator())
+
+    @property
+    def inputname(self) -> Types:
+        """Inputlname makes enum field to accept enum's uppercase name as
+        input.
+        """
+        return Types(self, InputNameValidator())
+
+    @property
+    def inputvalue(self) -> Types:
+        """Inputlname makes enum field to accept enum's value as input.
+        """
+        return Types(self, InputValueValidator())
+
+    @property
+    def outputlname(self) -> Types:
+        """Outputlname makes enum field to output lowercase name as display
+        value.
+        """
+        return Types(self, OutputLnameValidator())
+
+    @property
+    def outputname(self) -> Types:
+        """Outputname makes enum field to output uppercase name as display
+        value.
+        """
+        return Types(self, OutputNameValidator())
+
+    @property
+    def outputvalue(self) -> Types:
+        """Outputvalue makes enum field to output value as display value.
+        """
+        return Types(self, OutputValueValidator())
 
     def listof(self, item_types: Any) -> Types:
         """Fields marked with listof should be a list of the given type. This
