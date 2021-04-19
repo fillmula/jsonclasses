@@ -45,15 +45,15 @@ class EnumValidator(Validator):
                     return enum_class[context.value]
                 except KeyError:
                     pass
-            elif enum_input.__contains__(EnumInput.LOWERCASE_NAME):
+            if enum_input.__contains__(EnumInput.LOWERCASE_NAME):
                 try:
                     return enum_class[context.value.upper()]
                 except KeyError:
                     pass
-            else:
-                raise ValidationException({
-                    context.keypath_root: 'unknown enum value'
-                }, context.root)
+
+            raise ValidationException({
+                context.keypath_root: 'unknown enum value'
+            }, context.root)
         else:
             raise ValidationException({
                 context.keypath_root: 'unknown enum value'

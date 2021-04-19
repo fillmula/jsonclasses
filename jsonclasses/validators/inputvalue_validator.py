@@ -10,5 +10,5 @@ class InputValueValidator(Validator):
         if fdesc.enum_input is None:
             fdesc.enum_input = EnumInput.VALUE
         else:
-            fdesc.enum_input = fdesc.enum_input | EnumInput.NAME
+            fdesc.enum_input = fdesc.enum_input | EnumInput.VALUE
         return
