@@ -41,6 +41,7 @@ def jsondict(
             raise ValueError('@jsondict should be used to decorate a class.')
         class_graph = JSONClassGraph(class_graph)
         class_graph.put_dict(cls)
+        return cls
     else:
         def parametered_jsondict(cls):
             return jsondict(

@@ -41,9 +41,10 @@ def jsonenum(
             raise ValueError('@jsonenum should be used to decorate a class.')
         class_graph = JSONClassGraph(class_graph)
         class_graph.put_enum(cls)
+        return cls
     else:
-        def parametered_jsondict(cls):
+        def parametered_jsonenum(cls):
             return jsonenum(
                 cls,
                 class_graph=class_graph)
-        return parametered_jsondict
+        return parametered_jsonenum
