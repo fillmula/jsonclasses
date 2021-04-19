@@ -1,78 +1,33 @@
-import unittest
-from jsonclasses import jsonclass, types
+from __future__ import annotations
+from unittest import TestCase
 from jsonclasses.exceptions import ValidationException
+from tests.classes.valid_password import (ValidPassword, ValidPasswordMessage,
+                                          CValidPassword)
 
-# TODO: rewrite this file
-class TestValidateValidator(unittest.TestCase):
 
-    def test_validate_is_fine_when_value_is_valid(self):
-        @jsonclass(class_graph='test_validate_1')
-        class User:
-            email: str = types.str.validate(lambda e: None if len(e) == 3 else 'totally wrong').required
-        user = User(email='abc')
+class TestValidateValidator(TestCase):
+
+    def test_validate_is_fine_when_validator_returns_true(self):
+        pw = ValidPassword(name='Li Si', password='0000')
         try:
-            user.validate()
+            pw.validate()
         except ValidationException:
             self.fail('validate should be fine if value is valid')
 
-    def test_validate_throws_when_value_is_invalid(self):
-        @jsonclass(class_graph='test_validate_2')
-        class User:
-            email: str = types.str.validate(lambda e: None if len(e) == 3 else 'totally wrong').required
-        user = User(email='abcd')
-        self.assertRaisesRegex(ValidationException, 'totally wrong', user.validate)
+    def test_validate_raises_default_msg_when_validator_returns_false(self):
+        pw = ValidPassword(name='Li Si', password='000')
+        self.assertRaisesRegex(ValidationException,
+                               'invalid value',
+                               pw.validate)
 
-    def test_validate_is_fine_with_two_args_when_value_is_valid(self):
-        @jsonclass(class_graph='test_validate_3')
-        class User:
-            email: str = types.str.validate(lambda e, k: None if len(e) == 3 else f'totally wrong {k}').required
-        user = User(email='abc')
-        try:
-            user.validate()
-        except ValidationException:
-            self.fail('validate should be fine if value is valid')
+    def test_validate_raises_if_validator_returns_str(self):
+        pw = ValidPasswordMessage(name='Li Si', password='000')
+        self.assertRaisesRegex(ValidationException, 'wrong', pw.validate)
 
-    def test_validate_throws__with_two_args_when_value_is_invalid(self):
-        @jsonclass(class_graph='test_validate_4')
-        class User:
-            email: str = types.str.validate(lambda e, k: None if len(e) == 3 else f'totally wrong {k}').required
-        user = User(email='abcd')
-        self.assertRaisesRegex(ValidationException, 'totally wrong email', user.validate)
+    def test_validate_is_fine_when_validator_returns_none(self):
+        pw = ValidPasswordMessage(name='Li Si', password='0000')
+        pw.validate()
 
-    def test_validate_is_fine_with_three_args_when_value_is_valid(self):
-        @jsonclass(class_graph='test_validate_5')
-        class User:
-            phone: str = '9'
-            email: str = types.str.validate(lambda e, k, p: None if p.phone == '9' else f'totally wrong {k}').required
-        user = User(email='abc')
-        try:
-            user.validate()
-        except ValidationException:
-            self.fail('validate should be fine if value is valid')
-
-    def test_validate_throws__with_three_args_when_value_is_invalid(self):
-        @jsonclass(class_graph='test_validate_6')
-        class User:
-            phone: str = '9'
-            email: str = types.str.validate(lambda e, k, p: None if p.phone != '9' else f'totally wrong {k}').required
-        user = User(email='abcd')
-        self.assertRaisesRegex(ValidationException, 'totally wrong email', user.validate)
-
-    def test_validate_is_fine_with_four_args_when_value_is_valid(self):
-        @jsonclass(class_graph='test_validate_7')
-        class User:
-            phone: str = '9'
-            email: str = types.str.validate(lambda e, k, p, c: None if c.root.phone == '9' else f'totally wrong {k}').required
-        user = User(email='abc')
-        try:
-            user.validate()
-        except ValidationException:
-            self.fail('validate should be fine if value is valid')
-
-    def test_validate_throws__with_four_args_when_value_is_invalid(self):
-        @jsonclass(class_graph='test_validate_8')
-        class User:
-            phone: str = '9'
-            email: str = types.str.validate(lambda e, k, p, c: None if c.root.phone != '9' else f'totally wrong {k}').required
-        user = User(email='abcd')
-        self.assertRaisesRegex(ValidationException, 'totally wrong email', user.validate)
+    def test_validate_can_also_accept_context(self):
+        pw = CValidPassword(name='Li Si', password='0000')
+        pw.validate()

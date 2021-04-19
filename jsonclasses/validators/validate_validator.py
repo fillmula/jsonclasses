@@ -17,21 +17,20 @@ class ValidateValidator(Validator):
         if params_len == 1:
             result = self.validate_callable(context.value)
         elif params_len == 2:
-            result = self.validate_callable(context.value,
-                                            context.keypath_parent)
-        elif params_len == 3:
-            result = self.validate_callable(context.value,
-                                            context.keypath_parent,
-                                            context.parent)
-        elif params_len == 4:
-            result = self.validate_callable(context.value,
-                                            context.keypath_parent,
-                                            context.parent,
-                                            context)
+            result = self.validate_callable(context.value, context)
         else:
             raise ValueError('wrong number of arguments provided to validate '
                              'validator.')
-        if result is not None:
+        if result is None:
+            return
+        if result is True:
+            return
+        if result is False:
+            raise ValidationException(
+                keypath_messages={context.keypath_root: 'invalid value'},
+                root=context.root)
+        if isinstance(result, str):
             raise ValidationException(
                 keypath_messages={context.keypath_root: result},
                 root=context.root)
+        raise ValueError('invalid validator')
