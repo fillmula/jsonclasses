@@ -11,12 +11,17 @@ class OnWriteValidator(Validator):
     """
 
     def __init__(self, callback: Callable) -> None:
+        if not callable(callback):
+            raise ValueError('onwrite callback is not callable')
+        params_len = len(signature(callback).parameters)
+        if params_len > 2:
+            raise ValueError('not a valid onwrite callback')
         self.callback = callback
 
     def serialize(self, context: TransformingContext) -> Any:
-        from ..orm_object import ORMObject
+        from ..jsonclass_object import JSONClassObject
         name = context.keypath_parent
-        parent = cast(ORMObject, context.parent)
+        parent = cast(JSONClassObject, context.parent)
         if not parent.is_new and name not in parent.modified_fields:
             return context.value
         params_len = len(signature(self.callback).parameters)
@@ -25,18 +30,5 @@ class OnWriteValidator(Validator):
         elif params_len == 1:
             self.callback(context.value)
         elif params_len == 2:
-            self.callback(context.value,
-                          context.keypath_parent)
-        elif params_len == 3:
-            self.callback(context.value,
-                          context.keypath_parent,
-                          context.parent)
-        elif params_len == 4:
-            self.callback(context.value,
-                          context.keypath_parent,
-                          context.parent,
-                          context)
-        else:
-            raise ValueError('wrong number of arguments provided to onwrite '
-                             'validator.')
+            self.callback(context.value, context)
         return context.value

@@ -7,6 +7,7 @@ from jsonclasses import jsonclass, types
 class TransformName:
     name: Optional[str] = types.str.transform(lambda s: s + 'q')
 
+
 @jsonclass
 class CTransformName:
     name: Optional[str] = types.str.transform(lambda s, c: s + c.value)
