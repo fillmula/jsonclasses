@@ -1,15 +1,18 @@
 from __future__ import annotations
 from unittest import TestCase
-from jsonclasses import jsonclass, types
+from tests.classes.transform_name import TransformName, CTransformName
 
 
 class TestTransform(TestCase):
 
-    def test_transform_raises_if_param_is_not_callable(self):
-        with self.assertRaisesRegex(ValueError, 'transformer is not callable'):
-            @jsonclass
-            class WrongTransform:
-                name: str = types.str.transform(5).required
+    def test_transform_wont_handle_none(self):
+        name = TransformName(name=None)
+        self.assertEqual(name.name, None)
 
-    def test_transformer(self):
-        pass
+    def test_transform_transforms_with_1_param(self):
+        name = TransformName(name='Thuan I')
+        self.assertEqual(name.name, 'Thuan Iq')
+
+    def test_transform_transforms_takes_optional_context(self):
+        name = CTransformName(name='Ua Ai Kai Nang')
+        self.assertEqual(name.name, 'Ua Ai Kai NangUa Ai Kai Nang')

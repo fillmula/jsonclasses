@@ -10,17 +10,21 @@ class ValidateValidator(Validator):
     """Validate validator takes a validator."""
 
     def __init__(self, validate_callable: Callable) -> None:
+        if not callable(validate_callable):
+            raise ValueError('validator is not callable')
+        params_len = len(signature(validate_callable).parameters)
+        if params_len > 2 or params_len < 1:
+            raise ValueError('not a valid validator')
         self.validate_callable = validate_callable
 
     def validate(self, context: ValidatingContext) -> None:
+        if context.value is None:
+            return
         params_len = len(signature(self.validate_callable).parameters)
         if params_len == 1:
             result = self.validate_callable(context.value)
         elif params_len == 2:
             result = self.validate_callable(context.value, context)
-        else:
-            raise ValueError('wrong number of arguments provided to validate '
-                             'validator.')
         if result is None:
             return
         if result is True:
