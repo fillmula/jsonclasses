@@ -9,6 +9,11 @@ class OnSaveValidator(Validator):
     """On save validator is called when saving is triggered."""
 
     def __init__(self, callback: Callable) -> None:
+        if not callable(callback):
+            raise ValueError('onsave argument is not callable')
+        params_len = len(signature(callback).parameters)
+        if params_len > 1:
+            raise ValueError('not a valid onsave callable')
         self.callback = callback
 
     def serialize(self, context: TransformingContext) -> Any:
@@ -17,7 +22,4 @@ class OnSaveValidator(Validator):
             self.callback()
         elif params_len == 1:
             self.callback(context.value)
-        else:
-            raise ValueError('wrong number of arguments provided to onsave '
-                             'validator.')
         return context.value
