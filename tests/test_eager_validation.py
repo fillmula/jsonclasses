@@ -86,12 +86,12 @@ class TestEagerValidation(TestCase):
         user = EvUserD(passwords={'a': '123', 'b': '456', 'c': '789', 'd': '012'})
         try:
             user.validate()
-        except:
+        except ValidationException:
             self.fail('eager validator should not throw if not validation task after eager mark')
 
     def test_eager_validator_should_lazy_validate_when_validate_inside_shape(self):
         user = EvUserS(passwords={'a': '123', 'b': '456'})
         try:
             user.validate()
-        except:
+        except ValidationException:
             self.fail('eager validator should not throw if not validation task after eager mark')
