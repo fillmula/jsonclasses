@@ -80,7 +80,7 @@ class TestPreserializeValidator(TestCase):
     def test_preserialize_validator_should_validate_and_throw_inside_dict(self):
         with self.assertRaises(ValidationException) as context:
             user = PsUserDE(counts={'a': 123, 'b': 456})
-            user._setonsave()
+            user._set_on_save()
         exception = context.exception
         self.assertEqual(exception.keypath_messages['counts.a'], "Value at 'counts.a' should not be None.")
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from unittest import TestCase
 from typing import List, Dict, Optional
-from jsonclasses import jsonclass, JSONObject, types
+from jsonclasses import jsonclass, types
 from jsonclasses.exceptions import ValidationException
 
 
@@ -190,8 +190,8 @@ class TestInstanceOfValidator(TestCase):
         self.assertIsInstance(user.addresses[0], Address)
         self.assertIsInstance(user.addresses[1], Address)
         self.assertEqual(len(user.addresses), 2)
-        self.assertEqual(user.addresses[0].__fdict__, {'line1': 'London', 'line2': 'Road'})
-        self.assertEqual(user.addresses[1].__fdict__, {'line1': 'Paris', 'line2': 'Road'})
+        self.assertEqual(user.addresses[0]._data_dict, {'line1': 'London', 'line2': 'Road'})
+        self.assertEqual(user.addresses[1]._data_dict, {'line1': 'Paris', 'line2': 'Road'})
 
     def test_instanceof_validator_validates_instances_inside_list(self):
         @jsonclass(class_graph='test_instanceof_5')
