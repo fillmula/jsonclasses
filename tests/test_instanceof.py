@@ -305,34 +305,6 @@ class TestInstanceOfValidator(TestCase):
         self.assertIsInstance(staff.users['a'], User)
         self.assertEqual(staff.users['a'].name, 'Valy')
 
-    def test_instanceof_validates_in_list_without_assigning_a_types(self):
-        @jsonclass(class_graph='test_instanceof_11')
-        class Staff:
-            position: str
-            users: List[User]
-
-        @jsonclass(class_graph='test_instanceof_11')
-        class User:
-            name: str
-            staffs: List[Staff]
-        user = User(**{'name': 'John', 'staffs': [{'position': 'CEO'}, None, {'position': 'CSO'}]})
-        with self.assertRaisesRegex(ValidationException, 'Value at \'staffs\\.1\' should not be None\\.'):
-            user.validate()
-
-    def test_instanceof_validates_in_dict_without_assigning_a_types(self):
-        @jsonclass(class_graph='test_instanceof_12')
-        class Staff:
-            position: str
-            users: Dict[str, User]
-
-        @jsonclass(class_graph='test_instanceof_12')
-        class User:
-            name: str
-            staffs: Dict[str, Staff]
-        user = User(**{'name': 'John', 'staffs': {'a': {'position': 'CEO'}, 'b': None, 'c': {'position': 'CSO'}}})
-        with self.assertRaisesRegex(ValidationException, 'Value at \'staffs\\.b\' should not be None\\.'):
-            user.validate()
-
     def test_instance_of_accepts_object(self):
 
         @jsonclass(class_graph='test_instanceof__1')
