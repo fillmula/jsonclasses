@@ -53,10 +53,6 @@ class ClassDefinition:
                 json_name = camelize(name, False)
             else:
                 json_name = name
-            if config.camelize_db_keys:
-                db_name = camelize(name, False)
-            else:
-                db_name = name
             types = self._get_types(field, config)
             types.definition.class_definition = self
             if isinstance(field.default, Types):
@@ -68,7 +64,6 @@ class ClassDefinition:
             jsonclass_field = JSONClassField(
                 name=name,
                 json_name=json_name,
-                db_name=db_name,
                 default=default,
                 types=types,
                 definition=types.definition,

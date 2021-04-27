@@ -24,7 +24,6 @@ class TestJsonClass(TestCase):
         class_config = SimpleAccount.definition.config
         default_config = Config(class_graph='default',
                                 camelize_json_keys=True,
-                                camelize_db_keys=True,
                                 strict_input=True,
                                 key_transformer=reference_key,
                                 validate_all_fields=False,
@@ -41,10 +40,6 @@ class TestJsonClass(TestCase):
     def test_jsonclass_camelize_json_keys_changes_config(self):
         self.assertEqual(
             SimpleEmployee.definition.config.camelize_json_keys, False)
-
-    def test_jsonclass_camelize_db_keys_changes_config(self):
-        self.assertEqual(
-            SimpleEmployee.definition.config.camelize_db_keys, False)
 
     def test_jsonclass_strict_input_changes_config(self):
         self.assertEqual(

@@ -23,10 +23,6 @@ class JSONClassField(NamedTuple):
     """The name of the field when converted into JSON dict.
     """
 
-    db_name: str
-    """The name of the field when it's persisting in the database.
-    """
-
     default: Any
     """The default value that user assigned with equal sign.
     """

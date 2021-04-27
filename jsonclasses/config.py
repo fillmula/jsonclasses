@@ -19,7 +19,6 @@ class Config:
     def __init__(self: Config,
                  class_graph: Optional[str],
                  camelize_json_keys: Optional[bool],
-                 camelize_db_keys: Optional[bool],
                  strict_input: Optional[bool],
                  key_transformer: Optional[Callable[[JSONClassField], str]],
                  validate_all_fields: Optional[bool],
@@ -34,8 +33,6 @@ class Config:
                 the JSON class is defined.
             camelize_json_keys (Optional[bool]): Whether camelize keys when \
                 outputing JSON.
-            camelize_db_keys (Optional[bool]): Whether camelize keys when \
-                serializing into database.
             strict_input (Optional[bool]): Whether raise errors on receiving \
                 invalid input keys.
             key_transformer (Optional[Callable[[JSONClassField], str]]): The \
@@ -52,7 +49,6 @@ class Config:
         self._cls = None
         self._class_graph = class_graph or 'default'
         self._camelize_json_keys = camelize_json_keys
-        self._camelize_db_keys = camelize_db_keys
         self._strict_input = strict_input
         self._key_transformer = key_transformer
         self._validate_all_fields = validate_all_fields
@@ -67,8 +63,6 @@ class Config:
         if self.class_graph != other_config.class_graph:
             return False
         if self.camelize_json_keys != other_config.camelize_json_keys:
-            return False
-        if self.camelize_db_keys != other_config.camelize_db_keys:
             return False
         if self.strict_input != other_config.strict_input:
             return False
@@ -104,14 +98,6 @@ class Config:
         if self._camelize_json_keys is None:
             return self.class_graph.default_config.camelize_json_keys
         return self._camelize_json_keys
-
-    @property
-    def camelize_db_keys(self: Config) -> bool:
-        """Whether camelize keys when serializing into database.
-        """
-        if self._camelize_db_keys is None:
-            return self.class_graph.default_config.camelize_db_keys
-        return self._camelize_db_keys
 
     @property
     def strict_input(self: Config) -> bool:

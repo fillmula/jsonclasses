@@ -34,7 +34,7 @@ class JSONClassGraph:
             cls._graph_map[name] = super(JSONClassGraph, cls).__new__(cls)
         return cls._graph_map.get(name)
 
-    def __init__(self: JSONClassGraph, name: str) -> JSONClassGraph:
+    def __init__(self: JSONClassGraph, name: str) -> None:
         """Find a class graph by it's name. A new one is created if it's not
         exist.
 
@@ -49,7 +49,6 @@ class JSONClassGraph:
         self._enum_map: dict[str, type] = {}
         self._default_config = Config(class_graph=self.name,
                                       camelize_json_keys=True,
-                                      camelize_db_keys=True,
                                       strict_input=True,
                                       key_transformer=reference_key,
                                       validate_all_fields=False,

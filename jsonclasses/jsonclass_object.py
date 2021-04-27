@@ -2,7 +2,8 @@
 confirm to.
 """
 from __future__ import annotations
-from typing import Any, TypeVar, Optional, ClassVar, Protocol, TYPE_CHECKING
+from typing import (Any, TypeVar, Optional, ClassVar, Protocol, Union,
+                    TYPE_CHECKING)
 if TYPE_CHECKING:
     from .class_definition import ClassDefinition
 T = TypeVar('T', bound='JSONClassObject')
@@ -80,4 +81,12 @@ class JSONClassObject(Protocol):
     def modified_fields(self: T) -> set[str]: ...
 
     @property
+    def persisted_modified_fields(self: T) -> set[str]: ...
+
+    @property
     def previous_values(self: T) -> dict[str, Any]: ...
+
+    def _clear_temp_fields(self: T) -> None: ...
+
+    @property
+    def _id(self: JSONClassObject) -> Union[str, int, None]: ...
