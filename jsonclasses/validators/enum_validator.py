@@ -16,6 +16,7 @@ class EnumValidator(Validator):
         self.field_type = FieldType.ENUM
 
     def define(self, fdesc: FieldDefinition) -> None:
+        fdesc.field_type = FieldType.ENUM
         fdesc.enum_class = self.enum_or_name
         if fdesc.enum_input is None:
             fdesc.enum_input = EnumInput.NAME
