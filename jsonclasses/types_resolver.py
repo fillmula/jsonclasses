@@ -5,6 +5,7 @@ definition.
 from __future__ import annotations
 from typing import (Any, ForwardRef, Optional, Union, Annotated, final,
                     get_args, get_origin, TYPE_CHECKING)
+from enum import Enum
 from datetime import date, datetime
 from re import match, split
 if TYPE_CHECKING:
@@ -171,6 +172,10 @@ class TypesResolver:
                 dict_cls = graph.fetch_dict(any_types)
                 shape_type = types.nonnull.shape(dict_cls)
                 return shape_type if optional else shape_type.required
+            elif graph.has_enum(any_types):
+                enum_cls = graph.fetch_enum(any_types)
+                type = types.enum(enum_cls)
+                return type if optional else type.required
             elif isinstance(any_types, str):
                 instance_type = types.instanceof(any_types)
                 return instance_type if optional else instance_type.required
@@ -245,6 +250,9 @@ class TypesResolver:
                 item_types[k] = self.to_types(t, config)
             shape_types = types.nonnull.shape(item_types)
             return shape_types if optional else shape_types.required
+        elif isinstance(any_types, type) and issubclass(any_types, Enum):
+            enum_type = types.enum(any_types)
+            return enum_type if optional else enum_type.required
         elif hasattr(any_types, '__is_jsonclass__'):
             instance_type = types.instanceof(any_types)
             return instance_type if optional else instance_type.required
