@@ -59,9 +59,9 @@ class MarkGraph:
 
     def __init__(self):
         self._class_tables: dict[str, MarkClassTable] = {}
-        self._detached_table: dict[str, list[T]] = {}
+        self._detached_table: dict[str, list] = {}
 
-    def class_table(self, cls: type[T]) -> MarkClassTable[JSONClassObject]:
+    def class_table(self, cls: type) -> MarkClassTable[JSONClassObject]:
         if self._class_tables.get(cls.__name__) is None:
             self._class_tables[cls.__name__] = MarkClassTable()
         return self._class_tables[cls.__name__]

@@ -253,6 +253,22 @@ def save(self: JSONClassObject,
     return self
 
 
+def delete(self: JSONClassObject) -> JSONClassObject:
+    """Delete this object from database and clear linked relationships with
+    delete rule.
+    """
+    self._orm_delete()
+    return self
+
+
+def restore(self: JSONClassObject) -> JSONClassObject:
+    """Restore this object from database and setup lost relationships with
+    delete rule.
+    """
+    self._orm_restore()
+    return self
+
+
 def _ensure_not_detached(self: JSONClassObject) -> None:
     """Raises if this JSON class object is detached.
 
@@ -355,6 +371,14 @@ def _database_write(self: JSONClassObject) -> None:
     pass
 
 
+def _orm_delete(self: JSONClassObject) -> None:
+    pass
+
+
+def _orm_restore(self: JSONClassObject) -> None:
+    pass
+
+
 @property
 def _id(self: JSONClassObject) -> Union[str, int, None]:
     field = self.__class__.definition.primary_field
@@ -364,7 +388,7 @@ def _id(self: JSONClassObject) -> Union[str, int, None]:
 
 
 @property
-def _created_at(self: JSONClassObject) -> datetime:
+def _created_at(self: JSONClassObject) -> Optional[datetime]:
     field = self.__class__.definition.created_at_field
     if not field:
         return None
@@ -372,7 +396,7 @@ def _created_at(self: JSONClassObject) -> datetime:
 
 
 @property
-def _updated_at(self: JSONClassObject) -> datetime:
+def _updated_at(self: JSONClassObject) -> Optional[datetime]:
     field = self.__class__.definition.updated_at_field
     if not field:
         return None
@@ -380,7 +404,7 @@ def _updated_at(self: JSONClassObject) -> datetime:
 
 
 @property
-def _deleted_at(self: JSONClassObject) -> datetime:
+def _deleted_at(self: JSONClassObject) -> Optional[datetime]:
     field = self.__class__.definition.deleted_at_field
     if not field:
         return None
@@ -630,6 +654,8 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_.previous_values = previous_values
     class_.reset = reset
     class_.save = save
+    class_.delete = delete
+    class_.restore = restore
     # protected methods
     class_._ensure_not_detached = _ensure_not_detached
     class_._data_dict = _data_dict
@@ -642,6 +668,8 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_._set_on_save = _set_on_save
     class_._clear_temp_fields = _clear_temp_fields
     class_._database_write = _database_write
+    class_._orm_delete = _orm_delete
+    class_._orm_restore = _orm_restore
     class_._id = _id
     class_._created_at = _created_at
     class_._updated_at = _updated_at

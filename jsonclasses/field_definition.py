@@ -74,6 +74,15 @@ class Strictness(Enum):
     UNSTRICT = 'unstrict'
 
 
+class DeleteRule(Enum):
+    """The delete rule of a relationship.
+    """
+
+    NULLIFY = 'nullify'
+    CASCADE = 'cascade'
+    DENY = 'deny'
+
+
 class EnumInput(Flag):
     NAME = 1
     VALUE = 2
@@ -131,6 +140,7 @@ class FieldDefinition:  # pylint: disable=too-many-instance-attributes
     join_table_cls: Optional[Any] = None
     join_table_referrer_key: Optional[str] = None
     join_table_referee_key: Optional[str] = None
+    delete_rule: Optional[DeleteRule] = None
 
     read_rule: ReadRule = ReadRule.UNLIMITED
     write_rule: WriteRule = WriteRule.UNLIMITED

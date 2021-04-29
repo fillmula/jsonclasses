@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name='jsonclasses',
-    version='2.0.3',
+    version='2.1.0',
     description=('The Modern Declarative Data Flow and Data Graph Framework '
                  'for the AI Empowered Generation.'),
     long_description=README,
@@ -25,6 +25,4 @@ setup(
     include_package_data=True,
     python_requires='>=3.9',
     install_requires=[
-        'inflection>=0.5.1,<1.0.0'
-    ]
-)
+        'inflection>=0.5.1,<1.0.0'])

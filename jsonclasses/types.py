@@ -29,7 +29,8 @@ from .validators import (UseForValidator, BoolValidator, ChainedValidator,
                          TempValidator, TransformValidator, TrimValidator,
                          TruncateValidator, UniqueValidator, ValidateValidator,
                          Validator, WriteNonnullValidator, WriteonceValidator,
-                         WriteonlyValidator)
+                         WriteonlyValidator, DenyValidator, CascadeValidator,
+                         NullifyValidator)
 
 Str = str
 Int = int
@@ -220,6 +221,27 @@ class Types:
         key name.
         """
         return Types(self, RefereeValidator(referee_key))
+
+    @property
+    def nullify(self) -> Types:
+        """When an object is deleted, linked objects' references are set to
+        null instead of deleted.
+        """
+        return Types(self, NullifyValidator())
+
+    @property
+    def cascade(self) -> Types:
+        """When an object is deleted, linked objects with cascade relationship
+        are deleted.
+        """
+        return Types(self, CascadeValidator())
+
+    @property
+    def deny(self) -> Types:
+        """When an object is deleted, linked objects with deny relationship
+        prevent this object being deleted.
+        """
+        return Types(self, DenyValidator())
 
     @property
     def str(self) -> Types:

@@ -2,6 +2,7 @@
 confirm to.
 """
 from __future__ import annotations
+from datetime import datetime
 from typing import (Any, TypeVar, Optional, ClassVar, Protocol, Union,
                     TYPE_CHECKING)
 if TYPE_CHECKING:
@@ -90,3 +91,12 @@ class JSONClassObject(Protocol):
 
     @property
     def _id(self: JSONClassObject) -> Union[str, int, None]: ...
+
+    @property
+    def _created_at(self: JSONClassObject) -> Optional[datetime]: ...
+
+    @property
+    def _updated_at(self: JSONClassObject) -> Optional[datetime]: ...
+
+    @property
+    def _deleted_at(self: JSONClassObject) -> Optional[datetime]: ...
