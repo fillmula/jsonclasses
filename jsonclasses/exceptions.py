@@ -165,6 +165,15 @@ class ValidationException(Exception):
         return retval
 
 
+class DeletionDeniedException(Exception):
+    """DeletionDeniedException is raised on jsonclass object deletion.
+    """
+
+    def __init__(self) -> None:
+        self.message = 'deletion denied'
+        super().__init__(self.message)
+
+
 class AbstractJSONClassException(Exception):
     """Abstract class should not be initialized nor serialized into database.
     When an abstract JSON class is initialized, this error should be raised.
