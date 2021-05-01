@@ -9,7 +9,8 @@ from typing import Optional, final, cast, TYPE_CHECKING
 from dataclasses import fields, Field
 from inflection import camelize
 from .jsonclass_field import JSONClassField
-from .field_definition import FieldDefinition, FieldStorage, FieldType
+from .field_definition import (FieldDefinition, FieldStorage, FieldType,
+                               DeleteRule)
 from .types_resolver import TypesResolver
 from .exceptions import LinkedFieldUnmatchException
 if TYPE_CHECKING:
@@ -47,13 +48,16 @@ class ClassDefinition:
         self._created_at_field: Optional[JSONClassField] = None
         self._updated_at_field: Optional[JSONClassField] = None
         self._deleted_at_field: Optional[JSONClassField] = None
+        self._deny_fields: list[JSONClassField] = []
+        self._nullify_fields: list[JSONClassField] = []
+        self._cascade_fields: list[JSONClassField] = []
         for field in fields(class_):
             name = field.name
             if config.camelize_json_keys:
                 json_name = camelize(name, False)
             else:
                 json_name = name
-            types = self._get_types(field, config)
+            types = cast(Types, self._get_types(field, config))
             types.definition.class_definition = self
             if isinstance(field.default, Types):
                 default = None
@@ -78,6 +82,12 @@ class ClassDefinition:
                 self._updated_at_field = jsonclass_field
             elif types.definition.usage == 'deleted_at':
                 self._deleted_at_field = jsonclass_field
+            if types.definition.delete_rule == DeleteRule.DENY:
+                self._deny_fields.append(jsonclass_field)
+            elif types.definition.delete_rule == DeleteRule.NULLIFY:
+                self._nullify_fields.append(jsonclass_field)
+            elif types.definition.delete_rule == DeleteRule.CASCADE:
+                self._cascade_fields.append(jsonclass_field)
         self._tuple_fields: tuple[JSONClassField] = tuple(self._list_fields)
 
     def _get_types(self: ClassDefinition,
@@ -179,6 +189,24 @@ class ClassDefinition:
         record's deleted at timestamp.
         """
         return self._deleted_at_field
+
+    @property
+    def deny_fields(self: ClassDefinition) -> list[JSONClassField]:
+        """Reference fields with deny delete rule.
+        """
+        return self._deny_fields
+
+    @property
+    def nullify_fields(self: ClassDefinition) -> list[JSONClassField]:
+        """Reference fields with nullify delete rule.
+        """
+        return self._nullify_fields
+
+    @property
+    def cascade_fields(self: ClassDefinition) -> list[JSONClassField]:
+        """Reference fields with cascade delete rule.
+        """
+        return self._cascade_fields
 
     @property
     def primary_field(self: ClassDefinition) -> Optional[JSONClassField]:
