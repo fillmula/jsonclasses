@@ -1,10 +1,11 @@
 """This module defines the `jsonclassify` function."""
 from __future__ import annotations
+from dataclasses import Field
 from typing import Any, Optional, Union
 from datetime import datetime
 from .jsonclass_object import JSONClassObject
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
-from .field_definition import FieldType
+from .field_definition import FieldStorage, FieldType
 from .validators.instanceof_validator import InstanceOfValidator
 from .jsonclass_field import JSONClassField
 from .isjsonclass import isjsonobject
@@ -14,7 +15,7 @@ from .owned_dict import OwnedDict
 from .owned_list import OwnedList
 from .owned_collection_utils import (to_owned_dict, to_owned_list,
                                      unowned_copy_dict, unowned_copy_list)
-from .keypath_utils import concat_keypath, initial_keypath
+from .keypath_utils import concat_keypath, initial_keypath, reference_key
 from .exceptions import (AbstractJSONClassException, ValidationException,
                          JSONClassResetError, JSONClassResetNotEnabledError,
                          UnlinkableJSONClassException)
@@ -430,7 +431,15 @@ def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
     # this is a JSON class field attribute
     self._ensure_not_detached()
     if hasattr(self, name) and value == getattr(self, name):
-        return
+        lk = field.definition.field_storage is FieldStorage.LOCAL_KEY
+        value_none = value is None
+        if lk and value_none:
+            if getattr(self, reference_key(field), None) is not None:
+                pass
+            else:
+                return
+        else:
+            return
     # track modified and previous value
     if not self.is_new:
         setattr(self, '_is_modified', True)
