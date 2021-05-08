@@ -32,6 +32,11 @@ def __init__(self: JSONClassObject, **kwargs: dict[str, Any]) -> None:
     self._set_initial_status()
     for field in self.__class__.definition.fields:
         setattr(self, field.name, None)
+        if field.definition.field_storage == FieldStorage.LOCAL_KEY:
+            transformer = self.__class__.definition.config.key_transformer
+            local_key = transformer(field)
+            setattr(self, local_key, None)
+            self._local_keys.add(local_key)
     self._set(kwargs, fill_blanks=True)
     try:
         self._graph.put(self)
@@ -288,7 +293,8 @@ def _data_dict(self: JSONClassObject) -> dict[str, Any]:
     retval = {}
     for k, v in self.__dict__.items():
         if not k.startswith('_'):
-            retval[k] = v
+            if k not in self._local_keys:
+                retval[k] = v
     return retval
 
 
@@ -306,6 +312,7 @@ def _set_initial_status(self: JSONClassObject) -> None:
     setattr(self, '_is_detached', False)
     setattr(self, '_is_deleted', False)
     setattr(self, '_previous_values', {})
+    setattr(self, '_local_keys', set())
     setattr(self, '_detached_objects', {})
     setattr(self, '_graph', ObjectGraph())
 
