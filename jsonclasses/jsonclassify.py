@@ -267,6 +267,7 @@ def save(self: JSONClassObject,
     self._database_write()
     for _, lst in self.unlinked_objects.items():
         for item in lst:
+            lst.remove(item)
             item.save(validate_all_fields=validate_all_fields,
                       skip_validation=skip_validation)
     return self
