@@ -92,7 +92,8 @@ def update(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClassObject:
     calling with other instance methods.
     """
     self._ensure_not_detached()
-    unallowed_keys = set(kwargs.keys()) - set(self._data_dict.keys())
+    unallowed_keys = (set(kwargs.keys())
+                      - set(self.__class__.definition._update_names))
     unallowed_keys_length = len(unallowed_keys)
     if unallowed_keys_length > 0:
         keys_list = "', '".join(list(unallowed_keys))

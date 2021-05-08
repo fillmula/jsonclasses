@@ -82,12 +82,7 @@ class InstanceOfValidator(Validator):
     def _strictness_check(self,
                           context: TransformingContext,
                           dest: JSONClassObject) -> None:
-        if context.config_owner.camelize_json_keys:
-            available_name_pairs = [(field.name, field.json_name)
-                                    for field in dest.__class__.definition.fields]
-            available_names = list({e for pair in available_name_pairs for e in pair})
-        else:
-            available_names = [field.name for field in dest.__class__.definition.fields]
+        available_names = dest.__class__.definition._available_names
         for k in context.value.keys():
             if k not in available_names:
                 kp = concat_keypath(context.keypath_root, k)
@@ -181,6 +176,11 @@ class InstanceOfValidator(Validator):
                     if fdesc.field_type == FieldType.LIST:
                         if fdesc.collection_nullability == Nullability.NONNULL:
                             nonnull_ref_lists.append(field.name)
+                    elif fdesc.field_storage == FieldStorage.LOCAL_KEY:
+                        tsfm = dest.__class__.definition.config.key_transformer
+                        refname = tsfm(field)
+                        if context.value.get(refname) is not None:
+                            setattr(dest, refname, context.value.get(refname))
                     pass
                 elif context.fill_dest_blanks and not soft_apply_mode:
                     self._fill_default_value(field, dest, context, cls)

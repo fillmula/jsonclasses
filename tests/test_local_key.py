@@ -93,3 +93,20 @@ class TestLocalKey(TestCase):
         article.author_id = 995
         article._set_on_save()
         self.assertEqual(article.author_id, 995)
+
+    def test_init_should_accept_local_key(self):
+        article = LKArticle(name='A', author_id=1005)
+        self.assertEqual(article.author, None)
+        self.assertEqual(article.author_id, 1005)
+
+    def test_set_should_accept_local_key(self):
+        article = LKArticle()
+        article.set(name='A', author_id=1005)
+        self.assertEqual(article.author, None)
+        self.assertEqual(article.author_id, 1005)
+
+    def test_update_should_accept_local_key(self):
+        article = LKArticle()
+        article.update(name='A', author_id=1005)
+        self.assertEqual(article.author, None)
+        self.assertEqual(article.author_id, 1005)

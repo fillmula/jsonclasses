@@ -51,10 +51,15 @@ class ClassDefinition:
         self._deny_fields: list[JSONClassField] = []
         self._nullify_fields: list[JSONClassField] = []
         self._cascade_fields: list[JSONClassField] = []
+        self._field_names: list[str] = []
+        self._camelized_field_names: list[str] = []
+        self._reference_names: list[str] = []
         for field in fields(class_):
             name = field.name
+            self._field_names.append(name)
             if config.camelize_json_keys:
                 json_name = camelize(name, False)
+                self._camelized_field_names.append(json_name)
             else:
                 json_name = name
             types = cast(Types, self._get_types(field, config))
@@ -82,6 +87,9 @@ class ClassDefinition:
                 self._updated_at_field = jsonclass_field
             elif types.definition.usage == 'deleted_at':
                 self._deleted_at_field = jsonclass_field
+            if types.definition.field_storage == FieldStorage.LOCAL_KEY:
+                key_transformer = config.key_transformer
+                self._reference_names.append(key_transformer(jsonclass_field))
             if types.definition.delete_rule == DeleteRule.DENY:
                 self._deny_fields.append(jsonclass_field)
             elif types.definition.delete_rule == DeleteRule.NULLIFY:
@@ -89,6 +97,11 @@ class ClassDefinition:
             elif types.definition.delete_rule == DeleteRule.CASCADE:
                 self._cascade_fields.append(jsonclass_field)
         self._tuple_fields: tuple[JSONClassField] = tuple(self._list_fields)
+        self._available_names: set[str] = set(self._field_names
+                                              + self._camelized_field_names
+                                              + self._reference_names)
+        self._update_names: set[str] = set(self._field_names
+                                           + self._reference_names)
 
     def _get_types(self: ClassDefinition,
                    field: Field,
