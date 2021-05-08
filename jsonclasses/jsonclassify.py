@@ -258,6 +258,7 @@ def save(self: JSONClassObject,
         self.validate(validate_all_fields=validate_all_fields)
     self._set_on_save()
     self._database_write()
+    #
     return self
 
 
@@ -316,7 +317,7 @@ def _set_initial_status(self: JSONClassObject) -> None:
     setattr(self, '_previous_values', {})
     setattr(self, '_local_keys', set())
     setattr(self, '_local_key_map', {})
-    setattr(self, '_detached_objects', {})
+    setattr(self, '_unlinked_objects', {})
     setattr(self, '_graph', ObjectGraph())
 
 
@@ -325,29 +326,29 @@ def _mark_not_new(self: JSONClassObject) -> None:
     setattr(self, '_is_new', False)
 
 
-def _add_detached_object(self: JSONClassObject,
+def _add_unlinked_object(self: JSONClassObject,
                          field_name: str,
                          obj: JSONClassObject) -> None:
     """Add an object into detached objects pool."""
-    if not self._detached_objects.get(field_name):
-        self._detached_objects[field_name] = []
-    if obj not in self._detached_objects[field_name]:
-        self._detached_objects[field_name].append(obj)
+    if not self._unlinked_objects.get(field_name):
+        self._unlinked_objects[field_name] = []
+    if obj not in self._unlinked_objects[field_name]:
+        self._unlinked_objects[field_name].append(obj)
 
 
-def _del_detached_object(self: JSONClassObject,
+def _del_unlinked_object(self: JSONClassObject,
                          field_name: str,
                          obj: JSONClassObject) -> None:
     """Remove an object from detached objects pool."""
-    if not self._detached_objects.get(field_name):
-        self._detached_objects[field_name] = []
-    if obj in self._detached_objects[field_name]:
-        self._detached_objects[field_name].remove(obj)
+    if not self._unlinked_objects.get(field_name):
+        self._unlinked_objects[field_name] = []
+    if obj in self._unlinked_objects[field_name]:
+        self._unlinked_objects[field_name].remove(obj)
 
 
-def _clear_detached_object(self: JSONClassObject) -> None:
+def _clear_unlinked_object(self: JSONClassObject) -> None:
     """Clear and reset all detached objects."""
-    self._detached_objects = {}
+    self._unlinked_objects = {}
 
 
 def _set_on_save(self: JSONClassObject) -> None:
@@ -605,7 +606,7 @@ def __unlink_field__(self: JSONClassObject,
             return
         items = list(value)
     for item in items:
-        self._add_detached_object(field.name, item)
+        self._add_unlinked_object(field.name, item)
         other_field = field.foreign_field
         if other_field is None:
             return
@@ -616,13 +617,13 @@ def __unlink_field__(self: JSONClassObject,
                 if of.definition.field_storage == FieldStorage.LOCAL_KEY:
                     tsfm = item.__class__.definition.config.key_transformer
                     item.__original_setattr__(tsfm(other_field), None)
-                item._add_detached_object(other_field.name, self)
+                item._add_unlinked_object(other_field.name, self)
         elif other_field.definition.field_type == FieldType.LIST:
             other_list = getattr(item, other_field.name)
             if isinstance(other_list, list):
                 if self in other_list:
                     other_list.remove(self)
-                    item._add_detached_object(other_field.name, self)
+                    item._add_unlinked_object(other_field.name, self)
 
 
 def __link_field__(self: JSONClassObject,
@@ -638,22 +639,22 @@ def __link_field__(self: JSONClassObject,
             return
         items = value
     for item in items:
-        self._del_detached_object(field.name, item)
+        self._del_unlinked_object(field.name, item)
         other_field = field.foreign_field
         if other_field is None:
             return
         if other_field.definition.field_type == FieldType.INSTANCE:
             if getattr(item, other_field.name) != self:
                 setattr(item, other_field.name, self)
-                item._del_detached_object(other_field.name, self)
+                item._del_unlinked_object(other_field.name, self)
         elif other_field.definition.field_type == FieldType.LIST:
             if not isinstance(getattr(item, other_field.name), list):
                 setattr(item, other_field.name, [self])
-                item._del_detached_object(other_field.name, self)
+                item._del_unlinked_object(other_field.name, self)
             else:
                 if self not in getattr(item, other_field.name):
                     getattr(item, other_field.name).append(self)
-                    item._del_detached_object(other_field.name, self)
+                    item._del_unlinked_object(other_field.name, self)
         self.__link_graph__(item)
 
 
@@ -707,9 +708,9 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_._mark_new = _mark_new
     class_._set_initial_status = _set_initial_status
     class_._mark_not_new = _mark_not_new
-    class_._add_detached_object = _add_detached_object
-    class_._del_detached_object = _del_detached_object
-    class_._clear_detached_object = _clear_detached_object
+    class_._add_unlinked_object = _add_unlinked_object
+    class_._del_unlinked_object = _del_unlinked_object
+    class_._clear_unlinked_object = _clear_unlinked_object
     class_._set_on_save = _set_on_save
     class_._clear_temp_fields = _clear_temp_fields
     class_._database_write = _database_write
