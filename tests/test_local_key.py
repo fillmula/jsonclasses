@@ -87,3 +87,9 @@ class TestLocalKey(TestCase):
         self.assertEqual(article.author_id, None)
         self.assertEqual(article.modified_fields, ('author',))
         self.assertEqual(author.modified_fields, ('articles',))
+
+    def test_local_key_set_on_save_should_not_reset_value(self):
+        article = LinkedArticle(name='A', author=None)
+        article.author_id = 995
+        article._set_on_save()
+        self.assertEqual(article.author_id, 995)

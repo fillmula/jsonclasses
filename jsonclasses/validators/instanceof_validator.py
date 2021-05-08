@@ -260,6 +260,11 @@ class InstanceOfValidator(Validator):
             if (field.definition.is_ref
                     or field.definition.is_inst
                     or should_update):
+                if field.definition.field_storage == FieldStorage.LOCAL_KEY:
+                    if getattr(value, field.name) is None:
+                        tsf = value.__class__.definition.config.key_transformer
+                        if getattr(value, tsf(field)) is not None:
+                            continue
                 field_value = getattr(value, field.name)
                 field_context = context.new(
                     value=field_value,
