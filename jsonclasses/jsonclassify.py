@@ -708,6 +708,7 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_.modified_fields = modified_fields
     class_.persisted_modified_fields = persisted_modified_fields
     class_.previous_values = previous_values
+    class_.unlinked_objects = unlinked_objects
     class_.reset = reset
     class_.save = save
     class_.delete = delete
