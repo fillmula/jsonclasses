@@ -10,11 +10,11 @@ if TYPE_CHECKING:
 
 class CompareResult(NamedTuple):
     """When merging object graph, conflicted objects will be compared. One will
-    be kept and one will be detached.
+    be kept and one will be outdated.
     """
     kept: JSONClassObject
     """The updated one to keep."""
-    detached: JSONClassObject
+    outdated: JSONClassObject
     """The obsolete one to remove."""
 
 
@@ -105,17 +105,17 @@ class ObjectGraph:
                 raise JSONClassGraphMergeConflictException('both objects are '
                                                            'modified')
             elif obj2.is_modified:
-                return CompareResult(kept=obj2, detached=obj1)
+                return CompareResult(kept=obj2, outdated=obj1)
             else:
-                return CompareResult(kept=obj1, detached=obj2)
+                return CompareResult(kept=obj1, outdated=obj2)
         elif obj1._updated_at is None:
-            return CompareResult(kept=obj2, detached=obj1)
+            return CompareResult(kept=obj2, outdated=obj1)
         elif obj2._updated_at is None:
-            return CompareResult(kept=obj1, detached=obj2)
+            return CompareResult(kept=obj1, outdated=obj2)
         elif obj1._updated_at > obj2._updated_at:
-            return CompareResult(kept=obj1, detached=obj2)
+            return CompareResult(kept=obj1, outdated=obj2)
         else:
-            return CompareResult(kept=obj2, detached=obj1)
+            return CompareResult(kept=obj2, outdated=obj1)
 
     def merged_graph(self: ObjectGraph, graph2: ObjectGraph) -> ObjectGraph:
         """Get a new graph which is a combination of two graphs.
@@ -143,10 +143,10 @@ class ObjectGraph:
     def alter_links(self: ObjectGraph, result: CompareResult) -> None:
         """Alter all linked objects reference to the new object.
         """
-        for field in result.detached.__class__.definition.fields:
+        for field in result.outdated.__class__.definition.fields:
             if not field.definition.is_ref:
                 continue
-            item_or_items = getattr(result.detached, field.name)
+            item_or_items = getattr(result.outdated, field.name)
             items: list[JSONClassObject] = []
             if isjsonobject(item_or_items):
                 items = [item_or_items]
@@ -155,15 +155,15 @@ class ObjectGraph:
             for item in items:
                 item_field = field.foreign_field
                 item_value = getattr(item, item_field.name)
-                if item_value is result.detached:
+                if item_value is result.outdated:
                     setattr(item, item_field.name, result.kept)
                 elif isinstance(item_value, list):
-                    index = item_value.index(result.detached)
+                    index = item_value.index(result.outdated)
                     item_value[index] = result.kept
-            if result.detached._unlinked_objects.get(field.name) is not None:
-                detached_items = result.detached._unlinked_objects. \
+            if result.outdated._unlinked_objects.get(field.name) is not None:
+                outdated_items = result.outdated._unlinked_objects. \
                     get(field.name)
-                for item in detached_items:
+                for item in outdated_items:
                     result.kept._add_unlinked_object(field.name, item)
-                del result.detached._unlinked_objects[field.name]
-        result.detached._is_detached = True
+                del result.outdated._unlinked_objects[field.name]
+        result.outdated._is_outdated = True

@@ -49,8 +49,8 @@ class TestGraph(TestCase):
         objects = [object for object in user._graph]
         self.assertEqual(objects, [post_new, user])
         self.assertEqual(user.posts, [post_new])
-        self.assertEqual(post.is_detached, True)
-        self.assertEqual(post_new.is_detached, False)
+        self.assertEqual(post.is_outdated, True)
+        self.assertEqual(post_new.is_outdated, False)
 
     def test_graph_on_conflict_keep_edited_one(self):
         post = Post(id=1, name='M Tsai Tai Kha Kui Ê Lang',
@@ -70,5 +70,5 @@ class TestGraph(TestCase):
         objects = [object for object in user._graph]
         self.assertEqual(objects, [post_new, user])
         self.assertEqual(user.posts, [post_new])
-        self.assertEqual(post.is_detached, True)
-        self.assertEqual(post_new.is_detached, False)
+        self.assertEqual(post.is_outdated, True)
+        self.assertEqual(post_new.is_outdated, False)

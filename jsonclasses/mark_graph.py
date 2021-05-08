@@ -59,7 +59,6 @@ class MarkGraph:
 
     def __init__(self):
         self._class_tables: dict[str, MarkClassTable] = {}
-        self._detached_table: dict[str, list] = {}
 
     def class_table(self, cls: type) -> MarkClassTable[JSONClassObject]:
         if self._class_tables.get(cls.__name__) is None:
@@ -96,30 +95,3 @@ class MarkGraph:
                 if obj not in lst:
                     lst.append(obj)
         return lst.__iter__()
-
-    def put_detached(self, owner: type[JSONClassObject],
-                     detached: type[JSONClassObject]) -> None:
-        oid: str = ''
-        oid = owner._id
-        if oid is None:
-            oid = hex(id(owner))
-        if self._detached_table.get(oid) is None:
-            self._detached_table[oid] = []
-        if detached not in self._detached_table[oid]:
-            self._detached_table[oid].append(detached)
-
-    def all_detached(self, owner: type[JSONClassObject]) \
-            -> list[type[JSONClassObject]]:
-        oid: str = owner._id
-        if oid is None:
-            oid = hex(id(owner))
-        retval = self._detached_table.get(oid)
-        if retval is None:
-            return []
-        return retval
-
-    def del_detached(self, owner: type[JSONClassObject],
-                     detached: type[JSONClassObject]) -> None:
-        lst = self.all_detached(owner)
-        if detached in lst:
-            lst.remove(detached)

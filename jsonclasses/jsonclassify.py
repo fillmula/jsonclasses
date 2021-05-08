@@ -53,7 +53,7 @@ def jsonobject_set(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClass
     method triggers eager validation and transform. This method returns
     self, thus you can chain calling with other instance methods.
     """
-    self._ensure_not_detached()
+    self._ensure_not_outdated()
     self._set(kwargs, fill_blanks=False)
     return self
 
@@ -91,7 +91,7 @@ def update(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClassObject:
     through this method. This method returns self, thus you can chain
     calling with other instance methods.
     """
-    self._ensure_not_detached()
+    self._ensure_not_outdated()
     unallowed_keys = (set(kwargs.keys())
                       - set(self.__class__.definition._update_names))
     unallowed_keys_length = len(unallowed_keys)
@@ -115,7 +115,7 @@ def tojson(self: JSONClassObject,
     Returns:
         dict[str, Any]: A dict represents this object's JSON object.
     """
-    self._ensure_not_detached()
+    self._ensure_not_outdated()
     validator = InstanceOfValidator(self.__class__)
     config = self.__class__.definition.config
     context = ToJSONContext(value=self,
@@ -138,7 +138,7 @@ def validate(self: JSONClassObject,
     Returns:
         None: upon successful validation, returns nothing.
     """
-    self._ensure_not_detached()
+    self._ensure_not_outdated()
     config = self.__class__.definition.config
     context = ValidatingContext(
         value=self,
@@ -190,11 +190,11 @@ def is_modified(self: JSONClassObject) -> bool:
 
 
 @property
-def is_detached(self: JSONClassObject) -> bool:
-    """If a JSON class object is detached. This object cannot be used anymore
-    since it represents an outdated state of the same database record.
+def is_outdated(self: JSONClassObject) -> bool:
+    """Whether a jsonclass object is outdated. This object cannot be used
+    anymore since it represents an outdated state of the same database record.
     """
-    return self._is_detached
+    return self._is_outdated
 
 
 @property
@@ -289,14 +289,14 @@ def restore(self: JSONClassObject) -> JSONClassObject:
     return self
 
 
-def _ensure_not_detached(self: JSONClassObject) -> None:
-    """Raises if this JSON class object is detached.
+def _ensure_not_outdated(self: JSONClassObject) -> None:
+    """Raises if this JSON class object is outdated.
 
     Raises:
-        ValueError: This exception is raised if the object is detached.
+        ValueError: This exception is raised if the object is outdated.
     """
-    if self.is_detached:
-        raise ValueError(f'JSON class object {self} is detached')
+    if self.is_outdated:
+        raise ValueError(f'JSON class object {self} is outdated')
 
 
 @property
@@ -323,7 +323,7 @@ def _mark_new(self: JSONClassObject) -> None:
 def _set_initial_status(self: JSONClassObject) -> None:
     """Set the initial status of the JSON class object."""
     self._mark_new()
-    setattr(self, '_is_detached', False)
+    setattr(self, '_is_outdated', False)
     setattr(self, '_is_deleted', False)
     setattr(self, '_previous_values', {})
     setattr(self, '_local_keys', set())
@@ -340,7 +340,7 @@ def _mark_not_new(self: JSONClassObject) -> None:
 def _add_unlinked_object(self: JSONClassObject,
                          field_name: str,
                          obj: JSONClassObject) -> None:
-    """Add an object into detached objects pool."""
+    """Add an object into unlinked objects pool."""
     if not self._unlinked_objects.get(field_name):
         self._unlinked_objects[field_name] = []
     if obj not in self._unlinked_objects[field_name]:
@@ -350,7 +350,7 @@ def _add_unlinked_object(self: JSONClassObject,
 def _del_unlinked_object(self: JSONClassObject,
                          field_name: str,
                          obj: JSONClassObject) -> None:
-    """Remove an object from detached objects pool."""
+    """Remove an object from unlinked objects pool."""
     if not self._unlinked_objects.get(field_name):
         self._unlinked_objects[field_name] = []
     if obj in self._unlinked_objects[field_name]:
@@ -358,7 +358,7 @@ def _del_unlinked_object(self: JSONClassObject,
 
 
 def _clear_unlinked_object(self: JSONClassObject) -> None:
-    """Clear and reset all detached objects."""
+    """Clear and reset all unlinked objects."""
     self._unlinked_objects = {}
 
 
@@ -466,7 +466,7 @@ def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
         self.__original_setattr__(name, value)
         return
     # this is a JSON class field attribute
-    self._ensure_not_detached()
+    self._ensure_not_outdated()
     if hasattr(self, name) and value == getattr(self, name):
         lk = field.definition.field_storage is FieldStorage.LOCAL_KEY
         value_none = value is None
@@ -705,7 +705,7 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_.is_valid = is_valid
     class_.is_new = is_new
     class_.is_modified = is_modified
-    class_.is_detached = is_detached
+    class_.is_outdated = is_outdated
     class_.is_deleted = is_deleted
     class_.modified_fields = modified_fields
     class_.persisted_modified_fields = persisted_modified_fields
@@ -716,7 +716,7 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_.delete = delete
     class_.restore = restore
     # protected methods
-    class_._ensure_not_detached = _ensure_not_detached
+    class_._ensure_not_outdated = _ensure_not_outdated
     class_._data_dict = _data_dict
     class_._mark_new = _mark_new
     class_._set_initial_status = _set_initial_status
