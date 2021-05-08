@@ -628,6 +628,7 @@ def __unlink_field__(self: JSONClassObject,
                 if of.definition.field_storage == FieldStorage.LOCAL_KEY:
                     tsfm = item.__class__.definition.config.key_transformer
                     item.__original_setattr__(tsfm(other_field), None)
+                    item._modified_fields.add(other_field.name)
                 item._add_unlinked_object(other_field.name, self)
         elif other_field.definition.field_type == FieldType.LIST:
             other_list = getattr(item, other_field.name)
