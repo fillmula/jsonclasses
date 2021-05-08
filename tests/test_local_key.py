@@ -110,3 +110,14 @@ class TestLocalKey(TestCase):
         article.update(name='A', author_id=1005)
         self.assertEqual(article.author, None)
         self.assertEqual(article.author_id, 1005)
+
+    def test_init_should_accept_local_key_in_json_form(self):
+        article = LKArticle(**{'name': 'A', 'authorId': 1005})
+        self.assertEqual(article.author, None)
+        self.assertEqual(article.author_id, 1005)
+
+    def test_set_should_accept_local_key_in_json_form(self):
+        article = LKArticle()
+        article.set(**{'name': 'A', 'authorId': 1005})
+        self.assertEqual(article.author, None)
+        self.assertEqual(article.author_id, 1005)

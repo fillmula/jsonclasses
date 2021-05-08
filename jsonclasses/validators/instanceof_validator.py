@@ -2,6 +2,7 @@
 from __future__ import annotations
 from jsonclasses.jsonclass_field import JSONClassField
 from typing import Any, Sequence, Type, Union, cast, TYPE_CHECKING
+from inflection import camelize
 from ..field_definition import (FieldDefinition, FieldStorage, FieldType,
                                 Nullability, WriteRule, ReadRule, Strictness)
 from ..exceptions import ValidationException
@@ -181,6 +182,9 @@ class InstanceOfValidator(Validator):
                         refname = tsfm(field)
                         if context.value.get(refname) is not None:
                             setattr(dest, refname, context.value.get(refname))
+                        crefname = camelize(refname, False)
+                        if context.value.get(crefname) is not None:
+                            setattr(dest, refname, context.value.get(crefname))
                     pass
                 elif context.fill_dest_blanks and not soft_apply_mode:
                     self._fill_default_value(field, dest, context, cls)
