@@ -37,6 +37,7 @@ def __init__(self: JSONClassObject, **kwargs: dict[str, Any]) -> None:
             local_key = transformer(field)
             setattr(self, local_key, None)
             self._local_keys.add(local_key)
+            self._local_key_map[local_key] = field.name
     self._set(kwargs, fill_blanks=True)
     try:
         self._graph.put(self)
@@ -313,6 +314,7 @@ def _set_initial_status(self: JSONClassObject) -> None:
     setattr(self, '_is_deleted', False)
     setattr(self, '_previous_values', {})
     setattr(self, '_local_keys', set())
+    setattr(self, '_local_key_map', {})
     setattr(self, '_detached_objects', {})
     setattr(self, '_graph', ObjectGraph())
 
@@ -429,6 +431,21 @@ def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
     if __is_private_attr__(name):
         self.__original_setattr__(name, value)
         return
+    # use special method for local keys
+    if name in self._local_keys:
+        if str(value) == str(getattr(self, name)):
+            return
+        if value is None:
+            self.__original_setattr__(name, value)
+            setattr(self, self._local_key_map[name], None)
+        else:
+            # temporarily set to none if key is modified
+            # in the future, may query object from graph
+            self.__original_setattr__(name, value)
+            setattr(self, self._local_key_map[name], None)
+        if not self.is_new:
+            setattr(self, '_is_modified', True)
+            self._modified_fields.add(self._local_key_map[name])
     # use original setattr for non JSON class fields
     try:
         field = self.__class__.definition.field_named(name)
@@ -464,6 +481,13 @@ def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
         if hasattr(self, name):
             self.__unlink_field__(field, getattr(self, name))
         self.__original_setattr__(name, value)
+        if field.definition.field_storage == FieldStorage.LOCAL_KEY:
+            if value is None:
+                transformer = self.__class__.definition.config.key_transformer
+                self.__original_setattr__(transformer(field), None)
+            if isjsonobject(value):
+                transformer = self.__class__.definition.config.key_transformer
+                self.__original_setattr__(transformer(field), value._id)
         self.__link_field__(field, value)
     else:
         self.__original_setattr__(name, value)
@@ -587,6 +611,10 @@ def __unlink_field__(self: JSONClassObject,
         if other_field.definition.field_type == FieldType.INSTANCE:
             if getattr(item, other_field.name) is self:
                 item.__original_setattr__(other_field.name, None)
+                of = other_field
+                if of.definition.field_storage == FieldStorage.LOCAL_KEY:
+                    tsfm = item.__class__.definition.config.key_transformer
+                    item.__original_setattr__(tsfm(other_field), None)
                 item._add_detached_object(other_field.name, self)
         elif other_field.definition.field_type == FieldType.LIST:
             other_list = getattr(item, other_field.name)
