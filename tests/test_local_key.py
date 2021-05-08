@@ -1,6 +1,8 @@
 from __future__ import annotations
 from unittest import TestCase
 from tests.classes.local_key_author import LKAuthor, LKArticle
+from tests.classes.linked_author import LinkedAuthor
+from tests.classes.linked_article import LinkedArticle
 
 
 class TestLocalKey(TestCase):
@@ -59,11 +61,29 @@ class TestLocalKey(TestCase):
         self.assertEqual(article.modified_fields, ('author',))
         self.assertEqual(author.modified_fields, ('articles',))
 
-    def test_local_key_is_considered_modified_field_with_id_assign(self):
+    def test_local_key_is_considered_modified_field_with_id_none_assign(self):
         author = LKAuthor(name='A')
         article = LKArticle(name='A', author=author)
         setattr(author, '_is_new', False)
         setattr(article, '_is_new', False)
         article.author_id = None
+        self.assertEqual(article.modified_fields, ('author',))
+        self.assertEqual(author.modified_fields, ('articles',))
+
+    def test_local_key_is_considered_modified_field_with_id_assign(self):
+        article = LKArticle(name='A', author=None)
+        author = LKAuthor(name='A')
+        setattr(author, '_is_new', False)
+        setattr(article, '_is_new', False)
+        article.author_id = author.id
+        self.assertEqual(article.modified_fields, ('author',))
+
+    def test_local_key_is_considered_modified_field_even_id_is_none(self):
+        article = LinkedArticle(name='A', author=None)
+        author = LinkedAuthor(name='A')
+        setattr(author, '_is_new', False)
+        setattr(article, '_is_new', False)
+        article.author = author
+        self.assertEqual(article.author_id, None)
         self.assertEqual(article.modified_fields, ('author',))
         self.assertEqual(author.modified_fields, ('articles',))
