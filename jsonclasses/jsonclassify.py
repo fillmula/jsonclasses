@@ -234,6 +234,13 @@ def previous_values(self: JSONClassObject) -> dict[str, Any]:
     return self._previous_values
 
 
+@property
+def unlinked_objects(self: JSONClassObject) -> dict[str, list[JSONClassObject]]:
+    """Unlinked objects of this jsonclass object.
+    """
+    return self._unlinked_objects
+
+
 def reset(self: JSONClassObject) -> None:
     """Reset this object to it's unmodified status.
     """
@@ -258,7 +265,10 @@ def save(self: JSONClassObject,
         self.validate(validate_all_fields=validate_all_fields)
     self._set_on_save()
     self._database_write()
-    #
+    for _, lst in self.unlinked_objects.items():
+        for item in lst:
+            item.save(validate_all_fields=validate_all_fields,
+                      skip_validation=skip_validation)
     return self
 
 

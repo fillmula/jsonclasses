@@ -87,6 +87,9 @@ class JSONClassObject(Protocol):
     @property
     def previous_values(self: T) -> dict[str, Any]: ...
 
+    @property
+    def unlinked_objects(self: T) -> dict[str, list[T]]: ...
+
     def _clear_temp_fields(self: T) -> None: ...
 
     @property
