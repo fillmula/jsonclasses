@@ -320,6 +320,14 @@ def _mark_new(self: JSONClassObject) -> None:
     setattr(self, '_previous_values', {})
 
 
+def _mark_unmodified(self: JSONClassObject) -> None:
+    """Mark this jsonclass object as an unmodified object."""
+    setattr(self, '_is_new', False)
+    setattr(self, '_is_modified', False)
+    setattr(self, '_modified_fields', set())
+    setattr(self, '_previous_values', {})
+
+
 def _set_initial_status(self: JSONClassObject) -> None:
     """Set the initial status of the JSON class object."""
     self._mark_new()
@@ -719,6 +727,7 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_._ensure_not_outdated = _ensure_not_outdated
     class_._data_dict = _data_dict
     class_._mark_new = _mark_new
+    class_._mark_unmodified = _mark_unmodified
     class_._set_initial_status = _set_initial_status
     class_._mark_not_new = _mark_not_new
     class_._add_unlinked_object = _add_unlinked_object
