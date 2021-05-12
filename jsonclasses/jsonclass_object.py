@@ -73,6 +73,9 @@ class JSONClassObject(Protocol):
     def is_modified(self: T) -> bool: ...
 
     @property
+    def is_partial(self: T) -> bool: ...
+
+    @property
     def is_deleted(self: T) -> bool: ...
 
     @property

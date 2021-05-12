@@ -190,6 +190,15 @@ def is_modified(self: JSONClassObject) -> bool:
 
 
 @property
+def is_partial(self: JSONClassObject) -> bool:
+    """This property indicates this object is not a full version of the item it
+    represents in the database. Only part of fields are fetched from the
+    database.
+    """
+    return self._is_partial
+
+
+@property
 def is_outdated(self: JSONClassObject) -> bool:
     """Whether a jsonclass object is outdated. This object cannot be used
     anymore since it represents an outdated state of the same database record.
@@ -331,6 +340,7 @@ def _mark_unmodified(self: JSONClassObject) -> None:
 def _set_initial_status(self: JSONClassObject) -> None:
     """Set the initial status of the JSON class object."""
     self._mark_new()
+    setattr(self, '_is_partial', False)
     setattr(self, '_is_outdated', False)
     setattr(self, '_is_deleted', False)
     setattr(self, '_previous_values', {})
