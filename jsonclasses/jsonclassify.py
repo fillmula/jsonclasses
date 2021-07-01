@@ -1,6 +1,5 @@
 """This module defines the `jsonclassify` function."""
 from __future__ import annotations
-from dataclasses import Field
 from typing import Any, Optional, Union
 from datetime import datetime
 from .jsonclass_object import JSONClassObject
@@ -63,6 +62,8 @@ def _set(self: JSONClassObject,
     """Set values of a jsonclass object internally."""
     validator = InstanceOfValidator(self.__class__)
     config = self.__class__.definition.config
+    operator = (getattr(self, '_operator')
+                if hasattr(self, '_operator') else None)
     context = TransformingContext(
         value=kwargs,
         keypath_root='',
@@ -74,6 +75,7 @@ def _set(self: JSONClassObject,
         keypath_parent='',
         parent=self,
         definition=None,
+        operator=operator,
         all_fields=True,
         dest=self,
         fill_dest_blanks=fill_blanks,
@@ -140,6 +142,8 @@ def validate(self: JSONClassObject,
     """
     self._ensure_not_outdated()
     config = self.__class__.definition.config
+    operator = (getattr(self, '_operator')
+                if hasattr(self, '_operator') else None)
     context = ValidatingContext(
         value=self,
         keypath_root='',
@@ -151,6 +155,7 @@ def validate(self: JSONClassObject,
         keypath_parent='',
         parent=self,
         definition=None,
+        operator=operator,
         all_fields=validate_all_fields,
         mark_graph=MarkGraph())
     InstanceOfValidator(self.__class__).validate(context)
@@ -170,6 +175,20 @@ def is_valid(self: JSONClassObject) -> bool:
     except ValidationException:
         return False
     return True
+
+
+def opby(self: JSONClassObject, operator: Any) -> JSONClassObject:
+    """Assigns an operator object to the current object. This is used for
+    operator based validation.
+
+    Args:
+        operator (Any): Anything that is operator defined by user.
+
+    Returns:
+        JSONClassObject: The JSONClassObject itself is returned.
+    """
+    setattr(self, '_operator', operator)
+    return self
 
 
 @property
@@ -387,6 +406,8 @@ def _set_on_save(self: JSONClassObject) -> None:
     """
     validator = InstanceOfValidator(self.__class__)
     config = self.__class__.definition.config
+    operator = (getattr(self, '_operator')
+                if hasattr(self, '_operator') else None)
     context = TransformingContext(
         value=self,
         keypath_root='',
@@ -398,6 +419,7 @@ def _set_on_save(self: JSONClassObject) -> None:
         keypath_parent='',
         parent=self,
         definition=None,
+        operator=operator,
         mark_graph=MarkGraph())
     validator.serialize(context)
 
@@ -721,6 +743,7 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_.tojson = tojson
     class_.validate = validate
     class_.is_valid = is_valid
+    class_.opby = opby
     class_.is_new = is_new
     class_.is_modified = is_modified
     class_.is_outdated = is_outdated

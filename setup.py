@@ -16,7 +16,7 @@ setup(
     long_description=README,
     long_description_content_type='text/markdown',
     author='Fillmula Inc.',
-    author_email='wiosoftvictor@163.com',
+    author_email='victor.teo@fillmula.com',
     license='MIT',
     packages=find_packages(exclude=('tests')),
     package_data={'jsonclasses': ['py.typed']},

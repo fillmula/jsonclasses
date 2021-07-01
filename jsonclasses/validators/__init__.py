@@ -95,6 +95,9 @@ from .presentwithout_validator import PresentWithoutValidator
 # custom validator
 from .validate_validator import ValidateValidator
 
+# operator validator
+from .op_validator import OpValidator
+
 # comparing validator and callback
 from .reset_validator import ResetValidator
 from .compare_validator import CompareValidator

@@ -30,7 +30,7 @@ from .validators import (UseForValidator, BoolValidator, ChainedValidator,
                          TruncateValidator, UniqueValidator, ValidateValidator,
                          Validator, WriteNonnullValidator, WriteonceValidator,
                          WriteonlyValidator, DenyValidator, CascadeValidator,
-                         NullifyValidator)
+                         NullifyValidator, OpValidator)
 
 Str = str
 Int = int
@@ -493,20 +493,37 @@ class Types:
         """
         return Types(self, PresentWithoutValidator(referring_keys))
 
-    def validate(self, validate_callable) -> Types:
+    def validate(self, validate_callable: Callable) -> Types:
         """The validate field mark takes a validator callable as its sole
         argument. Use this to define custom field value validations.
 
         Args:
-            validate_callable (Callable): The validate callable tasks up to 4
-            arguments, which are value, key path, root and context. Returning
-            None means the value is valid, while returning a str message means
-            validation failed.
+            validate_callable (Callable): The validate callable takes up to 2
+            arguments, which are value and context. Returning None or True
+            means the value is valid, while returning a str message or False
+            means validation failed.
 
         Returns:
             Types: A new types chained with this marker.
         """
         return Types(self, ValidateValidator(validate_callable))
+
+    def op(self, op_callable: Callable) -> Types:
+        """Operator validator validates value against the operator object user
+        passed in. This validator is special and doesn't bypass None value. If
+        the operator is not present, this validator fails.
+
+        Args:
+            op_callable (Callable): The op callable takes 1 to 3 arguments. The
+            first is the operator object, the second is the value of the field,
+            the third is the validating context. Returning None or True means
+            the value is valid, while returning a str message or False means
+            validation failed.
+
+        Returns:
+            Types: A new types chained with this marker.
+        """
+        return Types(self, OpValidator(op_callable))
 
     def compare(self, compare_callable: Callable) -> Types:
         """The compare field mark takes a validator callable as its sole

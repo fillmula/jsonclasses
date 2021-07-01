@@ -24,6 +24,7 @@ class ValidatingContext(NamedTuple):
     keypath_parent: Union[str, int]  # key relative to parent
     parent: Any  # the direct parent of this field
     definition: Optional[FieldDefinition] = None
+    operator: Any = None
     all_fields: Optional[bool] = None
     mark_graph: MarkGraph = MarkGraph()
 
@@ -46,7 +47,10 @@ class ValidatingContext(NamedTuple):
                             if 'keypath_parent' in keys
                             else self.keypath_parent),
             parent=kwargs['parent'] if 'parent' in keys else self.parent,
-            definition=kwargs['definition'] if 'definition' in keys else self.definition,
+            definition=(kwargs['definition']
+                        if 'definition' in keys else self.definition),
+            operator=(kwargs['operator']
+                      if 'operator' in keys else self.operator),
             all_fields=(kwargs['all_fields']
                         if 'all_fields' in keys else self.all_fields),
             mark_graph=(kwargs['mark_graph']
@@ -65,6 +69,7 @@ class ValidatingContext(NamedTuple):
             keypath_parent=self.keypath_parent,
             parent=self.parent,
             definition=self.definition,
+            operator=self.operator,
             all_fields=self.all_fields,
             mark_graph=self.mark_graph)
 
@@ -88,6 +93,7 @@ class TransformingContext(NamedTuple):
     keypath_parent: Union[str, int]  # key relative to parent
     parent: Any  # the direct parent of this field
     definition: Optional[FieldDefinition] = None
+    operator: Any = None
     all_fields: Optional[bool] = None
     dest: Optional[JSONClassObject] = None
     fill_dest_blanks: bool = True
@@ -112,7 +118,10 @@ class TransformingContext(NamedTuple):
                             if 'keypath_parent' in keys
                             else self.keypath_parent),
             parent=kwargs['parent'] if 'parent' in keys else self.parent,
-            definition=kwargs['definition'] if 'definition' in keys else self.definition,
+            definition=(kwargs['definition']
+                        if 'definition' in keys else self.definition),
+            operator=(kwargs['operator']
+                      if 'operator' in keys else self.operator),
             all_fields=(kwargs['all_fields']
                         if 'all_fields' in keys else self.all_fields),
             mark_graph=(kwargs['mark_graph']
@@ -131,6 +140,7 @@ class TransformingContext(NamedTuple):
             keypath_parent=self.keypath_parent,
             parent=self.parent,
             definition=self.definition,
+            operator=self.operator,
             all_fields=self.all_fields,
             mark_graph=self.mark_graph)
 
