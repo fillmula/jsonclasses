@@ -53,13 +53,9 @@ class InstanceOfValidator(Validator):
         keypath_messages = {}
         for field in context.value.__class__.definition.fields:
             fname = field.name
-            fd = field.definition
-            bypass = False
-            if fd.field_storage == FieldStorage.EMBEDDED:
+            if field.definition.field_storage == FieldStorage.EMBEDDED:
                 if only_validate_modified and fname not in modified_fields:
-                    bypass = True
-            if bypass:
-                continue
+                    continue
             try:
                 field.types.validator.validate(context.new(
                     value=getattr(context.value, fname),

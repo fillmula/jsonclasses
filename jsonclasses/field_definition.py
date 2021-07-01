@@ -1,6 +1,6 @@
 """This is an internal module."""
 from __future__ import annotations
-from typing import Any, Optional, Union, TYPE_CHECKING
+from typing import Any, Callable, Optional, Union, TYPE_CHECKING
 from enum import Enum, Flag
 from dataclasses import dataclass
 from .types_resolver import TypesResolver
@@ -155,6 +155,10 @@ class FieldDefinition:  # pylint: disable=too-many-instance-attributes
     has_eager_validator: bool = False
     has_reset_validator: bool = False
     has_preserialize_validator: bool = False
+
+    # operator
+    requires_operator_assign: bool = False
+    operator_assign_transformer: Optional[Callable] = None
 
     @property
     def is_ref(self: FieldDefinition) -> bool:

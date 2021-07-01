@@ -2,6 +2,7 @@
 from __future__ import annotations
 from typing import Any, Optional, Union
 from datetime import datetime
+from inspect import signature
 from .jsonclass_object import JSONClassObject
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
 from .field_definition import FieldStorage, FieldType
@@ -188,6 +189,18 @@ def opby(self: JSONClassObject, operator: Any) -> JSONClassObject:
         JSONClassObject: The JSONClassObject itself is returned.
     """
     setattr(self, '_operator', operator)
+    if self.is_new:
+        class_def = self.__class__.definition
+        for field in class_def.assign_operator_fields:
+            if field.definition.operator_assign_transformer is not None:
+                transformer = field.definition.operator_assign_transformer
+                params_len = len(signature(transformer).parameters)
+                if params_len == 1:
+                    setattr(self, field.name, transformer(operator))
+                elif params_len == 2:
+                    setattr(self, field.name, transformer(operator, self))
+            else:
+                setattr(self, field.name, operator)
     return self
 
 

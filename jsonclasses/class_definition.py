@@ -55,6 +55,7 @@ class ClassDefinition:
         self._camelized_field_names: list[str] = []
         self._reference_names: list[str] = []
         self._camelized_reference_names: list[str] = []
+        self._assign_operator_fields: list[JSONClassField] = []
         for field in fields(class_):
             name = field.name
             self._field_names.append(name)
@@ -100,6 +101,8 @@ class ClassDefinition:
                 self._nullify_fields.append(jsonclass_field)
             elif types.definition.delete_rule == DeleteRule.CASCADE:
                 self._cascade_fields.append(jsonclass_field)
+            if types.definition.requires_operator_assign:
+                self._assign_operator_fields.append(jsonclass_field)
         self._tuple_fields: tuple[JSONClassField] = tuple(self._list_fields)
         self._available_names: set[str] = set(self._field_names
                                               + self._camelized_field_names
@@ -232,6 +235,13 @@ class ClassDefinition:
         defined by user.
         """
         return self._primary_field
+
+    @property
+    def assign_operator_fields(self: ClassDefinition) -> list[JSONClassField]:
+        """The class definition's fields which require operator assigning on
+        object creation.
+        """
+        return self._assign_operator_fields
 
     def foreign_field_for(self: ClassDefinition,
                           name: str) -> Optional[tuple[ClassDefinition, str]]:

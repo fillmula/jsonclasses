@@ -30,7 +30,8 @@ from .validators import (UseForValidator, BoolValidator, ChainedValidator,
                          TruncateValidator, UniqueValidator, ValidateValidator,
                          Validator, WriteNonnullValidator, WriteonceValidator,
                          WriteonlyValidator, DenyValidator, CascadeValidator,
-                         NullifyValidator, OpValidator)
+                         NullifyValidator, OpValidator, AsopValidator,
+                         AsopdValidator)
 
 Str = str
 Int = int
@@ -593,6 +594,31 @@ class Types:
           Types: A new types chained with this marker.
         """
         return Types(self, EagerValidator(), TransformValidator(transformer))
+
+    def asop(self, asop_transformer: Callable) -> Types:
+        """Asop marker assigns transformed operator value to this field. When
+        the operator is not present, a ValidationException is raised.
+
+        Args:
+            asop_transformer (Callable): This transformer function takes 1 to
+            3 arguments. The first one is the opeartor, the second one is the
+            value of the field, the third is the transforming context.
+
+        Returns:
+            Types: A new types chained with this marker.
+        """
+        return Types(self, AsopValidator(asop_transformer))
+
+    @property
+    def asopd(self) -> Types:
+        """Asopd marker assigns operator value directly to this field without
+        any transforming. When the operator  is not present, a
+        ValidationException is raised.
+
+        Returns:
+            Types: A new types chained with this marker.
+        """
+        return Types(self, AsopdValidator())
 
     def setonsave(self, setter: Callable) -> Types:
         """Setonsave marker marks a field to be updated just before serializing
