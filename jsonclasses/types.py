@@ -515,11 +515,11 @@ class Types:
         the operator is not present, this validator fails.
 
         Args:
-            op_callable (Callable): The op callable takes 1 to 3 arguments. The
-            first is the operator object, the second is the value of the field,
-            the third is the validating context. Returning None or True means
-            the value is valid, while returning a str message or False means
-            validation failed.
+            op_callable (Callable): The op callable takes 1 to 4 arguments. The
+            first is the operator object, the second is the object being operated,
+            the third is the value of the field, the fourth is the validating context.
+            Returning None or True means the value is valid, while returning a str
+            message or False means validation failed.
 
         Returns:
             Types: A new types chained with this marker.
