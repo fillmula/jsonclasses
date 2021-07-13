@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name='jsonclasses',
-    version='2.4.1',
+    version='2.5.0',
     description=('The Modern Declarative Data Flow and Data Graph Framework '
                  'for the AI Empowered Generation.'),
     long_description=README,
@@ -24,5 +24,4 @@ setup(
     url='https://github.com/fillmula/jsonclasses',
     include_package_data=True,
     python_requires='>=3.9',
-    install_requires=[
-        'inflection>=0.5.1,<1.0.0'])
+    install_requires=['inflection>=0.5.1,<1.0.0'])

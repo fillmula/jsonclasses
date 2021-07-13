@@ -3,7 +3,8 @@ This module contains `jsonclass`, the decorator for JSON Classes.
 """
 from typing import Optional, Union, Callable, overload, cast
 from dataclasses import dataclass
-from .config import Config
+from .config import (Config, OnCreate, OnSave, CanCreate, CanUpdate, CanDelete,
+                     CanRead)
 from .jsonclass_field import JSONClassField
 from .class_definition import ClassDefinition
 from .jsonclassify import jsonclassify
@@ -24,7 +25,13 @@ def jsonclass(
     validate_all_fields: Optional[bool] = None,
     soft_delete: Optional[bool] = None,
     abstract: Optional[bool] = None,
-    reset_all_fields: Optional[bool] = None
+    reset_all_fields: Optional[bool] = None,
+    on_create: Optional[Union[OnCreate, list[OnCreate]]] = None,
+    on_save: Optional[Union[OnSave, list[OnSave]]] = None,
+    can_create: Optional[Union[CanCreate, list[CanCreate]]] = None,
+    can_update: Optional[Union[CanUpdate, list[CanUpdate]]] = None,
+    can_delete: Optional[Union[CanDelete, list[CanDelete]]] = None,
+    can_read: Optional[Union[CanRead, list[CanRead]]] = None,
 ) -> Callable[[type], type[JSONClassObject]]: ...
 
 
@@ -38,7 +45,13 @@ def jsonclass(
     validate_all_fields: Optional[bool] = None,
     soft_delete: Optional[bool] = None,
     abstract: Optional[bool] = None,
-    reset_all_fields: Optional[bool] = None
+    reset_all_fields: Optional[bool] = None,
+    on_create: Optional[Union[OnCreate, list[OnCreate]]] = None,
+    on_save: Optional[Union[OnSave, list[OnSave]]] = None,
+    can_create: Optional[Union[CanCreate, list[CanCreate]]] = None,
+    can_update: Optional[Union[CanUpdate, list[CanUpdate]]] = None,
+    can_delete: Optional[Union[CanDelete, list[CanDelete]]] = None,
+    can_read: Optional[Union[CanRead, list[CanRead]]] = None,
 ) -> type[JSONClassObject]: ...
 
 
@@ -51,7 +64,13 @@ def jsonclass(
     validate_all_fields: Optional[bool] = None,
     soft_delete: Optional[bool] = None,
     abstract: Optional[bool] = None,
-    reset_all_fields: Optional[bool] = None
+    reset_all_fields: Optional[bool] = None,
+    on_create: Optional[Union[OnCreate, list[OnCreate]]] = None,
+    on_save: Optional[Union[OnSave, list[OnSave]]] = None,
+    can_create: Optional[Union[CanCreate, list[CanCreate]]] = None,
+    can_update: Optional[Union[CanUpdate, list[CanUpdate]]] = None,
+    can_delete: Optional[Union[CanDelete, list[CanDelete]]] = None,
+    can_read: Optional[Union[CanRead, list[CanRead]]] = None,
 ) -> Union[Callable[[type], type[JSONClassObject]], type[JSONClassObject]]:
     """The jsonclass object class decorator. To declare a jsonclass class, use
     this syntax:
@@ -72,7 +91,13 @@ def jsonclass(
             validate_all_fields=validate_all_fields,
             soft_delete=soft_delete,
             abstract=abstract,
-            reset_all_fields=reset_all_fields)
+            reset_all_fields=reset_all_fields,
+            on_create=on_create,
+            on_save=on_save,
+            can_create=can_create,
+            can_update=can_update,
+            can_delete=can_delete,
+            can_read=can_read)
         dataclass_cls = dataclass(init=False)(cls)
         jsonclass_cls = jsonclassify(dataclass_cls)
         definition = ClassDefinition(jsonclass_cls, config)
@@ -90,5 +115,11 @@ def jsonclass(
                 validate_all_fields=validate_all_fields,
                 soft_delete=soft_delete,
                 abstract=abstract,
-                reset_all_fields=reset_all_fields)
+                reset_all_fields=reset_all_fields,
+                on_create=on_create,
+                on_save=on_save,
+                can_create=can_create,
+                can_update=can_update,
+                can_delete=can_delete,
+                can_read=can_read)
         return parametered_jsonclass

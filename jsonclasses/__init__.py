@@ -5,7 +5,7 @@ JSON Classes
 JSON Classes is the Modern Declarative Data Flow and Data Graph Framework for
 the AI Empowered Generation.
 
-:copyright: (c) 2020 by Wiosoft Crafts, Victor Zhang
+:copyright: (c) 2020 by Fillmula Inc., Victor Teo
 
 :license: MIT, see LICENSE for more details.
 """
