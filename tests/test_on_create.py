@@ -5,7 +5,7 @@ from tests.classes.cbm_article import CBMArticle
 from tests.classes.cbo_article import CBOArticle
 
 
-class TestOnCreate(TestCase):
+class TestDecoratedOnCreate(TestCase):
 
     def test_callback_are_called_for_new_objects_on_save(self):
         article = CBArticle(name='A', content='B')
