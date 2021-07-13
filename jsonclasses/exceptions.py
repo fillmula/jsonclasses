@@ -165,6 +165,16 @@ class ValidationException(Exception):
         return retval
 
 
+class UnauthorizedActionException(Exception):
+    """UnauthorizedActionException is raised when operator checking guards are
+    not passed.
+    """
+
+    def __init__(self, message: str) -> None:
+        self.message = message
+        super().__init__(self.message)
+
+
 class DeletionDeniedException(Exception):
     """DeletionDeniedException is raised on jsonclass object deletion.
     """

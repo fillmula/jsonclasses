@@ -18,7 +18,8 @@ from .owned_collection_utils import (to_owned_dict, to_owned_list,
 from .keypath_utils import concat_keypath, initial_keypath, reference_key
 from .exceptions import (AbstractJSONClassException, ValidationException,
                          JSONClassResetError, JSONClassResetNotEnabledError,
-                         UnlinkableJSONClassException)
+                         UnlinkableJSONClassException,
+                         UnauthorizedActionException)
 
 
 def __init__(self: JSONClassObject, **kwargs: dict[str, Any]) -> None:
@@ -466,40 +467,52 @@ def _orm_restore(self: JSONClassObject) -> None:
 def _can_create_or_update_check(self: JSONClassObject) -> None:
     if self.is_new:
         for callback in self.__class__.definition.config.can_create:
-            result = callback(self, getattr(self, '_operator'))
+            operator = getattr(self, '_operator')
+            if operator is None:
+                raise UnauthorizedActionException('no operator')
+            result = callback(self, operator)
             if result is not None and result is not True:
                 if isinstance(result, str):
-                    raise ValidationException(result)
+                    raise UnauthorizedActionException(result)
                 else:
-                    raise ValidationException('cannot create')
+                    raise UnauthorizedActionException('cannot create')
     else:
         for callback in self.__class__.definition.config.can_update:
-            result = callback(self, getattr(self, '_operator'))
+            operator = getattr(self, '_operator')
+            if operator is None:
+                raise UnauthorizedActionException('no operator')
+            result = callback(self, operator)
             if result is not None and result is not True:
                 if isinstance(result, str):
-                    raise ValidationException(result)
+                    raise UnauthorizedActionException(result)
                 else:
-                    raise ValidationException('cannot update')
+                    raise UnauthorizedActionException('cannot update')
 
 
 def _can_delete_check(self: JSONClassObject) -> None:
     for callback in self.__class__.definition.config.can_delete:
-        result = callback(self, getattr(self, '_operator'))
+        operator = getattr(self, '_operator')
+        if operator is None:
+            raise UnauthorizedActionException('no operator')
+        result = callback(self, operator)
         if result is not None and result is not True:
             if isinstance(result, str):
-                raise ValidationException(result)
+                raise UnauthorizedActionException(result)
             else:
-                raise ValidationException('cannot delete')
+                raise UnauthorizedActionException('cannot delete')
 
 
 def _can_read_check(self: JSONClassObject) -> None:
     for callback in self.__class__.definition.config.can_read:
-        result = callback(self, getattr(self, '_operator'))
+        operator = getattr(self, '_operator')
+        if operator is None:
+            raise UnauthorizedActionException('no operator')
+        result = callback(self, operator)
         if result is not None and result is not True:
             if isinstance(result, str):
-                raise ValidationException(result)
+                raise UnauthorizedActionException(result)
             else:
-                raise ValidationException('cannot read')
+                raise UnauthorizedActionException('cannot read')
 
 
 def _run_on_create_callbacks(self: JSONClassObject) -> None:

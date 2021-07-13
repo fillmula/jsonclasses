@@ -2,7 +2,7 @@ from __future__ import annotations
 from jsonclasses import jsonclass
 
 
-def set_deleted(p: CBMProduct, o: int) -> None:
+def set_deleted(p: CBOProduct, o: int) -> None:
     p.deleted_count = p.deleted_count - o
 
 
