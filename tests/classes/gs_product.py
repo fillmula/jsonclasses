@@ -14,7 +14,7 @@ class GSProductUser:
     books: list[GSProduct] = types.nonnull.listof('GSProduct').linkedby('user')
 
 
-@jsonclass(can_delete=check_user)
+@jsonclass(can_delete=check_user, can_read=check_user)
 class GSProduct:
     name: str
     user: GSProductUser = types.instanceof('GSProductUser').linkto.required

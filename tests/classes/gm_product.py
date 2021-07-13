@@ -18,7 +18,7 @@ class GMProductUser:
     books: list[GMProduct] = types.nonnull.listof('GMProduct').linkedby('user')
 
 
-@jsonclass(can_delete=[check_owner, check_tier])
+@jsonclass(can_delete=[check_owner, check_tier], can_read=[check_owner, check_tier])
 class GMProduct:
     name: str
     user: GMProductUser = types.instanceof('GMProductUser').linkto.required

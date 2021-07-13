@@ -120,6 +120,7 @@ def tojson(self: JSONClassObject,
         dict[str, Any]: A dict represents this object's JSON object.
     """
     self._ensure_not_outdated()
+    self._can_read_check()
     validator = InstanceOfValidator(self.__class__)
     config = self.__class__.definition.config
     context = ToJSONContext(value=self,
