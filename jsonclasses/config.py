@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
 OnCreate = Callable[[JSONClassObject, Any], None]
 OnSave = Callable[[JSONClassObject, Any], None]
+OnDelete = Callable[[JSONClassObject, Any], None]
 CanCreate = Callable[[JSONClassObject, Any], Union[bool, None, str]]
 CanUpdate = Callable[[JSONClassObject, Any], Union[bool, None, str]]
 CanDelete = Callable[[JSONClassObject, Any], Union[bool, None, str]]
@@ -35,6 +36,7 @@ class Config:
                  reset_all_fields: Optional[bool],
                  on_create: Optional[Union[OnCreate, list[OnCreate]]],
                  on_save: Optional[Union[OnSave, list[OnSave]]],
+                 on_delete: Optional[Union[OnDelete, list[OnDelete]]],
                  can_create: Optional[Union[CanCreate, list[CanCreate]]],
                  can_update: Optional[Union[CanUpdate, list[CanUpdate]]],
                  can_delete: Optional[Union[CanDelete, list[CanDelete]]],
@@ -63,6 +65,8 @@ class Config:
                 on first time save.
             on_save (Optional[Union[OnSave, list[OnSave]]]): The callback on
                 existing object save.
+            on_delete (Optional[Union[OnDelete, list[OnDelete]]]): The callback
+                on existing object deletion.
             can_create (Optional[Union[CanCreate, list[CanCreate]]]): The
                 creation guard.
             can_update (Optional[Union[CanUpdate, list[CanUpdate]]]): The
@@ -93,6 +97,12 @@ class Config:
             self._on_save = on_save
         else:
             self._on_save = []
+        if callable(on_delete):
+            self._on_delete = [on_delete]
+        elif isinstance(on_delete, list):
+            self._on_delete = on_delete
+        else:
+            self._on_delete = []
         if callable(can_create):
             self._can_create = [can_create]
         elif isinstance(can_create, list):
@@ -141,6 +151,8 @@ class Config:
         if self.on_create != other_config.on_create:
             return False
         if self.on_save != other_config.on_save:
+            return False
+        if self.on_delete != other_config._on_delete:
             return False
         if self.can_create != other_config.can_create:
             return False
@@ -234,6 +246,12 @@ class Config:
         """The object saving callback.
         """
         return self._on_save
+
+    @property
+    def on_delete(self: Config) -> list[OnDelete]:
+        """The object deleting callback.
+        """
+        return self._on_delete
 
     @property
     def can_create(self: Config) -> list[CanCreate]:

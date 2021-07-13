@@ -29,7 +29,14 @@ class TestJsonClass(TestCase):
                                 validate_all_fields=False,
                                 soft_delete=False,
                                 abstract=False,
-                                reset_all_fields=False)
+                                reset_all_fields=False,
+                                on_create=[],
+                                on_save=[],
+                                on_delete=[],
+                                can_create=[],
+                                can_update=[],
+                                can_delete=[],
+                                can_read=[])
         self.assertEqual(class_config, default_config)
 
     def test_jsonclass_class_graph_changes_class_graph(self):

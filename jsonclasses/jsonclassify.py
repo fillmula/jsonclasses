@@ -302,6 +302,11 @@ def save(self: JSONClassObject,
     """Save this object into database. This will not write if no storage
     modifier is used.
     """
+    self._can_create_or_update_check()
+    if self.is_new:
+        self._run_on_create_callbacks()
+    else:
+        self._run_on_save_callbacks()
     if not skip_validation:
         self.validate(validate_all_fields=validate_all_fields)
     self._set_on_save()
@@ -318,6 +323,8 @@ def delete(self: JSONClassObject) -> JSONClassObject:
     """Delete this object from database and clear linked relationships with
     delete rule.
     """
+    self._can_delete_check()
+    self._run_on_delete_callbacks()
     self._orm_delete()
     return self
 
@@ -380,6 +387,7 @@ def _set_initial_status(self: JSONClassObject) -> None:
     setattr(self, '_local_key_map', {})
     setattr(self, '_unlinked_objects', {})
     setattr(self, '_graph', ObjectGraph())
+    setattr(self, '_operator', None)
 
 
 def _mark_not_new(self: JSONClassObject) -> None:
@@ -453,6 +461,72 @@ def _orm_delete(self: JSONClassObject) -> None:
 
 def _orm_restore(self: JSONClassObject) -> None:
     pass
+
+
+def _can_create_or_update_check(self: JSONClassObject) -> None:
+    if self.is_new:
+        for callback in self.__class__.definition.config.can_create:
+            result = callback(self, getattr(self, '_operator'))
+            if result is not None and result is not True:
+                if isinstance(result, str):
+                    raise ValidationException(result)
+                else:
+                    raise ValidationException('cannot create')
+    else:
+        for callback in self.__class__.definition.config.can_update:
+            result = callback(self, getattr(self, '_operator'))
+            if result is not None and result is not True:
+                if isinstance(result, str):
+                    raise ValidationException(result)
+                else:
+                    raise ValidationException('cannot update')
+
+
+def _can_delete_check(self: JSONClassObject) -> None:
+    for callback in self.__class__.definition.config.can_delete:
+        result = callback(self, getattr(self, '_operator'))
+        if result is not None and result is not True:
+            if isinstance(result, str):
+                raise ValidationException(result)
+            else:
+                raise ValidationException('cannot delete')
+
+
+def _can_read_check(self: JSONClassObject) -> None:
+    for callback in self.__class__.definition.config.can_read:
+        result = callback(self, getattr(self, '_operator'))
+        if result is not None and result is not True:
+            if isinstance(result, str):
+                raise ValidationException(result)
+            else:
+                raise ValidationException('cannot read')
+
+
+def _run_on_create_callbacks(self: JSONClassObject) -> None:
+    for callback in self.__class__.definition.config.on_create:
+        params_len = len(signature(callback).parameters)
+        if params_len == 1:
+            callback(self)
+        else:
+            callback(self, getattr(self, '_operator'))
+
+
+def _run_on_save_callbacks(self: JSONClassObject) -> None:
+    for callback in self.__class__.definition.config.on_save:
+        params_len = len(signature(callback).parameters)
+        if params_len == 1:
+            callback(self)
+        else:
+            callback(self, getattr(self, '_operator'))
+
+
+def _run_on_delete_callbacks(self: JSONClassObject) -> None:
+    for callback in self.__class__.definition.config.on_delete:
+        params_len = len(signature(callback).parameters)
+        if params_len == 1:
+            callback(self)
+        else:
+            callback(self, getattr(self, '_operator'))
 
 
 @property
@@ -784,6 +858,12 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_._database_write = _database_write
     class_._orm_delete = _orm_delete
     class_._orm_restore = _orm_restore
+    class_._can_create_or_update_check = _can_create_or_update_check
+    class_._can_delete_check = _can_delete_check
+    class_._can_read_check = _can_read_check
+    class_._run_on_create_callbacks = _run_on_create_callbacks
+    class_._run_on_save_callbacks = _run_on_save_callbacks
+    class_._run_on_delete_callbacks = _run_on_delete_callbacks
     class_._id = _id
     class_._created_at = _created_at
     class_._updated_at = _updated_at
