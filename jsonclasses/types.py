@@ -31,7 +31,7 @@ from .validators import (UseForValidator, BoolValidator, ChainedValidator,
                          Validator, WriteNonnullValidator, WriteonceValidator,
                          WriteonlyValidator, DenyValidator, CascadeValidator,
                          NullifyValidator, OpValidator, AsopValidator,
-                         AsopdValidator)
+                         AsopdValidator, UrlValidator)
 
 Str = str
 Int = int
@@ -299,6 +299,13 @@ class Types:
           Types: A new types chained with this marker.
         """
         return Types(self, LengthValidator(minlength, maxlength))
+
+    @property
+    def url(self) -> Types:
+        """Fields marked with url should be valid url string. This is a
+        validator marker.
+        """
+        return Types(self, UrlValidator())
 
     @property
     def int(self) -> Types:
@@ -594,6 +601,20 @@ class Types:
           Types: A new types chained with this marker.
         """
         return Types(self, EagerValidator(), TransformValidator(transformer))
+
+    def uploader(self, uploader: Callable) -> Types:
+        """Uploader is barely a syntax alias for transformer. Uploaded files
+        can be processed through a transformer and get url attached to this
+        object.
+
+        Args:
+          transformer (Callable): This transformer function takes one argument
+          which is the current value of the field.
+
+        Returns:
+          Types: A new types chained with this marker.
+        """
+        return Types(self, EagerValidator(), TransformValidator(uploader))
 
     def asop(self, asop_transformer: Callable) -> Types:
         """Asop marker assigns transformed operator value to this field. When
