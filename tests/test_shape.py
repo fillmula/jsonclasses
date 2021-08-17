@@ -95,3 +95,15 @@ class TestShape(TestCase):
         with self.assertRaisesRegex(ValidationException,
                                     "Unallowed key 'a' at 'config'\\."):
             SimpleFolder(config={'a': True, 'b': False})
+
+    def test_shape_can_be_accessed_with_dot_notation(self):
+        folder = SimpleFolder(config={'display_size': True, 'display_date': False})
+        self.assertEqual(folder.config.display_size, True)
+        self.assertEqual(folder.config.display_date, False)
+
+    def test_shape_can_be_set_with_dot_notation(self):
+        folder = SimpleFolder(config={'display_size': True, 'display_date': False})
+        folder.config.display_size = False
+        folder.config.display_date = True
+        self.assertEqual(folder.config['display_size'], False)
+        self.assertEqual(folder.config['display_date'], True)

@@ -13,7 +13,8 @@ from .mark_graph import MarkGraph
 from .object_graph import ObjectGraph
 from .owned_dict import OwnedDict
 from .owned_list import OwnedList
-from .owned_collection_utils import (to_owned_dict, to_owned_list,
+from .owned_collection_utils import (to_owned_dict, to_shape_dict,
+                                     to_owned_list,
                                      unowned_copy_dict, unowned_copy_list)
 from .keypath_utils import concat_keypath, initial_keypath, reference_key
 from .exceptions import (AbstractJSONClassException, ValidationException,
@@ -630,7 +631,10 @@ def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
     if isinstance(value, list):
         value = to_owned_list(self, value, name)
     if isinstance(value, dict):
-        value = to_owned_dict(self, value, name)
+        if field.definition.field_type == FieldType.SHAPE:
+            value = to_shape_dict(self, value, name)
+        else:
+            value = to_owned_dict(self, value, name)
     if field.definition.is_ref:
         if hasattr(self, name):
             self.__unlink_field__(field, getattr(self, name))
