@@ -31,7 +31,10 @@ from .validators import (UseForValidator, BoolValidator, ChainedValidator,
                          Validator, WriteNonnullValidator, WriteonceValidator,
                          WriteonlyValidator, DenyValidator, CascadeValidator,
                          NullifyValidator, OpValidator, AsopValidator,
-                         AsopdValidator, UrlValidator)
+                         AsopdValidator, UrlValidator, EmailValidator,
+                         DigitValidator,AlphaValidator,NumericValidator,
+                         AlnumValidator,ToTitleValidator,ToCapValidator,
+                         ToLowerValidator,ToUpperValidator)
 
 Str = str
 Int = int
@@ -306,6 +309,41 @@ class Types:
         validator marker.
         """
         return Types(self, UrlValidator())
+
+    @property
+    def digit(self) -> Types:
+        """Values of fields marked with digit should be valid digit string. This is a
+        validator marker.
+        """
+        return Types(self, DigitValidator())
+
+    @property
+    def alpha(self) -> Types:
+        """Values of fields marked with alpha should be valid alpha string. This is a
+        validator marker.
+        """
+        return Types(self, AlphaValidator())
+
+    @property
+    def numeric(self) -> Types:
+        """Values of fields marked with numeric should be valid numeric string. This is a
+        validator marker.
+        """
+        return Types(self, NumericValidator())
+
+    @property
+    def email(self) -> Types:
+        """Values of fields marked with email should be valid email format. This is a
+        validator marker.
+        """
+        return Types(self, EmailValidator())
+
+    @property
+    def alnum(self) -> Types:
+        """Values fields marked with alnum should be valid alnum strings. This is a
+        validator marker.
+        """
+        return Types(self, AlnumValidator())
 
     @property
     def int(self) -> Types:
@@ -587,6 +625,42 @@ class Types:
             Types: A new types chained with this marker.
         """
         return Types(self, EagerValidator(), TrimValidator())
+
+    @property
+    def totitle(self) -> Types:
+        """This marker titlizes strings.
+
+        Returns:
+            Types: A new types chained with this marker.
+        """
+        return Types(self, EagerValidator(), ToTitleValidator())
+
+    @property
+    def tocap(self) -> Types:
+        """This marker capitalizes strings.
+
+        Returns:
+            Types: A new types chained with this marker.
+        """
+        return Types(self, EagerValidator(), ToCapValidator())
+
+    @property
+    def tolower(self) -> Types:
+        """This marker lowercasefies strings.
+
+        Returns:
+            Types: A new types chained with this marker.
+        """
+        return Types(self, EagerValidator(), ToLowerValidator())
+
+    @property
+    def toupper(self) -> Types:
+        """This marker uppercasefies strings.
+
+        Returns:
+            Types: A new types chained with this marker.
+        """
+        return Types(self, EagerValidator(), ToUpperValidator())
 
     def transform(self, transformer: Callable) -> Types:
         """This mark applies transfromer on the value. When value is None, the
