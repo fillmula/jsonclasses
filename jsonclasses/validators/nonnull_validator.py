@@ -6,5 +6,5 @@ from ..field_definition import FieldDefinition, Nullability
 class NonnullValidator(Validator):
     """A nonnull validator transforms None into empty library."""
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.collection_nullability = Nullability.NONNULL
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.collection_nullability = Nullability.NONNULL

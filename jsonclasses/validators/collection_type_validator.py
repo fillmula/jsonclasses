@@ -23,9 +23,9 @@ class CollectionTypeValidator(TypeValidator):
         self.raw_item_types = raw_item_types
         self.exact_type = False
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        super().define(fdesc)
-        fdesc.raw_item_types = self.raw_item_types
+    def define(self, fdef: FieldDefinition) -> None:
+        super().define(fdef)
+        fdef.raw_item_types = self.raw_item_types
 
     def item_types(self, owner_cls: type[JSONClassObject]) -> Types:
         if hasattr(self, '_item_types'):
@@ -83,9 +83,9 @@ class CollectionTypeValidator(TypeValidator):
                 root=context.root)
 
     def transform(self, context: TransformingContext) -> Any:
-        fdesc = cast(FieldDefinition, context.definition)
+        fdef = cast(FieldDefinition, context.definition)
         if context.value is None:
-            if fdesc.collection_nullability == Nullability.NONNULL:
+            if fdef.collection_nullability == Nullability.NONNULL:
                 return self.empty_collection()
             else:
                 return None

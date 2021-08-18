@@ -9,5 +9,5 @@ class TempValidator(Validator):
     temporary fields' values are set to None.
     """
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.is_temp_field = True
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.is_temp_field = True

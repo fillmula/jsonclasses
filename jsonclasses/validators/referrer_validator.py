@@ -9,5 +9,5 @@ class ReferrerValidator(Validator):
     def __init__(self, referrer_key: str) -> None:
         self.referrer_key = referrer_key
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.join_table_referrer_key = self.referrer_key
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.join_table_referrer_key = self.referrer_key

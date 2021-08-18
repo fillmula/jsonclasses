@@ -8,5 +8,5 @@ class ResetValidator(Validator):
     This is used for comparing and validating values on update.
     """
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.has_reset_validator = True
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.has_reset_validator = True

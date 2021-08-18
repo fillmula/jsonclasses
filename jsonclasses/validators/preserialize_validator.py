@@ -11,5 +11,5 @@ class PreserializeValidator(Validator):
     This is usually used before setonsave validator.
     """
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.has_preserialize_validator = True
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.has_preserialize_validator = True

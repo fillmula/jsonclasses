@@ -11,8 +11,8 @@ class AsopdValidator(Validator):
     current field directly.
     """
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.requires_operator_assign = True
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.requires_operator_assign = True
 
     def validate(self, context: ValidatingContext) -> None:
         if context.owner.is_new or context.keypath_owner in context.owner.modified_fields:

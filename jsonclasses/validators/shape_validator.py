@@ -36,9 +36,9 @@ class ShapeValidator(TypeValidator):
             setattr(self, '_shape_types', stypes)
             return stypes
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        super().define(fdesc)
-        fdesc.shape_types = self.raw_types
+    def define(self, fdef: FieldDefinition) -> None:
+        super().define(fdef)
+        fdef.shape_types = self.raw_types
 
     def validate(self, context: ValidatingContext) -> None:
         if context.value is None:

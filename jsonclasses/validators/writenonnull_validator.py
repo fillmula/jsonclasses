@@ -8,5 +8,5 @@ class WriteNonnullValidator(Validator):
     allowed to be modified. However, nil value won't be set.
     """
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.write_rule = WriteRule.WRITE_NONNULL
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.write_rule = WriteRule.WRITE_NONNULL

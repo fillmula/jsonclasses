@@ -6,5 +6,5 @@ from .validator import Validator
 class OutputValueValidator(Validator):
     """Output value validator tweaks enum validator's behavior."""
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.enum_output = EnumOutput.VALUE
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.enum_output = EnumOutput.VALUE

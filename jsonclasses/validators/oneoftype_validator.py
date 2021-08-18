@@ -14,9 +14,9 @@ class OneOfTypeValidator(Validator):
     def __init__(self, type_list: list[Any]) -> None:
         self.type_list = type_list
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.field_type = FieldType.UNION
-        fdesc.union_types = [TypesResolver().resolve_types(t) for t in self.type_list]
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.field_type = FieldType.UNION
+        fdef.union_types = [TypesResolver().resolve_types(t) for t in self.type_list]
 
     def validate(self, context: ValidatingContext) -> None:
         if context.value is None:

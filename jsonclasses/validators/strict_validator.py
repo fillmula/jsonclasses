@@ -6,5 +6,5 @@ from ..field_definition import FieldDefinition, Strictness
 class StrictValidator(Validator):
     """A strict validator marks shape to disallow undefined keys."""
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.strictness = Strictness.STRICT
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.strictness = Strictness.STRICT

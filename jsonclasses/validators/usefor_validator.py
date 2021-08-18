@@ -9,5 +9,5 @@ class UseForValidator(Validator):
     def __init__(self, usage: str) -> None:
         self.usage = usage
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.usage = self.usage
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.usage = self.usage

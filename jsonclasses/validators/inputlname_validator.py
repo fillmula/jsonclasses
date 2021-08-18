@@ -6,9 +6,9 @@ from .validator import Validator
 class InputLnameValidator(Validator):
     """Input lname validator tweaks enum validator's behavior."""
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        if fdesc.enum_input is None:
-            fdesc.enum_input = EnumInput.LOWERCASE_NAME
+    def define(self, fdef: FieldDefinition) -> None:
+        if fdef.enum_input is None:
+            fdef.enum_input = EnumInput.LOWERCASE_NAME
         else:
-            fdesc.enum_input = fdesc.enum_input | EnumInput.LOWERCASE_NAME
+            fdef.enum_input = fdef.enum_input | EnumInput.LOWERCASE_NAME
         return

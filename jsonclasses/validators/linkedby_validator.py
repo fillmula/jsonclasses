@@ -9,9 +9,9 @@ class LinkedByValidator(Validator):
     def __init__(self, foreign_key: str) -> None:
         self.foreign_key = foreign_key
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.field_storage = FieldStorage.FOREIGN_KEY
-        fdesc.foreign_key = self.foreign_key
-        fdesc.use_join_table = False
-        if fdesc.delete_rule is None:
-            fdesc.delete_rule = DeleteRule.NULLIFY
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.field_storage = FieldStorage.FOREIGN_KEY
+        fdef.foreign_key = self.foreign_key
+        fdef.use_join_table = False
+        if fdef.delete_rule is None:
+            fdef.delete_rule = DeleteRule.NULLIFY

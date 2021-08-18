@@ -11,8 +11,8 @@ class PresentValidator(Validator):
     key fields to do required validation.
     """
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.required = True
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.required = True
 
     def validate(self, context: ValidatingContext) -> None:
         if context.value is None:

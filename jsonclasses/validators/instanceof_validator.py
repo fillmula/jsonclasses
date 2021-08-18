@@ -22,9 +22,9 @@ class InstanceOfValidator(Validator):
     def __init__(self, raw_type: InstanceOfType) -> None:
         self.raw_type = raw_type
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.field_type = FieldType.INSTANCE
-        fdesc.instance_types = self.raw_type
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.field_type = FieldType.INSTANCE
+        fdef.instance_types = self.raw_type
 
     def validate(self, context: ValidatingContext) -> None:
         from ..jsonclass_object import JSONClassObject
@@ -169,11 +169,11 @@ class InstanceOfValidator(Validator):
         for field in dest.__class__.definition.fields:
             if not self._has_field_value(field, dict_keys):
                 if field.definition.is_ref:
-                    fdesc = field.definition
-                    if fdesc.field_type == FieldType.LIST:
-                        if fdesc.collection_nullability == Nullability.NONNULL:
+                    fdef = field.definition
+                    if fdef.field_type == FieldType.LIST:
+                        if fdef.collection_nullability == Nullability.NONNULL:
                             nonnull_ref_lists.append(field.name)
-                    elif fdesc.field_storage == FieldStorage.LOCAL_KEY:
+                    elif fdef.field_storage == FieldStorage.LOCAL_KEY:
                         tsfm = dest.__class__.definition.config.key_transformer
                         refname = tsfm(field)
                         if context.value.get(refname) is not None:

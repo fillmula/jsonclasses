@@ -11,8 +11,8 @@ from ..isjsonclass import isjsonobject
 class RequiredValidator(Validator):
     """Mark a field as required."""
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.required = True
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.required = True
 
     def validate(self, context: ValidatingContext) -> None:
         storage = FieldStorage.EMBEDDED

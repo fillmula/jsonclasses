@@ -6,6 +6,6 @@ from .validator import Validator
 class ReadwriteValidator(Validator):
     """Readwrite validator marks a field both readable and writable."""
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.write_rule = WriteRule.UNLIMITED
-        fdesc.read_rule = ReadRule.UNLIMITED
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.write_rule = WriteRule.UNLIMITED
+        fdef.read_rule = ReadRule.UNLIMITED

@@ -7,7 +7,7 @@ from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 class Validator:
     """Abstract and base class for validators."""
 
-    def define(self, fdesc: FieldDefinition) -> None:
+    def define(self, fdef: FieldDefinition) -> None:
         """A hook and chance for validator to update field description."""
 
     def validate(self, context: ValidatingContext) -> None:

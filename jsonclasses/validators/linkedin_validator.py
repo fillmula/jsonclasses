@@ -11,9 +11,9 @@ class LinkedInValidator(Validator):
     def __init__(self, cls: Any) -> None:
         self.cls = cls
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.field_storage = FieldStorage.FOREIGN_KEY
-        fdesc.join_table_cls = self.cls
-        fdesc.use_join_table = True
-        if fdesc.delete_rule is None:
-            fdesc.delete_rule = DeleteRule.NULLIFY
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.field_storage = FieldStorage.FOREIGN_KEY
+        fdef.join_table_cls = self.cls
+        fdef.use_join_table = True
+        if fdef.delete_rule is None:
+            fdef.delete_rule = DeleteRule.NULLIFY

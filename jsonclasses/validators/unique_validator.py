@@ -6,5 +6,5 @@ from .validator import Validator
 class UniqueValidator(Validator):
     """Unique validator marks a column should be unique."""
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.unique = True
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.unique = True

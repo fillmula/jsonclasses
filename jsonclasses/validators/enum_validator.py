@@ -15,13 +15,13 @@ class EnumValidator(Validator):
         self.enum_or_name = enum_or_name
         self.field_type = FieldType.ENUM
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.field_type = FieldType.ENUM
-        fdesc.enum_class = self.enum_or_name
-        if fdesc.enum_input is None:
-            fdesc.enum_input = EnumInput.NAME
-        if fdesc.enum_output is None:
-            fdesc.enum_output = EnumOutput.NAME
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.field_type = FieldType.ENUM
+        fdef.enum_class = self.enum_or_name
+        if fdef.enum_input is None:
+            fdef.enum_input = EnumInput.NAME
+        if fdef.enum_output is None:
+            fdef.enum_output = EnumOutput.NAME
         return
 
     def transform(self, context: TransformingContext) -> Any:

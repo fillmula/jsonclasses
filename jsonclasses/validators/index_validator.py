@@ -6,5 +6,5 @@ from ..field_definition import FieldDefinition
 class IndexValidator(Validator):
     """Index validator implies this column should be indexed in database."""
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.index = True
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.index = True

@@ -6,5 +6,5 @@ from .validator import Validator
 class ReadonlyValidator(Validator):
     """Readonly validator marks a field to be readonly."""
 
-    def define(self, fdesc: FieldDefinition) -> None:
-        fdesc.write_rule = WriteRule.NO_WRITE
+    def define(self, fdef: FieldDefinition) -> None:
+        fdef.write_rule = WriteRule.NO_WRITE
