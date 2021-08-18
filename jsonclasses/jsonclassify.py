@@ -4,8 +4,10 @@ from typing import Any, Optional, Union
 from datetime import datetime
 from inspect import signature
 from .jsonclass_object import JSONClassObject
+from .types import Types
+from .types_resolver import TypesResolver
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
-from .field_definition import FieldStorage, FieldType
+from .field_definition import FieldDefinition, FieldStorage, FieldType
 from .validators.instanceof_validator import InstanceOfValidator
 from .jsonclass_field import JSONClassField
 from .isjsonclass import isjsonobject
@@ -89,7 +91,58 @@ def _set(self: JSONClassObject,
 
 
 def _keypath_set(self: JSONClassObject, kwargs: dict[str, Any]) -> None:
-    pass
+    for key, value in kwargs.items():
+        items = key.split(".")
+        dest = getattr(self, items[0])
+        fdefinition = self.__class__.definition.field_named(items[0]).types.definition
+        used_items = [items[0]]
+        self._set_to_container(dest, items[1:], value, fdefinition, used_items)
+
+
+def _set_to_container(self: JSONClassObject,
+                      dest: Any,
+                      items: list[str],
+                      value: Any,
+                      fdefinition: FieldDefinition,
+                      used_items: list[str]) -> None:
+    if fdefinition.field_type == FieldType.INSTANCE:
+        if dest is None:
+            raise ValueError(f"value in {'.'.join(used_items)} is None")
+        if len(items) == 1:
+            dest._set({items[0]: value}, fill_blanks=False)
+        else:
+            dest._keypath_set({'.'.join(items): value})
+    elif fdefinition.field_type == FieldType.SHAPE:
+        if dest is None:
+            raise ValueError(f"value in {'.'.join(used_items)} is None")
+        if len(items) == 1:
+            dest[items[0]] = value
+        else:
+            item_types = fdefinition.shape_types[items[0]]
+            item_types = TypesResolver().resolve_types(item_types, self.__class__.definition.config)
+            fdefinition = item_types.definition
+            self._set_to_container(dest[items[0]], items[1:], value, fdefinition, used_items + [items[0]])
+    elif fdefinition.field_type == FieldType.LIST:
+        if dest is None:
+            raise ValueError(f"value in {'.'.join(used_items)} is None")
+        if len(items) == 1:
+            dest[int(items[0])] = value
+        else:
+            item_types = fdefinition.raw_item_types
+            item_types = TypesResolver().resolve_types(item_types, self.__class__.definition.config)
+            fdefinition = item_types.definition
+            self._set_to_container(dest[items[0]], items[1:], value, fdefinition, used_items + [items[0]])
+    elif fdefinition.field_type == FieldType.DICT:
+        if dest is None:
+            raise ValueError(f"value in {'.'.join(used_items)} is None")
+        if len(items) == 1:
+            dest[items[0]] = value
+        else:
+            item_types = fdefinition.raw_item_types
+            item_types = TypesResolver().resolve_types(item_types, self.__class__.definition.config)
+            fdefinition = item_types.definition
+            self._set_to_container(dest[items[0]], items[1:], value, fdefinition, used_items + [items[0]])
+
 
 def update(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClassObject:
     """Update object values in a batch. This method is suitable for
@@ -850,6 +903,7 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_.set = jsonobject_set
     class_._set = _set
     class_._keypath_set = _keypath_set
+    class_._set_to_container = _set_to_container
     class_.update = update
     class_.tojson = tojson
     class_.validate = validate
