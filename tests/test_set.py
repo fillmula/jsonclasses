@@ -78,3 +78,12 @@ class TestSet(TestCase):
                           content='Tsê Tioh Si Kim Sieng Ua Ê Tsuê Ai')
         article.set(author=author)
         self.assertEqual(author, article.author)
+
+    def test_set_accepts_nested_keypaths_for_shape(self):
+        pass
+
+    def test_set_accepts_nested_keypaths_for_instance(self):
+        pass
+
+    def test_set_accepts_nested_keypaths_for_instances_in_list(self):
+        pass

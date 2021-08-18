@@ -1,6 +1,6 @@
 """This module defines utility functions for working with keypaths."""
 from __future__ import annotations
-from typing import Union, TYPE_CHECKING
+from typing import Any, Union, TYPE_CHECKING
 from .field_definition import FieldStorage, FieldType
 if TYPE_CHECKING:
     from .jsonclass_field import JSONClassField
@@ -93,3 +93,11 @@ def initial_keypath(keypath: str) -> str:
         str: The initial keypath component or empty string.
     """
     return keypath.split('.')[0]
+
+
+def single_key_args(kwargs: dict[str, Any]) -> dict[str, Any]:
+    return {k: v for k, v in kwargs.items() if '.' not in k}
+
+
+def compound_key_args(kwargs: dict[str, Any]) -> dict[str, Any]:
+    return {k: v for k, v in kwargs.items() if '.' in k}

@@ -9,6 +9,7 @@ from tests.classes.simple_student import SimpleStudent
 from tests.classes.simple_deadline import SimpleDeadline
 from tests.classes.author import Author
 from tests.classes.article import Article
+from tests.classes.default_shape import DefaultShape
 
 
 class TestInitialize(TestCase):
@@ -60,3 +61,16 @@ class TestInitialize(TestCase):
                           content='Tsê Tioh Si Kim Sieng Ua Ê Tsuê Ai',
                           author=author)
         self.assertEqual(author, article.author)
+
+    def test_initialize_accepts_nested_keypaths_for_nonnull_shape(self):
+        shape = DefaultShape(**{'settings.ios': False, 'settings.name': 'equal'})
+        self.assertEqual(shape.settings.ios, False)
+        self.assertEqual(shape.settings.name, 'equal')
+
+    def test_initialize_nested_keypaths_are_assigned_after_single_length_keys(self):
+        pass
+
+    def test_initialize_accepts_nested_keypaths_for_instances(self):
+        shape = DefaultShape(**{'settings.ios': False, 'settings.name': 'equal'})
+        self.assertEqual(shape.settings.ios, False)
+        self.assertEqual(shape.settings.name, 'equal')

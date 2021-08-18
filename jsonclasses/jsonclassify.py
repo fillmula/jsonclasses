@@ -16,7 +16,7 @@ from .owned_list import OwnedList
 from .owned_collection_utils import (to_owned_dict, to_shape_dict,
                                      to_owned_list,
                                      unowned_copy_dict, unowned_copy_list)
-from .keypath_utils import concat_keypath, initial_keypath, reference_key
+from .keypath_utils import concat_keypath, initial_keypath, reference_key, single_key_args, compound_key_args
 from .exceptions import (AbstractJSONClassException, ValidationException,
                          JSONClassResetError, JSONClassResetNotEnabledError,
                          UnlinkableJSONClassException,
@@ -40,7 +40,8 @@ def __init__(self: JSONClassObject, **kwargs: dict[str, Any]) -> None:
             setattr(self, local_key, None)
             self._local_keys.add(local_key)
             self._local_key_map[local_key] = field.name
-    self._set(kwargs, fill_blanks=True)
+    self._set(single_key_args(kwargs), fill_blanks=True)
+    self._keypath_set(compound_key_args(kwargs))
     try:
         self._graph.put(self)
     except UnlinkableJSONClassException:
@@ -56,7 +57,8 @@ def jsonobject_set(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClass
     self, thus you can chain calling with other instance methods.
     """
     self._ensure_not_outdated()
-    self._set(kwargs, fill_blanks=False)
+    self._set(single_key_args(kwargs), fill_blanks=False)
+    self._keypath_set(compound_key_args(kwargs))
     return self
 
 
@@ -85,6 +87,9 @@ def _set(self: JSONClassObject,
         mark_graph=MarkGraph())
     validator.transform(context)
 
+
+def _keypath_set(self: JSONClassObject, kwargs: dict[str, Any]) -> None:
+    pass
 
 def update(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClassObject:
     """Update object values in a batch. This method is suitable for
@@ -844,6 +849,7 @@ def jsonclassify(class_: type) -> JSONClassObject:
     class_.__init__ = __init__
     class_.set = jsonobject_set
     class_._set = _set
+    class_._keypath_set = _keypath_set
     class_.update = update
     class_.tojson = tojson
     class_.validate = validate
