@@ -3,6 +3,6 @@ from jsonclasses import jsonclass, types
 
 
 @jsonclass(validate_all_fields=True)
-class EmailUserAnalysis:
+class EmailUser:
     username: str
     email: str = types.str.email.required

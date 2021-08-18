@@ -312,35 +312,35 @@ class Types:
 
     @property
     def digit(self) -> Types:
-        """Fields marked with digit should be valid digit string. This is a
+        """Values of fields marked with digit should be valid digit string. This is a
         validator marker.
         """
         return Types(self, DigitValidator())
 
     @property
     def alpha(self) -> Types:
-        """Fields marked with alpha should be valid alpha string. This is a
+        """Values of fields marked with alpha should be valid alpha string. This is a
         validator marker.
         """
         return Types(self, AlphaValidator())
 
     @property
     def numeric(self) -> Types:
-        """Fields marked with numeric should be valid numeric string. This is a
+        """Values of fields marked with numeric should be valid numeric string. This is a
         validator marker.
         """
         return Types(self, NumericValidator())
 
     @property
     def email(self) -> Types:
-        """Fields marked with email should be valid email string. This is a
+        """Values of fields marked with email should be valid email format. This is a
         validator marker.
         """
         return Types(self, EmailValidator())
 
     @property
     def alnum(self) -> Types:
-        """Fields marked with alnum should be valid alnum string. This is a
+        """Fields marked with alnum should be valid alnum strings. This is a
         validator marker.
         """
         return Types(self, AlnumValidator())
@@ -628,7 +628,7 @@ class Types:
 
     @property
     def totitle(self) -> Types:
-        """This marker titlizes string value.
+        """This marker titlizes strings.
 
         Returns:
             Types: A new types chained with this marker.
@@ -637,7 +637,7 @@ class Types:
 
     @property
     def tocap(self) -> Types:
-        """This marker capitalizes string.
+        """This marker capitalizes strings.
 
         Returns:
             Types: A new types chained with this marker.
@@ -646,7 +646,7 @@ class Types:
 
     @property
     def tolower(self) -> Types:
-        """This marker lowercasefies string.
+        """This marker lowercasefies strings.
 
         Returns:
             Types: A new types chained with this marker.
@@ -655,7 +655,7 @@ class Types:
 
     @property
     def toupper(self) -> Types:
-        """This marker uppercasefies string.
+        """This marker uppercasefies strings.
 
         Returns:
             Types: A new types chained with this marker.

@@ -3,7 +3,7 @@ from jsonclasses import jsonclass, types
 
 
 @jsonclass
-class NumericAnalysis:
+class NumericProductId:
     product_name: str
     product_id: str = types.str.numeric.required
 

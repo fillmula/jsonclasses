@@ -1,5 +1,4 @@
 """module for alpha validator."""
-from re import compile, match, IGNORECASE
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..contexts import ValidatingContext

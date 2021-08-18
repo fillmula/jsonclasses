@@ -1,5 +1,5 @@
 """module for email validator."""
-from re import compile, match, IGNORECASE
+from re import compile, match
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..contexts import ValidatingContext

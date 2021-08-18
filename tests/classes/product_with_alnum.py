@@ -3,7 +3,7 @@ from jsonclasses import jsonclass, types
 
 
 @jsonclass
-class AlnumAnalysis:
+class AlnumProductCode:
     product_name: str
     product_code: str = types.str.alnum.required
 

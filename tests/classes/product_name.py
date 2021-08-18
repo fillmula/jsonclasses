@@ -3,6 +3,6 @@ from jsonclasses import jsonclass, types
 
 
 @jsonclass
-class AlphaAnalysis:
+class AlphaProductName:
     product_name: str = types.str.alpha.required
 
