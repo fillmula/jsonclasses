@@ -6,6 +6,9 @@ from tests.classes.simple_deadline import SimpleDeadline
 from tests.classes.simple_article import SimpleArticle
 from tests.classes.article import Article
 from tests.classes.author import Author
+from tests.classes.default_shape import DefaultShape
+from tests.classes.nest_shape_user import NestShapeUser
+from tests.classes.default_dict import DefaultDict
 
 
 class TestSet(TestCase):
@@ -80,10 +83,35 @@ class TestSet(TestCase):
         self.assertEqual(author, article.author)
 
     def test_set_accepts_nested_keypaths_for_shape(self):
-        pass
+        shape = DefaultShape()
+        shape.set(**{'settings.ios': False, 'settings.name': 'equal'})
+        self.assertEqual(shape.settings.ios, False)
+        self.assertEqual(shape.settings.name, 'equal')
 
-    def test_set_accepts_nested_keypaths_for_instance(self):
-        pass
+    def test_set_accepts_nested_keypaths_for_instances(self):
+        author = Author(name='Kieng')
+        article = Article(**{'title': 'E Sai',
+                             'content': 'Tsê Tioh Si Kim Sieng Ua Ê Tsuê Ai',
+                             'author': author})
+        article.set(**{'author.name': 'abc.def'})
+        self.assertEqual(article.author.name, 'abc.def')
 
-    def test_set_accepts_nested_keypaths_for_instances_in_list(self):
-        pass
+    def test_set_accepts_nested_keypaths_for_instances_in_lists(self):
+        article = Article(title='T', content='C')
+        author = Author(**{'name': 'Kieng', 'articles': [article]})
+        author.set(**{'articles.0.title': 'QQQQQ'})
+        self.assertEqual(author.articles[0].title, 'QQQQQ')
+
+    def test_set_accepts_nested_keypaths_for_shape_in_shape(self):
+        user = NestShapeUser(**{'name': 'N', 'grouped': {
+            'ios': {'on': True, 'off': False},
+            'android': {'on': False, 'off': True}
+        }})
+        user.set(**{'grouped.ios.on': False, 'grouped.ios.off': True})
+        self.assertEqual(user.grouped.ios['on'], False)
+        self.assertEqual(user.grouped.ios['off'], True) # TODO: use dot notation
+
+    def test_set_accepts_nested_keypaths_for_value_in_dicts(self):
+        dct = DefaultDict()
+        dct.set(**{'value.b': '3', 'value.c': '4'})
+        self.assertEqual(dct.value, {'a': '1', 'b': '3', 'c': '4'})
