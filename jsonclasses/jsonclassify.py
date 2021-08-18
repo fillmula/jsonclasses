@@ -31,13 +31,13 @@ def __init__(self: JSONClassObject, **kwargs: dict[str, Any]) -> None:
     validation and transformation are applied during the initialization
     process.
     """
-    if self.__class__.definition.config.abstract:
+    if self.__class__.cdef.config.abstract:
         raise AbstractJSONClassException(self.__class__)
     self._set_initial_status()
-    for field in self.__class__.definition.fields:
+    for field in self.__class__.cdef.fields:
         setattr(self, field.name, None)
         if field.fdef.field_storage == FieldStorage.LOCAL_KEY:
-            transformer = self.__class__.definition.config.key_transformer
+            transformer = self.__class__.cdef.config.key_transformer
             local_key = transformer(field)
             setattr(self, local_key, None)
             self._local_keys.add(local_key)
@@ -68,7 +68,7 @@ def _set(self: JSONClassObject,
          kwargs: dict[str, Any], fill_blanks: bool = False) -> None:
     """Set values of a jsonclass object internally."""
     validator = InstanceOfValidator(self.__class__)
-    config = self.__class__.definition.config
+    config = self.__class__.cdef.config
     operator = (getattr(self, '_operator')
                 if hasattr(self, '_operator') else None)
     context = TransformingContext(
@@ -94,7 +94,7 @@ def _keypath_set(self: JSONClassObject, kwargs: dict[str, Any]) -> None:
     for key, value in kwargs.items():
         items = key.split(".")
         dest = getattr(self, items[0])
-        fdef = self.__class__.definition.field_named(items[0]).types.fdef
+        fdef = self.__class__.cdef.field_named(items[0]).types.fdef
         used_items = [items[0]]
         self._set_to_container(dest, items[1:], value, fdef, used_items)
 
@@ -119,7 +119,7 @@ def _set_to_container(self: JSONClassObject,
             dest[items[0]] = value
         else:
             item_types = fdef.shape_types[items[0]]
-            item_types = TypesResolver().resolve_types(item_types, self.__class__.definition.config)
+            item_types = TypesResolver().resolve_types(item_types, self.__class__.cdef.config)
             fdef = item_types.fdef
             self._set_to_container(dest[items[0]], items[1:], value, fdef, used_items + [items[0]])
     elif fdef.field_type == FieldType.LIST:
@@ -129,7 +129,7 @@ def _set_to_container(self: JSONClassObject,
             dest[int(items[0])] = value
         else:
             item_types = fdef.raw_item_types
-            item_types = TypesResolver().resolve_types(item_types, self.__class__.definition.config)
+            item_types = TypesResolver().resolve_types(item_types, self.__class__.cdef.config)
             fdef = item_types.fdef
             self._set_to_container(dest[int(items[0])], items[1:], value, fdef, used_items + [items[0]])
     elif fdef.field_type == FieldType.DICT:
@@ -139,7 +139,7 @@ def _set_to_container(self: JSONClassObject,
             dest[items[0]] = value
         else:
             item_types = fdef.raw_item_types
-            item_types = TypesResolver().resolve_types(item_types, self.__class__.definition.config)
+            item_types = TypesResolver().resolve_types(item_types, self.__class__.cdef.config)
             fdef = item_types.fdef
             self._set_to_container(dest[items[0]], items[1:], value, fdef, used_items + [items[0]])
 
@@ -156,7 +156,7 @@ def update(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClassObject:
     """
     self._ensure_not_outdated()
     unallowed_keys = (set(kwargs.keys())
-                      - set(self.__class__.definition._update_names))
+                      - set(self.__class__.cdef._update_names))
     unallowed_keys_length = len(unallowed_keys)
     if unallowed_keys_length > 0:
         keys_list = "', '".join(list(unallowed_keys))
@@ -181,7 +181,7 @@ def tojson(self: JSONClassObject,
     self._ensure_not_outdated()
     self._can_read_check()
     validator = InstanceOfValidator(self.__class__)
-    config = self.__class__.definition.config
+    config = self.__class__.cdef.config
     context = ToJSONContext(value=self,
                             config=config,
                             fdef=None,
@@ -203,7 +203,7 @@ def validate(self: JSONClassObject,
         None: upon successful validation, returns nothing.
     """
     self._ensure_not_outdated()
-    config = self.__class__.definition.config
+    config = self.__class__.cdef.config
     operator = (getattr(self, '_operator')
                 if hasattr(self, '_operator') else None)
     context = ValidatingContext(
@@ -251,7 +251,7 @@ def opby(self: JSONClassObject, operator: Any) -> JSONClassObject:
     """
     setattr(self, '_operator', operator)
     if self.is_new:
-        class_def = self.__class__.definition
+        class_def = self.__class__.cdef
         for field in class_def.assign_operator_fields:
             if field.fdef.operator_assign_transformer is not None:
                 transformer = field.fdef.operator_assign_transformer
@@ -320,9 +320,9 @@ def persisted_modified_fields(self: JSONClassObject) -> tuple[str]:
     database.
     """
     retval: list[str] = []
-    class_definition = self.__class__.definition
+    cdef = self.__class__.cdef
     for name in self._modified_fields:
-        if not class_definition.field_named(name).definition.is_temp_field:
+        if not cdef.field_named(name).cdef.is_temp_field:
             retval.append(name)
     return tuple(retval)
 
@@ -346,7 +346,7 @@ def unlinked_objects(self: JSONClassObject) -> dict[str, list[JSONClassObject]]:
 def reset(self: JSONClassObject) -> None:
     """Reset this object to it's unmodified status.
     """
-    if not self.__class__.definition.config.reset_all_fields:
+    if not self.__class__.cdef.config.reset_all_fields:
         raise JSONClassResetNotEnabledError()
     if self.is_new:
         raise JSONClassResetError()
@@ -487,7 +487,7 @@ def _set_on_save(self: JSONClassObject) -> None:
     get setonsave called and saved.
     """
     validator = InstanceOfValidator(self.__class__)
-    config = self.__class__.definition.config
+    config = self.__class__.cdef.config
     operator = (getattr(self, '_operator')
                 if hasattr(self, '_operator') else None)
     context = TransformingContext(
@@ -507,7 +507,7 @@ def _set_on_save(self: JSONClassObject) -> None:
 
 
 def _clear_temp_fields(self: JSONClassObject) -> None:
-    for field in self.__class__.definition.fields:
+    for field in self.__class__.cdef.fields:
         if field.fdef.is_temp_field:
             setattr(self, field.name, None)
 
@@ -526,7 +526,7 @@ def _orm_restore(self: JSONClassObject) -> None:
 
 def _can_create_or_update_check(self: JSONClassObject) -> None:
     if self.is_new:
-        for callback in self.__class__.definition.config.can_create:
+        for callback in self.__class__.cdef.config.can_create:
             operator = getattr(self, '_operator')
             if operator is None:
                 raise UnauthorizedActionException('no operator')
@@ -537,7 +537,7 @@ def _can_create_or_update_check(self: JSONClassObject) -> None:
                 else:
                     raise UnauthorizedActionException('cannot create')
     else:
-        for callback in self.__class__.definition.config.can_update:
+        for callback in self.__class__.cdef.config.can_update:
             operator = getattr(self, '_operator')
             if operator is None:
                 raise UnauthorizedActionException('no operator')
@@ -550,7 +550,7 @@ def _can_create_or_update_check(self: JSONClassObject) -> None:
 
 
 def _can_delete_check(self: JSONClassObject) -> None:
-    for callback in self.__class__.definition.config.can_delete:
+    for callback in self.__class__.cdef.config.can_delete:
         operator = getattr(self, '_operator')
         if operator is None:
             raise UnauthorizedActionException('no operator')
@@ -563,7 +563,7 @@ def _can_delete_check(self: JSONClassObject) -> None:
 
 
 def _can_read_check(self: JSONClassObject) -> None:
-    for callback in self.__class__.definition.config.can_read:
+    for callback in self.__class__.cdef.config.can_read:
         operator = getattr(self, '_operator')
         if operator is None:
             raise UnauthorizedActionException('no operator')
@@ -576,7 +576,7 @@ def _can_read_check(self: JSONClassObject) -> None:
 
 
 def _run_on_create_callbacks(self: JSONClassObject) -> None:
-    for callback in self.__class__.definition.config.on_create:
+    for callback in self.__class__.cdef.config.on_create:
         params_len = len(signature(callback).parameters)
         if params_len == 1:
             callback(self)
@@ -585,7 +585,7 @@ def _run_on_create_callbacks(self: JSONClassObject) -> None:
 
 
 def _run_on_save_callbacks(self: JSONClassObject) -> None:
-    for callback in self.__class__.definition.config.on_save:
+    for callback in self.__class__.cdef.config.on_save:
         params_len = len(signature(callback).parameters)
         if params_len == 1:
             callback(self)
@@ -594,7 +594,7 @@ def _run_on_save_callbacks(self: JSONClassObject) -> None:
 
 
 def _run_on_delete_callbacks(self: JSONClassObject) -> None:
-    for callback in self.__class__.definition.config.on_delete:
+    for callback in self.__class__.cdef.config.on_delete:
         params_len = len(signature(callback).parameters)
         if params_len == 1:
             callback(self)
@@ -604,7 +604,7 @@ def _run_on_delete_callbacks(self: JSONClassObject) -> None:
 
 @property
 def _id(self: JSONClassObject) -> Union[str, int, None]:
-    field = self.__class__.definition.primary_field
+    field = self.__class__.cdef.primary_field
     if not field:
         return None
     return getattr(self, field.name)
@@ -612,7 +612,7 @@ def _id(self: JSONClassObject) -> Union[str, int, None]:
 
 @property
 def _created_at(self: JSONClassObject) -> Optional[datetime]:
-    field = self.__class__.definition.created_at_field
+    field = self.__class__.cdef.created_at_field
     if not field:
         return None
     return getattr(self, field.name)
@@ -620,7 +620,7 @@ def _created_at(self: JSONClassObject) -> Optional[datetime]:
 
 @property
 def _updated_at(self: JSONClassObject) -> Optional[datetime]:
-    field = self.__class__.definition.updated_at_field
+    field = self.__class__.cdef.updated_at_field
     if not field:
         return None
     return getattr(self, field.name)
@@ -628,7 +628,7 @@ def _updated_at(self: JSONClassObject) -> Optional[datetime]:
 
 @property
 def _deleted_at(self: JSONClassObject) -> Optional[datetime]:
-    field = self.__class__.definition.deleted_at_field
+    field = self.__class__.cdef.deleted_at_field
     if not field:
         return None
     return getattr(self, field.name)
@@ -661,7 +661,7 @@ def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
             self._modified_fields.add(self._local_key_map[name])
     # use original setattr for non JSON class fields
     try:
-        field = self.__class__.definition.field_named(name)
+        field = self.__class__.cdef.field_named(name)
     except ValueError:
         self.__original_setattr__(name, value)
         return
@@ -681,7 +681,7 @@ def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
     if not self.is_new:
         setattr(self, '_is_modified', True)
         self._modified_fields.add(name)
-        if self.__class__.definition.config.reset_all_fields or \
+        if self.__class__.cdef.config.reset_all_fields or \
                 field.fdef.has_reset_validator:
             if name not in self.previous_values:
                 self.previous_values[name] = getattr(self, name)
@@ -699,10 +699,10 @@ def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
         self.__original_setattr__(name, value)
         if field.fdef.field_storage == FieldStorage.LOCAL_KEY:
             if value is None:
-                transformer = self.__class__.definition.config.key_transformer
+                transformer = self.__class__.cdef.config.key_transformer
                 self.__original_setattr__(transformer(field), None)
             if isjsonobject(value):
-                transformer = self.__class__.definition.config.key_transformer
+                transformer = self.__class__.cdef.config.key_transformer
                 self.__original_setattr__(transformer(field), value._id)
         self.__link_field__(field, value)
     else:
@@ -712,8 +712,8 @@ def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
 def __odict_will_change__(self: JSONClassObject, odict: OwnedDict) -> None:
     # record previous value
     name = initial_keypath(odict.keypath)
-    field = self.__class__.definition.field_named(name)
-    if self.__class__.definition.config.reset_all_fields or \
+    field = self.__class__.cdef.field_named(name)
+    if self.__class__.cdef.config.reset_all_fields or \
             field.fdef.has_reset_validator:
         if field.fdef.has_linked:
             return
@@ -749,8 +749,8 @@ def __odict_del__(self, odict: OwnedDict, val: Any) -> None:
 def __olist_will_change__(self, olist: OwnedList) -> None:
     # record previous value
     name = initial_keypath(olist.keypath)
-    field = self.__class__.definition.field_named(name)
-    if self.__class__.definition.config.reset_all_fields or \
+    field = self.__class__.cdef.field_named(name)
+    if self.__class__.cdef.config.reset_all_fields or \
             field.fdef.has_reset_validator:
         if field.fdef.has_linked:
             return
@@ -767,9 +767,9 @@ def __olist_add__(self: JSONClassObject,
                   olist: OwnedList,
                   idx: int,
                   val: Any) -> None:
-    class_definition = self.__class__.definition
+    cdef = self.__class__.cdef
     try:
-        field = class_definition.field_named(olist.keypath)
+        field = cdef.field_named(olist.keypath)
     except ValueError:
         field = None
     if field is not None and field.fdef.is_ref:
@@ -787,9 +787,9 @@ def __olist_add__(self: JSONClassObject,
 
 
 def __olist_del__(self: JSONClassObject, olist: OwnedList, val: Any) -> None:
-    class_definition = self.__class__.definition
+    cdef = self.__class__.cdef
     try:
-        field = class_definition.field_named(olist.keypath)
+        field = cdef.field_named(olist.keypath)
     except ValueError:
         field = None
     if field and field.fdef.is_ref:
@@ -829,7 +829,7 @@ def __unlink_field__(self: JSONClassObject,
                 item.__original_setattr__(other_field.name, None)
                 of = other_field
                 if of.fdef.field_storage == FieldStorage.LOCAL_KEY:
-                    tsfm = item.__class__.definition.config.key_transformer
+                    tsfm = item.__class__.cdef.config.key_transformer
                     item.__original_setattr__(tsfm(other_field), None)
                     item._modified_fields.add(other_field.name)
                 item._add_unlinked_object(other_field.name, self)

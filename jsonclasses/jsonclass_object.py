@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import (Any, TypeVar, Optional, ClassVar, Protocol, Union,
                     TYPE_CHECKING)
 if TYPE_CHECKING:
-    from .class_definition import ClassDefinition
+    from .cdef import Cdef
 T = TypeVar('T', bound='JSONClassObject')
 
 
@@ -15,7 +15,7 @@ class JSONClassObject(Protocol):
     should implement.
     """
 
-    definition: ClassVar[ClassDefinition]
+    cdef: ClassVar[Cdef]
     """The configuration user passed to JSON class through the jsonclass
     decorator.
     """

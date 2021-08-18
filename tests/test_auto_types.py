@@ -372,7 +372,7 @@ class TestAutoTypes(TestCase):
         @jsonclass(class_graph='test_marker_auto_gen')
         class TestUnionDictType:
             val: 'Union[dict[str, int], int]'
-        cfield = TestUnionDictType.definition.field_named('val')
+        cfield = TestUnionDictType.cdef.field_named('val')
         utypes = cfield.fdef.union_types
         self.assertEqual(utypes[0].fdef.field_type, FieldType.DICT)
         self.assertEqual(utypes[1].fdef.field_type, FieldType.INT)
@@ -399,7 +399,7 @@ class TestAutoTypes(TestCase):
             setting.validate)
 
     def test_auto_generates_1_to_1_links(self):
-        profile_field = LinkedUser.definition.field_named('profile')
+        profile_field = LinkedUser.cdef.field_named('profile')
         self.assertEqual(profile_field.fdef.field_type,
                          FieldType.INSTANCE)
         self.assertEqual(profile_field.fdef.field_storage,
@@ -407,7 +407,7 @@ class TestAutoTypes(TestCase):
         self.assertEqual(profile_field.fdef.foreign_key, 'user')
         self.assertEqual(profile_field.fdef.use_join_table, False)
 
-        user_field = LinkedProfile.definition.field_named('user')
+        user_field = LinkedProfile.cdef.field_named('user')
         self.assertEqual(user_field.fdef.field_type,
                          FieldType.INSTANCE)
         self.assertEqual(user_field.fdef.field_storage,
@@ -416,7 +416,7 @@ class TestAutoTypes(TestCase):
         self.assertEqual(user_field.fdef.use_join_table, None)
 
     def test_auto_generates_1_to_many_links(self):
-        articles_field = LinkedAuthor.definition.field_named('articles')
+        articles_field = LinkedAuthor.cdef.field_named('articles')
         self.assertEqual(articles_field.fdef.field_type,
                          FieldType.LIST)
         self.assertEqual(articles_field.fdef.field_storage,
@@ -424,7 +424,7 @@ class TestAutoTypes(TestCase):
         self.assertEqual(articles_field.fdef.foreign_key, 'author')
         self.assertEqual(articles_field.fdef.use_join_table, False)
 
-        author_field = LinkedArticle.definition.field_named('author')
+        author_field = LinkedArticle.cdef.field_named('author')
         self.assertEqual(author_field.fdef.field_type,
                          FieldType.INSTANCE)
         self.assertEqual(author_field.fdef.field_storage,

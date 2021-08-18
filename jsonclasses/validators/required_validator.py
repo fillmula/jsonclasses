@@ -22,9 +22,9 @@ class RequiredValidator(Validator):
             return
         if storage == FieldStorage.LOCAL_KEY:
             if context.value is None:  # check key presence
-                config: Config = context.owner.__class__.definition.config
+                config: Config = context.owner.__class__.cdef.config
                 ko = context.keypath_owner
-                field = context.owner.__class__.definition.field_named(ko)
+                field = context.owner.__class__.cdef.field_named(ko)
                 local_key = config.key_transformer(field)
                 if isinstance(context.parent, dict):
                     if context.parent.get(local_key) is None:

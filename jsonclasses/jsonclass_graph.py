@@ -9,7 +9,7 @@ from .exceptions import (JSONClassRedefinitionException,
                          JSONClassNotFoundException,
                          JSONClassTypedDictNotFoundException)
 if TYPE_CHECKING:
-    from .class_definition import ClassDefinition
+    from .cdef import Cdef
 
 
 @final
@@ -44,7 +44,7 @@ class JSONClassGraph:
         if self.__class__._initialized_map.get(name):
             return
         self._name: str = name
-        self._map: dict[str, ClassDefinition] = {}
+        self._map: dict[str, Cdef] = {}
         self._dict_map: dict[str, type[dict]] = {}
         self._enum_map: dict[str, type] = {}
         self._default_config = Config(class_graph=self.name,
@@ -78,7 +78,7 @@ class JSONClassGraph:
         """The default configuration used on this class graph."""
         return self._default_config
 
-    def put(self: JSONClassGraph, class_definition: ClassDefinition) -> None:
+    def put(self: JSONClassGraph, cdef: Cdef) -> None:
         """Put a class onto this class graph.
 
         Args:
@@ -88,14 +88,14 @@ class JSONClassGraph:
             JSONClassRedefinitionException: This exception is raised if a \
                 new class with existing name is defined.
         """
-        exist_definition = self._map.get(class_definition.name)
+        exist_definition = self._map.get(cdef.name)
         if exist_definition:
-            raise JSONClassRedefinitionException(class_definition.cls,
+            raise JSONClassRedefinitionException(cdef.cls,
                                                  exist_definition.cls)
-        self._map[class_definition.name] = class_definition
+        self._map[cdef.name] = cdef
 
     def fetch(self: JSONClassGraph,
-              name_or_class: Union[str, type]) -> ClassDefinition:
+              name_or_class: Union[str, type]) -> Cdef:
         """Fetch a class by it's name from this class graph.
 
         Args:

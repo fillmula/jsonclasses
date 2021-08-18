@@ -30,7 +30,7 @@ class TestStrict(TestCase):
 
     def test_without_strict_nothing_raises_in_set_on_unallowed_keys(self):
         tenant = SimpleTenant(name='Victor Teo', host='Emily Ho')
-        tenant.set(age=30, id='abcdefghi')
+        tenant.set(age=30, id='ab.cdefghi')
         self.assertEqual(tenant._data_dict,
                          {'name': 'Victor Teo', 'age': 30})
 

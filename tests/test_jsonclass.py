@@ -21,7 +21,7 @@ class TestJsonClass(TestCase):
         self.assertTrue(isjsonclass(SimpleCompany))
 
     def test_jsonclass_install_default_config_without_arguments(self):
-        class_config = SimpleAccount.definition.config
+        class_config = SimpleAccount.cdef.config
         default_config = Config(class_graph='default',
                                 camelize_json_keys=True,
                                 strict_input=True,
@@ -40,38 +40,38 @@ class TestJsonClass(TestCase):
         self.assertEqual(class_config, default_config)
 
     def test_jsonclass_class_graph_changes_class_graph(self):
-        class_graph = SimpleCompany.definition.config.class_graph
+        class_graph = SimpleCompany.cdef.config.class_graph
         company_graph = JSONClassGraph('simplecompany')
         self.assertEqual(class_graph, company_graph)
 
     def test_jsonclass_camelize_json_keys_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.definition.config.camelize_json_keys, False)
+            SimpleEmployee.cdef.config.camelize_json_keys, False)
 
     def test_jsonclass_strict_input_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.definition.config.strict_input, False)
+            SimpleEmployee.cdef.config.strict_input, False)
 
     def test_jsonclass_key_transformer_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.definition.config.key_transformer,
+            SimpleEmployee.cdef.config.key_transformer,
             yet_another_key_transformer)
 
     def test_jsonclass_validate_all_fields_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.definition.config.validate_all_fields, True)
+            SimpleEmployee.cdef.config.validate_all_fields, True)
 
     def test_jsonclass_soft_delete_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.definition.config.soft_delete, True)
+            SimpleEmployee.cdef.config.soft_delete, True)
 
     def test_jsonclass_abstract_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.definition.config.abstract, True)
+            SimpleEmployee.cdef.config.abstract, True)
 
     def test_jsonclass_reset_all_fields_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.definition.config.reset_all_fields, True)
+            SimpleEmployee.cdef.config.reset_all_fields, True)
 
     def test_jsonclass_raises_value_error_if_decorated_is_not_class(self):
         with self.assertRaisesRegex(ValueError, '@jsonclass should be used to'

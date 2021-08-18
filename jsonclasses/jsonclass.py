@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from .config import (Config, OnCreate, OnSave, CanCreate, OnDelete, CanUpdate,
                      CanDelete, CanRead)
 from .jsonclass_field import JSONClassField
-from .class_definition import ClassDefinition
+from .cdef import Cdef
 from .jsonclassify import jsonclassify
 from .jsonclass_object import JSONClassObject
 
@@ -104,8 +104,8 @@ def jsonclass(
             can_read=can_read)
         dataclass_cls = dataclass(init=False)(cls)
         jsonclass_cls = jsonclassify(dataclass_cls)
-        definition = ClassDefinition(jsonclass_cls, config)
-        cls.definition = definition
+        definition = Cdef(jsonclass_cls, config)
+        cls.cdef = definition
         config.class_graph.put(definition)
         return jsonclass_cls
     else:

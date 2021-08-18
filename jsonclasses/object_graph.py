@@ -54,7 +54,7 @@ class ObjectGraph:
     def _check_get_str_id(self: ObjectGraph, object: JSONClassObject) -> str:
         primary_value = object._id
         if primary_value is None:
-            if object.__class__.definition.primary_field:
+            if object.__class__.cdef.primary_field:
                 has_field = True
             else:
                 has_field = False
@@ -143,7 +143,7 @@ class ObjectGraph:
     def alter_links(self: ObjectGraph, result: CompareResult) -> None:
         """Alter all linked objects reference to the new object.
         """
-        for field in result.outdated.__class__.definition.fields:
+        for field in result.outdated.__class__.cdef.fields:
             if not field.fdef.is_ref:
                 continue
             item_or_items = getattr(result.outdated, field.name)

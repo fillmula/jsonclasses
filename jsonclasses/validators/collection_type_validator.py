@@ -33,7 +33,7 @@ class CollectionTypeValidator(TypeValidator):
         else:
             itypes = TypesResolver().resolve_types(
                 self.raw_item_types,
-                owner_cls.definition.config)
+                owner_cls.cdef.config)
             if itypes.fdef.item_nullability == Nullability.UNDEFINED:
                 itypes = itypes.required
             setattr(self, '_item_types', itypes)

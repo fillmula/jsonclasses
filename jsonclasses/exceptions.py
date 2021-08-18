@@ -50,7 +50,7 @@ class JSONClassRedefinitionException(Exception):
         assert new_module is not None
         new_file = new_module.__file__
         new_line = getsourcelines(new_class)[1]
-        graph = exist_class.definition.config.class_graph
+        graph = exist_class.cdef.config.class_graph
         message = (f'jsonclass name conflict in graph `{graph}`: '
                    f'exist `{name}` defined at '
                    f'`{original_file}:{original_line}`, '
@@ -80,7 +80,7 @@ class JSONClassTypedDictRedefinitionException(Exception):
         assert new_module is not None
         new_file = new_module.__file__
         new_line = getsourcelines(new_class)[1]
-        graph = exist_class.definition.config.class_graph
+        graph = exist_class.cdef.config.class_graph
         message = (f'jsonclass typed dict name conflict in graph `{graph}`: '
                    f'exist `{name}` defined at '
                    f'`{original_file}:{original_line}`, '

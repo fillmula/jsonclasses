@@ -34,7 +34,7 @@ class InstanceOfValidator(Validator):
         cls = cast(Type[JSONClassObject], types.fdef.instance_types)
         all_fields = context.all_fields
         if all_fields is None:
-            all_fields = cls.definition.config.validate_all_fields
+            all_fields = cls.cdef.config.validate_all_fields
         if not isinstance(context.value, cls):
             raise ValidationException({
                 context.keypath_root: (f"Value at '{context.keypath_root}' "
@@ -51,7 +51,7 @@ class InstanceOfValidator(Validator):
             modified_fields = list(initial_keypaths((context.value
                                                      .modified_fields)))
         keypath_messages = {}
-        for field in context.value.__class__.definition.fields:
+        for field in context.value.__class__.cdef.fields:
             fname = field.name
             if field.fdef.field_storage == FieldStorage.EMBEDDED:
                 if only_validate_modified and fname not in modified_fields:
@@ -62,7 +62,7 @@ class InstanceOfValidator(Validator):
                     keypath_root=concat_keypath(context.keypath_root, fname),
                     keypath_owner=fname,
                     owner=context.value,
-                    config_owner=context.value.__class__.definition.config,
+                    config_owner=context.value.__class__.cdef.config,
                     keypath_parent=fname,
                     parent=context.value,
                     fdef=field.fdef))
@@ -79,7 +79,7 @@ class InstanceOfValidator(Validator):
     def _strictness_check(self,
                           context: TransformingContext,
                           dest: JSONClassObject) -> None:
-        available_names = dest.__class__.definition._available_names
+        available_names = dest.__class__.cdef._available_names
         for k in context.value.keys():
             if k not in available_names:
                 kp = concat_keypath(context.keypath_root, k)
@@ -102,7 +102,7 @@ class InstanceOfValidator(Validator):
                 keypath_root=concat_keypath(context.keypath_root, field.name),
                 keypath_owner=field.name,
                 owner=context.value,
-                config_owner=cls.definition.config,
+                config_owner=cls.cdef.config,
                 keypath_parent=field.name,
                 parent=context.value,
                 fdef=field.fdef))
@@ -131,7 +131,7 @@ class InstanceOfValidator(Validator):
         # figure out types, cls and dest
         types = TypesResolver().resolve_types(self.raw_type, context.config_owner)
         cls = cast(Type[JSONClassObject], types.fdef.instance_types)
-        this_pk_field = cls.definition.primary_field
+        this_pk_field = cls.cdef.primary_field
         if this_pk_field:
             pk = this_pk_field.name
             pk_value = cast(Union[str, int], context.value.get(pk))
@@ -155,7 +155,7 @@ class InstanceOfValidator(Validator):
             context.mark_graph.put(dest)
 
         # strictness check
-        strictness = cast(bool, cls.definition.config.strict_input)
+        strictness = cast(bool, cls.cdef.config.strict_input)
         if context.fdef is not None:
             if context.fdef.strictness == Strictness.STRICT:
                 strictness = True
@@ -166,7 +166,7 @@ class InstanceOfValidator(Validator):
         # fill values
         dict_keys = list(context.value.keys())
         nonnull_ref_lists: list[str] = []
-        for field in dest.__class__.definition.fields:
+        for field in dest.__class__.cdef.fields:
             if not self._has_field_value(field, dict_keys):
                 if field.fdef.is_ref:
                     fdef = field.fdef
@@ -174,7 +174,7 @@ class InstanceOfValidator(Validator):
                         if fdef.collection_nullability == Nullability.NONNULL:
                             nonnull_ref_lists.append(field.name)
                     elif fdef.field_storage == FieldStorage.LOCAL_KEY:
-                        tsfm = dest.__class__.definition.config.key_transformer
+                        tsfm = dest.__class__.cdef.config.key_transformer
                         refname = tsfm(field)
                         if context.value.get(refname) is not None:
                             setattr(dest, refname, context.value.get(refname))
@@ -206,7 +206,7 @@ class InstanceOfValidator(Validator):
                                             field.name),
                 keypath_owner=field.name,
                 owner=context.value,
-                config_owner=cls.definition.config,
+                config_owner=cls.cdef.config,
                 keypath_parent=field.name,
                 parent=context.value,
                 fdef=field.fdef)
@@ -224,7 +224,7 @@ class InstanceOfValidator(Validator):
         entity_chain = context.entity_chain
         cls_name = context.value.__class__.__name__
         no_key_refs = cls_name in entity_chain
-        for field in context.value.__class__.definition.fields:
+        for field in context.value.__class__.cdef.fields:
             field_value = getattr(context.value, field.name)
             fd = field.types.fdef
             jf_name = field.json_name
@@ -256,13 +256,13 @@ class InstanceOfValidator(Validator):
         should_update = True
         if not value.is_modified and not value.is_new:
             should_update = False
-        for field in value.__class__.definition.fields:
+        for field in value.__class__.cdef.fields:
             if (field.fdef.is_ref
                     or field.fdef.is_inst
                     or should_update):
                 if field.fdef.field_storage == FieldStorage.LOCAL_KEY:
                     if getattr(value, field.name) is None:
-                        tsf = value.__class__.definition.config.key_transformer
+                        tsf = value.__class__.cdef.config.key_transformer
                         if getattr(value, tsf(field)) is not None:
                             continue
                 field_value = getattr(value, field.name)
@@ -272,7 +272,7 @@ class InstanceOfValidator(Validator):
                                                 field.name),
                     keypath_owner=field.name,
                     owner=value,
-                    config_owner=value.__class__.definition.config,
+                    config_owner=value.__class__.cdef.config,
                     keypath_parent=field.name,
                     parent=value,
                     fdef=field.fdef)

@@ -29,7 +29,7 @@ class ShapeValidator(TypeValidator):
                 return self._shape_types
             itypes = TypesResolver().resolve_types(
                 self.raw_types,
-                owner_cls.definition.config)
+                owner_cls.cdef.config)
             if itypes.fdef.item_nullability == Nullability.UNDEFINED:
                 itypes = itypes.required
             stypes = itypes.fdef.shape_types

@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from .types_resolver import TypesResolver
 if TYPE_CHECKING:
     from .types import Types
-    from .class_definition import ClassDefinition
+    from .cdef import Cdef
 
 
 class FieldType(Enum):
@@ -105,7 +105,7 @@ class Fdef:  # pylint: disable=too-many-instance-attributes
     marks.
     """
 
-    class_definition: ClassDefinition = None
+    cdef: Cdef = None
 
     field_type: Optional[FieldType] = None
     field_storage: FieldStorage = FieldStorage.EMBEDDED
@@ -174,7 +174,7 @@ class Fdef:  # pylint: disable=too-many-instance-attributes
         if self.field_type == FieldType.LIST:
             item_types = TypesResolver().resolve_types(
                 self.raw_item_types,
-                self.class_definition.config)
+                self.cdef.config)
             if item_types.fdef.field_type == FieldType.INSTANCE:
                 return True
         return False
@@ -189,5 +189,5 @@ class Fdef:  # pylint: disable=too-many-instance-attributes
                 self.field_type == FieldType.DICT:
             item_type = TypesResolver() \
                 .resolve_types(self.raw_item_types,
-                               self.class_definition.config)
+                               self.cdef.config)
             return item_type.fdef.has_linked

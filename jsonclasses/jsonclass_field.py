@@ -44,9 +44,9 @@ class JSONClassField(NamedTuple):
     def foreign_field(self: JSONClassField) -> Optional[JSONClassField]:
         """The foreign field defined on the referenced object.
         """
-        info = self.fdef.class_definition.foreign_field_for(self.name)
+        info = self.fdef.cdef.foreign_field_for(self.name)
         if info:
-            foreign_class_definition = info[0]
+            foreign_cdef = info[0]
             foreign_field_name = info[1]
-            return foreign_class_definition.field_named(foreign_field_name)
+            return foreign_cdef.field_named(foreign_field_name)
         return None
