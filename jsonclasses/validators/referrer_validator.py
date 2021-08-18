@@ -1,5 +1,5 @@
 """module for referrer validator."""
-from ..field_definition import FieldDefinition
+from ..fdef import Fdef
 from .validator import Validator
 
 
@@ -9,5 +9,5 @@ class ReferrerValidator(Validator):
     def __init__(self, referrer_key: str) -> None:
         self.referrer_key = referrer_key
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         fdef.join_table_referrer_key = self.referrer_key

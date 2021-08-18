@@ -1,5 +1,5 @@
 """module for required validator."""
-from ..field_definition import FieldDefinition
+from ..fdef import Fdef
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..contexts import ValidatingContext
@@ -11,7 +11,7 @@ class PresentValidator(Validator):
     key fields to do required validation.
     """
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         fdef.required = True
 
     def validate(self, context: ValidatingContext) -> None:

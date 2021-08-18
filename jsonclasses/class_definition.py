@@ -9,7 +9,7 @@ from typing import Optional, final, cast, TYPE_CHECKING
 from dataclasses import fields, Field
 from inflection import camelize
 from .jsonclass_field import JSONClassField
-from .field_definition import (FieldDefinition, FieldStorage, FieldType,
+from .fdef import (Fdef, FieldStorage, FieldType,
                                DeleteRule)
 from .types_resolver import TypesResolver
 from .exceptions import LinkedFieldUnmatchException
@@ -65,7 +65,7 @@ class ClassDefinition:
             else:
                 json_name = name
             types = cast(Types, self._get_types(field, config))
-            types.definition.class_definition = self
+            types.fdef.class_definition = self
             if isinstance(field.default, Types):
                 default = None
             elif field.default == field.default_factory:
@@ -77,31 +77,31 @@ class ClassDefinition:
                 json_name=json_name,
                 default=default,
                 types=types,
-                definition=types.definition,
+                fdef=types.fdef,
                 validator=types.validator)
             self._list_fields.append(jsonclass_field)
             self._dict_fields[name] = jsonclass_field
-            if types.definition.primary:
+            if types.fdef.primary:
                 self._primary_field = jsonclass_field
-            if types.definition.usage == 'created_at':
+            if types.fdef.usage == 'created_at':
                 self._created_at_field = jsonclass_field
-            elif types.definition.usage == 'updated_at':
+            elif types.fdef.usage == 'updated_at':
                 self._updated_at_field = jsonclass_field
-            elif types.definition.usage == 'deleted_at':
+            elif types.fdef.usage == 'deleted_at':
                 self._deleted_at_field = jsonclass_field
-            if types.definition.field_storage == FieldStorage.LOCAL_KEY:
+            if types.fdef.field_storage == FieldStorage.LOCAL_KEY:
                 key_transformer = config.key_transformer
                 self._reference_names.append(key_transformer(jsonclass_field))
                 if config.camelize_json_keys:
                     self._camelized_reference_names.append(
                         camelize(key_transformer(jsonclass_field), False))
-            if types.definition.delete_rule == DeleteRule.DENY:
+            if types.fdef.delete_rule == DeleteRule.DENY:
                 self._deny_fields.append(jsonclass_field)
-            elif types.definition.delete_rule == DeleteRule.NULLIFY:
+            elif types.fdef.delete_rule == DeleteRule.NULLIFY:
                 self._nullify_fields.append(jsonclass_field)
-            elif types.definition.delete_rule == DeleteRule.CASCADE:
+            elif types.fdef.delete_rule == DeleteRule.CASCADE:
                 self._cascade_fields.append(jsonclass_field)
-            if types.definition.requires_operator_assign:
+            if types.fdef.requires_operator_assign:
                 self._assign_operator_fields.append(jsonclass_field)
         self._tuple_fields: tuple[JSONClassField] = tuple(self._list_fields)
         self._available_names: set[str] = set(self._field_names
@@ -126,17 +126,17 @@ class ClassDefinition:
             return TypesResolver().resolve_types(field.type, config)
 
     def _def_class_match(self: ClassDefinition,
-                         definition: FieldDefinition,
+                         definition: Fdef,
                          class_: type) -> bool:
         resolver = TypesResolver()
         if definition.field_type == FieldType.LIST:
             item_types = resolver.resolve_types(definition.raw_item_types,
                                                 self.config)
-            return self._def_class_match(item_types.definition, class_)
+            return self._def_class_match(item_types.fdef, class_)
         elif definition.field_type == FieldType.INSTANCE:
             types = resolver.resolve_types(definition.instance_types,
                                            self.config)
-            return types.definition.instance_types == class_
+            return types.fdef.instance_types == class_
         return False
 
     @property
@@ -265,7 +265,7 @@ class ClassDefinition:
                 return None
             return field_tuple
         local_field = self.field_named(name)
-        definition = local_field.definition
+        definition = local_field.fdef
         resolver = TypesResolver()
         if definition.field_storage not in \
                 [FieldStorage.LOCAL_KEY, FieldStorage.FOREIGN_KEY]:
@@ -278,10 +278,10 @@ class ClassDefinition:
                 definition.raw_item_types, self.config)
             foreign_types = resolver.resolve_types(
                 instance_types, self.config)
-        foreign_class = cast(type, foreign_types.definition.instance_types)
+        foreign_class = cast(type, foreign_types.fdef.instance_types)
         foreign_class = TypesResolver().resolve_types(foreign_class,
                                                       self.config)
-        foreign_class = foreign_class.definition.instance_types
+        foreign_class = foreign_class.fdef.instance_types
         foreign_definition = self.config.class_graph.fetch(foreign_class)
         accepted: list[tuple(FieldStorage, bool)] = []
         if definition.field_storage == FieldStorage.LOCAL_KEY:
@@ -303,9 +303,9 @@ class ClassDefinition:
                 if storage == FieldStorage.LOCAL_KEY:
                     if definition.foreign_key == field.name:
                         local_matches = self._def_class_match(
-                            local_field.definition, foreign_class)
+                            local_field.fdef, foreign_class)
                         foreign_matches = self._def_class_match(
-                            field.definition, self.cls)
+                            field.fdef, self.cls)
                         if local_matches and foreign_matches:
                             foreign_tuple = (foreign_definition, field.name)
                             self._foreign_fields[name] = foreign_tuple
@@ -318,12 +318,12 @@ class ClassDefinition:
                                 self.cls.__name__, local_field.name,
                                 foreign_class.__name__, field.name)
                 elif storage == FieldStorage.FOREIGN_KEY:
-                    if local_field.name == field.definition.foreign_key:
-                        if use_join == field.definition.use_join_table:
+                    if local_field.name == field.fdef.foreign_key:
+                        if use_join == field.fdef.use_join_table:
                             local_matches = self._def_class_match(
-                                local_field.definition, foreign_class)
+                                local_field.fdef, foreign_class)
                             foreign_matches = self._def_class_match(
-                                field.definition, self.cls)
+                                field.fdef, self.cls)
                             if local_matches and foreign_matches:
                                 foreign_tuple = \
                                     (foreign_definition, field.name)

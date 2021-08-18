@@ -3,7 +3,7 @@ from typing import Any
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..contexts import ValidatingContext
-from ..field_definition import FieldDefinition
+from ..fdef import Fdef
 
 
 class AsopdValidator(Validator):
@@ -11,7 +11,7 @@ class AsopdValidator(Validator):
     current field directly.
     """
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         fdef.requires_operator_assign = True
 
     def validate(self, context: ValidatingContext) -> None:

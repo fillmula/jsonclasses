@@ -100,7 +100,7 @@ class EnumOutput(Enum):
 
 
 @dataclass
-class FieldDefinition:  # pylint: disable=too-many-instance-attributes
+class Fdef:  # pylint: disable=too-many-instance-attributes
     """The description of a JSON Class field. It is generated as specifying the
     marks.
     """
@@ -161,26 +161,26 @@ class FieldDefinition:  # pylint: disable=too-many-instance-attributes
     operator_assign_transformer: Optional[Callable] = None
 
     @property
-    def is_ref(self: FieldDefinition) -> bool:
+    def is_ref(self: Fdef) -> bool:
         if self.field_storage in \
                 [FieldStorage.LOCAL_KEY, FieldStorage.FOREIGN_KEY]:
             return True
         return False
 
     @property
-    def is_inst(self: FieldDefinition) -> bool:
+    def is_inst(self: Fdef) -> bool:
         if self.field_type == FieldType.INSTANCE:
             return True
         if self.field_type == FieldType.LIST:
             item_types = TypesResolver().resolve_types(
                 self.raw_item_types,
                 self.class_definition.config)
-            if item_types.definition.field_type == FieldType.INSTANCE:
+            if item_types.fdef.field_type == FieldType.INSTANCE:
                 return True
         return False
 
     @property
-    def has_linked(self: FieldDefinition) -> bool:
+    def has_linked(self: Fdef) -> bool:
         if self.field_storage == FieldStorage.LOCAL_KEY:
             return True
         if self.field_storage == FieldStorage.FOREIGN_KEY:
@@ -190,4 +190,4 @@ class FieldDefinition:  # pylint: disable=too-many-instance-attributes
             item_type = TypesResolver() \
                 .resolve_types(self.raw_item_types,
                                self.class_definition.config)
-            return item_type.definition.has_linked
+            return item_type.fdef.has_linked

@@ -1,10 +1,10 @@
 """module for outputvalue validator."""
-from ..field_definition import FieldDefinition, EnumOutput
+from ..fdef import Fdef, EnumOutput
 from .validator import Validator
 
 
 class OutputValueValidator(Validator):
     """Output value validator tweaks enum validator's behavior."""
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         fdef.enum_output = EnumOutput.VALUE

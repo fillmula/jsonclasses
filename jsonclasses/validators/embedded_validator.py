@@ -1,10 +1,10 @@
 """module for embedded validator."""
-from ..field_definition import FieldDefinition, FieldStorage
+from ..fdef import Fdef, FieldStorage
 from .validator import Validator
 
 
 class EmbeddedValidator(Validator):
     """This validator marks value as embedded on the hosting object."""
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         fdef.field_storage = FieldStorage.EMBEDDED

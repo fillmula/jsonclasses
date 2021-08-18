@@ -1,6 +1,6 @@
 """module for reset validator."""
 from .validator import Validator
-from ..field_definition import FieldDefinition
+from ..fdef import Fdef
 
 
 class ResetValidator(Validator):
@@ -8,5 +8,5 @@ class ResetValidator(Validator):
     This is used for comparing and validating values on update.
     """
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         fdef.has_reset_validator = True

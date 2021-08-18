@@ -1,10 +1,10 @@
 """module for index validator."""
 from .validator import Validator
-from ..field_definition import FieldDefinition
+from ..fdef import Fdef
 
 
 class IndexValidator(Validator):
     """Index validator implies this column should be indexed in database."""
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         fdef.index = True

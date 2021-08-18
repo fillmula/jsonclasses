@@ -144,7 +144,7 @@ class ObjectGraph:
         """Alter all linked objects reference to the new object.
         """
         for field in result.outdated.__class__.definition.fields:
-            if not field.definition.is_ref:
+            if not field.fdef.is_ref:
                 continue
             item_or_items = getattr(result.outdated, field.name)
             items: list[JSONClassObject] = []

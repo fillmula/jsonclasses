@@ -1,5 +1,5 @@
 """module for referee validator."""
-from ..field_definition import FieldDefinition
+from ..fdef import Fdef
 from .validator import Validator
 
 
@@ -9,5 +9,5 @@ class RefereeValidator(Validator):
     def __init__(self, referee_key: str) -> None:
         self.referee_key = referee_key
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         fdef.join_table_referee_key = self.referee_key

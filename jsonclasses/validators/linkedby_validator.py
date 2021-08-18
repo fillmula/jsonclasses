@@ -1,5 +1,5 @@
 """module for linkedby validator."""
-from ..field_definition import DeleteRule, FieldDefinition, FieldStorage
+from ..fdef import DeleteRule, Fdef, FieldStorage
 from .validator import Validator
 
 
@@ -9,7 +9,7 @@ class LinkedByValidator(Validator):
     def __init__(self, foreign_key: str) -> None:
         self.foreign_key = foreign_key
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         fdef.field_storage = FieldStorage.FOREIGN_KEY
         fdef.foreign_key = self.foreign_key
         fdef.use_join_table = False

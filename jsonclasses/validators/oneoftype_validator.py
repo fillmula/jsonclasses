@@ -4,7 +4,7 @@ from ..exceptions import ValidationException
 from .validator import Validator
 from ..contexts import ValidatingContext
 from ..types_resolver import TypesResolver
-from ..field_definition import FieldDefinition, FieldType
+from ..fdef import Fdef, FieldType
 
 
 class OneOfTypeValidator(Validator):
@@ -14,14 +14,14 @@ class OneOfTypeValidator(Validator):
     def __init__(self, type_list: list[Any]) -> None:
         self.type_list = type_list
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         fdef.field_type = FieldType.UNION
         fdef.union_types = [TypesResolver().resolve_types(t) for t in self.type_list]
 
     def validate(self, context: ValidatingContext) -> None:
         if context.value is None:
             return
-        for types in context.definition.union_types:
+        for types in context.fdef.union_types:
             try:
                 types.validator.validate(context)
                 return

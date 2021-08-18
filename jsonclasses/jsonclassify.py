@@ -7,7 +7,7 @@ from .jsonclass_object import JSONClassObject
 from .types import Types
 from .types_resolver import TypesResolver
 from .contexts import TransformingContext, ValidatingContext, ToJSONContext
-from .field_definition import FieldDefinition, FieldStorage, FieldType
+from .fdef import Fdef, FieldStorage, FieldType
 from .validators.instanceof_validator import InstanceOfValidator
 from .jsonclass_field import JSONClassField
 from .isjsonclass import isjsonobject
@@ -36,7 +36,7 @@ def __init__(self: JSONClassObject, **kwargs: dict[str, Any]) -> None:
     self._set_initial_status()
     for field in self.__class__.definition.fields:
         setattr(self, field.name, None)
-        if field.definition.field_storage == FieldStorage.LOCAL_KEY:
+        if field.fdef.field_storage == FieldStorage.LOCAL_KEY:
             transformer = self.__class__.definition.config.key_transformer
             local_key = transformer(field)
             setattr(self, local_key, None)
@@ -81,7 +81,7 @@ def _set(self: JSONClassObject,
         config_owner=config,
         keypath_parent='',
         parent=self,
-        definition=None,
+        fdef=None,
         operator=operator,
         all_fields=True,
         dest=self,
@@ -94,54 +94,54 @@ def _keypath_set(self: JSONClassObject, kwargs: dict[str, Any]) -> None:
     for key, value in kwargs.items():
         items = key.split(".")
         dest = getattr(self, items[0])
-        fdefinition = self.__class__.definition.field_named(items[0]).types.definition
+        fdef = self.__class__.definition.field_named(items[0]).types.fdef
         used_items = [items[0]]
-        self._set_to_container(dest, items[1:], value, fdefinition, used_items)
+        self._set_to_container(dest, items[1:], value, fdef, used_items)
 
 
 def _set_to_container(self: JSONClassObject,
                       dest: Any,
                       items: list[str],
                       value: Any,
-                      fdefinition: FieldDefinition,
+                      fdef: Fdef,
                       used_items: list[str]) -> None:
-    if fdefinition.field_type == FieldType.INSTANCE:
+    if fdef.field_type == FieldType.INSTANCE:
         if dest is None:
             raise ValueError(f"value in {'.'.join(used_items)} is None")
         if len(items) == 1:
             dest._set({items[0]: value}, fill_blanks=False)
         else:
             dest._keypath_set({'.'.join(items): value})
-    elif fdefinition.field_type == FieldType.SHAPE:
+    elif fdef.field_type == FieldType.SHAPE:
         if dest is None:
             raise ValueError(f"value in {'.'.join(used_items)} is None")
         if len(items) == 1:
             dest[items[0]] = value
         else:
-            item_types = fdefinition.shape_types[items[0]]
+            item_types = fdef.shape_types[items[0]]
             item_types = TypesResolver().resolve_types(item_types, self.__class__.definition.config)
-            fdefinition = item_types.definition
-            self._set_to_container(dest[items[0]], items[1:], value, fdefinition, used_items + [items[0]])
-    elif fdefinition.field_type == FieldType.LIST:
+            fdef = item_types.fdef
+            self._set_to_container(dest[items[0]], items[1:], value, fdef, used_items + [items[0]])
+    elif fdef.field_type == FieldType.LIST:
         if dest is None:
             raise ValueError(f"value in {'.'.join(used_items)} is None")
         if len(items) == 1:
             dest[int(items[0])] = value
         else:
-            item_types = fdefinition.raw_item_types
+            item_types = fdef.raw_item_types
             item_types = TypesResolver().resolve_types(item_types, self.__class__.definition.config)
-            fdefinition = item_types.definition
-            self._set_to_container(dest[int(items[0])], items[1:], value, fdefinition, used_items + [items[0]])
-    elif fdefinition.field_type == FieldType.DICT:
+            fdef = item_types.fdef
+            self._set_to_container(dest[int(items[0])], items[1:], value, fdef, used_items + [items[0]])
+    elif fdef.field_type == FieldType.DICT:
         if dest is None:
             raise ValueError(f"value in {'.'.join(used_items)} is None")
         if len(items) == 1:
             dest[items[0]] = value
         else:
-            item_types = fdefinition.raw_item_types
+            item_types = fdef.raw_item_types
             item_types = TypesResolver().resolve_types(item_types, self.__class__.definition.config)
-            fdefinition = item_types.definition
-            self._set_to_container(dest[items[0]], items[1:], value, fdefinition, used_items + [items[0]])
+            fdef = item_types.fdef
+            self._set_to_container(dest[items[0]], items[1:], value, fdef, used_items + [items[0]])
 
 
 def update(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClassObject:
@@ -184,7 +184,7 @@ def tojson(self: JSONClassObject,
     config = self.__class__.definition.config
     context = ToJSONContext(value=self,
                             config=config,
-                            definition=None,
+                            fdef=None,
                             ignore_writeonly=ignore_writeonly)
     return validator.tojson(context)
 
@@ -216,7 +216,7 @@ def validate(self: JSONClassObject,
         config_owner=config,
         keypath_parent='',
         parent=self,
-        definition=None,
+        fdef=None,
         operator=operator,
         all_fields=validate_all_fields,
         mark_graph=MarkGraph())
@@ -253,8 +253,8 @@ def opby(self: JSONClassObject, operator: Any) -> JSONClassObject:
     if self.is_new:
         class_def = self.__class__.definition
         for field in class_def.assign_operator_fields:
-            if field.definition.operator_assign_transformer is not None:
-                transformer = field.definition.operator_assign_transformer
+            if field.fdef.operator_assign_transformer is not None:
+                transformer = field.fdef.operator_assign_transformer
                 params_len = len(signature(transformer).parameters)
                 if params_len == 1:
                     setattr(self, field.name, transformer(operator))
@@ -500,7 +500,7 @@ def _set_on_save(self: JSONClassObject) -> None:
         config_owner=config,
         keypath_parent='',
         parent=self,
-        definition=None,
+        fdef=None,
         operator=operator,
         mark_graph=MarkGraph())
     validator.serialize(context)
@@ -508,7 +508,7 @@ def _set_on_save(self: JSONClassObject) -> None:
 
 def _clear_temp_fields(self: JSONClassObject) -> None:
     for field in self.__class__.definition.fields:
-        if field.definition.is_temp_field:
+        if field.fdef.is_temp_field:
             setattr(self, field.name, None)
 
 
@@ -668,7 +668,7 @@ def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
     # this is a JSON class field attribute
     self._ensure_not_outdated()
     if hasattr(self, name) and value == getattr(self, name):
-        lk = field.definition.field_storage is FieldStorage.LOCAL_KEY
+        lk = field.fdef.field_storage is FieldStorage.LOCAL_KEY
         value_none = value is None
         if lk and value_none:
             if getattr(self, reference_key(field), None) is not None:
@@ -682,22 +682,22 @@ def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
         setattr(self, '_is_modified', True)
         self._modified_fields.add(name)
         if self.__class__.definition.config.reset_all_fields or \
-                field.definition.has_reset_validator:
+                field.fdef.has_reset_validator:
             if name not in self.previous_values:
                 self.previous_values[name] = getattr(self, name)
     # make list and dict assignments owned and monitored
     if isinstance(value, list):
         value = to_owned_list(self, value, name)
     if isinstance(value, dict):
-        if field.definition.field_type == FieldType.SHAPE:
+        if field.fdef.field_type == FieldType.SHAPE:
             value = to_shape_dict(self, value, name)
         else:
             value = to_owned_dict(self, value, name)
-    if field.definition.is_ref:
+    if field.fdef.is_ref:
         if hasattr(self, name):
             self.__unlink_field__(field, getattr(self, name))
         self.__original_setattr__(name, value)
-        if field.definition.field_storage == FieldStorage.LOCAL_KEY:
+        if field.fdef.field_storage == FieldStorage.LOCAL_KEY:
             if value is None:
                 transformer = self.__class__.definition.config.key_transformer
                 self.__original_setattr__(transformer(field), None)
@@ -714,14 +714,14 @@ def __odict_will_change__(self: JSONClassObject, odict: OwnedDict) -> None:
     name = initial_keypath(odict.keypath)
     field = self.__class__.definition.field_named(name)
     if self.__class__.definition.config.reset_all_fields or \
-            field.definition.has_reset_validator:
-        if field.definition.has_linked:
+            field.fdef.has_reset_validator:
+        if field.fdef.has_linked:
             return
         if name not in self.previous_values:
-            if field.definition.field_type == FieldType.DICT:
+            if field.fdef.field_type == FieldType.DICT:
                 self.previous_values[name] = unowned_copy_dict(
                     getattr(self, name))
-            if field.definition.field_type == FieldType.LIST:
+            if field.fdef.field_type == FieldType.LIST:
                 self.previous_values[name] = unowned_copy_list(
                     getattr(self, name))
 
@@ -751,14 +751,14 @@ def __olist_will_change__(self, olist: OwnedList) -> None:
     name = initial_keypath(olist.keypath)
     field = self.__class__.definition.field_named(name)
     if self.__class__.definition.config.reset_all_fields or \
-            field.definition.has_reset_validator:
-        if field.definition.has_linked:
+            field.fdef.has_reset_validator:
+        if field.fdef.has_linked:
             return
         if name not in self.previous_values:
-            if field.definition.field_type == FieldType.DICT:
+            if field.fdef.field_type == FieldType.DICT:
                 self.previous_values[name] = unowned_copy_dict(
                     getattr(self, name))
-            if field.definition.field_type == FieldType.LIST:
+            if field.fdef.field_type == FieldType.LIST:
                 self.previous_values[name] = unowned_copy_list(
                     getattr(self, name))
 
@@ -772,7 +772,7 @@ def __olist_add__(self: JSONClassObject,
         field = class_definition.field_named(olist.keypath)
     except ValueError:
         field = None
-    if field is not None and field.definition.is_ref:
+    if field is not None and field.fdef.is_ref:
         self.__link_field__(field, [val])
     if isinstance(val, dict):
         olist[idx] = to_owned_dict(self, val,
@@ -792,7 +792,7 @@ def __olist_del__(self: JSONClassObject, olist: OwnedList, val: Any) -> None:
         field = class_definition.field_named(olist.keypath)
     except ValueError:
         field = None
-    if field and field.definition.is_ref:
+    if field and field.fdef.is_ref:
         self.__unlink_field__(field, [val])
     # record modified
     if not self.is_new:
@@ -811,11 +811,11 @@ def __unlink_field__(self: JSONClassObject,
                      field: JSONClassField,
                      value: Any) -> None:
     items: list[JSONClassObject] = []
-    if field.definition.field_type == FieldType.INSTANCE:
+    if field.fdef.field_type == FieldType.INSTANCE:
         if not isjsonobject(value):
             return
         items = [value]
-    if field.definition.field_type == FieldType.LIST:
+    if field.fdef.field_type == FieldType.LIST:
         if not isinstance(value, list):
             return
         items = list(value)
@@ -824,16 +824,16 @@ def __unlink_field__(self: JSONClassObject,
         other_field = field.foreign_field
         if other_field is None:
             return
-        if other_field.definition.field_type == FieldType.INSTANCE:
+        if other_field.fdef.field_type == FieldType.INSTANCE:
             if getattr(item, other_field.name) is self:
                 item.__original_setattr__(other_field.name, None)
                 of = other_field
-                if of.definition.field_storage == FieldStorage.LOCAL_KEY:
+                if of.fdef.field_storage == FieldStorage.LOCAL_KEY:
                     tsfm = item.__class__.definition.config.key_transformer
                     item.__original_setattr__(tsfm(other_field), None)
                     item._modified_fields.add(other_field.name)
                 item._add_unlinked_object(other_field.name, self)
-        elif other_field.definition.field_type == FieldType.LIST:
+        elif other_field.fdef.field_type == FieldType.LIST:
             other_list = getattr(item, other_field.name)
             if isinstance(other_list, list):
                 if self in other_list:
@@ -845,11 +845,11 @@ def __link_field__(self: JSONClassObject,
                    field: JSONClassField,
                    value: Any) -> None:
     items: list[JSONClassObject] = []
-    if field.definition.field_type == FieldType.INSTANCE:
+    if field.fdef.field_type == FieldType.INSTANCE:
         if not isjsonobject(value):
             return
         items = [value]
-    if field.definition.field_type == FieldType.LIST:
+    if field.fdef.field_type == FieldType.LIST:
         if not isinstance(value, list):
             return
         items = value
@@ -858,11 +858,11 @@ def __link_field__(self: JSONClassObject,
         other_field = field.foreign_field
         if other_field is None:
             return
-        if other_field.definition.field_type == FieldType.INSTANCE:
+        if other_field.fdef.field_type == FieldType.INSTANCE:
             if getattr(item, other_field.name) != self:
                 setattr(item, other_field.name, self)
                 item._del_unlinked_object(other_field.name, self)
-        elif other_field.definition.field_type == FieldType.LIST:
+        elif other_field.fdef.field_type == FieldType.LIST:
             if not isinstance(getattr(item, other_field.name), list):
                 setattr(item, other_field.name, [self])
                 item._del_unlinked_object(other_field.name, self)

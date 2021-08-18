@@ -1,6 +1,6 @@
 """module for preserialize validator."""
 from .validator import Validator
-from ..field_definition import FieldDefinition
+from ..fdef import Fdef
 
 
 class PreserializeValidator(Validator):
@@ -11,5 +11,5 @@ class PreserializeValidator(Validator):
     This is usually used before setonsave validator.
     """
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         fdef.has_preserialize_validator = True

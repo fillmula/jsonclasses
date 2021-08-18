@@ -1,9 +1,9 @@
 """module for required validator."""
-from ..field_definition import FieldDefinition
+from ..fdef import Fdef
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..contexts import ValidatingContext
-from ..field_definition import FieldStorage, FieldType
+from ..fdef import FieldStorage, FieldType
 from ..config import Config
 from ..isjsonclass import isjsonobject
 
@@ -11,13 +11,13 @@ from ..isjsonclass import isjsonobject
 class RequiredValidator(Validator):
     """Mark a field as required."""
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         fdef.required = True
 
     def validate(self, context: ValidatingContext) -> None:
         storage = FieldStorage.EMBEDDED
-        if context.definition is not None:
-            storage = context.definition.field_storage
+        if context.fdef is not None:
+            storage = context.fdef.field_storage
         if storage == FieldStorage.FOREIGN_KEY:  # we don't check foreign key
             return
         if storage == FieldStorage.LOCAL_KEY:

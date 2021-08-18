@@ -1,7 +1,7 @@
 """module for shape validator."""
 from typing import Any, Sequence, Union, cast
 from inflection import underscore, camelize
-from ..field_definition import FieldDefinition, FieldType, Nullability, Strictness
+from ..fdef import Fdef, FieldType, Nullability, Strictness
 from ..exceptions import ValidationException
 from ..config import Config
 from ..keypath_utils import concat_keypath
@@ -30,13 +30,13 @@ class ShapeValidator(TypeValidator):
             itypes = TypesResolver().resolve_types(
                 self.raw_types,
                 owner_cls.definition.config)
-            if itypes.definition.item_nullability == Nullability.UNDEFINED:
+            if itypes.fdef.item_nullability == Nullability.UNDEFINED:
                 itypes = itypes.required
-            stypes = itypes.definition.shape_types
+            stypes = itypes.fdef.shape_types
             setattr(self, '_shape_types', stypes)
             return stypes
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         super().define(fdef)
         fdef.shape_types = self.raw_types
 
@@ -62,7 +62,7 @@ class ShapeValidator(TypeValidator):
                         keypath_owner=concat_keypath(context.keypath_owner, k),
                         keypath_parent=k,
                         parent=context.value,
-                        definition=types.definition))
+                        fdef=types.fdef))
                 except ValidationException as exception:
                     if all_fields:
                         keypath_messages.update(exception.keypath_messages)
@@ -106,7 +106,7 @@ class ShapeValidator(TypeValidator):
 
     def transform(self, context: TransformingContext) -> Any:
         value = context.value
-        fd = cast(FieldDefinition, context.definition)
+        fd = cast(Fdef, context.fdef)
         if fd.collection_nullability == Nullability.NONNULL and value is None:
             value = {}
         if value is None:
@@ -129,7 +129,7 @@ class ShapeValidator(TypeValidator):
                 keypath_owner=concat_keypath(context.keypath_owner, fk),
                 keypath_parent=fk,
                 parent=value,
-                definition=types.definition))
+                fdef=types.fdef))
         return retval
 
     def tojson(self, context: ToJSONContext) -> Any:
@@ -165,7 +165,7 @@ class ShapeValidator(TypeValidator):
                     keypath_owner=concat_keypath(context.keypath_owner, key),
                     keypath_parent=key,
                     parent=context.value,
-                    definition=types.definition))
+                    fdef=types.fdef))
             else:
                 retval[key] = value_at_key
         return retval

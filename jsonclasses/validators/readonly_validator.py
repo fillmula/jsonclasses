@@ -1,10 +1,10 @@
 """module for readonly validator."""
-from ..field_definition import FieldDefinition, WriteRule
+from ..fdef import Fdef, WriteRule
 from .validator import Validator
 
 
 class ReadonlyValidator(Validator):
     """Readonly validator marks a field to be readonly."""
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         fdef.write_rule = WriteRule.NO_WRITE

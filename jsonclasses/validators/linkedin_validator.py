@@ -1,6 +1,6 @@
 """module for linkedin validator."""
 from typing import Any
-from ..field_definition import DeleteRule, FieldDefinition, FieldStorage
+from ..fdef import DeleteRule, Fdef, FieldStorage
 from .validator import Validator
 
 
@@ -11,7 +11,7 @@ class LinkedInValidator(Validator):
     def __init__(self, cls: Any) -> None:
         self.cls = cls
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         fdef.field_storage = FieldStorage.FOREIGN_KEY
         fdef.join_table_cls = self.cls
         fdef.use_join_table = True

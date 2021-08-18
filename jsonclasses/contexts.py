@@ -4,7 +4,7 @@ from typing import Any, NamedTuple, Optional, Union, TYPE_CHECKING
 from .mark_graph import MarkGraph
 if TYPE_CHECKING:
     from .config import Config
-    from .field_definition import FieldDefinition
+    from .fdef import Fdef
     from .jsonclass_object import JSONClassObject
 
 
@@ -23,7 +23,7 @@ class ValidatingContext(NamedTuple):
     config_owner: Config
     keypath_parent: Union[str, int]  # key relative to parent
     parent: Any  # the direct parent of this field
-    definition: Optional[FieldDefinition] = None
+    fdef: Optional[Fdef] = None
     operator: Any = None
     all_fields: Optional[bool] = None
     mark_graph: MarkGraph = MarkGraph()
@@ -47,8 +47,8 @@ class ValidatingContext(NamedTuple):
                             if 'keypath_parent' in keys
                             else self.keypath_parent),
             parent=kwargs['parent'] if 'parent' in keys else self.parent,
-            definition=(kwargs['definition']
-                        if 'definition' in keys else self.definition),
+            fdef=(kwargs['fdef']
+                        if 'fdef' in keys else self.fdef),
             operator=(kwargs['operator']
                       if 'operator' in keys else self.operator),
             all_fields=(kwargs['all_fields']
@@ -68,7 +68,7 @@ class ValidatingContext(NamedTuple):
             config_owner=self.config_owner,
             keypath_parent=self.keypath_parent,
             parent=self.parent,
-            definition=self.definition,
+            fdef=self.fdef,
             operator=self.operator,
             all_fields=self.all_fields,
             mark_graph=self.mark_graph)
@@ -92,7 +92,7 @@ class TransformingContext(NamedTuple):
     config_owner: Config
     keypath_parent: Union[str, int]  # key relative to parent
     parent: Any  # the direct parent of this field
-    definition: Optional[FieldDefinition] = None
+    fdef: Optional[Fdef] = None
     operator: Any = None
     all_fields: Optional[bool] = None
     dest: Optional[JSONClassObject] = None
@@ -118,8 +118,8 @@ class TransformingContext(NamedTuple):
                             if 'keypath_parent' in keys
                             else self.keypath_parent),
             parent=kwargs['parent'] if 'parent' in keys else self.parent,
-            definition=(kwargs['definition']
-                        if 'definition' in keys else self.definition),
+            fdef=(kwargs['fdef']
+                        if 'fdef' in keys else self.fdef),
             operator=(kwargs['operator']
                       if 'operator' in keys else self.operator),
             all_fields=(kwargs['all_fields']
@@ -139,7 +139,7 @@ class TransformingContext(NamedTuple):
             config_owner=self.config_owner,
             keypath_parent=self.keypath_parent,
             parent=self.parent,
-            definition=self.definition,
+            fdef=self.fdef,
             operator=self.operator,
             all_fields=self.all_fields,
             mark_graph=self.mark_graph)
@@ -151,7 +151,7 @@ class ToJSONContext(NamedTuple):
     """
     value: Any
     config: Config
-    definition: Optional[FieldDefinition] = None
+    fdef: Optional[Fdef] = None
     ignore_writeonly: bool = False
     entity_chain: list[str] = []  # for circular tojson strip duplicated refs
 
@@ -161,9 +161,9 @@ class ToJSONContext(NamedTuple):
         return ToJSONContext(
             value=kwargs['value'] if 'value' in keys else self.value,
             config=kwargs['config'] if 'config' in keys else self.config,
-            definition=(kwargs['definition']
-                        if 'definition' in keys
-                        else self.definition),
+            fdef=(kwargs['fdef']
+                        if 'fdef' in keys
+                        else self.fdef),
             ignore_writeonly=(kwargs['ignore_writeonly']
                               if 'ignore_writeonly' in keys
                               else self.ignore_writeonly),

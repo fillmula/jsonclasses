@@ -4,7 +4,7 @@ from inspect import signature
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..contexts import ValidatingContext
-from ..field_definition import FieldDefinition
+from ..fdef import Fdef
 
 
 class AsopValidator(Validator):
@@ -20,7 +20,7 @@ class AsopValidator(Validator):
             raise ValueError('not a valid asop transformer')
         self.transformer = transformer
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         fdef.requires_operator_assign = True
         fdef.operator_assign_transformer = self.transformer
 

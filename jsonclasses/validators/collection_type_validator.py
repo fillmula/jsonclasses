@@ -1,7 +1,7 @@
 """module for listof validator."""
 from __future__ import annotations
 from typing import Any, Collection, Iterable, TypeVar, Union, cast, TYPE_CHECKING
-from ..field_definition import FieldDefinition, Nullability
+from ..fdef import Fdef, Nullability
 from ..config import Config
 from ..exceptions import ValidationException
 from .type_validator import TypeValidator
@@ -23,7 +23,7 @@ class CollectionTypeValidator(TypeValidator):
         self.raw_item_types = raw_item_types
         self.exact_type = False
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         super().define(fdef)
         fdef.raw_item_types = self.raw_item_types
 
@@ -34,7 +34,7 @@ class CollectionTypeValidator(TypeValidator):
             itypes = TypesResolver().resolve_types(
                 self.raw_item_types,
                 owner_cls.definition.config)
-            if itypes.definition.item_nullability == Nullability.UNDEFINED:
+            if itypes.fdef.item_nullability == Nullability.UNDEFINED:
                 itypes = itypes.required
             setattr(self, '_item_types', itypes)
             return itypes
@@ -71,7 +71,7 @@ class CollectionTypeValidator(TypeValidator):
                     keypath_owner=concat_keypath(context.keypath_owner, i),
                     keypath_parent=i,
                     parent=context.value,
-                    definition=types.definition))
+                    fdef=types.fdef))
             except ValidationException as exception:
                 if all_fields:
                     keypath_messages.update(exception.keypath_messages)
@@ -83,7 +83,7 @@ class CollectionTypeValidator(TypeValidator):
                 root=context.root)
 
     def transform(self, context: TransformingContext) -> Any:
-        fdef = cast(FieldDefinition, context.definition)
+        fdef = cast(Fdef, context.fdef)
         if context.value is None:
             if fdef.collection_nullability == Nullability.NONNULL:
                 return self.empty_collection()
@@ -100,7 +100,7 @@ class CollectionTypeValidator(TypeValidator):
                 keypath_owner=concat_keypath(context.keypath_owner, i),
                 keypath_parent=i,
                 parent=context.value,
-                definition=itypes.definition))
+                fdef=itypes.fdef))
             self.append_value(
                 self.to_object_key(i, context.config_owner),
                 transformed,
@@ -136,7 +136,7 @@ class CollectionTypeValidator(TypeValidator):
                 keypath_owner=concat_keypath(context.keypath_owner, i),
                 keypath_parent=i,
                 parent=context.value,
-                definition=itypes.definition))
+                fdef=itypes.fdef))
             self.append_value(
                 self.to_json_key(i, context.config_owner),
                 transformed,

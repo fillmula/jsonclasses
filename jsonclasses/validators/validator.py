@@ -1,13 +1,13 @@
 """module for validator validator."""
 from typing import Any
-from ..field_definition import FieldDefinition
+from ..fdef import Fdef
 from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
 
 
 class Validator:
     """Abstract and base class for validators."""
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         """A hook and chance for validator to update field description."""
 
     def validate(self, context: ValidatingContext) -> None:

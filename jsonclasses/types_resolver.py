@@ -55,14 +55,14 @@ class TypesResolver:
         Returns:
             Types: The types with link specifier applied.
         """
-        from .field_definition import FieldType
+        from .fdef import FieldType
         if match("^linkto", specifier):
             return types.linkto
         elif match("^linkedby\\('", specifier):
             match_data = match("^linkedby\\('(.+)'\\)", specifier)
             assert match_data is not None
             fk = match_data.group(1)
-            if types.definition.field_type == FieldType.LIST:
+            if types.fdef.field_type == FieldType.LIST:
                 return types.nonnull.linkedby(fk)
             else:
                 return types.linkedby(fk)

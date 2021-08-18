@@ -1,5 +1,5 @@
 """module for readonly validator."""
-from ..field_definition import FieldDefinition
+from ..fdef import Fdef
 from .validator import Validator
 
 
@@ -9,5 +9,5 @@ class UseForValidator(Validator):
     def __init__(self, usage: str) -> None:
         self.usage = usage
 
-    def define(self, fdef: FieldDefinition) -> None:
+    def define(self, fdef: Fdef) -> None:
         fdef.usage = self.usage

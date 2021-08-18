@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import NamedTuple, Any, Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from .types import Types
-    from .field_definition import FieldDefinition
+    from .fdef import Fdef
     from .validators import ChainedValidator
 
 
@@ -32,7 +32,7 @@ class JSONClassField(NamedTuple):
     definition.
     """
 
-    definition: FieldDefinition
+    fdef: Fdef
     """The detailed field definition defined with the types chain.
     """
 
@@ -44,7 +44,7 @@ class JSONClassField(NamedTuple):
     def foreign_field(self: JSONClassField) -> Optional[JSONClassField]:
         """The foreign field defined on the referenced object.
         """
-        info = self.definition.class_definition.foreign_field_for(self.name)
+        info = self.fdef.class_definition.foreign_field_for(self.name)
         if info:
             foreign_class_definition = info[0]
             foreign_field_name = info[1]
