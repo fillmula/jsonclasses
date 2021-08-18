@@ -10,6 +10,8 @@ from tests.classes.simple_deadline import SimpleDeadline
 from tests.classes.author import Author
 from tests.classes.article import Article
 from tests.classes.default_shape import DefaultShape
+from tests.classes.nest_shape_user import NestShapeUser
+from tests.classes.default_dict import DefaultDict
 
 
 class TestInitialize(TestCase):
@@ -79,3 +81,15 @@ class TestInitialize(TestCase):
         article = Article(title='T', content='C')
         author = Author(**{'name': 'Kieng', 'articles': [article], 'articles.0.title': 'QQQQQ'})
         self.assertEqual(author.articles[0].title, 'QQQQQ')
+
+    def test_initialize_accepts_nested_keypaths_for_shape_in_shape(self):
+        user = NestShapeUser(**{'name': 'N', 'grouped': {
+            'ios': {'on': True, 'off': False},
+            'android': {'on': False, 'off': True}
+        }, 'grouped.ios.on': False, 'grouped.ios.off': True})
+        self.assertEqual(user.grouped.ios['on'], False)
+        self.assertEqual(user.grouped.ios['off'], True) # TODO: use dot notation
+
+    def test_initialize_accepts_nested_keypaths_for_value_in_dicts(self):
+        dct = DefaultDict(**{'value.b': '3', 'value.c': '4'})
+        self.assertEqual(dct.value, {'a': '1', 'b': '3', 'c': '4'})
