@@ -22,7 +22,7 @@ class TestEmail(TestCase):
         analysis = EmailUser(username='hello', email='a@a.a.cn')
         analysis.validate()
 
-    def test_email_with_multiple_domain_doesnt_raise(self):
+    def test_email_with_multiple_domains_doesnt_raise(self):
         analysis = EmailUser(username='hello', email='a@a.a.cn.a.a')
         analysis.validate()
 
@@ -34,7 +34,7 @@ class TestEmail(TestCase):
         self.assertEqual(context.exception.keypath_messages['email'],
                          "email '@qq.com' at 'email' is not valid email.")
 
-    def test_email_raises_if_email_contain_exclamation_mark(self):
+    def test_email_raises_if_email_contains_special_charaters(self):
         analysis = EmailUser(username='hello', email='!a@qq.com')
         with self.assertRaises(ValidationException) as context:
             analysis.validate()
@@ -42,7 +42,7 @@ class TestEmail(TestCase):
         self.assertEqual(context.exception.keypath_messages['email'],
                          "email '!a@qq.com' at 'email' is not valid email.")
 
-    def test_email_raises_exception_if_email_contain_hashtag(self):
+    def test_email_raises_exception_if_email_contains_hashtag(self):
         analysis = EmailUser(username='hello', email='#@qq.com')
         with self.assertRaises(ValidationException) as context:
             analysis.validate()

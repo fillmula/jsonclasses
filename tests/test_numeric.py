@@ -30,7 +30,7 @@ class TestDigit(TestCase):
         self.assertEqual(context.exception.keypath_messages['product_id'],
                          "product_id '12a' at 'product_id' is not a numeric.")
 
-    def test_numeric_raises_if_value_contains_special_character(self):
+    def test_numeric_raises_if_value_contains_special_characters(self):
         analysis = NumericProductId(product_name='water', product_id='12!')
         with self.assertRaises(ValidationException) as context:
             analysis.validate()

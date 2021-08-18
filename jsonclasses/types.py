@@ -340,7 +340,7 @@ class Types:
 
     @property
     def alnum(self) -> Types:
-        """Fields marked with alnum should be valid alnum strings. This is a
+        """Values fields marked with alnum should be valid alnum strings. This is a
         validator marker.
         """
         return Types(self, AlnumValidator())

@@ -18,7 +18,7 @@ class TestIsAlpha(TestCase):
         self.assertEqual(context.exception.keypath_messages['product_name'],
                          "product_name '123' at 'product_name' is not a alpha.")
 
-    def test_alpha_raises_if_value_contain_number(self):
+    def test_alpha_raises_if_value_contains_number(self):
         analysis = AlphaProductName(product_name='water12')
         with self.assertRaises(ValidationException) as context:
             analysis.validate()
@@ -26,7 +26,7 @@ class TestIsAlpha(TestCase):
         self.assertEqual(context.exception.keypath_messages['product_name'],
                          "product_name 'water12' at 'product_name' is not a alpha.")
 
-    def test_alpha_raises_if_value_with_special_character(self):
+    def test_alpha_raises_if_value_contains_special_character(self):
         analysis = AlphaProductName(product_name='water!')
         with self.assertRaises(ValidationException) as context:
             analysis.validate()
