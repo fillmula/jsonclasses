@@ -47,6 +47,15 @@ from .minlength_validator import MinlengthValidator
 from .maxlength_validator import MaxlengthValidator
 from .length_validator import LengthValidator
 from .url_validator import UrlValidator
+from .email_validator import EmailValidator
+from .digit_validator import DigitValidator
+from .alpha_validator import AlphaValidator
+from .numeric_validator import NumericValidator
+from .alnum_validator import AlnumValidator
+from .totitle_validator import ToTitleValidator
+from .tocap_validator import ToCapValidator
+from .tolower_validator import ToLowerValidator
+from .toupper_validator import ToUpperValidator
 
 # number validators
 from .int_validator import IntValidator
