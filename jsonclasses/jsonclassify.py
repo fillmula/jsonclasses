@@ -131,7 +131,7 @@ def _set_to_container(self: JSONClassObject,
             item_types = fdefinition.raw_item_types
             item_types = TypesResolver().resolve_types(item_types, self.__class__.definition.config)
             fdefinition = item_types.definition
-            self._set_to_container(dest[items[0]], items[1:], value, fdefinition, used_items + [items[0]])
+            self._set_to_container(dest[int(items[0])], items[1:], value, fdefinition, used_items + [items[0]])
     elif fdefinition.field_type == FieldType.DICT:
         if dest is None:
             raise ValueError(f"value in {'.'.join(used_items)} is None")

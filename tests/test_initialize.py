@@ -67,10 +67,15 @@ class TestInitialize(TestCase):
         self.assertEqual(shape.settings.ios, False)
         self.assertEqual(shape.settings.name, 'equal')
 
-    def test_initialize_nested_keypaths_are_assigned_after_single_length_keys(self):
-        pass
-
     def test_initialize_accepts_nested_keypaths_for_instances(self):
-        shape = DefaultShape(**{'settings.ios': False, 'settings.name': 'equal'})
-        self.assertEqual(shape.settings.ios, False)
-        self.assertEqual(shape.settings.name, 'equal')
+        author = Author(name='Kieng')
+        article = Article(**{'title': 'E Sai',
+                             'content': 'Tsê Tioh Si Kim Sieng Ua Ê Tsuê Ai',
+                             'author': author,
+                             'author.name': 'abc.def'})
+        self.assertEqual(article.author.name, 'abc.def')
+
+    def test_initialize_accepts_nested_keypaths_for_instances_in_lists(self):
+        article = Article(title='T', content='C')
+        author = Author(**{'name': 'Kieng', 'articles': [article], 'articles.0.title': 'QQQQQ'})
+        self.assertEqual(author.articles[0].title, 'QQQQQ')
