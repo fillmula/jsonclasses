@@ -118,9 +118,7 @@ def _set_to_container(self: JSONClassObject,
         if len(items) == 1:
             dest[items[0]] = value
         else:
-            item_types = fdef.raw_shape_types[items[0]]
-            item_types = rtypes(item_types, self.__class__.cdef.config)
-            fdef = item_types.fdef
+            fdef = fdef.shape_types[items[0]].fdef
             self._set_to_container(dest[items[0]], items[1:], value, fdef, used_items + [items[0]])
     elif fdef.field_type == FieldType.LIST:
         if dest is None:
@@ -128,9 +126,7 @@ def _set_to_container(self: JSONClassObject,
         if len(items) == 1:
             dest[int(items[0])] = value
         else:
-            item_types = fdef.raw_item_types
-            item_types = rtypes(item_types, self.__class__.cdef.config)
-            fdef = item_types.fdef
+            fdef = fdef.item_types.fdef
             self._set_to_container(dest[int(items[0])], items[1:], value, fdef, used_items + [items[0]])
     elif fdef.field_type == FieldType.DICT:
         if dest is None:
@@ -138,9 +134,7 @@ def _set_to_container(self: JSONClassObject,
         if len(items) == 1:
             dest[items[0]] = value
         else:
-            item_types = fdef.raw_item_types
-            item_types = rtypes(item_types, self.__class__.cdef.config)
-            fdef = item_types.fdef
+            fdef = fdef.item_types.fdef
             self._set_to_container(dest[items[0]], items[1:], value, fdef, used_items + [items[0]])
 
 

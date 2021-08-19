@@ -256,8 +256,11 @@ class Fdef:
             return None
         if self._resolved_shape_types is not None:
             return self._resolved_shape_types
-        self._resolved_shape_types = \
-            {k: rtypes(t, self) for k, t in self._raw_shape_types.items()}
+        if isinstance(self._resolved_shape_types, dict):
+            self._resolved_shape_types = \
+                {k: rtypes(t, self) for k, t in self._raw_shape_types.items()}
+        else:
+            self._resolved_shape_types = rtypes(self._raw_shape_types, self).fdef.raw_shape_types
         return self._resolved_shape_types
 
     @property
