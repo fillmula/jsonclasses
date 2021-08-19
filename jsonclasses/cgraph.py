@@ -13,28 +13,28 @@ if TYPE_CHECKING:
 
 
 @final
-class JSONClassGraph:
+class CGraph:
     """JSON classes are defined on class graphs. Classes in the same graph
     share default configurations and can interoperate with each other. A class
     is guaranteed to have a unique name in it's graph. Different graphs serve
     as different naming spaces.
     """
 
-    _graph_map: dict[str, JSONClassGraph] = {}
+    _graph_map: dict[str, CGraph] = {}
     """The graph map on which graph objects are stored."""
 
     _initialized_map: dict[str, bool] = {}
     """The map on which graphs' initialization status are recorded."""
 
-    def __new__(cls: type[JSONClassGraph], name: str) -> JSONClassGraph:
-        """The `JSONClassGraph` class returns a shared graph object by it's
+    def __new__(cls: type[CGraph], name: str) -> CGraph:
+        """The `CGraph` class returns a shared graph object by it's
         name.
         """
         if not cls._graph_map.get(name):
-            cls._graph_map[name] = super(JSONClassGraph, cls).__new__(cls)
+            cls._graph_map[name] = super(CGraph, cls).__new__(cls)
         return cls._graph_map.get(name)
 
-    def __init__(self: JSONClassGraph, name: str) -> None:
+    def __init__(self: CGraph, name: str) -> None:
         """Find a class graph by it's name. A new one is created if it's not
         exist.
 
@@ -69,16 +69,16 @@ class JSONClassGraph:
         return f'[{self._name}]'
 
     @property
-    def name(self: JSONClassGraph) -> str:
+    def name(self: CGraph) -> str:
         """The name of this class graph."""
         return self._name
 
     @property
-    def default_config(self: JSONClassGraph) -> Config:
+    def default_config(self: CGraph) -> Config:
         """The default configuration used on this class graph."""
         return self._default_config
 
-    def put(self: JSONClassGraph, cdef: Cdef) -> None:
+    def put(self: CGraph, cdef: Cdef) -> None:
         """Put a class onto this class graph.
 
         Args:
@@ -94,7 +94,7 @@ class JSONClassGraph:
                                                  exist_definition.cls)
         self._map[cdef.name] = cdef
 
-    def fetch(self: JSONClassGraph,
+    def fetch(self: CGraph,
               name_or_class: Union[str, type]) -> Cdef:
         """Fetch a class by it's name from this class graph.
 
@@ -115,7 +115,7 @@ class JSONClassGraph:
         except KeyError:
             raise JSONClassNotFoundException(name, self.name)
 
-    def has(self: JSONClassGraph,
+    def has(self: CGraph,
             name_or_class: Union[str, type]) -> bool:
         """Test if class with name is registered in the graph.
 
@@ -132,7 +132,7 @@ class JSONClassGraph:
             name = name_or_class
         return self._map.get(name) is not None
 
-    def put_dict(self: JSONClassGraph, dict_class: type[dict]) -> None:
+    def put_dict(self: CGraph, dict_class: type[dict]) -> None:
         """Put a typed dict class onto this class graph.
 
         Args:
@@ -149,7 +149,7 @@ class JSONClassGraph:
                                                           exist_def.cls)
         self._dict_map[dict_class.__name__] = dict_class
 
-    def fetch_dict(self: JSONClassGraph,
+    def fetch_dict(self: CGraph,
                    dc_or_name: Union[type[dict], str]) -> type[dict]:
         """Fetch a typed dict class by it's name from this class graph.
 
@@ -170,7 +170,7 @@ class JSONClassGraph:
         except KeyError:
             raise JSONClassTypedDictNotFoundException(name, self.name)
 
-    def has_dict(self: JSONClassGraph,
+    def has_dict(self: CGraph,
                  dc_or_name: Union[type[dict], str]) -> bool:
         """Test if a typed dict class with name is registered in the graph.
 
@@ -188,7 +188,7 @@ class JSONClassGraph:
             name = dc_or_name
         return self._dict_map.get(name) is not None
 
-    def put_enum(self: JSONClassGraph, enum_class: type) -> None:
+    def put_enum(self: CGraph, enum_class: type) -> None:
         """Put a enum class onto this class graph.
 
         Args:
@@ -205,7 +205,7 @@ class JSONClassGraph:
                                                           exist_def.cls)
         self._enum_map[enum_class.__name__] = enum_class
 
-    def fetch_enum(self: JSONClassGraph,
+    def fetch_enum(self: CGraph,
                    ec_or_name: Union[type[dict], str]) -> type[dict]:
         """Fetch a enum class by it's name from this class graph.
 
@@ -226,7 +226,7 @@ class JSONClassGraph:
         except KeyError:
             raise JSONClassTypedDictNotFoundException(name, self.name)
 
-    def has_enum(self: JSONClassGraph,
+    def has_enum(self: CGraph,
                  ec_or_name: Union[type[dict], str]) -> bool:
         """Test if a enum class with name is registered in the graph.
 

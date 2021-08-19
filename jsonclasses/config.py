@@ -6,7 +6,7 @@ from typing import Optional, Callable, Any, Union, cast, final, TYPE_CHECKING
 from .jsonclass_object import JSONClassObject
 if TYPE_CHECKING:
     from .jfield import JField
-    from .jsonclass_graph import JSONClassGraph
+    from .cgraph import CGraph
 
 
 OnCreate = Callable[[JSONClassObject, Any], None]
@@ -171,11 +171,11 @@ class Config:
         return self._cls
 
     @property
-    def class_graph(self: Config) -> JSONClassGraph:
+    def class_graph(self: Config) -> CGraph:
         """The name of the class graph on which the JSON class is defined.
         """
-        from .jsonclass_graph import JSONClassGraph
-        return JSONClassGraph(self._class_graph)
+        from .cgraph import CGraph
+        return CGraph(self._class_graph)
 
     @property
     def camelize_json_keys(self: Config) -> bool:

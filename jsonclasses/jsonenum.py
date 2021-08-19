@@ -2,7 +2,7 @@
 This module contains `jsonenum`, the decorator for enums used with jsonclasses.
 """
 from typing import Optional, Union, Callable, overload
-from .jsonclass_graph import JSONClassGraph
+from .cgraph import CGraph
 
 
 @overload
@@ -39,7 +39,7 @@ def jsonenum(
     if cls is not None:
         if not isinstance(cls, type):
             raise ValueError('@jsonenum should be used to decorate a class.')
-        class_graph = JSONClassGraph(class_graph)
+        class_graph = CGraph(class_graph)
         class_graph.put_enum(cls)
         return cls
     else:

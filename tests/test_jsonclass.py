@@ -4,7 +4,7 @@ from jsonclasses import jsonclass
 from jsonclasses.isjsonclass import isjsonclass
 from jsonclasses.config import Config
 from jsonclasses.keypath_utils import reference_key
-from jsonclasses.jsonclass_graph import JSONClassGraph
+from jsonclasses.cgraph import CGraph
 from jsonclasses.exceptions import JSONClassRedefinitionException
 from tests.classes.simple_account import SimpleAccount
 from tests.classes.simple_company import SimpleCompany
@@ -41,7 +41,7 @@ class TestJsonClass(TestCase):
 
     def test_jsonclass_class_graph_changes_class_graph(self):
         class_graph = SimpleCompany.cdef.config.class_graph
-        company_graph = JSONClassGraph('simplecompany')
+        company_graph = CGraph('simplecompany')
         self.assertEqual(class_graph, company_graph)
 
     def test_jsonclass_camelize_json_keys_changes_config(self):

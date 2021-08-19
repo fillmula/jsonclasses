@@ -9,8 +9,7 @@ from typing import Optional, final, cast, TYPE_CHECKING
 from dataclasses import fields, Field
 from inflection import camelize
 from .jfield import JField
-from .fdef import (Fdef, FieldStorage, FieldType,
-                               DeleteRule)
+from .fdef import Fdef, FieldStorage, FieldType, DeleteRule
 from .rtypes import rtypes
 from .exceptions import LinkedFieldUnmatchException
 if TYPE_CHECKING:
