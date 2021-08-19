@@ -1,6 +1,6 @@
 # pylint: skip-file
 """JSON Class Mypy plugin for type checking JSON Class classes and objects."""
-from typing import Optional, Callable, Type as TypingType, Any
+from typing import Optional, Callable, Any
 from mypy.plugin import Plugin, ClassDefContext
 from mypy.options import Options
 from mypy.types import AnyType, TypeOfAny
@@ -8,7 +8,7 @@ from mypy.nodes import (CallExpr, LambdaExpr, MemberExpr, TempNode, TypeInfo,
                         AssignmentStmt, NameExpr, PlaceholderNode, Var)
 from mypy.errorcodes import ErrorCode
 
-JSONOBJECT_FULLNAME = 'jsonclasses.json_object.JSONObject'
+JSONCLASS_DECORATOR_FULLNAME = 'jsonclasses.jsonclass'
 TYPES_FULLNAME = 'jsonclasses.types.Types'
 JSONCLASS_FULLNAME = 'jsonclasses.jsonclass.jsonclass'
 
@@ -18,27 +18,36 @@ ERROR_MULTIPLE_DEFAULT_VALUES = ErrorCode('jsonclass-field',
                                           'JSON Class')
 
 
-def is_json_class_types_expr(expr: Any) -> bool:
-    if isinstance(expr, NameExpr):
-        return expr.fullname == 'jsonclasses.types.types'
-    if isinstance(expr, MemberExpr):
-        return is_json_class_types_expr(expr.expr)
-    if isinstance(expr, CallExpr):
-        return is_json_class_types_expr(expr.callee)
-    return False
+# def is_json_class_types_expr(expr: Any) -> bool:
+#     if isinstance(expr, NameExpr):
+#         return expr.fullname == 'jsonclasses.types.types'
+#     if isinstance(expr, MemberExpr):
+#         return is_json_class_types_expr(expr.expr)
+#     if isinstance(expr, CallExpr):
+#         return is_json_class_types_expr(expr.callee)
+#     return False
 
 
-def json_class_types_default_arg_expr(expr: Any) -> Any:
-    if isinstance(expr, NameExpr):
-        return None
-    if isinstance(expr, MemberExpr):
-        return json_class_types_default_arg_expr(expr.expr)
-    if isinstance(expr, CallExpr):
-        if isinstance(expr.callee, MemberExpr) and expr.callee.name == 'default':
-            return expr.args
-        else:
-            return json_class_types_default_arg_expr(expr.callee)
-    return None
+# def json_class_types_default_arg_expr(expr: Any) -> Any:
+#     if isinstance(expr, NameExpr):
+#         return None
+#     if isinstance(expr, MemberExpr):
+#         return json_class_types_default_arg_expr(expr.expr)
+#     if isinstance(expr, CallExpr):
+#         if isinstance(expr.callee, MemberExpr) and expr.callee.name == 'default':
+#             return expr.args
+#         else:
+#             return json_class_types_default_arg_expr(expr.callee)
+#     return None
+
+
+def collect_attrs(ctx: ClassDefContext):
+    pass
+
+
+def transform_jsonclass_class(ctx: ClassDefContext) -> None:
+    #ctx.
+    pass
 
 
 def transform_json_object_subclass(ctx: ClassDefContext) -> None:
@@ -88,15 +97,14 @@ class JSONClassesPlugin(Plugin):
     def __init__(self, options: Options) -> None:
         super().__init__(options)
 
-    def get_base_class_hook(self, fullname: str) -> Optional[Callable[[ClassDefContext], None]]:
-        sym_table_node = self.lookup_fully_qualified(fullname)
-        if sym_table_node and isinstance(sym_table_node.node, TypeInfo):
-            if any(instancetype.fullname == JSONOBJECT_FULLNAME for instancetype in sym_table_node.node.mro):
-                return transform_json_object_subclass
-        return None
+    def get_class_decorator_hook(self, fullname: str) -> Optional[Callable[[ClassDefContext], None]]:
+        if fullname == JSONCLASS_DECORATOR_FULLNAME:
+            return transform_jsonclass_class
+        else:
+            return super().get_class_decorator_hook(fullname)
 
 
-def plugin(version: str) -> TypingType[Plugin]:
+def plugin(version: str) -> type[Plugin]:
     """Returns the JSON Class Mypy plugin. The version argument is ignored.
     """
     return JSONClassesPlugin
