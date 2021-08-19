@@ -286,6 +286,7 @@ def rtypes(anytypes: Any, anyowner: Optional[Any] = None) -> Types:
         Types: A types which describes the field.
     """
     from .cdef import Cdef
+    from .fdef import Fdef
     config = None
     if isjsonclass(anyowner):
         config = anyowner.cdef.config
@@ -293,6 +294,8 @@ def rtypes(anytypes: Any, anyowner: Optional[Any] = None) -> Types:
         config = anyowner.__class__.cdef.config
     elif isinstance(anyowner, Cdef):
         config = anyowner.config
+    elif isinstance(anyowner, Fdef):
+        config = anyowner.cdef.config
     else:
         config = anyowner
     return TypesResolver().resolve_types(anytypes, config)

@@ -119,6 +119,10 @@ class Fdef:
         self._raw_item_types: Optional[Any] = None
         self._raw_shape_types: Optional[dict[str, Any]] = None
         self._raw_inst_types: Optional[Union[Types, str, type]] = None
+        self._resolved_union_types: Optional[list[Types]] = None
+        self._resolved_item_types: Optional[Types] = None
+        self._resolved_shape_types: Optional[dict[str, Types]] = None
+        self._resolved_inst_types: Optional[Types] = None
         self._foreign_key: Optional[str] = None
         self._use_join_table: Optional[bool] = None
         self._join_table_cls: Optional[Any] = None
@@ -228,16 +232,50 @@ class Fdef:
         return self._raw_item_types
 
     @property
+    def item_types(self: Fdef) -> Optional[Types]:
+        """The item types of this collection field.
+        """
+        if self._raw_item_types is None:
+            return None
+        if self._resolved_item_types is not None:
+            return self._resolved_item_types
+        self._resolved_item_types = rtypes(self.raw_item_types, self)
+        return self._resolved_item_types
+
+    @property
     def raw_shape_types(self: Fdef) -> Optional[dict[str, Any]]:
         """The raw shape types of this shape field.
         """
         return self._raw_shape_types
 
     @property
+    def shape_types(self: Fdef) -> Optional[dict[str, Types]]:
+        """The shape types of this collection field.
+        """
+        if self._raw_shape_types is None:
+            return None
+        if self._resolved_shape_types is not None:
+            return self._resolved_shape_types
+        self._resolved_shape_types = \
+            {k: rtypes(t, self) for k, t in self._raw_shape_types.items()}
+        return self._resolved_shape_types
+
+    @property
     def raw_inst_types(self: Fdef) -> Optional[Union[Types, str, type]]:
         """The raw instance types of this instance field.
         """
         return self._raw_inst_types
+
+    @property
+    def inst_types(self: Fdef) -> Optional[Types]:
+        """The instance types of this field.
+        """
+        if self._raw_inst_types is None:
+            return None
+        if self._resolved_inst_types is not None:
+            return self._resolved_inst_types
+        self._resolved_inst_types = rtypes(self.raw_inst_types, self)
+        return self._resolved_inst_types
 
     # relationship
 
