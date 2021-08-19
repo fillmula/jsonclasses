@@ -44,12 +44,7 @@ def concat_keypath(*args: Union[str, int]) -> str:
     Returns:
         str: the concatenated keypath.
     """
-    retval = ''
-    for arg in args:
-        if retval != '':
-            retval += '.'
-        retval += str(arg)
-    return retval
+    return '.'.join([str(arg) for arg in args if len(str(arg)) > 0])
 
 
 def keypath_drop_last(keypath: str) -> str:
@@ -62,11 +57,7 @@ def keypath_drop_last(keypath: str) -> str:
     Returns:
         str: A new keypath with last component dropped or empty string.
     """
-    if keypath == '':
-        return ''
-    parts = keypath.split('.')
-    parts.pop()
-    return '.'.join(parts)
+    return '.'.join(keypath.split('.')[:-1])
 
 
 def initial_keypaths(keypaths: set[str]) -> set[str]:
@@ -78,10 +69,7 @@ def initial_keypaths(keypaths: set[str]) -> set[str]:
     Returns:
         set[str]: A set of initial keypath components without duplication.
     """
-    retval = set()
-    for keypath in keypaths:
-        retval.add(initial_keypath(keypath))
-    return retval
+    return set([initial_keypath(k) for k in keypaths])
 
 
 def initial_keypath(keypath: str) -> str:
