@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
-from jsonclasses import jsonclass, Link, linkedthru
+from typing import Annotated, TYPE_CHECKING
+from jsonclasses import jsonclass, linkedthru
 if TYPE_CHECKING:
     from tests.classes.linked_product import LinkedProduct
 
@@ -8,4 +8,4 @@ if TYPE_CHECKING:
 @jsonclass
 class LinkedCustomer:
     name: str
-    products: Link[list[LinkedProduct], linkedthru('customers')]
+    products: Annotated[list[LinkedProduct], linkedthru('customers')]

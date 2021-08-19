@@ -1,7 +1,6 @@
 from __future__ import annotations
-from typing import Annotated, Final
+from typing import Final
 
-Link = Annotated
 
 linkto: Final[str] = 'linkto'
 

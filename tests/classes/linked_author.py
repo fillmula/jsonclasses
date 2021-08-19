@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
-from jsonclasses import jsonclass, Link, linkedby
+from typing import Annotated, TYPE_CHECKING
+from jsonclasses import jsonclass, linkedby
 if TYPE_CHECKING:
     from tests.classes.linked_article import LinkedArticle
 
@@ -8,4 +8,4 @@ if TYPE_CHECKING:
 @jsonclass
 class LinkedAuthor:
     name: str
-    articles: Link[list[LinkedArticle], linkedby('author')]
+    articles: Annotated[list[LinkedArticle], linkedby('author')]

@@ -155,9 +155,8 @@ class TypesResolver:
             item_type = match_data.group(1)
             dict_type = types.dictof(self.str_to_types(item_type, config))
             return dict_type if optional else dict_type.required
-        elif any_types.startswith('Annotated[') or \
-                any_types.startswith('Link['):
-            match_data = match('(Annotated|Link)\\[(.+), *(.+)\\]', any_types)
+        elif any_types.startswith('Annotated['):
+            match_data = match('(Annotated)\\[(.+), *(.+)\\]', any_types)
             assert match_data is not None
             instance_type = match_data.group(2)
             link_specifier = match_data.group(3)
