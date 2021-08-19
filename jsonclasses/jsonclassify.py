@@ -316,7 +316,7 @@ def persisted_modified_fields(self: JObject) -> tuple[str]:
     retval: list[str] = []
     cdef = self.__class__.cdef
     for name in self._modified_fields:
-        if not cdef.field_named(name).cdef.is_temp_field:
+        if not cdef.field_named(name).fdef.is_temp_field:
             retval.append(name)
     return tuple(retval)
 
