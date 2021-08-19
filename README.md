@@ -1,5 +1,3 @@
-<img src="https://github.com/fillmula/jsonclasses/blob/master/resources/logo.png" alt="Logo" width="auto" height="88">
-
 JSONClasses
 ===========
 [![Pypi][pypi-image]][pypi-url]
