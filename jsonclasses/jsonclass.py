@@ -102,10 +102,10 @@ def jsonclass(
             can_update=can_update,
             can_delete=can_delete,
             can_read=can_read)
-        dataclass_cls = dataclass(init=False)(cls)
+        dataclass_cls: type = dataclass(init=False)(cls)
         jsonclass_cls = jsonclassify(dataclass_cls)
         definition = Cdef(jsonclass_cls, config)
-        cls.cdef = definition
+        jsonclass_cls.cdef = definition
         config.cgraph.put(definition)
         return jsonclass_cls
     else:

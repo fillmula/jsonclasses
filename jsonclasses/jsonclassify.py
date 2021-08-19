@@ -891,7 +891,7 @@ def __link_graph__(self: JObject, other: JObject) -> None:
     self._graph.merged_graph(other._graph)
 
 
-def jsonclassify(class_: type) -> JObject:
+def jsonclassify(class_: type) -> type[JObject]:
     """Make a declared class into JSON class.
 
     Args:
