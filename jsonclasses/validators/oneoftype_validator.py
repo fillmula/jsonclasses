@@ -16,7 +16,7 @@ class OneOfTypeValidator(Validator):
 
     def define(self, fdef: Fdef) -> None:
         fdef._field_type = FieldType.UNION
-        fdef._union_types = [rtypes(t) for t in self.type_list]
+        fdef._raw_union_types = [rtypes(t) for t in self.type_list]
 
     def validate(self, context: VCtx) -> None:
         if context.value is None:

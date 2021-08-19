@@ -115,7 +115,7 @@ class Fdef:
         self._enum_class: Optional[Union[type[Enum], str]] = None
         self._enum_input: Optional[EnumInput] = None
         self._enum_output: Optional[EnumOutput] = None
-        self._union_types: Optional[list[Types]] = None
+        self._raw_union_types: Optional[list[Types]] = None
         self._raw_item_types: Optional[Any] = None
         self._raw_shape_types: Optional[dict[str, Any]] = None
         self._raw_inst_types: Optional[Union[Types, str, type]] = None
@@ -217,7 +217,7 @@ class Fdef:
     def raw_union_types(self: Fdef) -> Optional[list[Types]]:
         """The raw union types of this union field.
         """
-        return self._union_types
+        return self._raw_union_types
 
     # subtypes
 
