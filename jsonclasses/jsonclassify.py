@@ -12,7 +12,7 @@ from .validators.instanceof_validator import InstanceOfValidator
 from .jfield import JField
 from .isjsonclass import isjsonobject
 from .mark_graph import MarkGraph
-from .object_graph import ObjectGraph
+from .ograph import OGraph
 from .owned_dict import OwnedDict
 from .owned_list import OwnedList
 from .owned_collection_utils import (to_owned_dict, to_shape_dict,
@@ -441,7 +441,7 @@ def _set_initial_status(self: JObject) -> None:
     setattr(self, '_local_keys', set())
     setattr(self, '_local_key_map', {})
     setattr(self, '_unlinked_objects', {})
-    setattr(self, '_graph', ObjectGraph())
+    setattr(self, '_graph', OGraph())
     setattr(self, '_operator', None)
 
 

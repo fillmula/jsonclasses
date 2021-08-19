@@ -18,14 +18,14 @@ class CompareResult(NamedTuple):
     """The obsolete one to remove."""
 
 
-class ObjectGraph:
+class OGraph:
     """The object graph is a graph containing JSON Class objects. It has two
     main usages. First, it's used for tracking and referencing objects within
     the same objects from a query result. Second, it's used for marking objects
     as handled when performing validating and serializing.
     """
 
-    def __init__(self: ObjectGraph,
+    def __init__(self: OGraph,
                  objects: Union[list[JObject],
                                 JObject, None] = None) -> None:
         self._maps: dict[str, dict[str, JObject]] = {}
@@ -45,13 +45,13 @@ class ObjectGraph:
                 lst.append(obj)
         return lst.__iter__()
 
-    def _object_map(self: ObjectGraph,
+    def _object_map(self: OGraph,
                     name: str) -> dict[str, JObject]:
         if self._maps.get(name) is None:
             self._maps[name] = {}
         return self._maps[name]
 
-    def _check_get_str_id(self: ObjectGraph, object: JObject) -> str:
+    def _check_get_str_id(self: OGraph, object: JObject) -> str:
         primary_value = object._id
         if primary_value is None:
             if object.__class__.cdef.primary_field:
@@ -61,7 +61,7 @@ class ObjectGraph:
             raise UnlinkableJSONClassException(type(object), has_field)
         return str(primary_value)
 
-    def put(self: ObjectGraph, object: JObject) -> None:
+    def put(self: OGraph, object: JObject) -> None:
         """Put an object into object graph. When conflict, this object
         overrides the existing one on the graph.
         """
@@ -70,12 +70,12 @@ class ObjectGraph:
         object_map = self._object_map(class_name)
         object_map[primary_value] = object
 
-    def has(self: ObjectGraph, object: JObject) -> bool:
+    def has(self: OGraph, object: JObject) -> bool:
         """Check whether an object is existing in the object graph.
         """
         return self.get(object) is not None
 
-    def get(self: ObjectGraph, object: JObject) -> JObject:
+    def get(self: OGraph, object: JObject) -> JObject:
         """Get an object from the graph which matches the provided object.
         """
         primary_value = self._check_get_str_id(object)
@@ -83,17 +83,17 @@ class ObjectGraph:
         object_map = self._object_map(class_name)
         return object_map.get(primary_value)
 
-    def copy(self: ObjectGraph) -> ObjectGraph:
+    def copy(self: OGraph) -> OGraph:
         """Get a copy of this object graph.
         """
-        new_graph = ObjectGraph()
+        new_graph = OGraph()
         for key, map in self._maps.items():
             new_graph._maps[key] = {}
             for name, obj in map.items():
                 new_graph._maps[key][name] = obj
         return new_graph
 
-    def compare(self: ObjectGraph,
+    def compare(self: OGraph,
                 obj1: JObject,
                 obj2: JObject) -> CompareResult:
         if obj1.is_new and obj2.is_new:
@@ -117,7 +117,7 @@ class ObjectGraph:
         else:
             return CompareResult(kept=obj2, outdated=obj1)
 
-    def merged_graph(self: ObjectGraph, graph2: ObjectGraph) -> ObjectGraph:
+    def merged_graph(self: OGraph, graph2: OGraph) -> OGraph:
         """Get a new graph which is a combination of two graphs.
         """
         if self is graph2:
@@ -140,7 +140,7 @@ class ObjectGraph:
             object._graph = graph
         return graph
 
-    def alter_links(self: ObjectGraph, result: CompareResult) -> None:
+    def alter_links(self: OGraph, result: CompareResult) -> None:
         """Alter all linked objects reference to the new object.
         """
         for field in result.outdated.__class__.cdef.fields:
