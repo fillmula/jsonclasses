@@ -4,7 +4,7 @@ from datetime import date, datetime
 from ..fdef import FieldType
 from ..exceptions import ValidationException
 from .type_validator import TypeValidator
-from ..contexts import TransformingContext, ToJSONContext
+from ..ctxs import TCtx, JCtx
 
 
 class DateValidator(TypeValidator):
@@ -15,7 +15,7 @@ class DateValidator(TypeValidator):
         self.cls = date
         self.field_type = FieldType.DATE
 
-    def transform(self, context: TransformingContext) -> Any:
+    def transform(self, context: TCtx) -> Any:
         if context.value is None:
             return None
         elif isinstance(context.value, str):
@@ -32,6 +32,6 @@ class DateValidator(TypeValidator):
         else:
             return context.value
 
-    def tojson(self, context: ToJSONContext) -> Any:
+    def tojson(self, context: JCtx) -> Any:
         if context.value is not None:
             return context.value.isoformat() + 'T00:00:00.000Z'

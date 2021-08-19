@@ -6,7 +6,7 @@ from ..exceptions import ValidationException
 from ..config import Config
 from ..keypath_utils import concat_keypath
 from ..types_resolver import TypesResolver
-from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
+from ..ctxs import VCtx, TCtx, JCtx
 from .type_validator import TypeValidator
 
 
@@ -40,7 +40,7 @@ class ShapeValidator(TypeValidator):
         super().define(fdef)
         fdef.shape_types = self.raw_types
 
-    def validate(self, context: ValidatingContext) -> None:
+    def validate(self, context: VCtx) -> None:
         if context.value is None:
             return
         super().validate(context)
@@ -92,7 +92,7 @@ class ShapeValidator(TypeValidator):
 
     def _strictness_check(self,
                           value: dict[str, Any],
-                          context: TransformingContext):
+                          context: TCtx):
         value_keys = list(value.keys())
         if context.config_owner.camelize_json_keys:
             value_keys = [underscore(k) for k in value_keys]
@@ -104,7 +104,7 @@ class ShapeValidator(TypeValidator):
                                             f'\'{context.keypath_root}\'.')},
                     context.root)
 
-    def transform(self, context: TransformingContext) -> Any:
+    def transform(self, context: TCtx) -> Any:
         value = context.value
         fd = cast(Fdef, context.fdef)
         if fd.collection_nullability == Nullability.NONNULL and value is None:
@@ -132,7 +132,7 @@ class ShapeValidator(TypeValidator):
                 fdef=types.fdef))
         return retval
 
-    def tojson(self, context: ToJSONContext) -> Any:
+    def tojson(self, context: JCtx) -> Any:
         if context.value is None:
             return None
         if not isinstance(context.value, dict):
@@ -148,7 +148,7 @@ class ShapeValidator(TypeValidator):
                 retval[key] = value_at_key
         return retval
 
-    def serialize(self, context: TransformingContext) -> Any:
+    def serialize(self, context: TCtx) -> Any:
         if context.value is None:
             return None
         if not isinstance(context.value, dict):

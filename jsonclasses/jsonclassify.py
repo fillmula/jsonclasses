@@ -6,7 +6,7 @@ from inspect import signature
 from .jsonclass_object import JSONClassObject
 from .types import Types
 from .types_resolver import TypesResolver
-from .contexts import TransformingContext, ValidatingContext, ToJSONContext
+from .ctxs import TCtx, VCtx, JCtx
 from .fdef import Fdef, FieldStorage, FieldType
 from .validators.instanceof_validator import InstanceOfValidator
 from .jsonclass_field import JSONClassField
@@ -71,7 +71,7 @@ def _set(self: JSONClassObject,
     config = self.__class__.cdef.config
     operator = (getattr(self, '_operator')
                 if hasattr(self, '_operator') else None)
-    context = TransformingContext(
+    context = TCtx(
         value=kwargs,
         keypath_root='',
         root=self,
@@ -182,7 +182,7 @@ def tojson(self: JSONClassObject,
     self._can_read_check()
     validator = InstanceOfValidator(self.__class__)
     config = self.__class__.cdef.config
-    context = ToJSONContext(value=self,
+    context = JCtx(value=self,
                             config=config,
                             fdef=None,
                             ignore_writeonly=ignore_writeonly)
@@ -206,7 +206,7 @@ def validate(self: JSONClassObject,
     config = self.__class__.cdef.config
     operator = (getattr(self, '_operator')
                 if hasattr(self, '_operator') else None)
-    context = ValidatingContext(
+    context = VCtx(
         value=self,
         keypath_root='',
         root=self,
@@ -490,7 +490,7 @@ def _set_on_save(self: JSONClassObject) -> None:
     config = self.__class__.cdef.config
     operator = (getattr(self, '_operator')
                 if hasattr(self, '_operator') else None)
-    context = TransformingContext(
+    context = TCtx(
         value=self,
         keypath_root='',
         root=self,

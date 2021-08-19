@@ -2,7 +2,7 @@
 from typing import Callable, Any, cast
 from inspect import signature
 from .validator import Validator
-from ..contexts import TransformingContext
+from ..ctxs import TCtx
 
 
 class OnWriteValidator(Validator):
@@ -18,7 +18,7 @@ class OnWriteValidator(Validator):
             raise ValueError('not a valid onwrite callback')
         self.callback = callback
 
-    def serialize(self, context: TransformingContext) -> Any:
+    def serialize(self, context: TCtx) -> Any:
         from ..jsonclass_object import JSONClassObject
         name = context.keypath_parent
         parent = cast(JSONClassObject, context.parent)

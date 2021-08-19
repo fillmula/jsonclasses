@@ -2,7 +2,7 @@
 from re import search
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..contexts import ValidatingContext
+from ..ctxs import VCtx
 
 
 class MatchValidator(Validator):
@@ -11,7 +11,7 @@ class MatchValidator(Validator):
     def __init__(self, pattern: str) -> None:
         self.pattern = pattern
 
-    def validate(self, context: ValidatingContext) -> None:
+    def validate(self, context: VCtx) -> None:
         if context.value is None:
             return
         value = context.value

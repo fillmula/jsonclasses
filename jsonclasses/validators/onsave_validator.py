@@ -2,7 +2,7 @@
 from typing import Callable, Any
 from inspect import signature
 from .validator import Validator
-from ..contexts import TransformingContext
+from ..ctxs import TCtx
 
 
 class OnSaveValidator(Validator):
@@ -16,7 +16,7 @@ class OnSaveValidator(Validator):
             raise ValueError('not a valid onsave callable')
         self.callback = callback
 
-    def serialize(self, context: TransformingContext) -> Any:
+    def serialize(self, context: TCtx) -> Any:
         params_len = len(signature(self.callback).parameters)
         if params_len == 0:
             self.callback()

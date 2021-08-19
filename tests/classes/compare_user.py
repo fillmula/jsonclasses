@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Optional, Tuple
 from jsonclasses import jsonclass, types
-from jsonclasses.contexts import ValidatingContext
+from jsonclasses.ctxs import VCtx
 
 val = 0
 oldval = 0
@@ -31,7 +31,7 @@ def callbackb(old: int, new: int) -> None:
     return new == old + 1
 
 
-def callbacks(old: int, new: int, context: ValidatingContext) -> None:
+def callbacks(old: int, new: int, context: VCtx) -> None:
     global val, oldval, newval
     val = val + 1
     oldval = old

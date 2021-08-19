@@ -1,13 +1,13 @@
 """module for toupper validator."""
 from typing import Any
 from .validator import Validator
-from ..contexts import TransformingContext
+from ..ctxs import TCtx
 
 
 class ToUpperValidator(Validator):
     """convert string into upper case"""
 
-    def transform(self, context: TransformingContext) -> Any:
+    def transform(self, context: TCtx) -> Any:
         if context.value is None:
             return None
         return context.value.upper()

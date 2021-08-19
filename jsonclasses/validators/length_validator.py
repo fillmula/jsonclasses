@@ -2,7 +2,7 @@
 from typing import Optional
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..contexts import ValidatingContext
+from ..ctxs import VCtx
 
 
 class LengthValidator(Validator):
@@ -12,7 +12,7 @@ class LengthValidator(Validator):
         self.minlength = minlength
         self.maxlength = maxlength if maxlength is not None else minlength
 
-    def validate(self, context: ValidatingContext) -> None:
+    def validate(self, context: VCtx) -> None:
         if context.value is None:
             return
         value = context.value

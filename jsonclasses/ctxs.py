@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from .jsonclass_object import JSONClassObject
 
 
-class ValidatingContext(NamedTuple):
+class VCtx(NamedTuple):
     """The context on which validating is performing. It contains necessary
     information for validators to validate the field values correctly.
     """
@@ -31,7 +31,7 @@ class ValidatingContext(NamedTuple):
     def new(self, **kwargs):
         """Return a new validating context by replacing provided values."""
         keys = kwargs.keys()
-        return ValidatingContext(
+        return VCtx(
             value=kwargs['value'] if 'value' in keys else self.value,
             keypath_root=(kwargs['keypath_root']
                           if 'keypath_root' in keys else self.keypath_root),
@@ -56,9 +56,9 @@ class ValidatingContext(NamedTuple):
             mark_graph=(kwargs['mark_graph']
                         if 'mark_graph' in keys else self.mark_graph))
 
-    def transforming_context(self):
+    def tctx(self):
         """Return a new transforming context by converting."""
-        return TransformingContext(
+        return TCtx(
             value=self.value,
             keypath_root=self.keypath_root,
             root=self.root,
@@ -74,7 +74,7 @@ class ValidatingContext(NamedTuple):
             mark_graph=self.mark_graph)
 
 
-class TransformingContext(NamedTuple):
+class TCtx(NamedTuple):
     """The context on which transforming is performing. It contains necessary
     information for validators to transform the field values correctly.
 
@@ -102,7 +102,7 @@ class TransformingContext(NamedTuple):
     def new(self, **kwargs):
         """Return a new transforming context by replacing provided values."""
         keys = kwargs.keys()
-        return TransformingContext(
+        return TCtx(
             value=kwargs['value'] if 'value' in keys else self.value,
             keypath_root=(kwargs['keypath_root']
                           if 'keypath_root' in keys else self.keypath_root),
@@ -127,9 +127,9 @@ class TransformingContext(NamedTuple):
             mark_graph=(kwargs['mark_graph']
                         if 'mark_graph' in keys else self.mark_graph))
 
-    def validating_context(self):
+    def vctx(self):
         """Return a new validating context by converting."""
-        return ValidatingContext(
+        return VCtx(
             value=self.value,
             keypath_root=self.keypath_root,
             root=self.root,
@@ -145,7 +145,7 @@ class TransformingContext(NamedTuple):
             mark_graph=self.mark_graph)
 
 
-class ToJSONContext(NamedTuple):
+class JCtx(NamedTuple):
     """The context on which `tojson` is performing. It contains necessary
     information for validators to convert the field values to JSON correctly.
     """
@@ -158,7 +158,7 @@ class ToJSONContext(NamedTuple):
     def new(self, **kwargs):
         """Return a new tojson context by replacing provided values."""
         keys = kwargs.keys()
-        return ToJSONContext(
+        return JCtx(
             value=kwargs['value'] if 'value' in keys else self.value,
             config=kwargs['config'] if 'config' in keys else self.config,
             fdef=(kwargs['fdef']

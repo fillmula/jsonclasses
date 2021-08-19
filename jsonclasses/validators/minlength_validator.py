@@ -1,7 +1,7 @@
 """module for minlength validator."""
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..contexts import ValidatingContext
+from ..ctxs import VCtx
 
 
 class MinlengthValidator(Validator):
@@ -10,7 +10,7 @@ class MinlengthValidator(Validator):
     def __init__(self, minlength: int) -> None:
         self.minlength = minlength
 
-    def validate(self, context: ValidatingContext) -> None:
+    def validate(self, context: VCtx) -> None:
         if context.value is None:
             return
         if len(context.value) < self.minlength:

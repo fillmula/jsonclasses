@@ -3,7 +3,7 @@ from typing import Callable, cast
 from inspect import signature
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..contexts import ValidatingContext
+from ..ctxs import VCtx
 
 
 class CompareValidator(Validator):
@@ -18,7 +18,7 @@ class CompareValidator(Validator):
             raise ValueError('not a valid compare callable')
         self.compare_callable = compare_callable
 
-    def validate(self, context: ValidatingContext) -> None:
+    def validate(self, context: VCtx) -> None:
         from ..jsonclass_object import JSONClassObject
         name = context.keypath_parent
         parent = cast(JSONClassObject, context.parent)

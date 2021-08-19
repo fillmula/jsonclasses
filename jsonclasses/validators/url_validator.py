@@ -2,13 +2,13 @@
 from re import compile, match, IGNORECASE
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..contexts import ValidatingContext
+from ..ctxs import VCtx
 
 
 class UrlValidator(Validator):
     """URL validator raises if value is not valid url."""
 
-    def validate(self, context: ValidatingContext) -> None:
+    def validate(self, context: VCtx) -> None:
         if context.value is None:
             return
         value = context.value

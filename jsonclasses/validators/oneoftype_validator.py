@@ -2,7 +2,7 @@
 from typing import Any
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..contexts import ValidatingContext
+from ..ctxs import VCtx
 from ..types_resolver import TypesResolver
 from ..fdef import Fdef, FieldType
 
@@ -18,7 +18,7 @@ class OneOfTypeValidator(Validator):
         fdef.field_type = FieldType.UNION
         fdef.union_types = [TypesResolver().resolve_types(t) for t in self.type_list]
 
-    def validate(self, context: ValidatingContext) -> None:
+    def validate(self, context: VCtx) -> None:
         if context.value is None:
             return
         for types in context.fdef.union_types:

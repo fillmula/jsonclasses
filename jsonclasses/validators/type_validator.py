@@ -1,7 +1,7 @@
 """module for validator validator."""
 from ..exceptions import ValidationException
 from ..fdef import Fdef, FieldType
-from ..contexts import ValidatingContext
+from ..ctxs import VCtx
 from .validator import Validator
 
 
@@ -16,7 +16,7 @@ class TypeValidator(Validator):
     def define(self, fdef: Fdef) -> None:
         fdef.field_type = self.field_type
 
-    def validate(self, context: ValidatingContext) -> None:
+    def validate(self, context: VCtx) -> None:
         if context.value is None:
             return
         if self.exact_type:

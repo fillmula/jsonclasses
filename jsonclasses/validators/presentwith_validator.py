@@ -1,7 +1,7 @@
 """module for required validator."""
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..contexts import ValidatingContext
+from ..ctxs import VCtx
 
 
 class PresentWithValidator(Validator):
@@ -14,7 +14,7 @@ class PresentWithValidator(Validator):
     def __init__(self, referring_key: str) -> None:
         self.referring_key = referring_key
 
-    def validate(self, context: ValidatingContext) -> None:
+    def validate(self, context: VCtx) -> None:
         if context.value is not None:
             return
         try:

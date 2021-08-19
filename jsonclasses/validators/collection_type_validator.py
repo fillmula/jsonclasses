@@ -7,7 +7,7 @@ from ..exceptions import ValidationException
 from .type_validator import TypeValidator
 from ..keypath_utils import concat_keypath
 from ..types_resolver import TypesResolver
-from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
+from ..ctxs import VCtx, TCtx, JCtx
 if TYPE_CHECKING:
     from ..jsonclass_object import JSONClassObject
     from ..types import Types
@@ -54,7 +54,7 @@ class CollectionTypeValidator(TypeValidator):
     def to_json_key(self, key: T, conf: Config) -> T:
         return key
 
-    def validate(self, context: ValidatingContext) -> None:
+    def validate(self, context: VCtx) -> None:
         if context.value is None:
             return
         super().validate(context)
@@ -82,7 +82,7 @@ class CollectionTypeValidator(TypeValidator):
                 keypath_messages=keypath_messages,
                 root=context.root)
 
-    def transform(self, context: TransformingContext) -> Any:
+    def transform(self, context: TCtx) -> Any:
         fdef = cast(Fdef, context.fdef)
         if context.value is None:
             if fdef.collection_nullability == Nullability.NONNULL:
@@ -107,7 +107,7 @@ class CollectionTypeValidator(TypeValidator):
                 retval)
         return retval
 
-    def tojson(self, context: ToJSONContext) -> Any:
+    def tojson(self, context: JCtx) -> Any:
         if context.value is None:
             return None
         if not isinstance(context.value, self.cls):
@@ -122,7 +122,7 @@ class CollectionTypeValidator(TypeValidator):
                 retval)
         return retval
 
-    def serialize(self, context: TransformingContext) -> Any:
+    def serialize(self, context: TCtx) -> Any:
         if context.value is None:
             return None
         if not isinstance(context.value, self.cls):

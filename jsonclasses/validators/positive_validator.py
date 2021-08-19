@@ -1,13 +1,13 @@
 """module for positive validator."""
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..contexts import ValidatingContext
+from ..ctxs import VCtx
 
 
 class PositiveValidator(Validator):
     """Positive validator marks value valid for large than zero."""
 
-    def validate(self, context: ValidatingContext) -> None:
+    def validate(self, context: VCtx) -> None:
         if context.value is None:
             return context.value
         if context.value <= 0:

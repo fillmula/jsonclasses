@@ -3,7 +3,7 @@ from typing import Callable
 from inspect import signature
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..contexts import ValidatingContext
+from ..ctxs import VCtx
 
 
 class OpValidator(Validator):
@@ -17,7 +17,7 @@ class OpValidator(Validator):
             raise ValueError('not a valid op validator')
         self.op_callable = op_callable
 
-    def validate(self, context: ValidatingContext) -> None:
+    def validate(self, context: VCtx) -> None:
         if context.operator is None:
             raise ValidationException(
                 {context.keypath_root: 'operator not present'},

@@ -2,7 +2,7 @@
 from typing import Union
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..contexts import ValidatingContext
+from ..ctxs import VCtx
 
 
 class MinValidator(Validator):
@@ -11,7 +11,7 @@ class MinValidator(Validator):
     def __init__(self, min_value: Union[int, float]):
         self.min_value = min_value
 
-    def validate(self, context: ValidatingContext) -> None:
+    def validate(self, context: VCtx) -> None:
         if context.value is None:
             return
         if context.value < self.min_value:

@@ -3,7 +3,7 @@ from unittest import TestCase
 from typing import Optional
 from jsonclasses import jsonclass, types
 from jsonclasses.exceptions import ValidationException
-from jsonclasses.contexts import ValidatingContext
+from jsonclasses.ctxs import VCtx
 from tests.classes.compare_user import (CompareUser, CompareUserB,
                                         CompareUserS, check_value, check_args)
 
@@ -65,7 +65,7 @@ class TestCompare(TestCase):
 
     #     val = {'val': '123'}
 
-    #     def compare(old: int, new: int, key_path: str, obj: User, ctx: ValidatingContext):
+    #     def compare(old: int, new: int, key_path: str, obj: User, ctx: VCtx):
     #         val['val'] = ctx
 
     #     @jsonclass(class_graph='test_compare_9')
@@ -75,4 +75,4 @@ class TestCompare(TestCase):
     #     setattr(user, '_is_new', False)
     #     user.age = 60
     #     user.validate()
-    #     self.assertTrue(isinstance(val['val'], ValidatingContext))
+    #     self.assertTrue(isinstance(val['val'], VCtx))

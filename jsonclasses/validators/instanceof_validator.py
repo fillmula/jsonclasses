@@ -9,7 +9,7 @@ from ..exceptions import ValidationException
 from .validator import Validator
 from ..keypath_utils import concat_keypath, initial_keypaths
 from ..types_resolver import TypesResolver
-from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
+from ..ctxs import VCtx, TCtx, JCtx
 if TYPE_CHECKING:
     from ..jsonclass_object import JSONClassObject
     from ..types import Types
@@ -26,7 +26,7 @@ class InstanceOfValidator(Validator):
         fdef.field_type = FieldType.INSTANCE
         fdef.instance_types = self.raw_type
 
-    def validate(self, context: ValidatingContext) -> None:
+    def validate(self, context: VCtx) -> None:
         from ..jsonclass_object import JSONClassObject
         if context.value is None:
             return
@@ -77,7 +77,7 @@ class InstanceOfValidator(Validator):
                 root=context.root)
 
     def _strictness_check(self,
-                          context: TransformingContext,
+                          context: TCtx,
                           dest: JSONClassObject) -> None:
         available_names = dest.__class__.cdef._available_names
         for k in context.value.keys():
@@ -92,7 +92,7 @@ class InstanceOfValidator(Validator):
     def _fill_default_value(self,
                             field: JSONClassField,
                             dest: JSONClassObject,
-                            context: TransformingContext,
+                            context: TCtx,
                             cls: Type[JSONClassObject]):
         if field.default is not None:
             setattr(dest, field.name, field.default)
@@ -113,14 +113,14 @@ class InstanceOfValidator(Validator):
 
     def _get_field_value(self,
                          field: JSONClassField,
-                         context: TransformingContext) -> Any:
+                         context: TCtx) -> Any:
         field_value = context.value.get(field.json_name)
         if field_value is None and context.config_owner.camelize_json_keys:
             field_value = context.value.get(field.name)
         return field_value
 
     # pylint: disable=arguments-differ, too-many-locals, too-many-branches
-    def transform(self, context: TransformingContext) -> Any:
+    def transform(self, context: TCtx) -> Any:
         from ..types import Types
         from ..jsonclass_object import JSONClassObject
         # handle non normal value
@@ -217,7 +217,7 @@ class InstanceOfValidator(Validator):
                 setattr(dest, cname, [])
         return dest
 
-    def tojson(self, context: ToJSONContext) -> Any:
+    def tojson(self, context: JCtx) -> Any:
         if context.value is None:
             return None
         retval = {}
@@ -244,7 +244,7 @@ class InstanceOfValidator(Validator):
             retval[jf_name] = field.types.validator.tojson(item_context)
         return retval
 
-    def serialize(self, context: TransformingContext) -> Any:
+    def serialize(self, context: TCtx) -> Any:
         from ..jsonclass_object import JSONClassObject
         value = cast(JSONClassObject, context.value)
         if value is None:

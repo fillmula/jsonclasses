@@ -2,7 +2,7 @@
 from typing import Callable, Any
 from inspect import signature
 from .validator import Validator
-from ..contexts import TransformingContext
+from ..ctxs import TCtx
 
 
 class SetOnSaveValidator(Validator):
@@ -16,7 +16,7 @@ class SetOnSaveValidator(Validator):
             raise ValueError('not a valid setonsave setter')
         self.setter = setter
 
-    def serialize(self, context: TransformingContext) -> Any:
+    def serialize(self, context: TCtx) -> Any:
         params_len = len(signature(self.setter).parameters)
         if params_len == 1:
             return self.setter(context.value)

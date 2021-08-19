@@ -5,7 +5,7 @@ from ..exceptions import ValidationException
 from .validator import Validator
 from .eager_validator import EagerValidator
 from .preserialize_validator import PreserializeValidator
-from ..contexts import ValidatingContext, TransformingContext, ToJSONContext
+from ..ctxs import VCtx, TCtx, JCtx
 
 
 class ChainedValidator(Validator):
@@ -92,7 +92,7 @@ class ChainedValidator(Validator):
         except ValueError:
             return None
 
-    def validate(self, context: ValidatingContext) -> None:
+    def validate(self, context: VCtx) -> None:
         keypath_messages: dict[str, str] = {}
         start = self._last_eager_validator_index(self.validators)
         end = self._first_preserialize_validator_index(self.validators)
@@ -108,18 +108,18 @@ class ChainedValidator(Validator):
 
     def _validate_and_transform(self,
                                 validator: Validator,
-                                context: TransformingContext) -> Any:
+                                context: TCtx) -> Any:
         """Validate as transform."""
-        validator.validate(context.validating_context())
+        validator.validate(context.vctx())
         return validator.transform(context)
 
-    def _serialize_and_validate(self, validator: Validator, context: TransformingContext) -> Any:
+    def _serialize_and_validate(self, validator: Validator, context: TCtx) -> Any:
         """Serialize as validate."""
         value = validator.serialize(context)
-        validator.validate(context.validating_context())
+        validator.validate(context.vctx())
         return value
 
-    def _preserialize_validate(self, context: ValidatingContext) -> None:
+    def _preserialize_validate(self, context: VCtx) -> None:
         keypath_messages: dict[str, str] = {}
         start = self._first_preserialize_validator_index(self.validators)
         for validator in self.validators[start:]:
@@ -133,7 +133,7 @@ class ChainedValidator(Validator):
             raise ValidationException(keypath_messages, context.root)
 
     # flake8: noqa: E501
-    def transform(self, context: TransformingContext) -> Any:
+    def transform(self, context: TCtx) -> Any:
         curvalue = context.value
         index = 0
         next_index = self._eager_validator_index_after_index(
@@ -152,13 +152,13 @@ class ChainedValidator(Validator):
             curvalue = validator.transform(context.new(value=curvalue))
         return curvalue
 
-    def tojson(self, context: ToJSONContext) -> Any:
+    def tojson(self, context: JCtx) -> Any:
         value = context.value
         for validator in self.validators:
             value = validator.tojson(context.new(value=value))
         return value
 
-    def serialize(self, context: TransformingContext) -> Any:
+    def serialize(self, context: TCtx) -> Any:
         curvalue = context.value
         index = self._preserialize_validator_index_after_index(
                 self.validators, 0)
