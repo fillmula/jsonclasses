@@ -52,7 +52,7 @@ class MarkClassTable:
         return self._memory_id_table.get(hex(memid))
 
 
-class MarkGraph:
+class MGraph:
     """The mark graph is a graph containing JSON Class objects. It's used for
     marking objects as handled when performing validating and serializing.
     """

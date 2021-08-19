@@ -41,9 +41,9 @@ class InstanceOfValidator(Validator):
                                        f"should be instance of "
                                        f"'{cls.__name__}'.")
             }, context.root)
-        if context.mark_graph.has(context.value):
+        if context.mgraph.has(context.value):
             return
-        context.mark_graph.put(context.value)
+        context.mgraph.put(context.value)
         only_validate_modified = False
         modified_fields = []
         if not context.value.is_new:
@@ -141,18 +141,18 @@ class InstanceOfValidator(Validator):
         if context.dest is not None:
             dest = context.dest
             if pk_value is not None:
-                context.mark_graph.putp(pk_value, dest)
+                context.mgraph.putp(pk_value, dest)
         elif pk_value is not None:
-            exist_item = context.mark_graph.getp(cls, pk_value)
+            exist_item = context.mgraph.getp(cls, pk_value)
             if exist_item is not None:
                 dest = exist_item
                 soft_apply_mode = True
             else:
                 dest = cls()
-                context.mark_graph.putp(pk_value, dest)
+                context.mgraph.putp(pk_value, dest)
         else:
             dest = cls()
-            context.mark_graph.put(dest)
+            context.mgraph.put(dest)
 
         # strictness check
         strictness = cast(bool, cls.cdef.config.strict_input)
@@ -249,10 +249,10 @@ class InstanceOfValidator(Validator):
         value = cast(JObject, context.value)
         if value is None:
             return None
-        exist_item = context.mark_graph.get(value)
+        exist_item = context.mgraph.get(value)
         if exist_item is not None:  # Don't do twice for an object
             return value
-        context.mark_graph.put(value)
+        context.mgraph.put(value)
         should_update = True
         if not value.is_modified and not value.is_new:
             should_update = False

@@ -11,7 +11,7 @@ from .fdef import Fdef, FieldStorage, FieldType
 from .validators.instanceof_validator import InstanceOfValidator
 from .jfield import JField
 from .isjsonclass import isjsonobject
-from .mark_graph import MarkGraph
+from .mgraph import MGraph
 from .ograph import OGraph
 from .owned_dict import OwnedDict
 from .owned_list import OwnedList
@@ -86,7 +86,7 @@ def _set(self: JObject,
         all_fields=True,
         dest=self,
         fill_dest_blanks=fill_blanks,
-        mark_graph=MarkGraph())
+        mgraph=MGraph())
     validator.transform(context)
 
 
@@ -213,7 +213,7 @@ def validate(self: JObject,
         fdef=None,
         operator=operator,
         all_fields=validate_all_fields,
-        mark_graph=MarkGraph())
+        mgraph=MGraph())
     InstanceOfValidator(self.__class__).validate(context)
     return self
 
@@ -509,7 +509,7 @@ def _set_on_save(self: JObject) -> None:
         parent=self,
         fdef=None,
         operator=operator,
-        mark_graph=MarkGraph())
+        mgraph=MGraph())
     validator.serialize(context)
 
 
