@@ -1,8 +1,8 @@
 from jsonclasses.fdef import FieldStorage, FieldType
-from jsonclasses.jsonclass_field import JSONClassField
+from jsonclasses.jfield import JField
 
 
-def yet_another_key_transformer(field: JSONClassField) -> str:
+def yet_another_key_transformer(field: JField) -> str:
     if field.fdef.field_storage not in \
             [FieldStorage.FOREIGN_KEY, FieldStorage.LOCAL_KEY]:
         raise ValueError(f"field named {field.name} is not a reference field")

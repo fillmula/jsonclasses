@@ -9,7 +9,7 @@ from .types_resolver import TypesResolver
 from .ctxs import TCtx, VCtx, JCtx
 from .fdef import Fdef, FieldStorage, FieldType
 from .validators.instanceof_validator import InstanceOfValidator
-from .jsonclass_field import JSONClassField
+from .jfield import JField
 from .isjsonclass import isjsonobject
 from .mark_graph import MarkGraph
 from .object_graph import ObjectGraph
@@ -808,7 +808,7 @@ def __olist_sor__(self, olist: OwnedList) -> None:
 
 
 def __unlink_field__(self: JSONClassObject,
-                     field: JSONClassField,
+                     field: JField,
                      value: Any) -> None:
     items: list[JSONClassObject] = []
     if field.fdef.field_type == FieldType.INSTANCE:
@@ -842,7 +842,7 @@ def __unlink_field__(self: JSONClassObject,
 
 
 def __link_field__(self: JSONClassObject,
-                   field: JSONClassField,
+                   field: JField,
                    value: Any) -> None:
     items: list[JSONClassObject] = []
     if field.fdef.field_type == FieldType.INSTANCE:

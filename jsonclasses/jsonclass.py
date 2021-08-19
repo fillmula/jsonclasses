@@ -5,7 +5,7 @@ from typing import Optional, Union, Callable, overload, cast
 from dataclasses import dataclass
 from .config import (Config, OnCreate, OnSave, CanCreate, OnDelete, CanUpdate,
                      CanDelete, CanRead)
-from .jsonclass_field import JSONClassField
+from .jfield import JField
 from .cdef import Cdef
 from .jsonclassify import jsonclassify
 from .jsonclass_object import JSONClassObject
@@ -21,7 +21,7 @@ def jsonclass(
     class_graph: Optional[str] = 'default',
     camelize_json_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
-    key_transformer: Optional[Callable[[JSONClassField], str]] = None,
+    key_transformer: Optional[Callable[[JField], str]] = None,
     validate_all_fields: Optional[bool] = None,
     soft_delete: Optional[bool] = None,
     abstract: Optional[bool] = None,
@@ -42,7 +42,7 @@ def jsonclass(
     class_graph: Optional[str] = 'default',
     camelize_json_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
-    key_transformer: Optional[Callable[[JSONClassField], str]] = None,
+    key_transformer: Optional[Callable[[JField], str]] = None,
     validate_all_fields: Optional[bool] = None,
     soft_delete: Optional[bool] = None,
     abstract: Optional[bool] = None,
@@ -62,7 +62,7 @@ def jsonclass(
     class_graph: Optional[str] = 'default',
     camelize_json_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
-    key_transformer: Optional[Callable[[JSONClassField], str]] = None,
+    key_transformer: Optional[Callable[[JField], str]] = None,
     validate_all_fields: Optional[bool] = None,
     soft_delete: Optional[bool] = None,
     abstract: Optional[bool] = None,

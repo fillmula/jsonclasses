@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import Optional, final, cast, TYPE_CHECKING
 from dataclasses import fields, Field
 from inflection import camelize
-from .jsonclass_field import JSONClassField
+from .jfield import JField
 from .fdef import (Fdef, FieldStorage, FieldType,
                                DeleteRule)
 from .types_resolver import TypesResolver
@@ -40,22 +40,22 @@ class Cdef:
         config._cls = class_
         self._name: str = class_.__name__
         self._config: Config = config
-        self._list_fields: list[JSONClassField] = []
-        self._dict_fields: dict[str, JSONClassField] = {}
+        self._list_fields: list[JField] = []
+        self._dict_fields: dict[str, JField] = {}
         self._foreign_fields: dict[str, Optional[tuple[Cdef, str]]]\
             = {}
-        self._primary_field: Optional[JSONClassField] = None
-        self._created_at_field: Optional[JSONClassField] = None
-        self._updated_at_field: Optional[JSONClassField] = None
-        self._deleted_at_field: Optional[JSONClassField] = None
-        self._deny_fields: list[JSONClassField] = []
-        self._nullify_fields: list[JSONClassField] = []
-        self._cascade_fields: list[JSONClassField] = []
+        self._primary_field: Optional[JField] = None
+        self._created_at_field: Optional[JField] = None
+        self._updated_at_field: Optional[JField] = None
+        self._deleted_at_field: Optional[JField] = None
+        self._deny_fields: list[JField] = []
+        self._nullify_fields: list[JField] = []
+        self._cascade_fields: list[JField] = []
         self._field_names: list[str] = []
         self._camelized_field_names: list[str] = []
         self._reference_names: list[str] = []
         self._camelized_reference_names: list[str] = []
-        self._assign_operator_fields: list[JSONClassField] = []
+        self._assign_operator_fields: list[JField] = []
         for field in fields(class_):
             name = field.name
             self._field_names.append(name)
@@ -72,38 +72,38 @@ class Cdef:
                 default = None
             else:
                 default = field.default
-            jsonclass_field = JSONClassField(
+            jfield = JField(
                 name=name,
                 json_name=json_name,
                 default=default,
                 types=types,
                 fdef=types.fdef,
                 validator=types.validator)
-            self._list_fields.append(jsonclass_field)
-            self._dict_fields[name] = jsonclass_field
+            self._list_fields.append(jfield)
+            self._dict_fields[name] = jfield
             if types.fdef.primary:
-                self._primary_field = jsonclass_field
+                self._primary_field = jfield
             if types.fdef.usage == 'created_at':
-                self._created_at_field = jsonclass_field
+                self._created_at_field = jfield
             elif types.fdef.usage == 'updated_at':
-                self._updated_at_field = jsonclass_field
+                self._updated_at_field = jfield
             elif types.fdef.usage == 'deleted_at':
-                self._deleted_at_field = jsonclass_field
+                self._deleted_at_field = jfield
             if types.fdef.field_storage == FieldStorage.LOCAL_KEY:
                 key_transformer = config.key_transformer
-                self._reference_names.append(key_transformer(jsonclass_field))
+                self._reference_names.append(key_transformer(jfield))
                 if config.camelize_json_keys:
                     self._camelized_reference_names.append(
-                        camelize(key_transformer(jsonclass_field), False))
+                        camelize(key_transformer(jfield), False))
             if types.fdef.delete_rule == DeleteRule.DENY:
-                self._deny_fields.append(jsonclass_field)
+                self._deny_fields.append(jfield)
             elif types.fdef.delete_rule == DeleteRule.NULLIFY:
-                self._nullify_fields.append(jsonclass_field)
+                self._nullify_fields.append(jfield)
             elif types.fdef.delete_rule == DeleteRule.CASCADE:
-                self._cascade_fields.append(jsonclass_field)
+                self._cascade_fields.append(jfield)
             if types.fdef.requires_operator_assign:
-                self._assign_operator_fields.append(jsonclass_field)
-        self._tuple_fields: tuple[JSONClassField] = tuple(self._list_fields)
+                self._assign_operator_fields.append(jfield)
+        self._tuple_fields: tuple[JField] = tuple(self._list_fields)
         self._available_names: set[str] = set(self._field_names
                                               + self._camelized_field_names
                                               + self._reference_names
@@ -159,7 +159,7 @@ class Cdef:
         """
         return self._config
 
-    def field_named(self: Cdef, name: str) -> JSONClassField:
+    def field_named(self: Cdef, name: str) -> JField:
         """
         Get the field which is named `name`.
 
@@ -167,7 +167,7 @@ class Cdef:
             name (str): The name of the field to return.
 
         Returns:
-            JSONClassField: The field named `name`.
+            JField: The field named `name`.
 
         Raises:
             ValueError: If can't find a field with name `name`.
@@ -177,14 +177,14 @@ class Cdef:
         return self._dict_fields[name]
 
     @property
-    def fields(self: Cdef) -> tuple[JSONClassField]:
+    def fields(self: Cdef) -> tuple[JField]:
         """Get the fields of this class definition as a tuple. This is useful
         for looping and iterating.
         """
         return self._tuple_fields
 
     @property
-    def created_at_field(self: Cdef) -> Optional[JSONClassField]:
+    def created_at_field(self: Cdef) -> Optional[JField]:
         """
         The class definition's field which represents the created at field.
 
@@ -194,7 +194,7 @@ class Cdef:
         return self._created_at_field
 
     @property
-    def updated_at_field(self: Cdef) -> Optional[JSONClassField]:
+    def updated_at_field(self: Cdef) -> Optional[JField]:
         """The class definition's field which represents the updated at field.
 
         This is used by the framework to locate the correct field to find the
@@ -203,7 +203,7 @@ class Cdef:
         return self._updated_at_field
 
     @property
-    def deleted_at_field(self: Cdef) -> Optional[JSONClassField]:
+    def deleted_at_field(self: Cdef) -> Optional[JField]:
         """The class definition's field which represents the deleted at field.
 
         This is used by the framework to locate the correct field to find the
@@ -212,32 +212,32 @@ class Cdef:
         return self._deleted_at_field
 
     @property
-    def deny_fields(self: Cdef) -> list[JSONClassField]:
+    def deny_fields(self: Cdef) -> list[JField]:
         """Reference fields with deny delete rule.
         """
         return self._deny_fields
 
     @property
-    def nullify_fields(self: Cdef) -> list[JSONClassField]:
+    def nullify_fields(self: Cdef) -> list[JField]:
         """Reference fields with nullify delete rule.
         """
         return self._nullify_fields
 
     @property
-    def cascade_fields(self: Cdef) -> list[JSONClassField]:
+    def cascade_fields(self: Cdef) -> list[JField]:
         """Reference fields with cascade delete rule.
         """
         return self._cascade_fields
 
     @property
-    def primary_field(self: Cdef) -> Optional[JSONClassField]:
+    def primary_field(self: Cdef) -> Optional[JField]:
         """The class definition's primary field. This can be None if it's not
         defined by user.
         """
         return self._primary_field
 
     @property
-    def assign_operator_fields(self: Cdef) -> list[JSONClassField]:
+    def assign_operator_fields(self: Cdef) -> list[JField]:
         """The class definition's fields which require operator assigning on
         object creation.
         """

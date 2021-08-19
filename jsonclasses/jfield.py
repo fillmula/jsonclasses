@@ -1,4 +1,4 @@
-"""This module defines the `JSONClassField` named tuple. This data structure
+"""This module defines the `JField` named tuple. This data structure
 records the detailed information of a JSON class field.
 """
 from __future__ import annotations
@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from .validators import ChainedValidator
 
 
-class JSONClassField(NamedTuple):
+class JField(NamedTuple):
     """The detailed field information of a JSON class field. This includes
     field names in different circumstances, assigned default value, field
     description and main validator.
@@ -41,7 +41,7 @@ class JSONClassField(NamedTuple):
     """
 
     @property
-    def foreign_field(self: JSONClassField) -> Optional[JSONClassField]:
+    def foreign_field(self: JField) -> Optional[JField]:
         """The foreign field defined on the referenced object.
         """
         info = self.fdef.cdef.foreign_field_for(self.name)

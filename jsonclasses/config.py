@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Optional, Callable, Any, Union, cast, final, TYPE_CHECKING
 from .jsonclass_object import JSONClassObject
 if TYPE_CHECKING:
-    from .jsonclass_field import JSONClassField
+    from .jfield import JField
     from .jsonclass_graph import JSONClassGraph
 
 
@@ -29,7 +29,7 @@ class Config:
                  class_graph: Optional[str],
                  camelize_json_keys: Optional[bool],
                  strict_input: Optional[bool],
-                 key_transformer: Optional[Callable[[JSONClassField], str]],
+                 key_transformer: Optional[Callable[[JField], str]],
                  validate_all_fields: Optional[bool],
                  soft_delete: Optional[bool],
                  abstract: Optional[bool],
@@ -51,7 +51,7 @@ class Config:
                 outputing JSON.
             strict_input (Optional[bool]): Whether raise errors on receiving \
                 invalid input keys.
-            key_transformer (Optional[Callable[[JSONClassField], str]]): The \
+            key_transformer (Optional[Callable[[JField], str]]): The \
                 reference field local key conversion function.
             validate_all_fields (Optional[bool]): The default field \
                 validating method when performing saving and validating.
@@ -194,7 +194,7 @@ class Config:
         return self._strict_input
 
     @property
-    def key_transformer(self: Config) -> Callable[[JSONClassField], str]:
+    def key_transformer(self: Config) -> Callable[[JField], str]:
         """The reference field local key conversion function.
         """
         if self._key_transformer is None:

@@ -3,15 +3,15 @@ from __future__ import annotations
 from typing import Any, Union, TYPE_CHECKING
 from .fdef import FieldStorage, FieldType
 if TYPE_CHECKING:
-    from .jsonclass_field import JSONClassField
+    from .jfield import JField
 
 
-def reference_key(field: JSONClassField) -> str:
+def reference_key(field: JField) -> str:
     """
     Figure out the correct reference key name from the field definition.
 
     Args:
-        field (JSONClassField): The JSON class field to figure out reference
+        field (JField): The JSON class field to figure out reference
         key from.
 
     Returns:

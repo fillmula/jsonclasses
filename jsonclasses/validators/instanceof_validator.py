@@ -1,6 +1,6 @@
 """module for instanceof validator."""
 from __future__ import annotations
-from jsonclasses.jsonclass_field import JSONClassField
+from jsonclasses.jfield import JField
 from typing import Any, Sequence, Type, Union, cast, TYPE_CHECKING
 from inflection import camelize
 from ..fdef import (Fdef, FieldStorage, FieldType,
@@ -90,7 +90,7 @@ class InstanceOfValidator(Validator):
                 raise ValidationException({kp: msg}, context.root)
 
     def _fill_default_value(self,
-                            field: JSONClassField,
+                            field: JField,
                             dest: JSONClassObject,
                             context: TCtx,
                             cls: Type[JSONClassObject]):
@@ -108,11 +108,11 @@ class InstanceOfValidator(Validator):
                 fdef=field.fdef))
             setattr(dest, field.name, tsfmd)
 
-    def _has_field_value(self, field: JSONClassField, keys: Sequence[str]) -> bool:
+    def _has_field_value(self, field: JField, keys: Sequence[str]) -> bool:
         return field.json_name in keys or field.name in keys
 
     def _get_field_value(self,
-                         field: JSONClassField,
+                         field: JField,
                          context: TCtx) -> Any:
         field_value = context.value.get(field.json_name)
         if field_value is None and context.config_owner.camelize_json_keys:
