@@ -1,8 +1,8 @@
 """This module defines utility functions for working with keypaths."""
 from __future__ import annotations
 from typing import Any, Union, TYPE_CHECKING
-from .fdef import FieldStorage, FieldType
 from re import split,search
+from .fdef import FieldStorage, FieldType
 if TYPE_CHECKING:
     from .jfield import JField
 
