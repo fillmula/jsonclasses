@@ -102,12 +102,12 @@ def jsonclass(
             can_update=can_update,
             can_delete=can_delete,
             can_read=can_read)
-        dataclass_cls: type = dataclass(init=False)(cls)
-        jsonclass_cls = jsonclassify(dataclass_cls)
-        definition = Cdef(jsonclass_cls, config)
-        jsonclass_cls.cdef = definition
-        config.cgraph.put(definition)
-        return jsonclass_cls
+        dcls: type = dataclass(init=False)(cls)
+        jcls = jsonclassify(dcls)
+        cdef = Cdef(jcls, config)
+        jcls.cdef = cdef
+        config.cgraph.put(cdef)
+        return jcls
     else:
         def parametered_jsonclass(cls):
             return jsonclass(
