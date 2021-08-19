@@ -19,9 +19,9 @@ class OnWriteValidator(Validator):
         self.callback = callback
 
     def serialize(self, context: TCtx) -> Any:
-        from ..jsonclass_object import JSONClassObject
+        from ..jobject import JObject
         name = context.keypath_parent
-        parent = cast(JSONClassObject, context.parent)
+        parent = cast(JObject, context.parent)
         if not parent.is_new and name not in parent.modified_fields:
             return context.value
         params_len = len(signature(self.callback).parameters)

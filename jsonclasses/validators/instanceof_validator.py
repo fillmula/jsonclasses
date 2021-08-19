@@ -11,9 +11,9 @@ from ..keypath_utils import concat_keypath, initial_keypaths
 from ..rtypes import rtypes
 from ..ctxs import VCtx, TCtx, JCtx
 if TYPE_CHECKING:
-    from ..jsonclass_object import JSONClassObject
+    from ..jobject import JObject
     from ..types import Types
-    InstanceOfType = Union[Types, str, type[JSONClassObject]]
+    InstanceOfType = Union[Types, str, type[JObject]]
 
 
 class InstanceOfValidator(Validator):
@@ -27,11 +27,11 @@ class InstanceOfValidator(Validator):
         fdef._raw_inst_types = self.raw_type
 
     def validate(self, context: VCtx) -> None:
-        from ..jsonclass_object import JSONClassObject
+        from ..jobject import JObject
         if context.value is None:
             return
         types = rtypes(self.raw_type, context.config_owner)
-        cls = cast(type[JSONClassObject], types.fdef.raw_inst_types)
+        cls = cast(type[JObject], types.fdef.raw_inst_types)
         all_fields = context.all_fields
         if all_fields is None:
             all_fields = cls.cdef.config.validate_all_fields
@@ -78,7 +78,7 @@ class InstanceOfValidator(Validator):
 
     def _strictness_check(self,
                           context: TCtx,
-                          dest: JSONClassObject) -> None:
+                          dest: JObject) -> None:
         available_names = dest.__class__.cdef._available_names
         for k in context.value.keys():
             if k not in available_names:
@@ -91,9 +91,9 @@ class InstanceOfValidator(Validator):
 
     def _fill_default_value(self,
                             field: JField,
-                            dest: JSONClassObject,
+                            dest: JObject,
                             context: TCtx,
-                            cls: type[JSONClassObject]):
+                            cls: type[JObject]):
         if field.default is not None:
             setattr(dest, field.name, field.default)
         else:
@@ -122,7 +122,7 @@ class InstanceOfValidator(Validator):
     # pylint: disable=arguments-differ, too-many-locals, too-many-branches
     def transform(self, context: TCtx) -> Any:
         from ..types import Types
-        from ..jsonclass_object import JSONClassObject
+        from ..jobject import JObject
         # handle non normal value
         if context.value is None:
             return context.dest
@@ -130,7 +130,7 @@ class InstanceOfValidator(Validator):
             return context.dest if context.dest is not None else context.value
         # figure out types, cls and dest
         types = rtypes(self.raw_type, context.config_owner)
-        cls = cast(type[JSONClassObject], types.fdef.raw_inst_types)
+        cls = cast(type[JObject], types.fdef.raw_inst_types)
         this_pk_field = cls.cdef.primary_field
         if this_pk_field:
             pk = this_pk_field.name
@@ -245,8 +245,8 @@ class InstanceOfValidator(Validator):
         return retval
 
     def serialize(self, context: TCtx) -> Any:
-        from ..jsonclass_object import JSONClassObject
-        value = cast(JSONClassObject, context.value)
+        from ..jobject import JObject
+        value = cast(JObject, context.value)
         if value is None:
             return None
         exist_item = context.mark_graph.get(value)

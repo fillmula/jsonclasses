@@ -5,16 +5,16 @@ from .isjsonclass import isjsonobject
 from .exceptions import (UnlinkableJSONClassException,
                          JSONClassGraphMergeConflictException)
 if TYPE_CHECKING:
-    from .jsonclass_object import JSONClassObject
+    from .jobject import JObject
 
 
 class CompareResult(NamedTuple):
     """When merging object graph, conflicted objects will be compared. One will
     be kept and one will be outdated.
     """
-    kept: JSONClassObject
+    kept: JObject
     """The updated one to keep."""
-    outdated: JSONClassObject
+    outdated: JObject
     """The obsolete one to remove."""
 
 
@@ -26,9 +26,9 @@ class ObjectGraph:
     """
 
     def __init__(self: ObjectGraph,
-                 objects: Union[list[JSONClassObject],
-                                JSONClassObject, None] = None) -> None:
-        self._maps: dict[str, dict[str, JSONClassObject]] = {}
+                 objects: Union[list[JObject],
+                                JObject, None] = None) -> None:
+        self._maps: dict[str, dict[str, JObject]] = {}
         try:
             if isinstance(objects, list):
                 for object in objects:
@@ -38,20 +38,20 @@ class ObjectGraph:
         except UnlinkableJSONClassException:
             return
 
-    def __iter__(self) -> Iterator[JSONClassObject]:
-        lst: list[JSONClassObject] = []
+    def __iter__(self) -> Iterator[JObject]:
+        lst: list[JObject] = []
         for table in self._maps.values():
             for obj in table.values():
                 lst.append(obj)
         return lst.__iter__()
 
     def _object_map(self: ObjectGraph,
-                    name: str) -> dict[str, JSONClassObject]:
+                    name: str) -> dict[str, JObject]:
         if self._maps.get(name) is None:
             self._maps[name] = {}
         return self._maps[name]
 
-    def _check_get_str_id(self: ObjectGraph, object: JSONClassObject) -> str:
+    def _check_get_str_id(self: ObjectGraph, object: JObject) -> str:
         primary_value = object._id
         if primary_value is None:
             if object.__class__.cdef.primary_field:
@@ -61,7 +61,7 @@ class ObjectGraph:
             raise UnlinkableJSONClassException(type(object), has_field)
         return str(primary_value)
 
-    def put(self: ObjectGraph, object: JSONClassObject) -> None:
+    def put(self: ObjectGraph, object: JObject) -> None:
         """Put an object into object graph. When conflict, this object
         overrides the existing one on the graph.
         """
@@ -70,12 +70,12 @@ class ObjectGraph:
         object_map = self._object_map(class_name)
         object_map[primary_value] = object
 
-    def has(self: ObjectGraph, object: JSONClassObject) -> bool:
+    def has(self: ObjectGraph, object: JObject) -> bool:
         """Check whether an object is existing in the object graph.
         """
         return self.get(object) is not None
 
-    def get(self: ObjectGraph, object: JSONClassObject) -> JSONClassObject:
+    def get(self: ObjectGraph, object: JObject) -> JObject:
         """Get an object from the graph which matches the provided object.
         """
         primary_value = self._check_get_str_id(object)
@@ -94,8 +94,8 @@ class ObjectGraph:
         return new_graph
 
     def compare(self: ObjectGraph,
-                obj1: JSONClassObject,
-                obj2: JSONClassObject) -> CompareResult:
+                obj1: JObject,
+                obj2: JObject) -> CompareResult:
         if obj1.is_new and obj2.is_new:
             raise JSONClassGraphMergeConflictException('both objects are new')
         elif obj1.is_new or obj2.is_new:
@@ -147,7 +147,7 @@ class ObjectGraph:
             if not field.fdef.is_ref:
                 continue
             item_or_items = getattr(result.outdated, field.name)
-            items: list[JSONClassObject] = []
+            items: list[JObject] = []
             if isjsonobject(item_or_items):
                 items = [item_or_items]
             elif isinstance(item_or_items, list):

@@ -5,7 +5,7 @@ from .mark_graph import MarkGraph
 if TYPE_CHECKING:
     from .config import Config
     from .fdef import Fdef
-    from .jsonclass_object import JSONClassObject
+    from .jobject import JObject
 
 
 class VCtx(NamedTuple):
@@ -95,7 +95,7 @@ class TCtx(NamedTuple):
     fdef: Optional[Fdef] = None
     operator: Any = None
     all_fields: Optional[bool] = None
-    dest: Optional[JSONClassObject] = None
+    dest: Optional[JObject] = None
     fill_dest_blanks: bool = True
     mark_graph: MarkGraph = MarkGraph()  # Override this, this is a placeholder
 

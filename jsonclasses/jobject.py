@@ -1,4 +1,4 @@
-"""This module defines `JSONClassObject`, the protocol that JSON classes should
+"""This module defines `JObject`, the protocol that JSON classes should
 confirm to.
 """
 from __future__ import annotations
@@ -7,11 +7,11 @@ from typing import (Any, TypeVar, Optional, ClassVar, Protocol, Union,
                     TYPE_CHECKING)
 if TYPE_CHECKING:
     from .cdef import Cdef
-T = TypeVar('T', bound='JSONClassObject')
+T = TypeVar('T', bound='JObject')
 
 
-class JSONClassObject(Protocol):
-    """The `JSONClassObject` protocol defines methods a qualified JSON class
+class JObject(Protocol):
+    """The `JObject` protocol defines methods a qualified JSON class
     should implement.
     """
 
@@ -100,13 +100,13 @@ class JSONClassObject(Protocol):
     def _clear_temp_fields(self: T) -> None: ...
 
     @property
-    def _id(self: JSONClassObject) -> Union[str, int, None]: ...
+    def _id(self: JObject) -> Union[str, int, None]: ...
 
     @property
-    def _created_at(self: JSONClassObject) -> Optional[datetime]: ...
+    def _created_at(self: JObject) -> Optional[datetime]: ...
 
     @property
-    def _updated_at(self: JSONClassObject) -> Optional[datetime]: ...
+    def _updated_at(self: JObject) -> Optional[datetime]: ...
 
     @property
-    def _deleted_at(self: JSONClassObject) -> Optional[datetime]: ...
+    def _deleted_at(self: JObject) -> Optional[datetime]: ...

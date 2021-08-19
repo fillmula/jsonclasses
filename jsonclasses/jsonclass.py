@@ -8,7 +8,7 @@ from .config import (Config, OnCreate, OnSave, CanCreate, OnDelete, CanUpdate,
 from .jfield import JField
 from .cdef import Cdef
 from .jsonclassify import jsonclassify
-from .jsonclass_object import JSONClassObject
+from .jobject import JObject
 
 
 @overload
@@ -33,7 +33,7 @@ def jsonclass(
     can_update: Optional[Union[CanUpdate, list[CanUpdate]]] = None,
     can_delete: Optional[Union[CanDelete, list[CanDelete]]] = None,
     can_read: Optional[Union[CanRead, list[CanRead]]] = None,
-) -> Callable[[type], type[JSONClassObject]]: ...
+) -> Callable[[type], type[JObject]]: ...
 
 
 @overload
@@ -54,7 +54,7 @@ def jsonclass(
     can_update: Optional[Union[CanUpdate, list[CanUpdate]]] = None,
     can_delete: Optional[Union[CanDelete, list[CanDelete]]] = None,
     can_read: Optional[Union[CanRead, list[CanRead]]] = None,
-) -> type[JSONClassObject]: ...
+) -> type[JObject]: ...
 
 
 def jsonclass(
@@ -74,7 +74,7 @@ def jsonclass(
     can_update: Optional[Union[CanUpdate, list[CanUpdate]]] = None,
     can_delete: Optional[Union[CanDelete, list[CanDelete]]] = None,
     can_read: Optional[Union[CanRead, list[CanRead]]] = None,
-) -> Union[Callable[[type], type[JSONClassObject]], type[JSONClassObject]]:
+) -> Union[Callable[[type], type[JObject]], type[JObject]]:
     """The jsonclass object class decorator. To declare a jsonclass class, use
     this syntax:
 

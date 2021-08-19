@@ -3,19 +3,19 @@ configuration object tweaks the behavior of JSON classes.
 """
 from __future__ import annotations
 from typing import Optional, Callable, Any, Union, cast, final, TYPE_CHECKING
-from .jsonclass_object import JSONClassObject
+from .jobject import JObject
 if TYPE_CHECKING:
     from .jfield import JField
     from .cgraph import CGraph
 
 
-OnCreate = Callable[[JSONClassObject, Any], None]
-OnSave = Callable[[JSONClassObject, Any], None]
-OnDelete = Callable[[JSONClassObject, Any], None]
-CanCreate = Callable[[JSONClassObject, Any], Union[bool, None, str]]
-CanUpdate = Callable[[JSONClassObject, Any], Union[bool, None, str]]
-CanDelete = Callable[[JSONClassObject, Any], Union[bool, None, str]]
-CanRead = Callable[[JSONClassObject, Any], Union[bool, None, str]]
+OnCreate = Callable[[JObject, Any], None]
+OnSave = Callable[[JObject, Any], None]
+OnDelete = Callable[[JObject, Any], None]
+CanCreate = Callable[[JObject, Any], Union[bool, None, str]]
+CanUpdate = Callable[[JObject, Any], Union[bool, None, str]]
+CanDelete = Callable[[JObject, Any], Union[bool, None, str]]
+CanRead = Callable[[JObject, Any], Union[bool, None, str]]
 
 
 @final
@@ -165,7 +165,7 @@ class Config:
         return True
 
     @property
-    def cls(self: Config) -> type[JSONClassObject]:
+    def cls(self: Config) -> type[JObject]:
         """The JSON class on which this class config is defined.
         """
         return self._cls

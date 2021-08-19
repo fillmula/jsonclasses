@@ -9,7 +9,7 @@ from ..keypath_utils import concat_keypath
 from ..rtypes import rtypes
 from ..ctxs import VCtx, TCtx, JCtx
 if TYPE_CHECKING:
-    from ..jsonclass_object import JSONClassObject
+    from ..jobject import JObject
     from ..types import Types
 
 T = TypeVar('T', bound=Collection)
@@ -27,7 +27,7 @@ class CollectionTypeValidator(TypeValidator):
         super().define(fdef)
         fdef._raw_item_types = self.raw_item_types
 
-    def item_types(self, owner_cls: type[JSONClassObject]) -> Types:
+    def item_types(self, owner_cls: type[JObject]) -> Types:
         if hasattr(self, '_item_types'):
             return getattr(self, '_item_types')
         else:

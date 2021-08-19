@@ -19,9 +19,9 @@ class OnUpdateValidator(Validator):
         self.callback = callback
 
     def serialize(self, context: TCtx) -> Any:
-        from ..jsonclass_object import JSONClassObject
+        from ..jobject import JObject
         name = context.keypath_parent
-        parent = cast(JSONClassObject, context.parent)
+        parent = cast(JObject, context.parent)
         if name not in parent.previous_values:
             return context.value
         prev_value = parent.previous_values[name]

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Optional, Union
 from datetime import datetime
 from inspect import signature
-from .jsonclass_object import JSONClassObject
+from .jobject import JObject
 from .types import Types
 from .rtypes import rtypes
 from .ctxs import TCtx, VCtx, JCtx
@@ -25,7 +25,7 @@ from .exceptions import (AbstractJSONClassException, ValidationException,
                          UnauthorizedActionException)
 
 
-def __init__(self: JSONClassObject, **kwargs: dict[str, Any]) -> None:
+def __init__(self: JObject, **kwargs: dict[str, Any]) -> None:
     """Initialize a new jsonclass object from keyed arguments or a dict.
     This method is suitable for accepting web and malformed inputs. Eager
     validation and transformation are applied during the initialization
@@ -50,7 +50,7 @@ def __init__(self: JSONClassObject, **kwargs: dict[str, Any]) -> None:
         pass
 
 
-def jsonobject_set(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClassObject:
+def jsonobject_set(self: JObject, **kwargs: dict[str, Any]) -> JObject:
     """Set object values in a batch. This method is suitable for web and
     fraud inputs. This method takes accessor marks into consideration,
     means readonly and internal field values will be just ignored.
@@ -64,7 +64,7 @@ def jsonobject_set(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClass
     return self
 
 
-def _set(self: JSONClassObject,
+def _set(self: JObject,
          kwargs: dict[str, Any], fill_blanks: bool = False) -> None:
     """Set values of a jsonclass object internally."""
     validator = InstanceOfValidator(self.__class__)
@@ -90,7 +90,7 @@ def _set(self: JSONClassObject,
     validator.transform(context)
 
 
-def _keypath_set(self: JSONClassObject, kwargs: dict[str, Any]) -> None:
+def _keypath_set(self: JObject, kwargs: dict[str, Any]) -> None:
     for key, value in kwargs.items():
         items = key.split(".")
         dest = getattr(self, items[0])
@@ -99,7 +99,7 @@ def _keypath_set(self: JSONClassObject, kwargs: dict[str, Any]) -> None:
         self._set_to_container(dest, items[1:], value, fdef, used_items)
 
 
-def _set_to_container(self: JSONClassObject,
+def _set_to_container(self: JObject,
                       dest: Any,
                       items: list[str],
                       value: Any,
@@ -138,7 +138,7 @@ def _set_to_container(self: JSONClassObject,
             self._set_to_container(dest[items[0]], items[1:], value, fdef, used_items + [items[0]])
 
 
-def update(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClassObject:
+def update(self: JObject, **kwargs: dict[str, Any]) -> JObject:
     """Update object values in a batch. This method is suitable for
     internal inputs. This method ignores accessor marks, thus you can
     update readonly and internal values through this method. Writeonce
@@ -161,7 +161,7 @@ def update(self: JSONClassObject, **kwargs: dict[str, Any]) -> JSONClassObject:
     return self
 
 
-def tojson(self: JSONClassObject,
+def tojson(self: JObject,
            ignore_writeonly: bool = False) -> dict[str, Any]:
     """Convert this JSON Class object to JSON dict.
 
@@ -183,8 +183,8 @@ def tojson(self: JSONClassObject,
     return validator.tojson(context)
 
 
-def validate(self: JSONClassObject,
-             validate_all_fields: Optional[bool] = None) -> JSONClassObject:
+def validate(self: JObject,
+             validate_all_fields: Optional[bool] = None) -> JObject:
     """Validate the jsonclass object's validity. Raises ValidationException
     on validation failed.
 
@@ -219,7 +219,7 @@ def validate(self: JSONClassObject,
 
 
 @property
-def is_valid(self: JSONClassObject) -> bool:
+def is_valid(self: JObject) -> bool:
     """Test whether the jsonclass object is valid or not. This method
     triggers object validation.
 
@@ -233,7 +233,7 @@ def is_valid(self: JSONClassObject) -> bool:
     return True
 
 
-def opby(self: JSONClassObject, operator: Any) -> JSONClassObject:
+def opby(self: JObject, operator: Any) -> JObject:
     """Assigns an operator object to the current object. This is used for
     operator based validation.
 
@@ -241,7 +241,7 @@ def opby(self: JSONClassObject, operator: Any) -> JSONClassObject:
         operator (Any): Anything that is operator defined by user.
 
     Returns:
-        JSONClassObject: The JSONClassObject itself is returned.
+        JObject: The JObject itself is returned.
     """
     setattr(self, '_operator', operator)
     if self.is_new:
@@ -260,7 +260,7 @@ def opby(self: JSONClassObject, operator: Any) -> JSONClassObject:
 
 
 @property
-def is_new(self: JSONClassObject) -> bool:
+def is_new(self: JObject) -> bool:
     """This property is true if this object is newly created and not persisted
     yet.
     """
@@ -268,7 +268,7 @@ def is_new(self: JSONClassObject) -> bool:
 
 
 @property
-def is_modified(self: JSONClassObject) -> bool:
+def is_modified(self: JObject) -> bool:
     """This property indicates this object is modified and it's a new version
     comparing to the persisted one in the database. Calling save will cause
     modified fields to be written into the persistance storage.
@@ -277,7 +277,7 @@ def is_modified(self: JSONClassObject) -> bool:
 
 
 @property
-def is_partial(self: JSONClassObject) -> bool:
+def is_partial(self: JObject) -> bool:
     """This property indicates this object is not a full version of the item it
     represents in the database. Only part of fields are fetched from the
     database.
@@ -286,7 +286,7 @@ def is_partial(self: JSONClassObject) -> bool:
 
 
 @property
-def is_outdated(self: JSONClassObject) -> bool:
+def is_outdated(self: JObject) -> bool:
     """Whether a jsonclass object is outdated. This object cannot be used
     anymore since it represents an outdated state of the same database record.
     """
@@ -294,13 +294,13 @@ def is_outdated(self: JSONClassObject) -> bool:
 
 
 @property
-def is_deleted(self: JSONClassObject) -> bool:
+def is_deleted(self: JObject) -> bool:
     """This property records whether this object is deleted."""
     return self._is_deleted
 
 
 @property
-def modified_fields(self: JSONClassObject) -> tuple[str]:
+def modified_fields(self: JObject) -> tuple[str]:
     """A tuple of string represents the modified field names which need
     validation.
     """
@@ -308,7 +308,7 @@ def modified_fields(self: JSONClassObject) -> tuple[str]:
 
 
 @property
-def persisted_modified_fields(self: JSONClassObject) -> tuple[str]:
+def persisted_modified_fields(self: JObject) -> tuple[str]:
     """This is similar to `modified_fields`. This property doesn't include
     temporary fields. Thus, use `persisted_modified_fields` when updating the
     database.
@@ -322,7 +322,7 @@ def persisted_modified_fields(self: JSONClassObject) -> tuple[str]:
 
 
 @property
-def previous_values(self: JSONClassObject) -> dict[str, Any]:
+def previous_values(self: JObject) -> dict[str, Any]:
     """This field records values to be reset to. This is only used for fields
     with compare mark or `reset_all_fields` is defined in the class
     configuration.
@@ -331,13 +331,13 @@ def previous_values(self: JSONClassObject) -> dict[str, Any]:
 
 
 @property
-def unlinked_objects(self: JSONClassObject) -> dict[str, list[JSONClassObject]]:
+def unlinked_objects(self: JObject) -> dict[str, list[JObject]]:
     """Unlinked objects of this jsonclass object.
     """
     return self._unlinked_objects
 
 
-def reset(self: JSONClassObject) -> None:
+def reset(self: JObject) -> None:
     """Reset this object to it's unmodified status.
     """
     if not self.__class__.cdef.config.reset_all_fields:
@@ -351,9 +351,9 @@ def reset(self: JSONClassObject) -> None:
         self._previous_values = {}
 
 
-def save(self: JSONClassObject,
+def save(self: JObject,
          validate_all_fields: bool = False,
-         skip_validation: bool = False) -> JSONClassObject:
+         skip_validation: bool = False) -> JObject:
     """Save this object into database. This will not write if no storage
     modifier is used.
     """
@@ -374,7 +374,7 @@ def save(self: JSONClassObject,
     return self
 
 
-def delete(self: JSONClassObject) -> JSONClassObject:
+def delete(self: JObject) -> JObject:
     """Delete this object from database and clear linked relationships with
     delete rule.
     """
@@ -384,7 +384,7 @@ def delete(self: JSONClassObject) -> JSONClassObject:
     return self
 
 
-def restore(self: JSONClassObject) -> JSONClassObject:
+def restore(self: JObject) -> JObject:
     """Restore this object from database and setup lost relationships with
     delete rule.
     """
@@ -392,7 +392,7 @@ def restore(self: JSONClassObject) -> JSONClassObject:
     return self
 
 
-def _ensure_not_outdated(self: JSONClassObject) -> None:
+def _ensure_not_outdated(self: JObject) -> None:
     """Raises if this JSON class object is outdated.
 
     Raises:
@@ -403,7 +403,7 @@ def _ensure_not_outdated(self: JSONClassObject) -> None:
 
 
 @property
-def _data_dict(self: JSONClassObject) -> dict[str, Any]:
+def _data_dict(self: JObject) -> dict[str, Any]:
     """A dict which is a subview of __dict__ that only contains public data
     field items.
     """
@@ -415,7 +415,7 @@ def _data_dict(self: JSONClassObject) -> dict[str, Any]:
     return retval
 
 
-def _mark_new(self: JSONClassObject) -> None:
+def _mark_new(self: JObject) -> None:
     """Mark the jsonclass object as a new object."""
     setattr(self, '_is_new', True)
     setattr(self, '_is_modified', False)
@@ -423,7 +423,7 @@ def _mark_new(self: JSONClassObject) -> None:
     setattr(self, '_previous_values', {})
 
 
-def _mark_unmodified(self: JSONClassObject) -> None:
+def _mark_unmodified(self: JObject) -> None:
     """Mark this jsonclass object as an unmodified object."""
     setattr(self, '_is_new', False)
     setattr(self, '_is_modified', False)
@@ -431,7 +431,7 @@ def _mark_unmodified(self: JSONClassObject) -> None:
     setattr(self, '_previous_values', {})
 
 
-def _set_initial_status(self: JSONClassObject) -> None:
+def _set_initial_status(self: JObject) -> None:
     """Set the initial status of the JSON class object."""
     self._mark_new()
     setattr(self, '_is_partial', False)
@@ -445,14 +445,14 @@ def _set_initial_status(self: JSONClassObject) -> None:
     setattr(self, '_operator', None)
 
 
-def _mark_not_new(self: JSONClassObject) -> None:
+def _mark_not_new(self: JObject) -> None:
     """Mark the jsonclass object as not a new object."""
     setattr(self, '_is_new', False)
 
 
-def _add_unlinked_object(self: JSONClassObject,
+def _add_unlinked_object(self: JObject,
                          field_name: str,
-                         obj: JSONClassObject) -> None:
+                         obj: JObject) -> None:
     """Add an object into unlinked objects pool."""
     if not self._unlinked_objects.get(field_name):
         self._unlinked_objects[field_name] = []
@@ -460,9 +460,9 @@ def _add_unlinked_object(self: JSONClassObject,
         self._unlinked_objects[field_name].append(obj)
 
 
-def _del_unlinked_object(self: JSONClassObject,
+def _del_unlinked_object(self: JObject,
                          field_name: str,
-                         obj: JSONClassObject) -> None:
+                         obj: JObject) -> None:
     """Remove an object from unlinked objects pool."""
     if not self._unlinked_objects.get(field_name):
         self._unlinked_objects[field_name] = []
@@ -470,12 +470,12 @@ def _del_unlinked_object(self: JSONClassObject,
         self._unlinked_objects[field_name].remove(obj)
 
 
-def _clear_unlinked_object(self: JSONClassObject) -> None:
+def _clear_unlinked_object(self: JObject) -> None:
     """Clear and reset all unlinked objects."""
     self._unlinked_objects = {}
 
 
-def _set_on_save(self: JSONClassObject) -> None:
+def _set_on_save(self: JObject) -> None:
     """Update fields with setonsave marks if this object is modified. This
     is a graph operation. Objects chained with the saving object will also
     get setonsave called and saved.
@@ -500,25 +500,25 @@ def _set_on_save(self: JSONClassObject) -> None:
     validator.serialize(context)
 
 
-def _clear_temp_fields(self: JSONClassObject) -> None:
+def _clear_temp_fields(self: JObject) -> None:
     for field in self.__class__.cdef.fields:
         if field.fdef.is_temp_field:
             setattr(self, field.name, None)
 
 
-def _database_write(self: JSONClassObject) -> None:
+def _database_write(self: JObject) -> None:
     pass
 
 
-def _orm_delete(self: JSONClassObject) -> None:
+def _orm_delete(self: JObject) -> None:
     pass
 
 
-def _orm_restore(self: JSONClassObject) -> None:
+def _orm_restore(self: JObject) -> None:
     pass
 
 
-def _can_create_or_update_check(self: JSONClassObject) -> None:
+def _can_create_or_update_check(self: JObject) -> None:
     if self.is_new:
         for callback in self.__class__.cdef.config.can_create:
             operator = getattr(self, '_operator')
@@ -543,7 +543,7 @@ def _can_create_or_update_check(self: JSONClassObject) -> None:
                     raise UnauthorizedActionException('cannot update')
 
 
-def _can_delete_check(self: JSONClassObject) -> None:
+def _can_delete_check(self: JObject) -> None:
     for callback in self.__class__.cdef.config.can_delete:
         operator = getattr(self, '_operator')
         if operator is None:
@@ -556,7 +556,7 @@ def _can_delete_check(self: JSONClassObject) -> None:
                 raise UnauthorizedActionException('cannot delete')
 
 
-def _can_read_check(self: JSONClassObject) -> None:
+def _can_read_check(self: JObject) -> None:
     for callback in self.__class__.cdef.config.can_read:
         operator = getattr(self, '_operator')
         if operator is None:
@@ -569,7 +569,7 @@ def _can_read_check(self: JSONClassObject) -> None:
                 raise UnauthorizedActionException('cannot read')
 
 
-def _run_on_create_callbacks(self: JSONClassObject) -> None:
+def _run_on_create_callbacks(self: JObject) -> None:
     for callback in self.__class__.cdef.config.on_create:
         params_len = len(signature(callback).parameters)
         if params_len == 1:
@@ -578,7 +578,7 @@ def _run_on_create_callbacks(self: JSONClassObject) -> None:
             callback(self, getattr(self, '_operator'))
 
 
-def _run_on_save_callbacks(self: JSONClassObject) -> None:
+def _run_on_save_callbacks(self: JObject) -> None:
     for callback in self.__class__.cdef.config.on_save:
         params_len = len(signature(callback).parameters)
         if params_len == 1:
@@ -587,7 +587,7 @@ def _run_on_save_callbacks(self: JSONClassObject) -> None:
             callback(self, getattr(self, '_operator'))
 
 
-def _run_on_delete_callbacks(self: JSONClassObject) -> None:
+def _run_on_delete_callbacks(self: JObject) -> None:
     for callback in self.__class__.cdef.config.on_delete:
         params_len = len(signature(callback).parameters)
         if params_len == 1:
@@ -597,7 +597,7 @@ def _run_on_delete_callbacks(self: JSONClassObject) -> None:
 
 
 @property
-def _id(self: JSONClassObject) -> Union[str, int, None]:
+def _id(self: JObject) -> Union[str, int, None]:
     field = self.__class__.cdef.primary_field
     if not field:
         return None
@@ -605,7 +605,7 @@ def _id(self: JSONClassObject) -> Union[str, int, None]:
 
 
 @property
-def _created_at(self: JSONClassObject) -> Optional[datetime]:
+def _created_at(self: JObject) -> Optional[datetime]:
     field = self.__class__.cdef.created_at_field
     if not field:
         return None
@@ -613,7 +613,7 @@ def _created_at(self: JSONClassObject) -> Optional[datetime]:
 
 
 @property
-def _updated_at(self: JSONClassObject) -> Optional[datetime]:
+def _updated_at(self: JObject) -> Optional[datetime]:
     field = self.__class__.cdef.updated_at_field
     if not field:
         return None
@@ -621,7 +621,7 @@ def _updated_at(self: JSONClassObject) -> Optional[datetime]:
 
 
 @property
-def _deleted_at(self: JSONClassObject) -> Optional[datetime]:
+def _deleted_at(self: JObject) -> Optional[datetime]:
     field = self.__class__.cdef.deleted_at_field
     if not field:
         return None
@@ -633,7 +633,7 @@ def __is_private_attr__(name: str) -> bool:
     return name.startswith('_')
 
 
-def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
+def __setattr__(self: JObject, name: str, value: Any) -> None:
     # use original setattr for private fields
     if __is_private_attr__(name):
         self.__original_setattr__(name, value)
@@ -703,7 +703,7 @@ def __setattr__(self: JSONClassObject, name: str, value: Any) -> None:
         self.__original_setattr__(name, value)
 
 
-def __odict_will_change__(self: JSONClassObject, odict: OwnedDict) -> None:
+def __odict_will_change__(self: JObject, odict: OwnedDict) -> None:
     # record previous value
     name = initial_keypath(odict.keypath)
     field = self.__class__.cdef.field_named(name)
@@ -757,7 +757,7 @@ def __olist_will_change__(self, olist: OwnedList) -> None:
                     getattr(self, name))
 
 
-def __olist_add__(self: JSONClassObject,
+def __olist_add__(self: JObject,
                   olist: OwnedList,
                   idx: int,
                   val: Any) -> None:
@@ -780,7 +780,7 @@ def __olist_add__(self: JSONClassObject,
         self._modified_fields.add(olist.keypath)
 
 
-def __olist_del__(self: JSONClassObject, olist: OwnedList, val: Any) -> None:
+def __olist_del__(self: JObject, olist: OwnedList, val: Any) -> None:
     cdef = self.__class__.cdef
     try:
         field = cdef.field_named(olist.keypath)
@@ -801,10 +801,10 @@ def __olist_sor__(self, olist: OwnedList) -> None:
         self._modified_fields.add(olist.keypath)
 
 
-def __unlink_field__(self: JSONClassObject,
+def __unlink_field__(self: JObject,
                      field: JField,
                      value: Any) -> None:
-    items: list[JSONClassObject] = []
+    items: list[JObject] = []
     if field.fdef.field_type == FieldType.INSTANCE:
         if not isjsonobject(value):
             return
@@ -835,10 +835,10 @@ def __unlink_field__(self: JSONClassObject,
                     item._add_unlinked_object(other_field.name, self)
 
 
-def __link_field__(self: JSONClassObject,
+def __link_field__(self: JObject,
                    field: JField,
                    value: Any) -> None:
-    items: list[JSONClassObject] = []
+    items: list[JObject] = []
     if field.fdef.field_type == FieldType.INSTANCE:
         if not isjsonobject(value):
             return
@@ -867,7 +867,7 @@ def __link_field__(self: JSONClassObject,
         self.__link_graph__(item)
 
 
-def __link_graph__(self: JSONClassObject, other: JSONClassObject) -> None:
+def __link_graph__(self: JObject, other: JObject) -> None:
     """
     """
     try:
@@ -878,14 +878,14 @@ def __link_graph__(self: JSONClassObject, other: JSONClassObject) -> None:
     self._graph.merged_graph(other._graph)
 
 
-def jsonclassify(class_: type) -> JSONClassObject:
+def jsonclassify(class_: type) -> JObject:
     """Make a declared class into JSON class.
 
     Args:
         class_ (type): A class that user declared.
 
     Returns:
-        JSONClassObject: A class that confirms to `JSONClassObject`.
+        JObject: A class that confirms to `JObject`.
     """
     # do not install methods for subclasses
     if hasattr(class_, '__is_jsonclass__'):
