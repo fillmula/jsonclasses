@@ -15,13 +15,13 @@ class OneOfTypeValidator(Validator):
         self.type_list = type_list
 
     def define(self, fdef: Fdef) -> None:
-        fdef.field_type = FieldType.UNION
-        fdef.union_types = [TypesResolver().resolve_types(t) for t in self.type_list]
+        fdef._field_type = FieldType.UNION
+        fdef._union_types = [TypesResolver().resolve_types(t) for t in self.type_list]
 
     def validate(self, context: VCtx) -> None:
         if context.value is None:
             return
-        for types in context.fdef.union_types:
+        for types in context.fdef.raw_union_types:
             try:
                 types.validator.validate(context)
                 return

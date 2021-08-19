@@ -16,12 +16,12 @@ class EnumValidator(Validator):
         self.field_type = FieldType.ENUM
 
     def define(self, fdef: Fdef) -> None:
-        fdef.field_type = FieldType.ENUM
-        fdef.enum_class = self.enum_or_name
+        fdef._field_type = FieldType.ENUM
+        fdef._enum_class = self.enum_or_name
         if fdef.enum_input is None:
-            fdef.enum_input = EnumInput.NAME
+            fdef._enum_input = EnumInput.NAME
         if fdef.enum_output is None:
-            fdef.enum_output = EnumOutput.NAME
+            fdef._enum_output = EnumOutput.NAME
         return
 
     def transform(self, context: TCtx) -> Any:

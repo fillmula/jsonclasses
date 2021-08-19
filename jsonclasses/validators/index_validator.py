@@ -7,4 +7,4 @@ class IndexValidator(Validator):
     """Index validator implies this column should be indexed in database."""
 
     def define(self, fdef: Fdef) -> None:
-        fdef.index = True
+        fdef._index = True

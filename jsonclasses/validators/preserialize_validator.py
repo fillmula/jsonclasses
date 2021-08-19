@@ -12,4 +12,4 @@ class PreserializeValidator(Validator):
     """
 
     def define(self, fdef: Fdef) -> None:
-        fdef.has_preserialize_validator = True
+        fdef._has_preserialize_validator = True

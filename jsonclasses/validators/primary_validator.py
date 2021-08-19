@@ -7,4 +7,4 @@ class PrimaryValidator(Validator):
     """Primary validator marks a field as the primary key."""
 
     def define(self, fdef: Fdef) -> None:
-        fdef.primary = True
+        fdef._primary = True

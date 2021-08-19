@@ -65,7 +65,7 @@ class Cdef:
             else:
                 json_name = name
             types = cast(Types, self._get_types(field, config))
-            types.fdef.cdef = self
+            types.fdef._cdef = self
             if isinstance(field.default, Types):
                 default = None
             elif field.default == field.default_factory:
@@ -134,9 +134,9 @@ class Cdef:
                                                 self.config)
             return self._def_class_match(item_types.fdef, class_)
         elif fdef.field_type == FieldType.INSTANCE:
-            types = resolver.resolve_types(fdef.instance_types,
+            types = resolver.resolve_types(fdef.raw_inst_types,
                                            self.config)
-            return types.fdef.instance_types == class_
+            return types.fdef.raw_inst_types == class_
         return False
 
     @property
@@ -272,16 +272,16 @@ class Cdef:
             raise ValueError(f"field named '{name}' is not a linked field")
         if definition.field_type == FieldType.INSTANCE:
             foreign_types = resolver.resolve_types(
-                definition.instance_types, self.config)
+                definition.raw_inst_types, self.config)
         elif definition.field_type == FieldType.LIST:
-            instance_types = resolver.resolve_types(
+            raw_inst_types = resolver.resolve_types(
                 definition.raw_item_types, self.config)
             foreign_types = resolver.resolve_types(
-                instance_types, self.config)
-        foreign_class = cast(type, foreign_types.fdef.instance_types)
+                raw_inst_types, self.config)
+        foreign_class = cast(type, foreign_types.fdef.raw_inst_types)
         foreign_class = TypesResolver().resolve_types(foreign_class,
                                                       self.config)
-        foreign_class = foreign_class.fdef.instance_types
+        foreign_class = foreign_class.fdef.raw_inst_types
         foreign_definition = self.config.class_graph.fetch(foreign_class)
         accepted: list[tuple(FieldStorage, bool)] = []
         if definition.field_storage == FieldStorage.LOCAL_KEY:

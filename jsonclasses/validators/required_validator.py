@@ -12,7 +12,7 @@ class RequiredValidator(Validator):
     """Mark a field as required."""
 
     def define(self, fdef: Fdef) -> None:
-        fdef.required = True
+        fdef._required = True
 
     def validate(self, context: VCtx) -> None:
         storage = FieldStorage.EMBEDDED

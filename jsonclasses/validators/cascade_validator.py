@@ -7,4 +7,4 @@ class CascadeValidator(Validator):
     """Cascade validator marks a relationship's delete rule as cascade."""
 
     def define(self, fdef: Fdef) -> None:
-        fdef.delete_rule = DeleteRule.CASCADE
+        fdef._delete_rule = DeleteRule.CASCADE

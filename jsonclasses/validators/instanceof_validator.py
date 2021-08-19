@@ -23,15 +23,15 @@ class InstanceOfValidator(Validator):
         self.raw_type = raw_type
 
     def define(self, fdef: Fdef) -> None:
-        fdef.field_type = FieldType.INSTANCE
-        fdef.instance_types = self.raw_type
+        fdef._field_type = FieldType.INSTANCE
+        fdef._raw_inst_types = self.raw_type
 
     def validate(self, context: VCtx) -> None:
         from ..jsonclass_object import JSONClassObject
         if context.value is None:
             return
         types = TypesResolver().resolve_types(self.raw_type, context.config_owner)
-        cls = cast(Type[JSONClassObject], types.fdef.instance_types)
+        cls = cast(Type[JSONClassObject], types.fdef.raw_inst_types)
         all_fields = context.all_fields
         if all_fields is None:
             all_fields = cls.cdef.config.validate_all_fields
@@ -130,7 +130,7 @@ class InstanceOfValidator(Validator):
             return context.dest if context.dest is not None else context.value
         # figure out types, cls and dest
         types = TypesResolver().resolve_types(self.raw_type, context.config_owner)
-        cls = cast(Type[JSONClassObject], types.fdef.instance_types)
+        cls = cast(Type[JSONClassObject], types.fdef.raw_inst_types)
         this_pk_field = cls.cdef.primary_field
         if this_pk_field:
             pk = this_pk_field.name

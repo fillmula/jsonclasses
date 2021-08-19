@@ -10,4 +10,4 @@ class TempValidator(Validator):
     """
 
     def define(self, fdef: Fdef) -> None:
-        fdef.is_temp_field = True
+        fdef._is_temp_field = True

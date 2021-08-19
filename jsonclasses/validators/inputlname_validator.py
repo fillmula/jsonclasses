@@ -8,7 +8,7 @@ class InputLnameValidator(Validator):
 
     def define(self, fdef: Fdef) -> None:
         if fdef.enum_input is None:
-            fdef.enum_input = EnumInput.LOWERCASE_NAME
+            fdef._enum_input = EnumInput.LOWERCASE_NAME
         else:
-            fdef.enum_input = fdef.enum_input | EnumInput.LOWERCASE_NAME
+            fdef._enum_input = fdef.enum_input | EnumInput.LOWERCASE_NAME
         return

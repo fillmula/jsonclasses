@@ -7,6 +7,6 @@ class LinkToValidator(Validator):
     """Link to validator marks a field which is a local key."""
 
     def define(self, fdef: Fdef) -> None:
-        fdef.field_storage = FieldStorage.LOCAL_KEY
-        if fdef.delete_rule is None:
-            fdef.delete_rule = DeleteRule.NULLIFY
+        fdef._field_storage = FieldStorage.LOCAL_KEY
+        if fdef._delete_rule is None:
+            fdef._delete_rule = DeleteRule.NULLIFY

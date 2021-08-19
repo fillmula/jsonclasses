@@ -10,4 +10,4 @@ class RefereeValidator(Validator):
         self.referee_key = referee_key
 
     def define(self, fdef: Fdef) -> None:
-        fdef.join_table_referee_key = self.referee_key
+        fdef._join_table_referee_key = self.referee_key

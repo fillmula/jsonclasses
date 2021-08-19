@@ -118,7 +118,7 @@ def _set_to_container(self: JSONClassObject,
         if len(items) == 1:
             dest[items[0]] = value
         else:
-            item_types = fdef.shape_types[items[0]]
+            item_types = fdef.raw_shape_types[items[0]]
             item_types = TypesResolver().resolve_types(item_types, self.__class__.cdef.config)
             fdef = item_types.fdef
             self._set_to_container(dest[items[0]], items[1:], value, fdef, used_items + [items[0]])

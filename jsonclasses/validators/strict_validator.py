@@ -7,4 +7,4 @@ class StrictValidator(Validator):
     """A strict validator marks shape to disallow undefined keys."""
 
     def define(self, fdef: Fdef) -> None:
-        fdef.strictness = Strictness.STRICT
+        fdef._strictness = Strictness.STRICT

@@ -9,4 +9,4 @@ class EagerValidator(Validator):
     """
 
     def define(self, fdef: Fdef) -> None:
-        fdef.has_eager_validator = True
+        fdef._has_eager_validator = True

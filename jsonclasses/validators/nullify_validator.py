@@ -7,4 +7,4 @@ class NullifyValidator(Validator):
     """Nullify validator marks a relationship's delete rule as nullify."""
 
     def define(self, fdef: Fdef) -> None:
-        fdef.delete_rule = DeleteRule.NULLIFY
+        fdef._delete_rule = DeleteRule.NULLIFY

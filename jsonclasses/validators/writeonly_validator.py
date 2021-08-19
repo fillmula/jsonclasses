@@ -7,4 +7,4 @@ class WriteonlyValidator(Validator):
     """Writeonly validator marks a field as writeonly."""
 
     def define(self, fdef: Fdef) -> None:
-        fdef.read_rule = ReadRule.NO_READ
+        fdef._read_rule = ReadRule.NO_READ

@@ -7,4 +7,4 @@ class InputAllValidator(Validator):
     """Input all validator tweaks enum validator's behavior."""
 
     def define(self, fdef: Fdef) -> None:
-        fdef.enum_input = EnumInput.ALL
+        fdef._enum_input = EnumInput.ALL

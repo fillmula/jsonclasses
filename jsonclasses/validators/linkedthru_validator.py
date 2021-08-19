@@ -10,8 +10,8 @@ class LinkedThruValidator(Validator):
         self.foreign_key = foreign_key
 
     def define(self, fdef: Fdef) -> None:
-        fdef.field_storage = FieldStorage.FOREIGN_KEY
-        fdef.foreign_key = self.foreign_key
-        fdef.use_join_table = True
-        if fdef.delete_rule is None:
-            fdef.delete_rule = DeleteRule.NULLIFY
+        fdef._field_storage = FieldStorage.FOREIGN_KEY
+        fdef._foreign_key = self.foreign_key
+        fdef._use_join_table = True
+        if fdef._delete_rule is None:
+            fdef._delete_rule = DeleteRule.NULLIFY

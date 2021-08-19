@@ -25,7 +25,7 @@ class CollectionTypeValidator(TypeValidator):
 
     def define(self, fdef: Fdef) -> None:
         super().define(fdef)
-        fdef.raw_item_types = self.raw_item_types
+        fdef._raw_item_types = self.raw_item_types
 
     def item_types(self, owner_cls: type[JSONClassObject]) -> Types:
         if hasattr(self, '_item_types'):

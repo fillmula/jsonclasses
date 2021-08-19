@@ -12,7 +12,7 @@ class AsopdValidator(Validator):
     """
 
     def define(self, fdef: Fdef) -> None:
-        fdef.requires_operator_assign = True
+        fdef._requires_operator_assign = True
 
     def validate(self, context: VCtx) -> None:
         if context.owner.is_new or context.keypath_owner in context.owner.modified_fields:

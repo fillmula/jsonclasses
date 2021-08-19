@@ -248,8 +248,8 @@ class TypesResolver:
             item_types: dict[str, Types] = {}
             for k, t in anno_dict.items():
                 item_types[k] = self.to_types(t, config)
-            shape_types = types.nonnull.shape(item_types)
-            return shape_types if optional else shape_types.required
+            raw_shape_types = types.nonnull.shape(item_types)
+            return raw_shape_types if optional else raw_shape_types.required
         elif isinstance(any_types, type) and issubclass(any_types, Enum):
             enum_type = types.enum(any_types)
             return enum_type if optional else enum_type.required

@@ -21,8 +21,8 @@ class AsopValidator(Validator):
         self.transformer = transformer
 
     def define(self, fdef: Fdef) -> None:
-        fdef.requires_operator_assign = True
-        fdef.operator_assign_transformer = self.transformer
+        fdef._requires_operator_assign = True
+        fdef._operator_assign_transformer = self.transformer
 
     def validate(self, context: VCtx) -> None:
         if context.owner.is_new or context.keypath_owner in context.owner.modified_fields:

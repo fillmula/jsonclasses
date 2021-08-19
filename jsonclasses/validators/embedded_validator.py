@@ -7,4 +7,4 @@ class EmbeddedValidator(Validator):
     """This validator marks value as embedded on the hosting object."""
 
     def define(self, fdef: Fdef) -> None:
-        fdef.field_storage = FieldStorage.EMBEDDED
+        fdef._field_storage = FieldStorage.EMBEDDED

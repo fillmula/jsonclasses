@@ -373,7 +373,7 @@ class TestAutoTypes(TestCase):
         class TestUnionDictType:
             val: 'Union[dict[str, int], int]'
         cfield = TestUnionDictType.cdef.field_named('val')
-        utypes = cfield.fdef.union_types
+        utypes = cfield.fdef.raw_union_types
         self.assertEqual(utypes[0].fdef.field_type, FieldType.DICT)
         self.assertEqual(utypes[1].fdef.field_type, FieldType.INT)
 

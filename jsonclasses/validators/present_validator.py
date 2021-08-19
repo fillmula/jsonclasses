@@ -12,7 +12,7 @@ class PresentValidator(Validator):
     """
 
     def define(self, fdef: Fdef) -> None:
-        fdef.required = True
+        fdef._required = True
 
     def validate(self, context: VCtx) -> None:
         if context.value is None:

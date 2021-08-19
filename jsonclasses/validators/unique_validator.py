@@ -7,4 +7,4 @@ class UniqueValidator(Validator):
     """Unique validator marks a column should be unique."""
 
     def define(self, fdef: Fdef) -> None:
-        fdef.unique = True
+        fdef._unique = True

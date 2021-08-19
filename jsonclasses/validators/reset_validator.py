@@ -9,4 +9,4 @@ class ResetValidator(Validator):
     """
 
     def define(self, fdef: Fdef) -> None:
-        fdef.has_reset_validator = True
+        fdef._has_reset_validator = True

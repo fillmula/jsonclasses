@@ -7,4 +7,4 @@ class OutputNameValidator(Validator):
     """Output name validator tweaks enum validator's behavior."""
 
     def define(self, fdef: Fdef) -> None:
-        fdef.enum_output = EnumOutput.NAME
+        fdef._enum_output = EnumOutput.NAME

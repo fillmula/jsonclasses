@@ -7,4 +7,4 @@ class DenyValidator(Validator):
     """Deny validator marks a relationship's delete rule as deny."""
 
     def define(self, fdef: Fdef) -> None:
-        fdef.delete_rule = DeleteRule.DENY
+        fdef._delete_rule = DeleteRule.DENY

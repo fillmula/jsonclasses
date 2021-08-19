@@ -14,7 +14,7 @@ class TypeValidator(Validator):
         self.exact_type: bool = False
 
     def define(self, fdef: Fdef) -> None:
-        fdef.field_type = self.field_type
+        fdef._field_type = self.field_type
 
     def validate(self, context: VCtx) -> None:
         if context.value is None:

@@ -8,7 +8,7 @@ class InputNameValidator(Validator):
 
     def define(self, fdef: Fdef) -> None:
         if fdef.enum_input is None:
-            fdef.enum_input = EnumInput.NAME
+            fdef._enum_input = EnumInput.NAME
         else:
-            fdef.enum_input = fdef.enum_input | EnumInput.NAME
+            fdef._enum_input = fdef.enum_input | EnumInput.NAME
         return

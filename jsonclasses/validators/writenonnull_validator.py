@@ -9,4 +9,4 @@ class WriteNonnullValidator(Validator):
     """
 
     def define(self, fdef: Fdef) -> None:
-        fdef.write_rule = WriteRule.WRITE_NONNULL
+        fdef._write_rule = WriteRule.WRITE_NONNULL

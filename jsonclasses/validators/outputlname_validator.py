@@ -7,4 +7,4 @@ class OutputLnameValidator(Validator):
     """Output lname validator tweaks enum validator's behavior."""
 
     def define(self, fdef: Fdef) -> None:
-        fdef.enum_output = EnumOutput.LOWERCASE_NAME
+        fdef._enum_output = EnumOutput.LOWERCASE_NAME

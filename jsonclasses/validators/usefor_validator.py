@@ -10,4 +10,4 @@ class UseForValidator(Validator):
         self.usage = usage
 
     def define(self, fdef: Fdef) -> None:
-        fdef.usage = self.usage
+        fdef._usage = self.usage
