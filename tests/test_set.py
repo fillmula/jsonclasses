@@ -115,3 +115,37 @@ class TestSet(TestCase):
         dct = DefaultDict()
         dct.set(**{'value.b': '3', 'value.c': '4'})
         self.assertEqual(dct.value, {'a': '1', 'b': '3', 'c': '4'})
+
+    def test_set_accepts_nested_keypaths_for_value_in_dicts_with_list_indexing(self):
+        dct = DefaultDict()
+        dct.set(**{'value[b]': '1'})
+        self.assertEqual(dct.value, {'a': '1', 'b': '1'})
+
+    def test_set_accepts_nested_keypaths_for_values_in_dicts_with_list_indexing(self):
+        dct = DefaultDict()
+        dct.set(**{'value[b]': '1', 'value[c]': '2'})
+        self.assertEqual(dct.value, {'a': '1', 'b': '1', 'c': '2'})
+
+    def test_set_accepts_nested_keypaths_for_instances_with_list_indexing(self):
+        author = Author(name='Kieng')
+        article = Article(**{'title': 'E Sai',
+                             'content': 'Tsê Tioh Si Kim Sieng Ua Ê Tsuê Ai',
+                             'author': author})
+        article.set(**{'author[name]': 'abca.def'})
+        self.assertEqual(article.author.name, 'abca.def')
+
+    def test_set_accepts_nested_keypaths_for_instances_with_multiple_list_indexing(self):
+        article = Article(title='T', content='C')
+        author = Author(**{'name': 'Kieng', 'articles': [article]})
+        author.set(**{'articles[0][title]': 'QQQQQ'})
+        self.assertEqual(author.articles[0].title, 'QQQQQ')
+
+    
+    def test_set_accepts_nested_keypaths_for_shape_in_shape_with_mix_indexing(self):
+        user = NestShapeUser(**{'name': 'N', 'grouped': {
+            'ios': {'on': True, 'off': False},
+            'android': {'on': False, 'off': True}
+        }})
+        user.set(**{'grouped[ios].on': False, 'grouped.ios[off]': True})
+        self.assertEqual(user.grouped.ios['on'], False)
+        self.assertEqual(user.grouped.ios['off'], True) # TODO: use dot notation

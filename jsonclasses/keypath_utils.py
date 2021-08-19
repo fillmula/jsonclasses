@@ -2,6 +2,7 @@
 from __future__ import annotations
 from typing import Any, Union, TYPE_CHECKING
 from .fdef import FieldStorage, FieldType
+from re import split,search
 if TYPE_CHECKING:
     from .jfield import JField
 
@@ -96,8 +97,16 @@ def initial_keypath(keypath: str) -> str:
 
 
 def single_key_args(kwargs: dict[str, Any]) -> dict[str, Any]:
-    return {k: v for k, v in kwargs.items() if '.' not in k}
+    return {k: v for k, v in kwargs.items() if not search(r'\.|\[|\]', k)}
 
 
 def compound_key_args(kwargs: dict[str, Any]) -> dict[str, Any]:
-    return {k: v for k, v in kwargs.items() if '.' in k}
+    return {k: v for k, v in kwargs.items() if search(r'\.|\[|\]', k)}
+
+def keypath_split(key: str) -> list[str]:
+    result = []
+    items = split(r'\]|\[|\.', key)
+    for item in items:
+        if item != '':
+            result.append(item)
+    return result
