@@ -392,6 +392,19 @@ def restore(self: JObject) -> JObject:
     return self
 
 
+def complete(self: JObject) -> JObject:
+    """Fetch missing field values from the underlying ORM.
+    """
+    if self.is_partial:
+        self._orm_complete()
+
+
+def _orm_complete(self: JObject) -> JObject:
+    """ORM method override. Fetch missing field values and assign to this object.
+    """
+    pass
+
+
 def _ensure_not_outdated(self: JObject) -> None:
     """Raises if this JSON class object is outdated.
 
@@ -915,7 +928,9 @@ def jsonclassify(class_: type) -> JObject:
     class_.save = save
     class_.delete = delete
     class_.restore = restore
+    class_.complete = complete
     # protected methods
+    class_._orm_complete = _orm_complete
     class_._ensure_not_outdated = _ensure_not_outdated
     class_._data_dict = _data_dict
     class_._mark_new = _mark_new
