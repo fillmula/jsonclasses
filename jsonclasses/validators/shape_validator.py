@@ -27,9 +27,7 @@ class ShapeValidator(TypeValidator):
             if isinstance(self.raw_types, dict):
                 setattr(self, '_raw_shape_types', self.raw_types)
                 return self._raw_shape_types
-            itypes = rtypes(
-                self.raw_types,
-                owner_cls.cdef.config)
+            itypes = rtypes(self.raw_types, owner_cls)
             if itypes.fdef.item_nullability == Nullability.UNDEFINED:
                 itypes = itypes.required
             stypes = itypes.fdef.raw_shape_types

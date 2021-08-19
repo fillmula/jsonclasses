@@ -129,12 +129,10 @@ class Cdef:
                          fdef: Fdef,
                          class_: type) -> bool:
         if fdef.field_type == FieldType.LIST:
-            item_types = rtypes(fdef.raw_item_types,
-                                                self.config)
+            item_types = rtypes(fdef.raw_item_types, self.config)
             return self._def_class_match(item_types.fdef, class_)
         elif fdef.field_type == FieldType.INSTANCE:
-            types = rtypes(fdef.raw_inst_types,
-                                           self.config)
+            types = rtypes(fdef.raw_inst_types, self.config)
             return types.fdef.raw_inst_types == class_
         return False
 
@@ -264,51 +262,47 @@ class Cdef:
                 return None
             return field_tuple
         local_field = self.field_named(name)
-        definition = local_field.fdef
-        if definition.field_storage not in \
+        fdef = local_field.fdef
+        if fdef.field_storage not in \
                 [FieldStorage.LOCAL_KEY, FieldStorage.FOREIGN_KEY]:
             raise ValueError(f"field named '{name}' is not a linked field")
-        if definition.field_type == FieldType.INSTANCE:
-            foreign_types = rtypes(
-                definition.raw_inst_types, self.config)
-        elif definition.field_type == FieldType.LIST:
-            raw_inst_types = rtypes(
-                definition.raw_item_types, self.config)
-            foreign_types = rtypes(
-                raw_inst_types, self.config)
+        if fdef.field_type == FieldType.INSTANCE:
+            foreign_types = rtypes(fdef.raw_inst_types, self.config)
+        elif fdef.field_type == FieldType.LIST:
+            raw_inst_types = rtypes(fdef.raw_item_types, self.config)
+            foreign_types = rtypes(raw_inst_types, self.config)
         foreign_class = cast(type, foreign_types.fdef.raw_inst_types)
-        foreign_class = rtypes(foreign_class,
-                                                      self.config)
+        foreign_class = rtypes(foreign_class, self.config)
         foreign_class = foreign_class.fdef.raw_inst_types
-        foreign_definition = self.config.class_graph.fetch(foreign_class)
-        accepted: list[tuple(FieldStorage, bool)] = []
-        if definition.field_storage == FieldStorage.LOCAL_KEY:
+        foreign_cdef = self.config.class_graph.fetch(foreign_class)
+        accepted: list[tuple[FieldStorage, bool]] = []
+        if fdef.field_storage == FieldStorage.LOCAL_KEY:
             foreign_storage = FieldStorage.FOREIGN_KEY
             use_join_table = False
             accepted.append((foreign_storage, use_join_table))
-        elif definition.field_storage == FieldStorage.FOREIGN_KEY:
+        elif fdef.field_storage == FieldStorage.FOREIGN_KEY:
             foreign_storage = FieldStorage.LOCAL_KEY
             use_join_table = False
             accepted.append((foreign_storage, use_join_table))
-            if definition.field_type == FieldType.LIST:
+            if fdef.field_type == FieldType.LIST:
                 foreign_storage = FieldStorage.FOREIGN_KEY
                 use_join_table = True
                 accepted.append((foreign_storage, use_join_table))
-            elif definition.field_type == FieldType.INSTANCE:
+            elif fdef.field_type == FieldType.INSTANCE:
                 pass
-        for field in foreign_definition.fields:
+        for field in foreign_cdef.fields:
             for (storage, use_join) in accepted:
                 if storage == FieldStorage.LOCAL_KEY:
-                    if definition.foreign_key == field.name:
+                    if fdef.foreign_key == field.name:
                         local_matches = self._def_class_match(
                             local_field.fdef, foreign_class)
                         foreign_matches = self._def_class_match(
                             field.fdef, self.cls)
                         if local_matches and foreign_matches:
-                            foreign_tuple = (foreign_definition, field.name)
+                            foreign_tuple = (foreign_cdef, field.name)
                             self._foreign_fields[name] = foreign_tuple
                             local_tuple = (self, name)
-                            foreign_definition._foreign_fields[field.name] = \
+                            foreign_cdef._foreign_fields[field.name] = \
                                 local_tuple
                             return self._foreign_fields[name]
                         else:
@@ -324,10 +318,10 @@ class Cdef:
                                 field.fdef, self.cls)
                             if local_matches and foreign_matches:
                                 foreign_tuple = \
-                                    (foreign_definition, field.name)
+                                    (foreign_cdef, field.name)
                                 self._foreign_fields[name] = foreign_tuple
                                 local_tuple = (self, name)
-                                foreign_definition._foreign_fields[field.name]\
+                                foreign_cdef._foreign_fields[field.name]\
                                     = local_tuple
                                 return self._foreign_fields[name]
                             else:
