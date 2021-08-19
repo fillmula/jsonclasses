@@ -5,7 +5,7 @@ from datetime import datetime
 from inspect import signature
 from .jsonclass_object import JSONClassObject
 from .types import Types
-from .types_resolver import TypesResolver
+from .rtypes import rtypes
 from .ctxs import TCtx, VCtx, JCtx
 from .fdef import Fdef, FieldStorage, FieldType
 from .validators.instanceof_validator import InstanceOfValidator
@@ -119,7 +119,7 @@ def _set_to_container(self: JSONClassObject,
             dest[items[0]] = value
         else:
             item_types = fdef.raw_shape_types[items[0]]
-            item_types = TypesResolver().resolve_types(item_types, self.__class__.cdef.config)
+            item_types = rtypes(item_types, self.__class__.cdef.config)
             fdef = item_types.fdef
             self._set_to_container(dest[items[0]], items[1:], value, fdef, used_items + [items[0]])
     elif fdef.field_type == FieldType.LIST:
@@ -129,7 +129,7 @@ def _set_to_container(self: JSONClassObject,
             dest[int(items[0])] = value
         else:
             item_types = fdef.raw_item_types
-            item_types = TypesResolver().resolve_types(item_types, self.__class__.cdef.config)
+            item_types = rtypes(item_types, self.__class__.cdef.config)
             fdef = item_types.fdef
             self._set_to_container(dest[int(items[0])], items[1:], value, fdef, used_items + [items[0]])
     elif fdef.field_type == FieldType.DICT:
@@ -139,7 +139,7 @@ def _set_to_container(self: JSONClassObject,
             dest[items[0]] = value
         else:
             item_types = fdef.raw_item_types
-            item_types = TypesResolver().resolve_types(item_types, self.__class__.cdef.config)
+            item_types = rtypes(item_types, self.__class__.cdef.config)
             fdef = item_types.fdef
             self._set_to_container(dest[items[0]], items[1:], value, fdef, used_items + [items[0]])
 

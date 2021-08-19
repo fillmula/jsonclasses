@@ -11,7 +11,7 @@ from inflection import camelize
 from .jfield import JField
 from .fdef import (Fdef, FieldStorage, FieldType,
                                DeleteRule)
-from .types_resolver import TypesResolver
+from .rtypes import rtypes
 from .exceptions import LinkedFieldUnmatchException
 if TYPE_CHECKING:
     from .config import Config
@@ -123,18 +123,17 @@ class Cdef:
         if isinstance(field.default, Types):
             return field.default
         else:
-            return TypesResolver().resolve_types(field.type, config)
+            return rtypes(field.type, config)
 
     def _def_class_match(self: Cdef,
                          fdef: Fdef,
                          class_: type) -> bool:
-        resolver = TypesResolver()
         if fdef.field_type == FieldType.LIST:
-            item_types = resolver.resolve_types(fdef.raw_item_types,
+            item_types = rtypes(fdef.raw_item_types,
                                                 self.config)
             return self._def_class_match(item_types.fdef, class_)
         elif fdef.field_type == FieldType.INSTANCE:
-            types = resolver.resolve_types(fdef.raw_inst_types,
+            types = rtypes(fdef.raw_inst_types,
                                            self.config)
             return types.fdef.raw_inst_types == class_
         return False
@@ -266,20 +265,19 @@ class Cdef:
             return field_tuple
         local_field = self.field_named(name)
         definition = local_field.fdef
-        resolver = TypesResolver()
         if definition.field_storage not in \
                 [FieldStorage.LOCAL_KEY, FieldStorage.FOREIGN_KEY]:
             raise ValueError(f"field named '{name}' is not a linked field")
         if definition.field_type == FieldType.INSTANCE:
-            foreign_types = resolver.resolve_types(
+            foreign_types = rtypes(
                 definition.raw_inst_types, self.config)
         elif definition.field_type == FieldType.LIST:
-            raw_inst_types = resolver.resolve_types(
+            raw_inst_types = rtypes(
                 definition.raw_item_types, self.config)
-            foreign_types = resolver.resolve_types(
+            foreign_types = rtypes(
                 raw_inst_types, self.config)
         foreign_class = cast(type, foreign_types.fdef.raw_inst_types)
-        foreign_class = TypesResolver().resolve_types(foreign_class,
+        foreign_class = rtypes(foreign_class,
                                                       self.config)
         foreign_class = foreign_class.fdef.raw_inst_types
         foreign_definition = self.config.class_graph.fetch(foreign_class)

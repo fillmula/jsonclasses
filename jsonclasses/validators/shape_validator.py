@@ -5,7 +5,7 @@ from ..fdef import Fdef, FieldType, Nullability, Strictness
 from ..exceptions import ValidationException
 from ..config import Config
 from ..keypath_utils import concat_keypath
-from ..types_resolver import TypesResolver
+from ..rtypes import rtypes
 from ..ctxs import VCtx, TCtx, JCtx
 from .type_validator import TypeValidator
 
@@ -27,7 +27,7 @@ class ShapeValidator(TypeValidator):
             if isinstance(self.raw_types, dict):
                 setattr(self, '_raw_shape_types', self.raw_types)
                 return self._raw_shape_types
-            itypes = TypesResolver().resolve_types(
+            itypes = rtypes(
                 self.raw_types,
                 owner_cls.cdef.config)
             if itypes.fdef.item_nullability == Nullability.UNDEFINED:
@@ -53,7 +53,7 @@ class ShapeValidator(TypeValidator):
                 value_at_key = context.value[k]
             except KeyError:
                 value_at_key = None
-            types = TypesResolver().resolve_types(t, context.config_owner)
+            types = rtypes(t, context.config_owner)
             if types:
                 try:
                     types.validator.validate(context.new(
@@ -122,7 +122,7 @@ class ShapeValidator(TypeValidator):
                                      list(value.keys()),
                                      context.config_owner):
                 fv = self._get_field_value(fk, value, context.config_owner)
-            types = TypesResolver().resolve_types(ft, context.config_owner)
+            types = rtypes(ft, context.config_owner)
             retval[fk] = types.validator.transform(context.new(
                 value=fv,
                 keypath_root=concat_keypath(context.keypath_root, fk),
@@ -141,7 +141,7 @@ class ShapeValidator(TypeValidator):
         for k, t in self.raw_shape_types(context.config.cls).items():
             key = camelize(k, False) if context.config.camelize_json_keys else k
             value_at_key = context.value.get(k)
-            types = TypesResolver().resolve_types(t, context.config)
+            types = rtypes(t, context.config)
             if types:
                 retval[key] = types.validator.tojson(context.new(value=value_at_key))
             else:
@@ -156,8 +156,7 @@ class ShapeValidator(TypeValidator):
         retval = {}
         for key, raw_types in self.raw_shape_types(context.config_owner.cls).items():
             value_at_key = context.value.get(key)
-            types = TypesResolver() \
-                .resolve_types(raw_types, context.config_owner)
+            types = rtypes(raw_types, context.config_owner)
             if types:
                 retval[key] = types.validator.serialize(context.new(
                     value=value_at_key,

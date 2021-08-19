@@ -6,7 +6,7 @@ from ..config import Config
 from ..exceptions import ValidationException
 from .type_validator import TypeValidator
 from ..keypath_utils import concat_keypath
-from ..types_resolver import TypesResolver
+from ..rtypes import rtypes
 from ..ctxs import VCtx, TCtx, JCtx
 if TYPE_CHECKING:
     from ..jsonclass_object import JSONClassObject
@@ -31,7 +31,7 @@ class CollectionTypeValidator(TypeValidator):
         if hasattr(self, '_item_types'):
             return getattr(self, '_item_types')
         else:
-            itypes = TypesResolver().resolve_types(
+            itypes = rtypes(
                 self.raw_item_types,
                 owner_cls.cdef.config)
             if itypes.fdef.item_nullability == Nullability.UNDEFINED:

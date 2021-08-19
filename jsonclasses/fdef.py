@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import cast, Any, Callable, Optional, Union, TYPE_CHECKING
 from enum import Enum, Flag
-from .types_resolver import TypesResolver
+from .rtypes import rtypes
 if TYPE_CHECKING:
     from .types import Types
     from .cdef import Cdef
@@ -365,7 +365,7 @@ class Fdef:
         if self.field_type == FieldType.INSTANCE:
             return True
         if self.field_type == FieldType.LIST:
-            item_types = TypesResolver().resolve_types(
+            item_types = rtypes(
                 self.raw_item_types,
                 self.cdef.config)
             if item_types.fdef.field_type == FieldType.INSTANCE:
@@ -380,8 +380,6 @@ class Fdef:
             return True
         if self.field_type == FieldType.LIST or \
                 self.field_type == FieldType.DICT:
-            item_type = TypesResolver() \
-                .resolve_types(self.raw_item_types,
-                               self.cdef.config)
+            item_type = rtypes(self.raw_item_types, self.cdef.config)
             return item_type.fdef.has_linked
         return False

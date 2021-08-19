@@ -1,19 +1,19 @@
 """module for instanceof validator."""
 from __future__ import annotations
 from jsonclasses.jfield import JField
-from typing import Any, Sequence, Type, Union, cast, TYPE_CHECKING
+from typing import Any, Sequence, Union, cast, TYPE_CHECKING
 from inflection import camelize
 from ..fdef import (Fdef, FieldStorage, FieldType,
                                 Nullability, WriteRule, ReadRule, Strictness)
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..keypath_utils import concat_keypath, initial_keypaths
-from ..types_resolver import TypesResolver
+from ..rtypes import rtypes
 from ..ctxs import VCtx, TCtx, JCtx
 if TYPE_CHECKING:
     from ..jsonclass_object import JSONClassObject
     from ..types import Types
-    InstanceOfType = Union[Types, str, Type[JSONClassObject]]
+    InstanceOfType = Union[Types, str, type[JSONClassObject]]
 
 
 class InstanceOfValidator(Validator):
@@ -30,8 +30,8 @@ class InstanceOfValidator(Validator):
         from ..jsonclass_object import JSONClassObject
         if context.value is None:
             return
-        types = TypesResolver().resolve_types(self.raw_type, context.config_owner)
-        cls = cast(Type[JSONClassObject], types.fdef.raw_inst_types)
+        types = rtypes(self.raw_type, context.config_owner)
+        cls = cast(type[JSONClassObject], types.fdef.raw_inst_types)
         all_fields = context.all_fields
         if all_fields is None:
             all_fields = cls.cdef.config.validate_all_fields
@@ -93,7 +93,7 @@ class InstanceOfValidator(Validator):
                             field: JField,
                             dest: JSONClassObject,
                             context: TCtx,
-                            cls: Type[JSONClassObject]):
+                            cls: type[JSONClassObject]):
         if field.default is not None:
             setattr(dest, field.name, field.default)
         else:
@@ -129,8 +129,8 @@ class InstanceOfValidator(Validator):
         if not isinstance(context.value, dict):
             return context.dest if context.dest is not None else context.value
         # figure out types, cls and dest
-        types = TypesResolver().resolve_types(self.raw_type, context.config_owner)
-        cls = cast(Type[JSONClassObject], types.fdef.raw_inst_types)
+        types = rtypes(self.raw_type, context.config_owner)
+        cls = cast(type[JSONClassObject], types.fdef.raw_inst_types)
         this_pk_field = cls.cdef.primary_field
         if this_pk_field:
             pk = this_pk_field.name

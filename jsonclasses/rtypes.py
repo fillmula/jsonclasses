@@ -8,6 +8,7 @@ from typing import (Any, ForwardRef, Optional, Union, Annotated, final,
 from enum import Enum
 from datetime import date, datetime
 from re import match, split
+from .isjsonclass import isjsonclass, isjsonobject
 if TYPE_CHECKING:
     from .types import Types
     from .config import Config
@@ -262,22 +263,36 @@ class TypesResolver:
             raise ValueError(f'{any_types} is not a valid JSON Class type.')
 
     def resolve_types(self: TypesResolver,
-                      any_types: Any,
+                      anytypes: Any,
                       config: Optional[Config] = None) -> Types:
-        """
-        Get field types from any types that users can specify.
-
-        If the provided `any_types` is a `Types` object, it itself is returned.
-        Otherwise, a synthesized default types is returned.
-
-        Args:
-            any_types (Any): The user specified any types.
-            config (Config): The configuration of the field's owner class.
-
-        Returns:
-            Types: A types which describes the field.
-        """
         from .types import Types
-        if isinstance(any_types, Types):
-            return any_types
-        return self.to_types(any_types, config)
+        if isinstance(anytypes, Types):
+            return anytypes
+        return self.to_types(anytypes, config)
+
+
+def rtypes(anytypes: Any, anyowner: Optional[Any] = None) -> Types:
+    """
+    Get field types from any types that users can specify.
+
+    If the provided `anytypes` is a `Types` object, it itself is returned.
+    Otherwise, a synthesized default types is returned.
+
+    Args:
+        anytypes (Any): The user specified any types.
+        anyowner (Any): The configuration of the field's owner class.
+
+    Returns:
+        Types: A types which describes the field.
+    """
+    from .cdef import Cdef
+    config = None
+    if isjsonclass(anyowner):
+        config = anyowner.cdef.config
+    elif isjsonobject(anyowner):
+        config = anyowner.__class__.cdef.config
+    elif isinstance(anyowner, Cdef):
+        config = anyowner.config
+    else:
+        config = anyowner
+    return TypesResolver().resolve_types(anytypes, config)
