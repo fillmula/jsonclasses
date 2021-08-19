@@ -18,12 +18,12 @@ from .owned_list import OwnedList
 from .owned_collection_utils import (to_owned_dict, to_shape_dict,
                                      to_owned_list,
                                      unowned_copy_dict, unowned_copy_list)
-from .keypath_utils import concat_keypath, initial_keypath, reference_key, single_key_args, compound_key_args,keypath_split
+from .keypath import concat_keypath, initial_keypath, reference_key, single_key_args, compound_key_args,keypath_split
 from .exceptions import (AbstractJSONClassException, ValidationException,
                          JSONClassResetError, JSONClassResetNotEnabledError,
                          UnlinkableJSONClassException,
                          UnauthorizedActionException)
-from re import split
+
 
 def __init__(self: JObject, **kwargs: dict[str, Any]) -> None:
     """Initialize a new jsonclass object from keyed arguments or a dict.

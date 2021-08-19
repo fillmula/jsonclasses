@@ -7,7 +7,7 @@ from ..fdef import (Fdef, FieldStorage, FieldType,
                                 Nullability, WriteRule, ReadRule, Strictness)
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..keypath_utils import concat_keypath, initial_keypaths
+from ..keypath import concat_keypath, initial_keypaths
 from ..rtypes import rtypes
 from ..ctxs import VCtx, TCtx, JCtx
 if TYPE_CHECKING:

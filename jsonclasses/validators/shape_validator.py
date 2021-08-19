@@ -4,7 +4,7 @@ from inflection import underscore, camelize
 from ..fdef import Fdef, FieldType, Nullability, Strictness
 from ..exceptions import ValidationException
 from ..config import Config
-from ..keypath_utils import concat_keypath
+from ..keypath import concat_keypath
 from ..rtypes import rtypes
 from ..ctxs import VCtx, TCtx, JCtx
 from .type_validator import TypeValidator

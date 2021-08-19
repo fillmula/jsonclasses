@@ -103,10 +103,6 @@ def single_key_args(kwargs: dict[str, Any]) -> dict[str, Any]:
 def compound_key_args(kwargs: dict[str, Any]) -> dict[str, Any]:
     return {k: v for k, v in kwargs.items() if search(r'\.|\[|\]', k)}
 
+
 def keypath_split(key: str) -> list[str]:
-    result = []
-    items = split(r'\]|\[|\.', key)
-    for item in items:
-        if item != '':
-            result.append(item)
-    return result
+    return [k for k in split(r'\]|\[|\.', key) if len(k) > 0]

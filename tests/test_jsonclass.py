@@ -3,7 +3,7 @@ from unittest import TestCase
 from jsonclasses import jsonclass
 from jsonclasses.isjsonclass import isjsonclass
 from jsonclasses.config import Config
-from jsonclasses.keypath_utils import reference_key
+from jsonclasses.keypath import reference_key
 from jsonclasses.cgraph import CGraph
 from jsonclasses.exceptions import JSONClassRedefinitionException
 from tests.classes.simple_account import SimpleAccount

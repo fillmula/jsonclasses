@@ -5,7 +5,7 @@ from typing import TypeVar, Any
 from .owned_dict import OwnedDict, DictOwner
 from .owned_list import OwnedList, ListOwner
 from .object_dict import ObjectDict
-from .keypath_utils import concat_keypath
+from .keypath import concat_keypath
 
 KT = TypeVar('KT')
 VT = TypeVar('VT')

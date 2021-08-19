@@ -5,7 +5,7 @@ from ..fdef import Fdef, Nullability
 from ..config import Config
 from ..exceptions import ValidationException
 from .type_validator import TypeValidator
-from ..keypath_utils import concat_keypath
+from ..keypath import concat_keypath
 from ..rtypes import rtypes
 from ..ctxs import VCtx, TCtx, JCtx
 if TYPE_CHECKING:
