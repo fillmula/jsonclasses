@@ -22,7 +22,7 @@ class TestJsonClass(TestCase):
 
     def test_jsonclass_install_default_config_without_arguments(self):
         class_config = SimpleAccount.cdef.config
-        default_config = Config(class_graph='default',
+        default_config = Config(cgraph='default',
                                 camelize_json_keys=True,
                                 strict_input=True,
                                 key_transformer=reference_key,
@@ -39,10 +39,10 @@ class TestJsonClass(TestCase):
                                 can_read=[])
         self.assertEqual(class_config, default_config)
 
-    def test_jsonclass_class_graph_changes_class_graph(self):
-        class_graph = SimpleCompany.cdef.config.class_graph
+    def test_jsonclass_cgraph_changes_cgraph(self):
+        cgraph = SimpleCompany.cdef.config.cgraph
         company_graph = CGraph('simplecompany')
-        self.assertEqual(class_graph, company_graph)
+        self.assertEqual(cgraph, company_graph)
 
     def test_jsonclass_camelize_json_keys_changes_config(self):
         self.assertEqual(
@@ -83,7 +83,7 @@ class TestJsonClass(TestCase):
     def test_jsonclass_raises_if_duplicate_names_on_same_graph(self):
         with self.assertRaisesRegex(JSONClassRedefinitionException,
                                     'jsonclass name conflict in graph'):
-            @jsonclass(class_graph='simplecompany')
+            @jsonclass(cgraph='simplecompany')
             class SimpleCompany:
                 str_field: str
                 int_field: str

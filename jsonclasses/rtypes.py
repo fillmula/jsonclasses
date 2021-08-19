@@ -164,7 +164,7 @@ class TypesResolver:
             types = self.str_to_types(instance_type, config, optional)
             return self.apply_link_specifier(types, link_specifier)
         else:
-            graph = config.class_graph
+            graph = config.cgraph
             if graph.has(any_types):
                 definition = graph.fetch(any_types)
                 instance_type = types.instanceof(definition.cls)

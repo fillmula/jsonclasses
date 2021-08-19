@@ -273,7 +273,7 @@ class Cdef:
         foreign_class = cast(type, foreign_types.fdef.raw_inst_types)
         foreign_class = rtypes(foreign_class, self.config)
         foreign_class = foreign_class.fdef.raw_inst_types
-        foreign_cdef = self.config.class_graph.fetch(foreign_class)
+        foreign_cdef = self.config.cgraph.fetch(foreign_class)
         accepted: list[tuple[FieldStorage, bool]] = []
         if fdef.field_storage == FieldStorage.LOCAL_KEY:
             foreign_storage = FieldStorage.FOREIGN_KEY

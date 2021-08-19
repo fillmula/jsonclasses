@@ -26,7 +26,7 @@ class Config:
     """
 
     def __init__(self: Config,
-                 class_graph: Optional[str],
+                 cgraph: Optional[str],
                  camelize_json_keys: Optional[bool],
                  strict_input: Optional[bool],
                  key_transformer: Optional[Callable[[JField], str]],
@@ -45,7 +45,7 @@ class Config:
         Initialize a new configuration object.
 
         Args:
-            class_graph (Optional[str]): The name of the class graph on which \
+            cgraph (Optional[str]): The name of the class graph on which \
                 the JSON class is defined.
             camelize_json_keys (Optional[bool]): Whether camelize keys when \
                 outputing JSON.
@@ -77,7 +77,7 @@ class Config:
                 guard.
         """
         self._cls = None
-        self._class_graph = class_graph or 'default'
+        self._cgraph = cgraph or 'default'
         self._camelize_json_keys = camelize_json_keys
         self._strict_input = strict_input
         self._key_transformer = key_transformer
@@ -132,7 +132,7 @@ class Config:
         if not isinstance(other, Config):
             return False
         other_config = cast(Config, other)
-        if self.class_graph != other_config.class_graph:
+        if self.cgraph != other_config.cgraph:
             return False
         if self.camelize_json_keys != other_config.camelize_json_keys:
             return False
@@ -171,18 +171,18 @@ class Config:
         return self._cls
 
     @property
-    def class_graph(self: Config) -> CGraph:
+    def cgraph(self: Config) -> CGraph:
         """The name of the class graph on which the JSON class is defined.
         """
         from .cgraph import CGraph
-        return CGraph(self._class_graph)
+        return CGraph(self._cgraph)
 
     @property
     def camelize_json_keys(self: Config) -> bool:
         """Whether camelize keys when outputing JSON.
         """
         if self._camelize_json_keys is None:
-            return self.class_graph.default_config.camelize_json_keys
+            return self.cgraph.default_config.camelize_json_keys
         return self._camelize_json_keys
 
     @property
@@ -190,7 +190,7 @@ class Config:
         """Whether raise errors on receiving invalid input keys.
         """
         if self._strict_input is None:
-            return self.class_graph.default_config.strict_input
+            return self.cgraph.default_config.strict_input
         return self._strict_input
 
     @property
@@ -198,7 +198,7 @@ class Config:
         """The reference field local key conversion function.
         """
         if self._key_transformer is None:
-            return self.class_graph.default_config.key_transformer
+            return self.cgraph.default_config.key_transformer
         return self._key_transformer
 
     @property
@@ -207,7 +207,7 @@ class Config:
         validating.
         """
         if self._validate_all_fields is None:
-            return self.class_graph.default_config.validate_all_fields
+            return self.cgraph.default_config.validate_all_fields
         return self._validate_all_fields
 
     @property
@@ -215,7 +215,7 @@ class Config:
         """Whether perform soft delete on deletion.
         """
         if self._soft_delete is None:
-            return self.class_graph.default_config.soft_delete
+            return self.cgraph.default_config.soft_delete
         return self._soft_delete
 
     @property
@@ -223,7 +223,7 @@ class Config:
         """Instance of abstract classes cannot be initialized.
         """
         if self._abstract is None:
-            return self.class_graph.default_config.abstract
+            return self.cgraph.default_config.abstract
         return self._abstract
 
     @property
@@ -232,7 +232,7 @@ class Config:
         functionality.
         """
         if self._reset_all_fields is None:
-            return self.class_graph.default_config.reset_all_fields
+            return self.cgraph.default_config.reset_all_fields
         return self._reset_all_fields
 
     @property

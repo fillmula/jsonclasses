@@ -47,7 +47,7 @@ class CGraph:
         self._map: dict[str, Cdef] = {}
         self._dict_map: dict[str, type[dict]] = {}
         self._enum_map: dict[str, type] = {}
-        self._default_config = Config(class_graph=self.name,
+        self._default_config = Config(cgraph=self.name,
                                       camelize_json_keys=True,
                                       strict_input=True,
                                       key_transformer=reference_key,

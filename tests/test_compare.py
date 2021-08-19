@@ -68,7 +68,7 @@ class TestCompare(TestCase):
     #     def compare(old: int, new: int, key_path: str, obj: User, ctx: VCtx):
     #         val['val'] = ctx
 
-    #     @jsonclass(class_graph='test_compare_9')
+    #     @jsonclass(cgraph='test_compare_9')
     #     class User:
     #         age: Optional[int] = types.int.compare(compare).required
     #     user = User(age=1)

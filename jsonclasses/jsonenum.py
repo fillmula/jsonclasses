@@ -12,20 +12,20 @@ def jsonenum(cls: type) -> type: ...
 @overload
 def jsonenum(
     cls: None,
-    class_graph: Optional[str] = 'default'
+    cgraph: Optional[str] = 'default'
 ) -> Callable[[type], type[dict]]: ...
 
 
 @overload
 def jsonenum(
     cls: type,
-    class_graph: Optional[str] = 'default'
+    cgraph: Optional[str] = 'default'
 ) -> type[dict]: ...
 
 
 def jsonenum(
     cls: Optional[type] = None,
-    class_graph: Optional[str] = 'default',
+    cgraph: Optional[str] = 'default',
 ) -> Union[Callable[[type], type[dict]], type[dict]]:
     """The jsonclass enum decorator. To declare a jsonclass enum, use this
     syntax:
@@ -39,12 +39,12 @@ def jsonenum(
     if cls is not None:
         if not isinstance(cls, type):
             raise ValueError('@jsonenum should be used to decorate a class.')
-        class_graph = CGraph(class_graph)
-        class_graph.put_enum(cls)
+        cgraph = CGraph(cgraph)
+        cgraph.put_enum(cls)
         return cls
     else:
         def parametered_jsonenum(cls):
             return jsonenum(
                 cls,
-                class_graph=class_graph)
+                cgraph=cgraph)
         return parametered_jsonenum

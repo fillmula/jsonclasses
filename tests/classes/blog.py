@@ -4,7 +4,7 @@ from datetime import datetime
 from jsonclasses import jsonclass, types
 
 
-@jsonclass(class_graph='blog')
+@jsonclass(cgraph='blog')
 class User:
     id: int = types.int.primary.required
     name: str
@@ -16,7 +16,7 @@ class User:
                                 .setonsave(datetime.now).required
 
 
-@jsonclass(class_graph='blog')
+@jsonclass(cgraph='blog')
 class Post:
     id: int = types.int.primary.required
     name: str
@@ -28,7 +28,7 @@ class Post:
 
 
 
-@jsonclass(class_graph='blog')
+@jsonclass(cgraph='blog')
 class Comment:
     id: int = types.int.primary.required
     content: str

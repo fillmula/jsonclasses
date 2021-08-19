@@ -13,20 +13,20 @@ def jsondict(cls: type) -> type: ...
 @overload
 def jsondict(
     cls: None,
-    class_graph: Optional[str] = 'default'
+    cgraph: Optional[str] = 'default'
 ) -> Callable[[type], type[dict]]: ...
 
 
 @overload
 def jsondict(
     cls: type,
-    class_graph: Optional[str] = 'default'
+    cgraph: Optional[str] = 'default'
 ) -> type[dict]: ...
 
 
 def jsondict(
     cls: Optional[type] = None,
-    class_graph: Optional[str] = 'default',
+    cgraph: Optional[str] = 'default',
 ) -> Union[Callable[[type], type[dict]], type[dict]]:
     """The jsondict typed dict class decorator. To declare a jsonclass typed
     dict, use this syntax:
@@ -39,12 +39,12 @@ def jsondict(
     if cls is not None:
         if not isinstance(cls, type):
             raise ValueError('@jsondict should be used to decorate a class.')
-        class_graph = CGraph(class_graph)
-        class_graph.put_dict(cls)
+        cgraph = CGraph(cgraph)
+        cgraph.put_dict(cls)
         return cls
     else:
         def parametered_jsondict(cls):
             return jsondict(
                 cls,
-                class_graph=class_graph)
+                cgraph=cgraph)
         return parametered_jsondict
