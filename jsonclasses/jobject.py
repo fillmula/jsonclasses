@@ -4,7 +4,7 @@ confirm to.
 from __future__ import annotations
 from datetime import datetime
 from typing import (Any, TypeVar, Optional, ClassVar, Protocol, Union,
-                    TYPE_CHECKING)
+                    Set, TYPE_CHECKING)
 if TYPE_CHECKING:
     from .cdef import Cdef
 T = TypeVar('T', bound='JObject')
@@ -84,10 +84,10 @@ class JObject(Protocol):
     def is_outdated(self: T) -> bool: ...
 
     @property
-    def modified_fields(self: T) -> set[str]: ...
+    def modified_fields(self: T) -> Set[str]: ...
 
     @property
-    def persisted_modified_fields(self: T) -> set[str]: ...
+    def persisted_modified_fields(self: T) -> Set[str]: ...
 
     @property
     def previous_values(self: T) -> dict[str, Any]: ...
