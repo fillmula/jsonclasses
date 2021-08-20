@@ -3,7 +3,7 @@ from unittest import TestCase
 from typing import Optional
 from jsonclasses import jsonclass, types
 from jsonclasses.exceptions import ValidationException
-from jsonclasses.ctx import VCtx
+from jsonclasses.ctx import Ctx
 from tests.classes.compare_user import (CompareUser, CompareUserB,
                                         CompareUserS, check_value, check_args)
 

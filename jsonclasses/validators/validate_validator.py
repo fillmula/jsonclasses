@@ -3,7 +3,7 @@ from typing import Callable
 from inspect import signature
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctx import VCtx
+from ..ctx import Ctx
 
 
 class ValidateValidator(Validator):
@@ -17,7 +17,7 @@ class ValidateValidator(Validator):
             raise ValueError('not a valid validator')
         self.validate_callable = validate_callable
 
-    def validate(self, context: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         if context.value is None:
             return
         params_len = len(signature(self.validate_callable).parameters)

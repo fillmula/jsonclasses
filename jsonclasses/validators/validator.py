@@ -1,7 +1,7 @@
 """module for validator validator."""
 from typing import Any
 from ..fdef import Fdef
-from ..ctx import VCtx, TCtx, JCtx
+from ..ctx import Ctx
 
 
 class Validator:
@@ -10,18 +10,18 @@ class Validator:
     def define(self, fdef: Fdef) -> None:
         """A hook and chance for validator to update field description."""
 
-    def validate(self, ctx: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         """Validate the validity of the object."""
 
-    def transform(self, ctx: TCtx) -> Any:
+    def transform(self, ctx: Ctx) -> Any:
         """Transform raw input object into JSON Class acceptable object."""
         return ctx.value
 
-    def tojson(self, ctx: JCtx) -> Any:
+    def tojson(self, ctx: Ctx) -> Any:
         """Transform JSON Class object and fields into JSON dict and values."""
         return ctx.value
 
-    def serialize(self, ctx: TCtx) -> Any:
+    def serialize(self, ctx: Ctx) -> Any:
         """A chance for validators to update the object's value before the
         value is serialized into the database. This is only triggered for
         objects which are modified and have fields to write to the database.

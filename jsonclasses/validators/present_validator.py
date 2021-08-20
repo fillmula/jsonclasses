@@ -2,7 +2,7 @@
 from ..fdef import Fdef
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctx import VCtx
+from ..ctx import Ctx
 
 
 class PresentValidator(Validator):
@@ -14,7 +14,7 @@ class PresentValidator(Validator):
     def define(self, fdef: Fdef) -> None:
         fdef._required = True
 
-    def validate(self, context: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         if context.value is None:
             raise ValidationException(
                 {context.keypath_root: (f'Value at \'{context.keypath_root}\''

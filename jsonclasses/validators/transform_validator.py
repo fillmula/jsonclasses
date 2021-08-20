@@ -2,7 +2,7 @@
 from typing import Callable, Any
 from inspect import signature
 from .validator import Validator
-from ..ctx import TCtx
+from ..ctx import Ctx
 
 
 class TransformValidator(Validator):
@@ -16,7 +16,7 @@ class TransformValidator(Validator):
             raise ValueError('not a valid transformer')
         self.transformer = transformer
 
-    def transform(self, context: TCtx) -> Any:
+    def transform(self, ctx: Ctx) -> Any:
         if context.value is None:
             return None
         params_len = len(signature(self.transformer).parameters)

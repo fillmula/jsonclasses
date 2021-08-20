@@ -1,7 +1,7 @@
 """module for unresolved validator."""
 from ..exceptions import ValidationException
 from ..fdef import Fdef, FieldType
-from ..ctx import VCtx
+from ..ctx import Ctx
 from .validator import Validator
 
 

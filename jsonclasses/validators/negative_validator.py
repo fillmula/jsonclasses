@@ -1,13 +1,13 @@
 """module for negative validator."""
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctx import VCtx
+from ..ctx import Ctx
 
 
 class NegativeValidator(Validator):
     """Negative validator marks value valid for smaller than zero."""
 
-    def validate(self, context: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         if context.value is None:
             return context.value
         if context.value >= 0:

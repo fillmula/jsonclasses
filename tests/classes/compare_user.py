@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Optional, Tuple
 from jsonclasses import jsonclass, types
-from jsonclasses.ctx import VCtx
+from jsonclasses.ctx import Ctx
 
 val = 0
 oldval = 0

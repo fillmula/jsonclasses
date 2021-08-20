@@ -1,7 +1,7 @@
 """module for default validator."""
 from typing import Any
 from .validator import Validator
-from ..ctx import TCtx
+from ..ctx import Ctx
 
 
 class DefaultValidator(Validator):
@@ -10,7 +10,7 @@ class DefaultValidator(Validator):
     def __init__(self, default_value: Any) -> None:
         self.default_value = default_value
 
-    def transform(self, context: TCtx) -> Any:
+    def transform(self, ctx: Ctx) -> Any:
         if context.value is not None:
             return context.value
         if callable(self.default_value):

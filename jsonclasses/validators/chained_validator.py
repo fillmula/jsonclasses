@@ -5,7 +5,7 @@ from ..exceptions import ValidationException
 from .validator import Validator
 from .eager_validator import EagerValidator
 from .preserialize_validator import PreserializeValidator
-from ..ctx import VCtx, TCtx, JCtx
+from ..ctx import Ctx
 
 
 class ChainedValidator(Validator):
@@ -92,7 +92,7 @@ class ChainedValidator(Validator):
         except ValueError:
             return None
 
-    def validate(self, context: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         keypath_messages: dict[str, str] = {}
         start = self._last_eager_validator_index(self.validators)
         end = self._first_preserialize_validator_index(self.validators)
@@ -133,7 +133,7 @@ class ChainedValidator(Validator):
             raise ValidationException(keypath_messages, context.root)
 
     # flake8: noqa: E501
-    def transform(self, context: TCtx) -> Any:
+    def transform(self, ctx: Ctx) -> Any:
         curvalue = context.value
         index = 0
         next_index = self._eager_validator_index_after_index(
@@ -152,7 +152,7 @@ class ChainedValidator(Validator):
             curvalue = validator.transform(context.new(value=curvalue))
         return curvalue
 
-    def tojson(self, context: JCtx) -> Any:
+    def tojson(self, ctx: Ctx) -> Any:
         value = context.value
         for validator in self.validators:
             value = validator.tojson(context.new(value=value))

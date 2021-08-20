@@ -7,7 +7,7 @@ from ..exceptions import ValidationException
 from .type_validator import TypeValidator
 from ..keypath import concat_keypath
 from ..rtypes import rtypes
-from ..ctx import VCtx, TCtx, JCtx
+from ..ctx import Ctx
 if TYPE_CHECKING:
     from ..jobject import JObject
     from ..types import Types
@@ -52,7 +52,7 @@ class CollectionTypeValidator(TypeValidator):
     def to_json_key(self, key: T, conf: JConf) -> T:
         return key
 
-    def validate(self, context: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         if context.value is None:
             return
         super().validate(context)
@@ -80,7 +80,7 @@ class CollectionTypeValidator(TypeValidator):
                 keypath_messages=keypath_messages,
                 root=context.root)
 
-    def transform(self, context: TCtx) -> Any:
+    def transform(self, ctx: Ctx) -> Any:
         fdef = cast(Fdef, context.fdef)
         if context.value is None:
             if fdef.collection_nullability == Nullability.NONNULL:
@@ -105,7 +105,7 @@ class CollectionTypeValidator(TypeValidator):
                 retval)
         return retval
 
-    def tojson(self, context: JCtx) -> Any:
+    def tojson(self, ctx: Ctx) -> Any:
         if context.value is None:
             return None
         if not isinstance(context.value, self.cls):

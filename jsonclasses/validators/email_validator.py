@@ -2,13 +2,13 @@
 from re import compile, match
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctx import VCtx
+from ..ctx import Ctx
 
 
 class EmailValidator(Validator):
     """Email validator raises if value is not valid email."""
 
-    def validate(self, context: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         if context.value is None:
             return
         value = context.value

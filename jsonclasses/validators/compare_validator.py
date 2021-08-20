@@ -3,7 +3,7 @@ from typing import Callable, cast
 from inspect import signature
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctx import VCtx
+from ..ctx import Ctx
 
 
 class CompareValidator(Validator):
@@ -18,7 +18,7 @@ class CompareValidator(Validator):
             raise ValueError('not a valid compare callable')
         self.compare_callable = compare_callable
 
-    def validate(self, context: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         from ..jobject import JObject
         name = context.keypath_parent
         parent = cast(JObject, context.parent)

@@ -1,7 +1,7 @@
 """module for truncate validator."""
 from typing import Any
 from .validator import Validator
-from ..ctx import TCtx
+from ..ctx import Ctx
 
 
 class TruncateValidator(Validator):
@@ -10,7 +10,7 @@ class TruncateValidator(Validator):
     def __init__(self, max_length: int) -> None:
         self.max_length = max_length
 
-    def transform(self, context: TCtx) -> Any:
+    def transform(self, ctx: Ctx) -> Any:
         if context.value is None:
             return None
         if context.value.__len__() > self.max_length:

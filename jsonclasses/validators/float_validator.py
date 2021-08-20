@@ -2,7 +2,7 @@
 from typing import Any
 from .type_validator import TypeValidator
 from ..fdef import FieldType
-from ..ctx import TCtx
+from ..ctx import Ctx
 
 
 class FloatValidator(TypeValidator):
@@ -13,7 +13,7 @@ class FloatValidator(TypeValidator):
         self.cls = float
         self.field_type = FieldType.FLOAT
 
-    def transform(self, context: TCtx) -> Any:
+    def transform(self, ctx: Ctx) -> Any:
         if context.value is None:
             return None
         if type(context.value) is int:

@@ -6,7 +6,7 @@ from ..exceptions import ValidationException
 from ..jconf import JConf
 from ..keypath import concat_keypath
 from ..rtypes import rtypes
-from ..ctx import VCtx, TCtx, JCtx
+from ..ctx import Ctx
 from .type_validator import TypeValidator
 
 
@@ -38,7 +38,7 @@ class ShapeValidator(TypeValidator):
         super().define(fdef)
         fdef._raw_shape_types = self.raw_types
 
-    def validate(self, context: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         if context.value is None:
             return
         super().validate(context)
@@ -102,7 +102,7 @@ class ShapeValidator(TypeValidator):
                                             f'\'{context.keypath_root}\'.')},
                     context.root)
 
-    def transform(self, context: TCtx) -> Any:
+    def transform(self, ctx: Ctx) -> Any:
         value = context.value
         fd = cast(Fdef, context.fdef)
         if fd.collection_nullability == Nullability.NONNULL and value is None:
@@ -130,7 +130,7 @@ class ShapeValidator(TypeValidator):
                 fdef=types.fdef))
         return retval
 
-    def tojson(self, context: JCtx) -> Any:
+    def tojson(self, ctx: Ctx) -> Any:
         if context.value is None:
             return None
         if not isinstance(context.value, dict):

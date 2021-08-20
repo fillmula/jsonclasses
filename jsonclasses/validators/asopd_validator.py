@@ -2,7 +2,7 @@
 from typing import Any
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctx import VCtx
+from ..ctx import Ctx
 from ..fdef import Fdef
 
 
@@ -14,7 +14,7 @@ class AsopdValidator(Validator):
     def define(self, fdef: Fdef) -> None:
         fdef._requires_operator_assign = True
 
-    def validate(self, context: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         if context.owner.is_new or context.keypath_owner in context.owner.modified_fields:
             if context.value is None:
                 raise ValidationException(

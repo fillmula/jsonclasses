@@ -1,7 +1,7 @@
 """module for maxlength validator."""
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctx import VCtx
+from ..ctx import Ctx
 
 
 class MaxlengthValidator(Validator):
@@ -10,7 +10,7 @@ class MaxlengthValidator(Validator):
     def __init__(self, maxlength: int) -> None:
         self.maxlength = maxlength
 
-    def validate(self, context: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         if context.value is None:
             return
         if len(context.value) > self.maxlength:

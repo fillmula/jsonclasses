@@ -1,7 +1,7 @@
 """module for oneof validator."""
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctx import VCtx
+from ..ctx import Ctx
 
 
 class OneOfValidator(Validator):
@@ -10,7 +10,7 @@ class OneOfValidator(Validator):
     def __init__(self, str_list: list[str]) -> None:
         self.str_list = str_list
 
-    def validate(self, context: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         if context.value is None:
             return None
         if context.value not in self.str_list:

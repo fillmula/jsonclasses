@@ -2,7 +2,7 @@
 from typing import Union
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctx import VCtx
+from ..ctx import Ctx
 
 
 class PresentWithoutValidator(Validator):
@@ -18,7 +18,7 @@ class PresentWithoutValidator(Validator):
         else:
             self.referring_keys = referring_keys
 
-    def validate(self, context: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         if context.value is not None:
             return
         for key in self.referring_keys:

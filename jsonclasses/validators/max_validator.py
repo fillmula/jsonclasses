@@ -2,7 +2,7 @@
 from typing import Union
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctx import VCtx
+from ..ctx import Ctx
 
 
 class MaxValidator(Validator):
@@ -11,7 +11,7 @@ class MaxValidator(Validator):
     def __init__(self, max_value: Union[int, float]) -> None:
         self.max_value = max_value
 
-    def validate(self, context: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         if context.value is None:
             return context.value
         if context.value > self.max_value:

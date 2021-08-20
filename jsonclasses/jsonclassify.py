@@ -4,7 +4,7 @@ from typing import Any, Optional, Union
 from datetime import datetime
 from inspect import signature
 from .jobject import JObject
-from .ctx import TCtx, VCtx, JCtx
+from .ctx import Ctx, CtxCfg
 from .fdef import Fdef, FieldStorage, FieldType
 from .validators.instanceof_validator import InstanceOfValidator
 from .jfield import JField
@@ -69,27 +69,9 @@ def jsonobject_set(self: JObject, **kwargs: dict[str, Any]) -> JObject:
 def _set(self: JObject,
          kwargs: dict[str, Any], fill_blanks: bool = False) -> None:
     """Set values of a jsonclass object internally."""
-    validator = InstanceOfValidator(self.__class__)
-    jconf = self.__class__.cdef.jconf
-    operator = (getattr(self, '_operator')
-                if hasattr(self, '_operator') else None)
-    context = TCtx(
-        value=kwargs,
-        keypath_root='',
-        root=self,
-        jconf_root=jconf,
-        keypath_owner='',
-        owner=self,
-        jconf_owner=jconf,
-        keypath_parent='',
-        parent=self,
-        fdef=None,
-        operator=operator,
-        all_fields=True,
-        dest=self,
-        fill_dest_blanks=fill_blanks,
-        mgraph=MGraph())
-    validator.transform(context)
+    ctxcfg = CtxCfg(fill_dest_blanks=fill_blanks, all_fields=False)
+    ctx = Ctx.rootctx(self, ctxcfg, kwargs)
+    InstanceOfValidator(self.__class__).transform(ctx)
 
 
 def _keypath_set(self: JObject, kwargs: dict[str, Any]) -> None:
@@ -176,13 +158,9 @@ def tojson(self: JObject,
     """
     self._ensure_not_outdated()
     self._can_read_check()
-    validator = InstanceOfValidator(self.__class__)
-    jconf = self.__class__.cdef.jconf
-    context = JCtx(value=self,
-                            jconf=jconf,
-                            fdef=None,
-                            ignore_writeonly=ignore_writeonly)
-    return validator.tojson(context)
+    ctxcfg = CtxCfg(ignore_writeonly=ignore_writeonly)
+    ctx = Ctx(self, ctxcfg)
+    return InstanceOfValidator(self.__class__).tojson(ctx)
 
 
 def validate(self: JObject,
@@ -199,24 +177,9 @@ def validate(self: JObject,
         None: upon successful validation, returns nothing.
     """
     self._ensure_not_outdated()
-    jconf = self.__class__.cdef.jconf
-    operator = (getattr(self, '_operator')
-                if hasattr(self, '_operator') else None)
-    context = VCtx(
-        value=self,
-        keypath_root='',
-        root=self,
-        jconf_root=jconf,
-        keypath_owner='',
-        owner=self,
-        jconf_owner=jconf,
-        keypath_parent='',
-        parent=self,
-        fdef=None,
-        operator=operator,
-        all_fields=validate_all_fields,
-        mgraph=MGraph())
-    InstanceOfValidator(self.__class__).validate(context)
+    ctxcfg = CtxCfg(all_fields=validate_all_fields)
+    ctx = Ctx.rootctx(self, ctxcfg)
+    InstanceOfValidator(self.__class__).validate(ctx)
     return self
 
 

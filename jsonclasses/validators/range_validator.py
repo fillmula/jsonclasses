@@ -3,7 +3,7 @@ from typing import Union
 from .validator import Validator
 from .min_validator import MinValidator
 from .max_validator import MaxValidator
-from ..ctx import VCtx
+from ..ctx import Ctx
 
 
 class RangeValidator(Validator):
@@ -13,7 +13,7 @@ class RangeValidator(Validator):
         self.min_value = min_value
         self.max_value = max_value
 
-    def validate(self, context: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         if context.value is None:
             return
         MinValidator(self.min_value).validate(context)

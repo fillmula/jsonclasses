@@ -2,7 +2,7 @@
 from ..fdef import Fdef
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctx import VCtx
+from ..ctx import Ctx
 from ..fdef import FieldStorage, FieldType
 from ..jconf import JConf
 from ..isjsonclass import isjsonobject
@@ -14,7 +14,7 @@ class RequiredValidator(Validator):
     def define(self, fdef: Fdef) -> None:
         fdef._required = True
 
-    def validate(self, context: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         storage = FieldStorage.EMBEDDED
         if context.fdef is not None:
             storage = context.fdef.field_storage

@@ -9,7 +9,7 @@ from ..exceptions import ValidationException
 from .validator import Validator
 from ..keypath import concat_keypath, initial_keypaths
 from ..rtypes import rtypes
-from ..ctx import VCtx, TCtx, JCtx
+from ..ctx import Ctx
 if TYPE_CHECKING:
     from ..jobject import JObject
     from ..types import Types
@@ -26,7 +26,7 @@ class InstanceOfValidator(Validator):
         fdef._field_type = FieldType.INSTANCE
         fdef._raw_inst_types = self.raw_type
 
-    def validate(self, context: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         from ..jobject import JObject
         if context.value is None:
             return
@@ -120,7 +120,7 @@ class InstanceOfValidator(Validator):
         return field_value
 
     # pylint: disable=arguments-differ, too-many-locals, too-many-branches
-    def transform(self, context: TCtx) -> Any:
+    def transform(self, ctx: Ctx) -> Any:
         from ..types import Types
         from ..jobject import JObject
         # handle non normal value
@@ -217,7 +217,7 @@ class InstanceOfValidator(Validator):
                 setattr(dest, cname, [])
         return dest
 
-    def tojson(self, context: JCtx) -> Any:
+    def tojson(self, ctx: Ctx) -> Any:
         if context.value is None:
             return None
         retval = {}

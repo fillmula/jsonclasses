@@ -5,7 +5,7 @@ from ..fdef import (FieldType, Fdef, EnumInput,
                                 EnumOutput)
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctx import TCtx, JCtx, VCtx
+from ..ctx import Ctx
 
 
 class EnumValidator(Validator):
@@ -25,7 +25,7 @@ class EnumValidator(Validator):
             fdef._enum_output = EnumOutput.NAME
         return
 
-    def transform(self, context: TCtx) -> Any:
+    def transform(self, ctx: Ctx) -> Any:
         if context.value is None:
             return None
         if isinstance(self.enum_or_name, str):
@@ -61,7 +61,7 @@ class EnumValidator(Validator):
                 context.keypath_root: 'unknown enum value'
             }, context.root)
 
-    def validate(self, context: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         if context.value is None:
             return None
         if isinstance(self.enum_or_name, str):
@@ -74,7 +74,7 @@ class EnumValidator(Validator):
                 context.keypath_root: 'invalid enum value'
             }, context.root)
 
-    def tojson(self, context: JCtx) -> Any:
+    def tojson(self, ctx: Ctx) -> Any:
         if context.value is None:
             return None
         if context.fdef.enum_output == EnumOutput.VALUE:
