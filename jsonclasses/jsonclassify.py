@@ -4,7 +4,7 @@ from typing import Any, Optional, Union
 from datetime import datetime
 from inspect import signature
 from .jobject import JObject
-from .ctxs import TCtx, VCtx, JCtx
+from .ctx import TCtx, VCtx, JCtx
 from .fdef import Fdef, FieldStorage, FieldType
 from .validators.instanceof_validator import InstanceOfValidator
 from .jfield import JField

@@ -1,7 +1,7 @@
 """module for totitle validator."""
 from typing import Any
 from .validator import Validator
-from ..ctxs import TCtx
+from ..ctx import TCtx
 
 
 class ToTitleValidator(Validator):

@@ -2,7 +2,7 @@
 from typing import Callable, Any
 from inspect import signature
 from .validator import Validator
-from ..ctxs import TCtx
+from ..ctx import TCtx
 
 
 class OnSaveValidator(Validator):

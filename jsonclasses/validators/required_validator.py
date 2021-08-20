@@ -2,7 +2,7 @@
 from ..fdef import Fdef
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import VCtx
+from ..ctx import VCtx
 from ..fdef import FieldStorage, FieldType
 from ..jconf import JConf
 from ..isjsonclass import isjsonobject

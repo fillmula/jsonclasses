@@ -3,7 +3,7 @@ from typing import Callable, cast
 from inspect import signature
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import VCtx
+from ..ctx import VCtx
 
 
 class CompareValidator(Validator):

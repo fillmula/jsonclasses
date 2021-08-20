@@ -7,7 +7,7 @@ from ..exceptions import ValidationException
 from .type_validator import TypeValidator
 from ..keypath import concat_keypath
 from ..rtypes import rtypes
-from ..ctxs import VCtx, TCtx, JCtx
+from ..ctx import VCtx, TCtx, JCtx
 if TYPE_CHECKING:
     from ..jobject import JObject
     from ..types import Types

@@ -5,7 +5,7 @@ from ..exceptions import ValidationException
 from .validator import Validator
 from .eager_validator import EagerValidator
 from .preserialize_validator import PreserializeValidator
-from ..ctxs import VCtx, TCtx, JCtx
+from ..ctx import VCtx, TCtx, JCtx
 
 
 class ChainedValidator(Validator):

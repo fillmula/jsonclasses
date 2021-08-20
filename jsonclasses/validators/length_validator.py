@@ -2,7 +2,7 @@
 from typing import Optional
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import VCtx
+from ..ctx import VCtx
 
 
 class LengthValidator(Validator):

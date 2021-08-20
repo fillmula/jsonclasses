@@ -6,7 +6,7 @@ from ..exceptions import ValidationException
 from ..jconf import JConf
 from ..keypath import concat_keypath
 from ..rtypes import rtypes
-from ..ctxs import VCtx, TCtx, JCtx
+from ..ctx import VCtx, TCtx, JCtx
 from .type_validator import TypeValidator
 
 

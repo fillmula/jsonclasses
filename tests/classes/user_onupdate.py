@@ -1,6 +1,6 @@
 from typing import Tuple
 from jsonclasses import jsonclass, types
-from jsonclasses.ctxs import TCtx
+from jsonclasses.ctx import TCtx
 
 val = 0
 oldval = -1

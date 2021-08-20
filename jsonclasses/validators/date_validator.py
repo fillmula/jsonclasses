@@ -4,7 +4,7 @@ from datetime import date, datetime
 from ..fdef import FieldType
 from ..exceptions import ValidationException
 from .type_validator import TypeValidator
-from ..ctxs import TCtx, JCtx
+from ..ctx import TCtx, JCtx
 
 
 class DateValidator(TypeValidator):

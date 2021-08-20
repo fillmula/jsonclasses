@@ -1,7 +1,7 @@
 """module for validator validator."""
 from typing import Any
 from ..fdef import Fdef
-from ..ctxs import VCtx, TCtx, JCtx
+from ..ctx import VCtx, TCtx, JCtx
 
 
 class Validator:

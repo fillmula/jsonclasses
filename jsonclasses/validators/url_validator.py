@@ -2,7 +2,7 @@
 from re import compile, match, IGNORECASE
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import VCtx
+from ..ctx import VCtx
 
 
 class UrlValidator(Validator):

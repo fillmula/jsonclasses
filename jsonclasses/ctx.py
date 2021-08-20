@@ -3,9 +3,45 @@ from __future__ import annotations
 from typing import Any, NamedTuple, Optional, Union, TYPE_CHECKING
 from .mgraph import MGraph
 if TYPE_CHECKING:
+    from .cdef import Cdef
     from .jconf import JConf
     from .fdef import Fdef
     from .jobject import JObject
+
+
+class CtxCfg(NamedTuple):
+
+    all_fields: bool = False
+    """On validating, whether validate all fields.
+    """
+
+    ignore_writeonly: bool = False
+    """On tojson, whether ignore writeonly.
+    """
+
+    fill_dest_blanks: bool = False
+    """On setting, whether fill default fields with None value.
+    """
+
+class Ctx(NamedTuple):
+    root: JObject
+    owner: JObject
+    parent: Union[list, dict, JObject]
+    value: Any
+    ctxcfg: CtxCfg
+    keypatho: list[str]
+    keypathr: list[str]
+    keypathp: list[str]
+    operator: Any
+
+    @property
+    def cdefroot(self: Ctx) -> Cdef:
+        return self.root.__class__.cdef
+
+    @property
+    def cdefowner(self: Ctx) -> Cdef:
+        return self.owner.__class__.cdef
+
 
 
 class VCtx(NamedTuple):

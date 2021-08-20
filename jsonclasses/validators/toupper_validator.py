@@ -1,7 +1,7 @@
 """module for toupper validator."""
 from typing import Any
 from .validator import Validator
-from ..ctxs import TCtx
+from ..ctx import TCtx
 
 
 class ToUpperValidator(Validator):

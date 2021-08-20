@@ -5,7 +5,7 @@ from ..fdef import (FieldType, Fdef, EnumInput,
                                 EnumOutput)
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import TCtx, JCtx, VCtx
+from ..ctx import TCtx, JCtx, VCtx
 
 
 class EnumValidator(Validator):

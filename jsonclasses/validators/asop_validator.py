@@ -3,7 +3,7 @@ from typing import Callable
 from inspect import signature
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import VCtx
+from ..ctx import VCtx
 from ..fdef import Fdef
 
 
