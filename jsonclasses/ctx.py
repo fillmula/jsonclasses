@@ -28,11 +28,14 @@ class Ctx(NamedTuple):
     owner: JObject
     parent: Union[list, dict, JObject]
     value: Any
+    original: Any
     ctxcfg: CtxCfg
-    keypatho: list[str]
-    keypathr: list[str]
-    keypathp: list[str]
+    keypatho: list[Union[str, int]]
+    keypathr: list[Union[str, int]]
+    keypathp: list[Union[str, int]]
+    fdef: Fdef
     operator: Any
+    mgraph: MGraph = MGraph()
 
     @property
     def cdefroot(self: Ctx) -> Cdef:
