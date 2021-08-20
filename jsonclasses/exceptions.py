@@ -4,6 +4,15 @@ from typing import Any
 from inspect import getmodule, getsourcelines
 
 
+class UnresolvedTypeNameException(Exception):
+    """Unresolved type name in graph.
+    """
+
+    def __init__(self, msg: str) -> None:
+        self.msg = msg
+        super().__init__(msg)
+
+
 class UnlinkableJSONClassException(Exception):
     """This exception is raised when jsonclass objects are linked and no unique
     primary key value is found.

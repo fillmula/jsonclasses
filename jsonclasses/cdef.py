@@ -63,14 +63,16 @@ class Cdef:
                 self._camelized_field_names.append(json_name)
             else:
                 json_name = name
-            types = cast(Types, self._get_types(field, jconf))
-            types.fdef._cdef = self
             if isinstance(field.default, Types):
+                types = field.default
                 default = None
             elif field.default == field.default_factory:
+                types = rtypes(field.type)
                 default = None
             else:
+                types = rtypes(field.type)
                 default = field.default
+            types.fdef._cdef = self
             jfield = JField(
                 name=name,
                 json_name=json_name,
@@ -110,28 +112,12 @@ class Cdef:
         self._update_names: set[str] = set(self._field_names
                                            + self._reference_names)
 
-    def _get_types(self: Cdef,
-                   field: Field,
-                   jconf: JConf) -> Types:
-        """
-        Try to fetch the types definition from the field definition. If user
-        hasn't define a types definition, an automatically synthesized one is
-        returned.
-        """
-        from .types import Types
-        if isinstance(field.default, Types):
-            return field.default
-        else:
-            return rtypes(field.type, jconf)
-
-    def _def_class_match(self: Cdef,
-                         fdef: Fdef,
-                         class_: type) -> bool:
+    def _def_class_match(self: Cdef, fdef: Fdef, class_: type) -> bool:
         if fdef.field_type == FieldType.LIST:
-            item_types = rtypes(fdef.raw_item_types, self.jconf)
+            item_types = rtypes(fdef.raw_item_types)
             return self._def_class_match(item_types.fdef, class_)
         elif fdef.field_type == FieldType.INSTANCE:
-            types = rtypes(fdef.raw_inst_types, self.jconf)
+            types = rtypes(fdef.raw_inst_types)
             return types.fdef.raw_inst_types == class_
         return False
 

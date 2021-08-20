@@ -68,12 +68,12 @@ def merge_back_dicts(args: list[str]) -> list[str]:
             retval.append(arg)
     return retval
 
-def str_to_types(any_types: str, opt: bool = False) -> Types:
+def str_to_types(anytypes: str, opt: bool = False) -> Types:
     """
     Convert user specified string described types to types.
 
     Args:
-        any_types (str): The user specified string described types.
+        anytypes (str): The user specified string described types.
         jconf (JConf): The configuration of the field's owner class.
         optional (bool): Whether the types is optional.
 
@@ -81,20 +81,20 @@ def str_to_types(any_types: str, opt: bool = False) -> Types:
         Types: A types which describes the field.
     """
     from .types import types
-    if any_types == 'str':
+    if anytypes == 'str':
         return types.str if opt else types.str.required
-    elif any_types == 'int':
+    elif anytypes == 'int':
         return types.int if opt else types.int.required
-    elif any_types == 'float':
+    elif anytypes == 'float':
         return types.float if opt else types.float.required
-    elif any_types == 'bool':
+    elif anytypes == 'bool':
         return types.bool if opt else types.bool.required
-    elif any_types == 'date':
+    elif anytypes == 'date':
         return types.date if opt else types.date.required
-    elif any_types == 'datetime':
+    elif anytypes == 'datetime':
         return types.datetime if opt else types.datetime.required
-    elif any_types.startswith('Union['):
-        match_data = match('Union\\[(.*)\\]', any_types)
+    elif anytypes.startswith('Union['):
+        match_data = match('Union\\[(.*)\\]', anytypes)
         assert match_data is not None
         all_item_types = match_data.group(1)
         types_to_build_union = split(", *", all_item_types)
@@ -104,55 +104,40 @@ def str_to_types(any_types: str, opt: bool = False) -> Types:
             results.append(str_to_types(t, True))
         oneoftype = types.oneoftype(results)
         return oneoftype if opt else oneoftype.required
-    elif any_types.startswith('Optional['):
-        match_data = match('Optional\\[(.*)\\]', any_types)
+    elif anytypes.startswith('Optional['):
+        match_data = match('Optional\\[(.*)\\]', anytypes)
         assert match_data is not None
         item_type = match_data.group(1)
         return str_to_types(item_type, True)
-    elif match('[Ll]ist\\[', any_types):
-        match_data = match('[Ll]ist\\[(.*)\\]', any_types)
+    elif match('[Ll]ist\\[', anytypes):
+        match_data = match('[Ll]ist\\[(.*)\\]', anytypes)
         assert match_data is not None
         item_type = match_data.group(1)
         list_type = types.listof(str_to_types(item_type))
         return list_type if opt else list_type.required
-    elif match('[Dd]ict\\[', any_types):
-        match_data = match('[Dd]ict\\[.+, *(.*)\\]', any_types)
+    elif match('[Dd]ict\\[', anytypes):
+        match_data = match('[Dd]ict\\[.+, *(.*)\\]', anytypes)
         assert match_data is not None
         item_type = match_data.group(1)
         dict_type = types.dictof(str_to_types(item_type))
         return dict_type if opt else dict_type.required
-    elif any_types.startswith('Annotated['):
-        match_data = match('(Annotated)\\[(.+), *(.+)\\]', any_types)
+    elif anytypes.startswith('Annotated['):
+        match_data = match('(Annotated)\\[(.+), *(.+)\\]', anytypes)
         assert match_data is not None
         instance_type = match_data.group(2)
         link_specifier = match_data.group(3)
         types = str_to_types(instance_type, opt)
         return apply_link_specifier(types, link_specifier)
     else:
-        return types._unresolved(any_types)
-        # graph = jconf.cgraph
-        # if graph.has(any_types):
-        #     definition = graph.fetch(any_types)
-        #     instance_type = types.instanceof(definition.cls)
-        #     return instance_type if opt else instance_type.required
-        # elif graph.has_dict(any_types):
-        #     dict_cls = graph.fetch_dict(any_types)
-        #     shape_type = types.nonnull.shape(dict_cls)
-        #     return shape_type if opt else shape_type.required
-        # elif graph.has_enum(any_types):
-        #     enum_cls = graph.fetch_enum(any_types)
-        #     type = types.enum(enum_cls)
-        #     return type if opt else type.required
-        # elif isinstance(any_types, str):
-        #     instance_type = types.instanceof(any_types)
-        #     return instance_type if opt else instance_type.required
+        return types._unresolved(anytypes)
 
-def to_types(any_types: Any, opt: bool = False) -> Types:
+
+def to_types(anytypes: Any, opt: bool = False) -> Types:
     """
     Convert any types that user specified to types.
 
     Args:
-        any_types (Any): The user specified any types.
+        anytypes (Any): The user specified any types.
         jconf (JConf): The configuration of the field's owner class.
         opt (bool): Whether the types is optional.
 
@@ -160,30 +145,30 @@ def to_types(any_types: Any, opt: bool = False) -> Types:
         Types: A types which describes the field.
     """
     from .types import types
-    if isinstance(any_types, str):
-        return str_to_types(any_types)
-    elif any_types is str:
+    if isinstance(anytypes, str):
+        return str_to_types(anytypes)
+    elif anytypes is str:
         return types.str if opt else types.str.required
-    elif any_types is int:
+    elif anytypes is int:
         return types.int if opt else types.int.required
-    elif any_types is float:
+    elif anytypes is float:
         return types.float if opt else types.float.required
-    elif any_types is bool:
+    elif anytypes is bool:
         return types.bool if opt else types.bool.required
-    elif any_types is date:
+    elif anytypes is date:
         return types.date if opt else types.date.required
-    elif any_types is datetime:
+    elif anytypes is datetime:
         return types.datetime if opt else types.datetime.required
-    elif get_origin(any_types) is list:
-        list_type = types.listof(get_args(any_types)[0])
+    elif get_origin(anytypes) is list:
+        list_type = types.listof(get_args(anytypes)[0])
         return list_type if opt else list_type.required
-    elif get_origin(any_types) is dict:
-        dict_type = types.dictof(get_args(any_types)[1])
+    elif get_origin(anytypes) is dict:
+        dict_type = types.dictof(get_args(anytypes)[1])
         return dict_type if opt else dict_type.required
-    elif get_origin(any_types) == Union:
+    elif get_origin(anytypes) == Union:
         required: bool = True
         types_to_build_union: list[Any] = []
-        args = get_args(any_types)
+        args = get_args(anytypes)
         for arg in args:
             if type(None) == arg:
                 required = False
@@ -197,31 +182,31 @@ def to_types(any_types: Any, opt: bool = False) -> Types:
                 results.append(to_types(t, True))
             oneoftype = types.oneoftype(results)
             return oneoftype if not required else oneoftype.required
-    elif get_origin(any_types) == Annotated:
-        annotated_args = get_args(any_types)
+    elif get_origin(anytypes) == Annotated:
+        annotated_args = get_args(anytypes)
         len_args = len(annotated_args)
         if len_args != 2:
             raise TypeError(('wrong number of arguments passed to Link, '
                             f'expect 2, got {len_args}'))
         types = to_types(annotated_args[0], opt)
         return apply_link_specifier(types, annotated_args[1])
-    elif isinstance(any_types, type) and issubclass(any_types, dict):
-        anno_dict: dict[str, Any] = any_types.__annotations__
+    elif isinstance(anytypes, type) and issubclass(anytypes, dict):
+        anno_dict: dict[str, Any] = anytypes.__annotations__
         item_types: dict[str, Types] = {}
         for k, t in anno_dict.items():
             item_types[k] = to_types(t)
         raw_shape_types = types.nonnull.shape(item_types)
         return raw_shape_types if opt else raw_shape_types.required
-    elif isinstance(any_types, type) and issubclass(any_types, Enum):
-        enum_type = types.enum(any_types)
+    elif isinstance(anytypes, type) and issubclass(anytypes, Enum):
+        enum_type = types.enum(anytypes)
         return enum_type if opt else enum_type.required
-    elif hasattr(any_types, '__is_jsonclass__'):
-        instance_type = types.instanceof(any_types)
+    elif hasattr(anytypes, '__is_jsonclass__'):
+        instance_type = types.instanceof(anytypes)
         return instance_type if opt else instance_type.required
-    elif isinstance(any_types, ForwardRef):
-        return str_to_types(any_types.__forward_arg__)
+    elif isinstance(anytypes, ForwardRef):
+        return str_to_types(anytypes.__forward_arg__)
     else:
-        raise ValueError(f'{any_types} is not a valid JSON Class type.')
+        raise ValueError(f'{anytypes} is not a valid JSON Class type.')
 
 
 def rtypes(anytypes: Any) -> Types:

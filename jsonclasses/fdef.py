@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import cast, Any, Callable, Optional, Union, TYPE_CHECKING
 from enum import Enum, Flag
 from .rtypes import rtypes
+from .exceptions import UnresolvedTypeNameException
 if TYPE_CHECKING:
     from .types import Types
     from .cdef import Cdef
@@ -153,12 +154,14 @@ class Fdef:
     def field_type(self: Fdef) -> FieldType:
         """The field's type.
         """
+        self._resolve_if_needed()
         return cast(FieldType, self._field_type)
 
     @property
     def field_storage(self: Fdef) -> FieldStorage:
         """The field's storage.
         """
+        self._resolve_if_needed()
         return self._field_storage
 
     # primary key
@@ -168,12 +171,14 @@ class Fdef:
         """Whether this field is a primary field. A class can only has one
         primary field.
         """
+        self._resolve_if_needed()
         return self._primary
 
     @property
     def usage(self: Fdef) -> Optional[str]:
         """The usage of this field.
         """
+        self._resolve_if_needed()
         return self._usage
 
     # database modifiers
@@ -183,6 +188,7 @@ class Fdef:
         """Whether perform database index on this field. This is marked for
         ORM implementers.
         """
+        self._resolve_if_needed()
         return self._index
 
     @property
@@ -190,6 +196,7 @@ class Fdef:
         """Whether this field's value is unique. This is marked for ORM
         implementers.
         """
+        self._resolve_if_needed()
         return self._unique
 
     @property
@@ -197,6 +204,7 @@ class Fdef:
         """Whether this field is required. This is marked for ORM
         implementers.
         """
+        self._resolve_if_needed()
         return self._required
 
     # enum marks
@@ -205,24 +213,28 @@ class Fdef:
     def enum_class(self: Fdef) -> Optional[Union[type[Enum], str]]:
         """The class of the enum.
         """
+        self._resolve_if_needed()
         return self._enum_class
 
     @property
     def enum_input(self: Fdef) -> Optional[EnumInput]:
         """The allowed input types of this enum class.
         """
+        self._resolve_if_needed()
         return self._enum_input
 
     @property
     def enum_output(self: Fdef) -> Optional[EnumOutput]:
         """The output type of this enum class.
         """
+        self._resolve_if_needed()
         return self._enum_output
 
     @property
     def raw_union_types(self: Fdef) -> Optional[list[Types]]:
         """The raw union types of this union field.
         """
+        self._resolve_if_needed()
         return self._raw_union_types
 
     # subtypes
@@ -231,12 +243,14 @@ class Fdef:
     def raw_item_types(self: Fdef) -> Optional[Any]:
         """The raw item types of this collection field.
         """
+        self._resolve_if_needed()
         return self._raw_item_types
 
     @property
     def item_types(self: Fdef) -> Optional[Types]:
         """The item types of this collection field.
         """
+        self._resolve_if_needed()
         if self._raw_item_types is None:
             return None
         if self._resolved_item_types is not None:
@@ -248,12 +262,14 @@ class Fdef:
     def raw_shape_types(self: Fdef) -> Optional[dict[str, Any]]:
         """The raw shape types of this shape field.
         """
+        self._resolve_if_needed()
         return self._raw_shape_types
 
     @property
     def shape_types(self: Fdef) -> Optional[dict[str, Types]]:
         """The shape types of this collection field.
         """
+        self._resolve_if_needed()
         if self._raw_shape_types is None:
             return None
         if self._resolved_shape_types is not None:
@@ -269,12 +285,14 @@ class Fdef:
     def raw_inst_types(self: Fdef) -> Optional[Union[Types, str, type]]:
         """The raw instance types of this instance field.
         """
+        self._resolve_if_needed()
         return self._raw_inst_types
 
     @property
     def inst_types(self: Fdef) -> Optional[Types]:
         """The instance types of this field.
         """
+        self._resolve_if_needed()
         if self._raw_inst_types is None:
             return None
         if self._resolved_inst_types is not None:
@@ -288,36 +306,42 @@ class Fdef:
     def foreign_key(self: Fdef) -> Optional[str]:
         """The foreign key of the relationship.
         """
+        self._resolve_if_needed()
         return self._foreign_key
 
     @property
     def use_join_table(self: Fdef) -> Optional[bool]:
         """Whether this reference uses join table.
         """
+        self._resolve_if_needed()
         return self._use_join_table
 
     @property
     def join_table_cls(self: Fdef) -> Optional[Any]:
         """The join table class of the relationship.
         """
+        self._resolve_if_needed()
         return self._join_table_cls
 
     @property
     def join_table_referrer_key(self: Fdef) -> Optional[str]:
         """The referrer key of the join table.
         """
+        self._resolve_if_needed()
         return self._join_table_referrer_key
 
     @property
     def join_table_referee_key(self: Fdef) -> Optional[str]:
         """The referee key of the join table.
         """
+        self._resolve_if_needed()
         return self._join_table_referee_key
 
     @property
     def delete_rule(self: Fdef) -> Optional[DeleteRule]:
         """The delete rule of this relationship.
         """
+        self._resolve_if_needed()
         return self._delete_rule
 
     # read write rule
@@ -326,18 +350,21 @@ class Fdef:
     def read_rule(self: Fdef) -> ReadRule:
         """The read rule of this field.
         """
+        self._resolve_if_needed()
         return self._read_rule
 
     @property
     def write_rule(self: Fdef) -> WriteRule:
         """The write rule of this field.
         """
+        self._resolve_if_needed()
         return self._write_rule
 
     @property
     def is_temp_field(self: Fdef) -> bool:
         """Whether this field is a temp field.
         """
+        self._resolve_if_needed()
         return self._is_temp_field
 
     # collection and collection items null rules
@@ -346,18 +373,21 @@ class Fdef:
     def collection_nullability(self: Fdef) -> Nullability:
         """The collection nullability of this field.
         """
+        self._resolve_if_needed()
         return self._collection_nullability
 
     @property
     def item_nullability(self: Fdef) -> Nullability:
         """The item nullability of this field.
         """
+        self._resolve_if_needed()
         return self._item_nullability
 
     @property
     def strictness(self: Fdef) -> Strictness:
         """The strictness of this shape field.
         """
+        self._resolve_if_needed()
         return self._strictness
 
     # special validator marks
@@ -366,18 +396,21 @@ class Fdef:
     def has_eager_validator(self: Fdef) -> bool:
         """Whether there is at least an eager validator in the chain.
         """
+        self._resolve_if_needed()
         return self._has_eager_validator
 
     @property
     def has_reset_validator(self: Fdef) -> bool:
         """Whether there is at least an reset validator in the chain.
         """
+        self._resolve_if_needed()
         return self._has_reset_validator
 
     @property
     def has_preserialize_validator(self: Fdef) -> bool:
         """Whether there is at least a preserialize validator in the chain.
         """
+        self._resolve_if_needed()
         return self._has_preserialize_validator
 
     # operator
@@ -386,18 +419,21 @@ class Fdef:
     def requires_operator_assign(self: Fdef) -> bool:
         """Whether this field requires an operator assigned.
         """
+        self._resolve_if_needed()
         return self._requires_operator_assign
 
     @property
     def operator_assign_transformer(self: Fdef) -> Optional[Callable]:
         """The operator assign transformer of this field.
         """
+        self._resolve_if_needed()
         return self._operator_assign_transformer
 
     # old reference properties
 
     @property
     def is_ref(self: Fdef) -> bool:
+        self._resolve_if_needed()
         if self.field_storage in \
                 [FieldStorage.LOCAL_KEY, FieldStorage.FOREIGN_KEY]:
             return True
@@ -405,6 +441,7 @@ class Fdef:
 
     @property
     def is_inst(self: Fdef) -> bool:
+        self._resolve_if_needed()
         if self.field_type == FieldType.INSTANCE:
             return True
         if self.field_type == FieldType.LIST:
@@ -417,6 +454,7 @@ class Fdef:
 
     @property
     def has_linked(self: Fdef) -> bool:
+        self._resolve_if_needed()
         if self.field_storage == FieldStorage.LOCAL_KEY:
             return True
         if self.field_storage == FieldStorage.FOREIGN_KEY:
@@ -426,3 +464,32 @@ class Fdef:
             item_type = rtypes(self.raw_item_types, self.cdef.jconf)
             return item_type.fdef.has_linked
         return False
+
+    def _resolve_if_needed(self: Fdef) -> None:
+        if self._unresolved:
+            # resolve
+            self._resolve()
+            self._unresolved = False
+            self._unresolved_name = None
+
+    def _resolve(self: Fdef) -> None:
+        name = self._unresolved_name
+        cgraph = self.cdef.jconf.cgraph
+        if cgraph.has(name):
+            cdef = cgraph.fetch(name)
+            self._field_type = FieldType.INSTANCE
+            self._raw_inst_types = cdef.cls
+        elif cgraph.has_dict(name):
+            dictcls = cgraph.fetch_dict(name)
+            self._field_type = FieldType.SHAPE
+            self._collection_nullability = Nullability.NONNULL
+            self._raw_shape_types = dictcls
+        elif cgraph.has_enum(name):
+            enumcls = cgraph.fetch_enum(name)
+            self._field_type = FieldType.ENUM
+            self._enum_class = enumcls
+            self._enum_input = EnumInput.NAME
+            self._enum_output = EnumOutput.NAME
+        else:
+            raise UnresolvedTypeNameException(
+                f"Unfound field name '{name}' in class '{self.cdef.name}'.")
