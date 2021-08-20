@@ -1,5 +1,6 @@
 """module for enum validator."""
 from typing import Any, Union
+from enum import Enum
 from ..fdef import (FieldType, Fdef, EnumInput,
                                 EnumOutput)
 from ..exceptions import ValidationException
@@ -10,14 +11,14 @@ from ..ctxs import TCtx, JCtx, VCtx
 class EnumValidator(Validator):
     """Enum validator validates value against provided enum type."""
 
-    def __init__(self, enum_or_name: Union[type, str]):
+    def __init__(self, enum_or_name: Union[type[Enum], str]):
         super().__init__()
         self.enum_or_name = enum_or_name
         self.field_type = FieldType.ENUM
 
     def define(self, fdef: Fdef) -> None:
         fdef._field_type = FieldType.ENUM
-        fdef._enum_class = self.enum_or_name
+        fdef._raw_enum_class = self.enum_or_name
         if fdef.enum_input is None:
             fdef._enum_input = EnumInput.NAME
         if fdef.enum_output is None:

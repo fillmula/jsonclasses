@@ -1,5 +1,7 @@
 """This is an internal module."""
 from __future__ import annotations
+from jsonclasses.isjsonclass import isjsonclass
+from jsonclasses.jobject import JObject
 from typing import cast, Any, Callable, Optional, Union, TYPE_CHECKING
 from enum import Enum, Flag
 from .rtypes import rtypes
@@ -115,17 +117,18 @@ class Fdef:
         self._index: bool = False
         self._unique: bool = False
         self._required: bool = False
-        self._enum_class: Optional[Union[type[Enum], str]] = None
+        self._raw_enum_class: Optional[Union[type[Enum], str]] = None
+        self._enum_class: Optional[type[Enum]] = None
         self._enum_input: Optional[EnumInput] = None
         self._enum_output: Optional[EnumOutput] = None
         self._raw_union_types: Optional[list[Types]] = None
         self._raw_item_types: Optional[Any] = None
         self._raw_shape_types: Optional[dict[str, Any]] = None
-        self._raw_inst_types: Optional[Union[Types, str, type]] = None
+        self._raw_inst_types: Optional[Union[str, type[JObject]]] = None
         self._resolved_union_types: Optional[list[Types]] = None
         self._resolved_item_types: Optional[Types] = None
         self._resolved_shape_types: Optional[dict[str, Types]] = None
-        self._resolved_inst_types: Optional[Types] = None
+        self._inst_cls: Optional[type[JObject]] = None
         self._foreign_key: Optional[str] = None
         self._use_join_table: Optional[bool] = None
         self._join_table_cls: Optional[Any] = None
@@ -209,11 +212,25 @@ class Fdef:
 
     # enum marks
 
-    @property # TODO: raw enum class
+    @property
+    def raw_enum_class(self: Fdef) -> Optional[Union[type[Enum], str]]:
+        """The raw enum class.
+        """
+        self._resolve_if_needed()
+        return self._raw_enum_class
+
+    @property
     def enum_class(self: Fdef) -> Optional[Union[type[Enum], str]]:
         """The class of the enum.
         """
         self._resolve_if_needed()
+        if self._enum_class is not None:
+            return self._enum_class
+        if isinstance(self._raw_enum_class, str):
+            ecls = self.cdef.jconf.cgraph.fetch_enum(self._raw_enum_class)
+            self._enum_class = ecls
+        else:
+            self._enum_class = self._raw_enum_class
         return self._enum_class
 
     @property
@@ -255,7 +272,7 @@ class Fdef:
             return None
         if self._resolved_item_types is not None:
             return self._resolved_item_types
-        self._resolved_item_types = rtypes(self.raw_item_types, self)
+        self._resolved_item_types = rtypes(self.raw_item_types)
         return self._resolved_item_types
 
     @property
@@ -276,29 +293,33 @@ class Fdef:
             return self._resolved_shape_types
         if isinstance(self._resolved_shape_types, dict):
             self._resolved_shape_types = \
-                {k: rtypes(t, self) for k, t in self._raw_shape_types.items()}
+                {k: rtypes(t) for k, t in self._raw_shape_types.items()}
         else:
-            self._resolved_shape_types = rtypes(self._raw_shape_types, self).fdef.raw_shape_types
+            self._resolved_shape_types = rtypes(self._raw_shape_types).fdef.raw_shape_types
         return self._resolved_shape_types
 
     @property
-    def raw_inst_types(self: Fdef) -> Optional[Union[Types, str, type]]:
+    def raw_inst_types(self: Fdef) -> Optional[Union[str, type[JObject]]]:
         """The raw instance types of this instance field.
         """
         self._resolve_if_needed()
         return self._raw_inst_types
 
     @property
-    def inst_types(self: Fdef) -> Optional[Types]:
-        """The instance types of this field.
+    def inst_cls(self: Fdef) -> Optional[type[JObject]]:
+        """The instance class of this field.
         """
         self._resolve_if_needed()
+        if self._inst_cls:
+            return self._inst_cls
         if self._raw_inst_types is None:
             return None
-        if self._resolved_inst_types is not None:
-            return self._resolved_inst_types
-        self._resolved_inst_types = rtypes(self.raw_inst_types, self)
-        return self._resolved_inst_types
+        if isjsonclass(self._raw_inst_types):
+            self._inst_cls = self._raw_inst_types
+        cgraph = self.cdef.jconf.cgraph
+        inst_cls = cgraph.fetch(self._raw_inst_types)
+        self._inst_cls = inst_cls
+        return self._inst_cls
 
     # relationship
 
@@ -445,10 +466,7 @@ class Fdef:
         if self.field_type == FieldType.INSTANCE:
             return True
         if self.field_type == FieldType.LIST:
-            item_types = rtypes(
-                self.raw_item_types,
-                self.cdef.jconf)
-            if item_types.fdef.field_type == FieldType.INSTANCE:
+            if self.item_types.fdef.field_type == FieldType.INSTANCE:
                 return True
         return False
 
@@ -459,10 +477,8 @@ class Fdef:
             return True
         if self.field_storage == FieldStorage.FOREIGN_KEY:
             return True
-        if self.field_type == FieldType.LIST or \
-                self.field_type == FieldType.DICT:
-            item_type = rtypes(self.raw_item_types, self.cdef.jconf)
-            return item_type.fdef.has_linked
+        if self.field_type == FieldType.LIST:
+            return self.item_types.fdef.has_linked
         return False
 
     def _resolve_if_needed(self: Fdef) -> None:
@@ -479,6 +495,7 @@ class Fdef:
             cdef = cgraph.fetch(name)
             self._field_type = FieldType.INSTANCE
             self._raw_inst_types = cdef.cls
+            self._inst_cls = cdef.cls
         elif cgraph.has_dict(name):
             dictcls = cgraph.fetch_dict(name)
             self._field_type = FieldType.SHAPE

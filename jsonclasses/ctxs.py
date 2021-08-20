@@ -161,9 +161,7 @@ class JCtx(NamedTuple):
         return JCtx(
             value=kwargs['value'] if 'value' in keys else self.value,
             jconf=kwargs['jconf'] if 'jconf' in keys else self.jconf,
-            fdef=(kwargs['fdef']
-                        if 'fdef' in keys
-                        else self.fdef),
+            fdef=(kwargs['fdef'] if 'fdef' in keys else self.fdef),
             ignore_writeonly=(kwargs['ignore_writeonly']
                               if 'ignore_writeonly' in keys
                               else self.ignore_writeonly),
