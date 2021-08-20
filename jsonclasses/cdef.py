@@ -5,6 +5,7 @@ user defines a JSON class. This is used by the framework to lookup class fields
 and class field settings.
 """
 from __future__ import annotations
+from jsonclasses.jobject import JObject
 from typing import Optional, final, cast, TYPE_CHECKING
 from dataclasses import fields, Field
 from inflection import camelize
@@ -82,27 +83,27 @@ class Cdef:
                 validator=types.validator)
             self._list_fields.append(jfield)
             self._dict_fields[name] = jfield
-            if types.fdef.primary:
+            if types.fdef._primary:
                 self._primary_field = jfield
-            if types.fdef.usage == 'created_at':
+            if types.fdef._usage == 'created_at':
                 self._created_at_field = jfield
-            elif types.fdef.usage == 'updated_at':
+            elif types.fdef._usage == 'updated_at':
                 self._updated_at_field = jfield
-            elif types.fdef.usage == 'deleted_at':
+            elif types.fdef._usage == 'deleted_at':
                 self._deleted_at_field = jfield
-            if types.fdef.field_storage == FieldStorage.LOCAL_KEY:
+            if types.fdef._field_storage == FieldStorage.LOCAL_KEY:
                 key_transformer = jconf.key_transformer
                 self._reference_names.append(key_transformer(jfield))
                 if jconf.camelize_json_keys:
                     self._camelized_reference_names.append(
                         camelize(key_transformer(jfield), False))
-            if types.fdef.delete_rule == DeleteRule.DENY:
+            if types.fdef._delete_rule == DeleteRule.DENY:
                 self._deny_fields.append(jfield)
-            elif types.fdef.delete_rule == DeleteRule.NULLIFY:
+            elif types.fdef._delete_rule == DeleteRule.NULLIFY:
                 self._nullify_fields.append(jfield)
-            elif types.fdef.delete_rule == DeleteRule.CASCADE:
+            elif types.fdef._delete_rule == DeleteRule.CASCADE:
                 self._cascade_fields.append(jfield)
-            if types.fdef.requires_operator_assign:
+            if types.fdef._requires_operator_assign:
                 self._assign_operator_fields.append(jfield)
         self._tuple_fields: tuple[JField] = tuple(self._list_fields)
         self._available_names: set[str] = set(self._field_names
@@ -111,15 +112,6 @@ class Cdef:
                                               + self._camelized_reference_names)
         self._update_names: set[str] = set(self._field_names
                                            + self._reference_names)
-
-    def _def_class_match(self: Cdef, fdef: Fdef, class_: type) -> bool:
-        if fdef.field_type == FieldType.LIST:
-            item_types = rtypes(fdef.raw_item_types)
-            return self._def_class_match(item_types.fdef, class_)
-        elif fdef.field_type == FieldType.INSTANCE:
-            types = rtypes(fdef.raw_inst_types)
-            return types.fdef.raw_inst_types == class_
-        return False
 
     @property
     def cls(self: Cdef) -> type:
@@ -218,104 +210,82 @@ class Cdef:
         """
         return self._primary_field
 
-    @property
     def assign_operator_fields(self: Cdef) -> list[JField]:
         """The class definition's fields which require operator assigning on
         object creation.
         """
         return self._assign_operator_fields
 
-    def foreign_field_for(self: Cdef,
-                          name: str) -> Optional[tuple[Cdef, str]]:
-        """Get the linked foreign field for local field named `name`.
+    def rfield(
+            self: Cdef, fcls: type[JObject], fname: Optional[str],
+            fkey: Optional[str]) -> JField:
+        for field in self._tuple_fields:
+            if field.foreign_class is fcls:
+                if fname is not None:
+                    if field.name == fname:
+                        return field
+                elif fkey is None:
+                    if field.fdef.foreign_key == fkey:
+                        return field
+        else:
+            return None
 
-        Args:
-            name (str): The name of the local field.
-
-        Returns:
-            Optional[tuple[Cdef, str]]: A tuple which is a \
-            combination of foreign class definition and foreign field name or \
-            None if not found.
-
-        Raises:
-            LinkedFieldUnmatchException: A foreign field which is linked by \
-            the field definition is found, however the properties don't match.
-        """
-        if name in self._foreign_fields:
-            field_tuple = self._foreign_fields[name]
-            if field_tuple is None:
-                return None
-            return field_tuple
-        local_field = self.field_named(name)
-        fdef = local_field.fdef
-        if fdef.field_storage not in \
-                [FieldStorage.LOCAL_KEY, FieldStorage.FOREIGN_KEY]:
-            raise ValueError(f"field named '{name}' is not a linked field")
-        if fdef.field_type == FieldType.INSTANCE:
-            foreign_types = rtypes(fdef.raw_inst_types, self.jconf)
-        elif fdef.field_type == FieldType.LIST:
-            raw_inst_types = rtypes(fdef.raw_item_types, self.jconf)
-            foreign_types = rtypes(raw_inst_types, self.jconf)
-        foreign_class = cast(type, foreign_types.fdef.raw_inst_types)
-        foreign_class = rtypes(foreign_class, self.jconf)
-        foreign_class = foreign_class.fdef.raw_inst_types
-        foreign_cdef = self.jconf.cgraph.fetch(foreign_class)
-        accepted: list[tuple[FieldStorage, bool]] = []
-        if fdef.field_storage == FieldStorage.LOCAL_KEY:
-            foreign_storage = FieldStorage.FOREIGN_KEY
-            use_join_table = False
-            accepted.append((foreign_storage, use_join_table))
-        elif fdef.field_storage == FieldStorage.FOREIGN_KEY:
-            foreign_storage = FieldStorage.LOCAL_KEY
-            use_join_table = False
-            accepted.append((foreign_storage, use_join_table))
-            if fdef.field_type == FieldType.LIST:
-                foreign_storage = FieldStorage.FOREIGN_KEY
-                use_join_table = True
-                accepted.append((foreign_storage, use_join_table))
-            elif fdef.field_type == FieldType.INSTANCE:
-                pass
-        for field in foreign_cdef.fields:
-            for (storage, use_join) in accepted:
-                if storage == FieldStorage.LOCAL_KEY:
-                    if fdef.foreign_key == field.name:
-                        local_matches = self._def_class_match(
-                            local_field.fdef, foreign_class)
-                        foreign_matches = self._def_class_match(
-                            field.fdef, self.cls)
-                        if local_matches and foreign_matches:
-                            foreign_tuple = (foreign_cdef, field.name)
-                            self._foreign_fields[name] = foreign_tuple
-                            local_tuple = (self, name)
-                            foreign_cdef._foreign_fields[field.name] = \
-                                local_tuple
-                            return self._foreign_fields[name]
-                        else:
-                            raise LinkedFieldUnmatchException(
-                                self.cls.__name__, local_field.name,
-                                foreign_class.__name__, field.name)
-                elif storage == FieldStorage.FOREIGN_KEY:
-                    if local_field.name == field.fdef.foreign_key:
-                        if use_join == field.fdef.use_join_table:
-                            local_matches = self._def_class_match(
-                                local_field.fdef, foreign_class)
-                            foreign_matches = self._def_class_match(
-                                field.fdef, self.cls)
-                            if local_matches and foreign_matches:
-                                foreign_tuple = \
-                                    (foreign_cdef, field.name)
-                                self._foreign_fields[name] = foreign_tuple
-                                local_tuple = (self, name)
-                                foreign_cdef._foreign_fields[field.name]\
-                                    = local_tuple
-                                return self._foreign_fields[name]
-                            else:
-                                raise LinkedFieldUnmatchException(
-                                    self.cls.__name__, local_field.name,
-                                    foreign_class.__name__, field.name)
-                        else:
-                            raise LinkedFieldUnmatchException(
-                                self.cls.__name__, local_field.name,
-                                foreign_class.__name__, field.name)
-        self._foreign_fields[name] = None
-        return None
+        # accepted: list[tuple[FieldStorage, bool]] = []
+        # if fdef.field_storage == FieldStorage.LOCAL_KEY:
+        #     foreign_storage = FieldStorage.FOREIGN_KEY
+        #     use_join_table = False
+        #     accepted.append((foreign_storage, use_join_table))
+        # elif fdef.field_storage == FieldStorage.FOREIGN_KEY:
+        #     foreign_storage = FieldStorage.LOCAL_KEY
+        #     use_join_table = False
+        #     accepted.append((foreign_storage, use_join_table))
+        #     if fdef.field_type == FieldType.LIST:
+        #         foreign_storage = FieldStorage.FOREIGN_KEY
+        #         use_join_table = True
+        #         accepted.append((foreign_storage, use_join_table))
+        #     elif fdef.field_type == FieldType.INSTANCE:
+        #         pass
+        # for field in foreign_cdef.fields:
+        #     for (storage, use_join) in accepted:
+        #         if storage == FieldStorage.LOCAL_KEY:
+        #             if fdef.foreign_key == field.name:
+        #                 local_matches = self._def_class_match(
+        #                     local_field.fdef, foreign_class)
+        #                 foreign_matches = self._def_class_match(
+        #                     field.fdef, self.cls)
+        #                 if local_matches and foreign_matches:
+        #                     foreign_tuple = (foreign_cdef, field.name)
+        #                     self._foreign_fields[name] = foreign_tuple
+        #                     local_tuple = (self, name)
+        #                     foreign_cdef._foreign_fields[field.name] = \
+        #                         local_tuple
+        #                     return self._foreign_fields[name]
+        #                 else:
+        #                     raise LinkedFieldUnmatchException(
+        #                         self.cls.__name__, local_field.name,
+        #                         foreign_class.__name__, field.name)
+        #         elif storage == FieldStorage.FOREIGN_KEY:
+        #             if local_field.name == field.fdef.foreign_key:
+        #                 if use_join == field.fdef.use_join_table:
+        #                     local_matches = self._def_class_match(
+        #                         local_field.fdef, foreign_class)
+        #                     foreign_matches = self._def_class_match(
+        #                         field.fdef, self.cls)
+        #                     if local_matches and foreign_matches:
+        #                         foreign_tuple = \
+        #                             (foreign_cdef, field.name)
+        #                         self._foreign_fields[name] = foreign_tuple
+        #                         local_tuple = (self, name)
+        #                         foreign_cdef._foreign_fields[field.name]\
+        #                             = local_tuple
+        #                         return self._foreign_fields[name]
+        #                     else:
+        #                         raise LinkedFieldUnmatchException(
+        #                             self.cls.__name__, local_field.name,
+        #                             foreign_class.__name__, field.name)
+        #                 else:
+        #                     raise LinkedFieldUnmatchException(
+        #                         self.cls.__name__, local_field.name,
+        #                         foreign_class.__name__, field.name)
+        # self._foreign_fields[name] = None
+        # return None

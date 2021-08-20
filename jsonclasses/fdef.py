@@ -317,7 +317,7 @@ class Fdef:
         if isjsonclass(self._raw_inst_types):
             self._inst_cls = self._raw_inst_types
         cgraph = self.cdef.jconf.cgraph
-        inst_cls = cgraph.fetch(self._raw_inst_types)
+        inst_cls = cgraph.fetch(self._raw_inst_types).cls
         self._inst_cls = inst_cls
         return self._inst_cls
 
@@ -509,4 +509,4 @@ class Fdef:
             self._enum_output = EnumOutput.NAME
         else:
             raise UnresolvedTypeNameException(
-                f"Unfound field name '{name}' in class '{self.cdef.name}'.")
+                f"Unfound type named '{name}' in class '{self.cdef.name}'.")

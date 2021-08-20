@@ -30,7 +30,7 @@ class InstanceOfValidator(Validator):
         from ..jobject import JObject
         if context.value is None:
             return
-        types = rtypes(self.raw_type, context.jconf_owner)
+        types = rtypes(self.raw_type)
         cls = cast(type[JObject], types.fdef.raw_inst_types)
         all_fields = context.all_fields
         if all_fields is None:
@@ -129,7 +129,7 @@ class InstanceOfValidator(Validator):
         if not isinstance(context.value, dict):
             return context.dest if context.dest is not None else context.value
         # figure out types, cls and dest
-        types = rtypes(self.raw_type, context.jconf_owner)
+        types = rtypes(self.raw_type)
         cls = cast(type[JObject], types.fdef.raw_inst_types)
         this_pk_field = cls.cdef.primary_field
         if this_pk_field:

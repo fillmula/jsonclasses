@@ -1,6 +1,5 @@
-"""This modules contains `TypesResolver`, the types definition normalizer and
-auto synthenizer. This is used for figuring out a JSON class field's types
-definition.
+"""This modules contains `rtypes`, the utility for converting arbitrary types
+input into valid types definition.
 """
 from __future__ import annotations
 from typing import (
@@ -108,7 +107,7 @@ def str_to_types(anytypes: str, opt: bool = False) -> Types:
         match_data = match('Optional\\[(.*)\\]', anytypes)
         assert match_data is not None
         item_type = match_data.group(1)
-        return str_to_types(item_type, True)
+        return str_to_types(item_type, opt=True)
     elif match('[Ll]ist\\[', anytypes):
         match_data = match('[Ll]ist\\[(.*)\\]', anytypes)
         assert match_data is not None
@@ -186,7 +185,7 @@ def to_types(anytypes: Any, opt: bool = False) -> Types:
         annotated_args = get_args(anytypes)
         len_args = len(annotated_args)
         if len_args != 2:
-            raise TypeError(('wrong number of arguments passed to Link, '
+            raise TypeError(('wrong number of arguments passed to Annotated, '
                             f'expect 2, got {len_args}'))
         types = to_types(annotated_args[0], opt)
         return apply_link_specifier(types, annotated_args[1])

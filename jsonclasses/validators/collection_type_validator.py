@@ -31,7 +31,7 @@ class CollectionTypeValidator(TypeValidator):
         if hasattr(self, '_item_types'):
             return getattr(self, '_item_types')
         else:
-            itypes = rtypes(self.raw_item_types, owner_cls)
+            itypes = rtypes(self.raw_item_types)
             if itypes.fdef.item_nullability == Nullability.UNDEFINED:
                 itypes = itypes.required
             setattr(self, '_item_types', itypes)

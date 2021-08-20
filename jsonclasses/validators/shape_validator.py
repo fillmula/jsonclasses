@@ -27,7 +27,7 @@ class ShapeValidator(TypeValidator):
             if isinstance(self.raw_types, dict):
                 setattr(self, '_raw_shape_types', self.raw_types)
                 return self._raw_shape_types
-            itypes = rtypes(self.raw_types, owner_cls)
+            itypes = rtypes(self.raw_types)
             if itypes.fdef.item_nullability == Nullability.UNDEFINED:
                 itypes = itypes.required
             stypes = itypes.fdef.raw_shape_types
@@ -51,7 +51,7 @@ class ShapeValidator(TypeValidator):
                 value_at_key = context.value[k]
             except KeyError:
                 value_at_key = None
-            types = rtypes(t, context.jconf_owner)
+            types = rtypes(t)
             if types:
                 try:
                     types.validator.validate(context.new(
@@ -120,7 +120,7 @@ class ShapeValidator(TypeValidator):
                                      list(value.keys()),
                                      context.jconf_owner):
                 fv = self._get_field_value(fk, value, context.jconf_owner)
-            types = rtypes(ft, context.jconf_owner)
+            types = rtypes(ft)
             retval[fk] = types.validator.transform(context.new(
                 value=fv,
                 keypath_root=concat_keypath(context.keypath_root, fk),
@@ -139,7 +139,7 @@ class ShapeValidator(TypeValidator):
         for k, t in self.raw_shape_types(context.jconf.cls).items():
             key = camelize(k, False) if context.jconf.camelize_json_keys else k
             value_at_key = context.value.get(k)
-            types = rtypes(t, context.jconf)
+            types = rtypes(t)
             if types:
                 retval[key] = types.validator.tojson(context.new(value=value_at_key))
             else:
@@ -154,7 +154,7 @@ class ShapeValidator(TypeValidator):
         retval = {}
         for key, raw_types in self.raw_shape_types(context.jconf_owner.cls).items():
             value_at_key = context.value.get(key)
-            types = rtypes(raw_types, context.jconf_owner)
+            types = rtypes(raw_types)
             if types:
                 retval[key] = types.validator.serialize(context.new(
                     value=value_at_key,
