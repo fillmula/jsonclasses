@@ -2,7 +2,7 @@ from __future__ import annotations
 from unittest import TestCase
 from jsonclasses import jsonclass
 from jsonclasses.isjsonclass import isjsonclass
-from jsonclasses.config import Config
+from jsonclasses.jconf import JConf
 from jsonclasses.keypath import reference_key
 from jsonclasses.cgraph import CGraph
 from jsonclasses.exceptions import JSONClassRedefinitionException
@@ -21,8 +21,8 @@ class TestJsonClass(TestCase):
         self.assertTrue(isjsonclass(SimpleCompany))
 
     def test_jsonclass_install_default_config_without_arguments(self):
-        class_config = SimpleAccount.cdef.config
-        default_config = Config(cgraph='default',
+        class_config = SimpleAccount.cdef.jconf
+        default_config = JConf(cgraph='default',
                                 camelize_json_keys=True,
                                 strict_input=True,
                                 key_transformer=reference_key,
@@ -40,38 +40,38 @@ class TestJsonClass(TestCase):
         self.assertEqual(class_config, default_config)
 
     def test_jsonclass_cgraph_changes_cgraph(self):
-        cgraph = SimpleCompany.cdef.config.cgraph
+        cgraph = SimpleCompany.cdef.jconf.cgraph
         company_graph = CGraph('simplecompany')
         self.assertEqual(cgraph, company_graph)
 
     def test_jsonclass_camelize_json_keys_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.cdef.config.camelize_json_keys, False)
+            SimpleEmployee.cdef.jconf.camelize_json_keys, False)
 
     def test_jsonclass_strict_input_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.cdef.config.strict_input, False)
+            SimpleEmployee.cdef.jconf.strict_input, False)
 
     def test_jsonclass_key_transformer_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.cdef.config.key_transformer,
+            SimpleEmployee.cdef.jconf.key_transformer,
             yet_another_key_transformer)
 
     def test_jsonclass_validate_all_fields_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.cdef.config.validate_all_fields, True)
+            SimpleEmployee.cdef.jconf.validate_all_fields, True)
 
     def test_jsonclass_soft_delete_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.cdef.config.soft_delete, True)
+            SimpleEmployee.cdef.jconf.soft_delete, True)
 
     def test_jsonclass_abstract_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.cdef.config.abstract, True)
+            SimpleEmployee.cdef.jconf.abstract, True)
 
     def test_jsonclass_reset_all_fields_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.cdef.config.reset_all_fields, True)
+            SimpleEmployee.cdef.jconf.reset_all_fields, True)
 
     def test_jsonclass_raises_value_error_if_decorated_is_not_class(self):
         with self.assertRaisesRegex(ValueError, '@jsonclass should be used to'

@@ -4,7 +4,7 @@ from ..exceptions import ValidationException
 from .validator import Validator
 from ..ctxs import VCtx
 from ..fdef import FieldStorage, FieldType
-from ..config import Config
+from ..jconf import JConf
 from ..isjsonclass import isjsonobject
 
 
@@ -22,10 +22,10 @@ class RequiredValidator(Validator):
             return
         if storage == FieldStorage.LOCAL_KEY:
             if context.value is None:  # check key presence
-                config: Config = context.owner.__class__.cdef.config
+                jconf: JConf = context.owner.__class__.cdef.jconf
                 ko = context.keypath_owner
                 field = context.owner.__class__.cdef.field_named(ko)
-                local_key = config.key_transformer(field)
+                local_key = jconf.key_transformer(field)
                 if isinstance(context.parent, dict):
                     if context.parent.get(local_key) is None:
                         raise ValidationException(

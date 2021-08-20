@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Union, final, TYPE_CHECKING
 
-from .config import Config
+from .jconf import JConf
 from .keypath import reference_key
 from .exceptions import (JSONClassRedefinitionException,
                          JSONClassTypedDictRedefinitionException,
@@ -47,7 +47,7 @@ class CGraph:
         self._map: dict[str, Cdef] = {}
         self._dict_map: dict[str, type[dict]] = {}
         self._enum_map: dict[str, type] = {}
-        self._default_config = Config(cgraph=self.name,
+        self._default_config = JConf(cgraph=self.name,
                                       camelize_json_keys=True,
                                       strict_input=True,
                                       key_transformer=reference_key,
@@ -74,7 +74,7 @@ class CGraph:
         return self._name
 
     @property
-    def default_config(self: CGraph) -> Config:
+    def default_config(self: CGraph) -> JConf:
         """The default configuration used on this class graph."""
         return self._default_config
 

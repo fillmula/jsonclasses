@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, NamedTuple, Optional, Union, TYPE_CHECKING
 from .mgraph import MGraph
 if TYPE_CHECKING:
-    from .config import Config
+    from .jconf import JConf
     from .fdef import Fdef
     from .jobject import JObject
 
@@ -15,12 +15,12 @@ class VCtx(NamedTuple):
     value: Any
     keypath_root: str
     root: Any
-    config_root: Config
+    jconf_root: JConf
     keypath_owner: str  # keypath relative to owner
     # the nearest json class instance or eager validation dict on which this
     # value is defined
     owner: Any
-    config_owner: Config
+    jconf_owner: JConf
     keypath_parent: Union[str, int]  # key relative to parent
     parent: Any  # the direct parent of this field
     fdef: Optional[Fdef] = None
@@ -36,13 +36,13 @@ class VCtx(NamedTuple):
             keypath_root=(kwargs['keypath_root']
                           if 'keypath_root' in keys else self.keypath_root),
             root=kwargs['root'] if 'root' in keys else self.root,
-            config_root=(kwargs['config_root']
-                         if 'config_root' in keys else self.config_root),
+            jconf_root=(kwargs['jconf_root']
+                         if 'jconf_root' in keys else self.jconf_root),
             keypath_owner=(kwargs['keypath_owner']
                            if 'keypath_owner' in keys else self.keypath_owner),
             owner=kwargs['owner'] if 'owner' in keys else self.owner,
-            config_owner=(kwargs['config_owner']
-                          if 'config_owner' in keys else self.config_owner),
+            jconf_owner=(kwargs['jconf_owner']
+                          if 'jconf_owner' in keys else self.jconf_owner),
             keypath_parent=(kwargs['keypath_parent']
                             if 'keypath_parent' in keys
                             else self.keypath_parent),
@@ -62,10 +62,10 @@ class VCtx(NamedTuple):
             value=self.value,
             keypath_root=self.keypath_root,
             root=self.root,
-            config_root=self.config_root,
+            jconf_root=self.jconf_root,
             keypath_owner=self.keypath_owner,
             owner=self.owner,
-            config_owner=self.config_owner,
+            jconf_owner=self.jconf_owner,
             keypath_parent=self.keypath_parent,
             parent=self.parent,
             fdef=self.fdef,
@@ -84,12 +84,12 @@ class TCtx(NamedTuple):
     value: Any
     keypath_root: str
     root: Any
-    config_root: Config
+    jconf_root: JConf
     keypath_owner: str  # keypath relative to owner
     # the nearest json class instance or eager validation dict on which this
     # value is defined
     owner: Any
-    config_owner: Config
+    jconf_owner: JConf
     keypath_parent: Union[str, int]  # key relative to parent
     parent: Any  # the direct parent of this field
     fdef: Optional[Fdef] = None
@@ -107,13 +107,13 @@ class TCtx(NamedTuple):
             keypath_root=(kwargs['keypath_root']
                           if 'keypath_root' in keys else self.keypath_root),
             root=kwargs['root'] if 'root' in keys else self.root,
-            config_root=(kwargs['config_root']
-                         if 'config_root' in keys else self.config_root),
+            jconf_root=(kwargs['jconf_root']
+                         if 'jconf_root' in keys else self.jconf_root),
             keypath_owner=(kwargs['keypath_owner']
                            if 'keypath_owner' in keys else self.keypath_owner),
             owner=kwargs['owner'] if 'owner' in keys else self.owner,
-            config_owner=(kwargs['config_owner']
-                          if 'config_owner' in keys else self.config_owner),
+            jconf_owner=(kwargs['jconf_owner']
+                          if 'jconf_owner' in keys else self.jconf_owner),
             keypath_parent=(kwargs['keypath_parent']
                             if 'keypath_parent' in keys
                             else self.keypath_parent),
@@ -133,10 +133,10 @@ class TCtx(NamedTuple):
             value=self.value,
             keypath_root=self.keypath_root,
             root=self.root,
-            config_root=self.config_root,
+            jconf_root=self.jconf_root,
             keypath_owner=self.keypath_owner,
             owner=self.owner,
-            config_owner=self.config_owner,
+            jconf_owner=self.jconf_owner,
             keypath_parent=self.keypath_parent,
             parent=self.parent,
             fdef=self.fdef,
@@ -150,7 +150,7 @@ class JCtx(NamedTuple):
     information for validators to convert the field values to JSON correctly.
     """
     value: Any
-    config: Config
+    jconf: JConf
     fdef: Optional[Fdef] = None
     ignore_writeonly: bool = False
     entity_chain: list[str] = []  # for circular tojson strip duplicated refs
@@ -160,7 +160,7 @@ class JCtx(NamedTuple):
         keys = kwargs.keys()
         return JCtx(
             value=kwargs['value'] if 'value' in keys else self.value,
-            config=kwargs['config'] if 'config' in keys else self.config,
+            jconf=kwargs['jconf'] if 'jconf' in keys else self.jconf,
             fdef=(kwargs['fdef']
                         if 'fdef' in keys
                         else self.fdef),

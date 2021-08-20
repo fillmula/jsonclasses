@@ -13,7 +13,7 @@ from .fdef import Fdef, FieldStorage, FieldType, DeleteRule
 from .rtypes import rtypes
 from .exceptions import LinkedFieldUnmatchException
 if TYPE_CHECKING:
-    from .config import Config
+    from .jconf import JConf
     from .types import Types
 
 
@@ -25,20 +25,20 @@ class Cdef:
     used by the framework to lookup class fields and class field settings.
     """
 
-    def __init__(self: Cdef, class_: type, config: Config) -> None:
+    def __init__(self: Cdef, class_: type, jconf: JConf) -> None:
         """
         Initialize a new class definition.
 
         Args:
             class_ (type): The JSON class for which the class definition is \
                 created.
-            config (Config): The configuration object for the targeted class.
+            jconf (JConf): The configuration object for the targeted class.
         """
         from .types import Types
         self._cls: type = class_
-        config._cls = class_
+        jconf._cls = class_
         self._name: str = class_.__name__
-        self._config: Config = config
+        self._jconf: JConf = jconf
         self._list_fields: list[JField] = []
         self._dict_fields: dict[str, JField] = {}
         self._foreign_fields: dict[str, Optional[tuple[Cdef, str]]]\
@@ -58,12 +58,12 @@ class Cdef:
         for field in fields(class_):
             name = field.name
             self._field_names.append(name)
-            if config.camelize_json_keys:
+            if jconf.camelize_json_keys:
                 json_name = camelize(name, False)
                 self._camelized_field_names.append(json_name)
             else:
                 json_name = name
-            types = cast(Types, self._get_types(field, config))
+            types = cast(Types, self._get_types(field, jconf))
             types.fdef._cdef = self
             if isinstance(field.default, Types):
                 default = None
@@ -89,9 +89,9 @@ class Cdef:
             elif types.fdef.usage == 'deleted_at':
                 self._deleted_at_field = jfield
             if types.fdef.field_storage == FieldStorage.LOCAL_KEY:
-                key_transformer = config.key_transformer
+                key_transformer = jconf.key_transformer
                 self._reference_names.append(key_transformer(jfield))
-                if config.camelize_json_keys:
+                if jconf.camelize_json_keys:
                     self._camelized_reference_names.append(
                         camelize(key_transformer(jfield), False))
             if types.fdef.delete_rule == DeleteRule.DENY:
@@ -112,7 +112,7 @@ class Cdef:
 
     def _get_types(self: Cdef,
                    field: Field,
-                   config: Config) -> Types:
+                   jconf: JConf) -> Types:
         """
         Try to fetch the types definition from the field definition. If user
         hasn't define a types definition, an automatically synthesized one is
@@ -122,16 +122,16 @@ class Cdef:
         if isinstance(field.default, Types):
             return field.default
         else:
-            return rtypes(field.type, config)
+            return rtypes(field.type, jconf)
 
     def _def_class_match(self: Cdef,
                          fdef: Fdef,
                          class_: type) -> bool:
         if fdef.field_type == FieldType.LIST:
-            item_types = rtypes(fdef.raw_item_types, self.config)
+            item_types = rtypes(fdef.raw_item_types, self.jconf)
             return self._def_class_match(item_types.fdef, class_)
         elif fdef.field_type == FieldType.INSTANCE:
-            types = rtypes(fdef.raw_inst_types, self.config)
+            types = rtypes(fdef.raw_inst_types, self.jconf)
             return types.fdef.raw_inst_types == class_
         return False
 
@@ -149,11 +149,11 @@ class Cdef:
         return self._name
 
     @property
-    def config(self: Cdef) -> Config:
+    def jconf(self: Cdef) -> JConf:
         """The configuration object of the JSON class on which this class
         definition is defined.
         """
-        return self._config
+        return self._jconf
 
     def field_named(self: Cdef, name: str) -> JField:
         """
@@ -266,14 +266,14 @@ class Cdef:
                 [FieldStorage.LOCAL_KEY, FieldStorage.FOREIGN_KEY]:
             raise ValueError(f"field named '{name}' is not a linked field")
         if fdef.field_type == FieldType.INSTANCE:
-            foreign_types = rtypes(fdef.raw_inst_types, self.config)
+            foreign_types = rtypes(fdef.raw_inst_types, self.jconf)
         elif fdef.field_type == FieldType.LIST:
-            raw_inst_types = rtypes(fdef.raw_item_types, self.config)
-            foreign_types = rtypes(raw_inst_types, self.config)
+            raw_inst_types = rtypes(fdef.raw_item_types, self.jconf)
+            foreign_types = rtypes(raw_inst_types, self.jconf)
         foreign_class = cast(type, foreign_types.fdef.raw_inst_types)
-        foreign_class = rtypes(foreign_class, self.config)
+        foreign_class = rtypes(foreign_class, self.jconf)
         foreign_class = foreign_class.fdef.raw_inst_types
-        foreign_cdef = self.config.cgraph.fetch(foreign_class)
+        foreign_cdef = self.jconf.cgraph.fetch(foreign_class)
         accepted: list[tuple[FieldStorage, bool]] = []
         if fdef.field_storage == FieldStorage.LOCAL_KEY:
             foreign_storage = FieldStorage.FOREIGN_KEY

@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any, Collection, Iterable, TypeVar, Union, cast, TYPE_CHECKING
 from ..fdef import Fdef, Nullability
-from ..config import Config
+from ..jconf import JConf
 from ..exceptions import ValidationException
 from .type_validator import TypeValidator
 from ..keypath import concat_keypath
@@ -46,20 +46,20 @@ class CollectionTypeValidator(TypeValidator):
     def append_value(self, i: Union[str, int], v: Any, col: Collection):
         raise NotImplementedError('please implement append_value')
 
-    def to_object_key(self, key: T, conf: Config) -> T:
+    def to_object_key(self, key: T, conf: JConf) -> T:
         return key
 
-    def to_json_key(self, key: T, conf: Config) -> T:
+    def to_json_key(self, key: T, conf: JConf) -> T:
         return key
 
     def validate(self, context: VCtx) -> None:
         if context.value is None:
             return
         super().validate(context)
-        types = self.item_types(context.config_owner.cls)
+        types = self.item_types(context.jconf_owner.cls)
         all_fields = next(b for b in [
             context.all_fields,
-            context.config_owner.validate_all_fields] if b is not None)
+            context.jconf_owner.validate_all_fields] if b is not None)
         keypath_messages = {}
         for i, v in self.enumerator(context.value):
             try:
@@ -89,7 +89,7 @@ class CollectionTypeValidator(TypeValidator):
                 return None
         if not isinstance(context.value, self.cls):
             return context.value
-        itypes = self.item_types(context.config_owner.cls)
+        itypes = self.item_types(context.jconf_owner.cls)
         retval = self.empty_collection()
         for i, v in self.enumerator(context.value):
             transformed = itypes.validator.transform(context.new(
@@ -100,7 +100,7 @@ class CollectionTypeValidator(TypeValidator):
                 parent=context.value,
                 fdef=itypes.fdef))
             self.append_value(
-                self.to_object_key(i, context.config_owner),
+                self.to_object_key(i, context.jconf_owner),
                 transformed,
                 retval)
         return retval
@@ -110,12 +110,12 @@ class CollectionTypeValidator(TypeValidator):
             return None
         if not isinstance(context.value, self.cls):
             return context.value
-        itypes = self.item_types(context.config.cls)
+        itypes = self.item_types(context.jconf.cls)
         retval = self.empty_collection()
         for i, v in self.enumerator(context.value):
             transformed = itypes.validator.tojson(context.new(value=v))
             self.append_value(
-                self.to_json_key(i, context.config),
+                self.to_json_key(i, context.jconf),
                 transformed,
                 retval)
         return retval
@@ -125,7 +125,7 @@ class CollectionTypeValidator(TypeValidator):
             return None
         if not isinstance(context.value, self.cls):
             return context.value
-        itypes = self.item_types(context.config_owner.cls)
+        itypes = self.item_types(context.jconf_owner.cls)
         retval = self.empty_collection()
         for i, v in self.enumerator(context.value):
             transformed = itypes.validator.serialize(context.new(
@@ -136,7 +136,7 @@ class CollectionTypeValidator(TypeValidator):
                 parent=context.value,
                 fdef=itypes.fdef))
             self.append_value(
-                self.to_json_key(i, context.config_owner),
+                self.to_json_key(i, context.jconf_owner),
                 transformed,
                 retval)
         return retval

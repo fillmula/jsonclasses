@@ -51,23 +51,23 @@ class TestShape(TestCase):
 
     def test_shape_assigns_none_on_inner_fields_for_accessing(self):
         user = SimpleConfigUser(config={})
-        self.assertEqual(user.config, {'ios': None, 'android': None})
+        self.assertEqual(user.jconf, {'ios': None, 'android': None})
 
     # TODO: make shape work according to strict settings
     def test_shape_sanitizes_input(self):
         user = SimpleConfigUser(config={'haha': True, 'android': False})
-        self.assertEqual(user.config, {'ios': None, 'android': False})
+        self.assertEqual(user.jconf, {'ios': None, 'android': False})
 
     def test_shape_underscores_keys_on_init(self):
         folder = SimpleFolder(
             config={'displaySize': True, 'displayDate': False})
-        self.assertEqual(folder.config,
+        self.assertEqual(folder.jconf,
                          {'display_size': True, 'display_date': False})
 
     def test_shape_doesnt_underscore_keys_on_init_if_specified(self):
         node = SimpleNode(
             config={'displaySize': True, 'display_Date': False})
-        self.assertEqual(node.config,
+        self.assertEqual(node.jconf,
                          {'display_size': None, 'display_date': None})
 
     def test_shape_camelizes_keys_on_tojson(self):
@@ -98,12 +98,12 @@ class TestShape(TestCase):
 
     def test_shape_can_be_accessed_with_dot_notation(self):
         folder = SimpleFolder(config={'display_size': True, 'display_date': False})
-        self.assertEqual(folder.config.display_size, True)
-        self.assertEqual(folder.config.display_date, False)
+        self.assertEqual(folder.jconf.display_size, True)
+        self.assertEqual(folder.jconf.display_date, False)
 
     def test_shape_can_be_set_with_dot_notation(self):
         folder = SimpleFolder(config={'display_size': True, 'display_date': False})
-        folder.config.display_size = False
-        folder.config.display_date = True
-        self.assertEqual(folder.config['display_size'], False)
-        self.assertEqual(folder.config['display_date'], True)
+        folder.jconf.display_size = False
+        folder.jconf.display_date = True
+        self.assertEqual(folder.jconf['display_size'], False)
+        self.assertEqual(folder.jconf['display_date'], True)

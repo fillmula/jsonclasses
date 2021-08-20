@@ -28,8 +28,8 @@ class EnumValidator(Validator):
         if context.value is None:
             return None
         if isinstance(self.enum_or_name, str):
-            config = context.config_owner
-            enum_class = config.cgraph.fetch_enum(self.enum_or_name)
+            jconf = context.jconf_owner
+            enum_class = jconf.cgraph.fetch_enum(self.enum_or_name)
         else:
             enum_class = self.enum_or_name
         if isinstance(context.value, enum_class):
@@ -64,8 +64,8 @@ class EnumValidator(Validator):
         if context.value is None:
             return None
         if isinstance(self.enum_or_name, str):
-            config = context.config_owner
-            enum_class = config.cgraph.fetch_enum(self.enum_or_name)
+            jconf = context.jconf_owner
+            enum_class = jconf.cgraph.fetch_enum(self.enum_or_name)
         else:
             enum_class = self.enum_or_name
         if not isinstance(context.value, enum_class):

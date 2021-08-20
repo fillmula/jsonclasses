@@ -105,6 +105,8 @@ class Fdef:
 
     def __init__(self: Fdef) -> None:
         self._cdef: Optional[Cdef] = None
+        self._unresolved: bool = False
+        self._unresolved_name: Optional[str] = None
         self._field_type: Optional[FieldType] = None
         self._field_storage: FieldStorage = FieldStorage.EMBEDDED
         self._primary: bool = False
@@ -408,7 +410,7 @@ class Fdef:
         if self.field_type == FieldType.LIST:
             item_types = rtypes(
                 self.raw_item_types,
-                self.cdef.config)
+                self.cdef.jconf)
             if item_types.fdef.field_type == FieldType.INSTANCE:
                 return True
         return False
@@ -421,6 +423,6 @@ class Fdef:
             return True
         if self.field_type == FieldType.LIST or \
                 self.field_type == FieldType.DICT:
-            item_type = rtypes(self.raw_item_types, self.cdef.config)
+            item_type = rtypes(self.raw_item_types, self.cdef.jconf)
             return item_type.fdef.has_linked
         return False

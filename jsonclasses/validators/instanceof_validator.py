@@ -30,11 +30,11 @@ class InstanceOfValidator(Validator):
         from ..jobject import JObject
         if context.value is None:
             return
-        types = rtypes(self.raw_type, context.config_owner)
+        types = rtypes(self.raw_type, context.jconf_owner)
         cls = cast(type[JObject], types.fdef.raw_inst_types)
         all_fields = context.all_fields
         if all_fields is None:
-            all_fields = cls.cdef.config.validate_all_fields
+            all_fields = cls.cdef.jconf.validate_all_fields
         if not isinstance(context.value, cls):
             raise ValidationException({
                 context.keypath_root: (f"Value at '{context.keypath_root}' "
@@ -62,7 +62,7 @@ class InstanceOfValidator(Validator):
                     keypath_root=concat_keypath(context.keypath_root, fname),
                     keypath_owner=fname,
                     owner=context.value,
-                    config_owner=context.value.__class__.cdef.config,
+                    jconf_owner=context.value.__class__.cdef.jconf,
                     keypath_parent=fname,
                     parent=context.value,
                     fdef=field.fdef))
@@ -102,7 +102,7 @@ class InstanceOfValidator(Validator):
                 keypath_root=concat_keypath(context.keypath_root, field.name),
                 keypath_owner=field.name,
                 owner=context.value,
-                config_owner=cls.cdef.config,
+                jconf_owner=cls.cdef.jconf,
                 keypath_parent=field.name,
                 parent=context.value,
                 fdef=field.fdef))
@@ -115,7 +115,7 @@ class InstanceOfValidator(Validator):
                          field: JField,
                          context: TCtx) -> Any:
         field_value = context.value.get(field.json_name)
-        if field_value is None and context.config_owner.camelize_json_keys:
+        if field_value is None and context.jconf_owner.camelize_json_keys:
             field_value = context.value.get(field.name)
         return field_value
 
@@ -129,7 +129,7 @@ class InstanceOfValidator(Validator):
         if not isinstance(context.value, dict):
             return context.dest if context.dest is not None else context.value
         # figure out types, cls and dest
-        types = rtypes(self.raw_type, context.config_owner)
+        types = rtypes(self.raw_type, context.jconf_owner)
         cls = cast(type[JObject], types.fdef.raw_inst_types)
         this_pk_field = cls.cdef.primary_field
         if this_pk_field:
@@ -155,7 +155,7 @@ class InstanceOfValidator(Validator):
             context.mgraph.put(dest)
 
         # strictness check
-        strictness = cast(bool, cls.cdef.config.strict_input)
+        strictness = cast(bool, cls.cdef.jconf.strict_input)
         if context.fdef is not None:
             if context.fdef.strictness == Strictness.STRICT:
                 strictness = True
@@ -174,7 +174,7 @@ class InstanceOfValidator(Validator):
                         if fdef.collection_nullability == Nullability.NONNULL:
                             nonnull_ref_lists.append(field.name)
                     elif fdef.field_storage == FieldStorage.LOCAL_KEY:
-                        tsfm = dest.__class__.cdef.config.key_transformer
+                        tsfm = dest.__class__.cdef.jconf.key_transformer
                         refname = tsfm(field)
                         if context.value.get(refname) is not None:
                             setattr(dest, refname, context.value.get(refname))
@@ -206,7 +206,7 @@ class InstanceOfValidator(Validator):
                                             field.name),
                 keypath_owner=field.name,
                 owner=context.value,
-                config_owner=cls.cdef.config,
+                jconf_owner=cls.cdef.jconf,
                 keypath_parent=field.name,
                 parent=context.value,
                 fdef=field.fdef)
@@ -262,7 +262,7 @@ class InstanceOfValidator(Validator):
                     or should_update):
                 if field.fdef.field_storage == FieldStorage.LOCAL_KEY:
                     if getattr(value, field.name) is None:
-                        tsf = value.__class__.cdef.config.key_transformer
+                        tsf = value.__class__.cdef.jconf.key_transformer
                         if getattr(value, tsf(field)) is not None:
                             continue
                 field_value = getattr(value, field.name)
@@ -272,7 +272,7 @@ class InstanceOfValidator(Validator):
                                                 field.name),
                     keypath_owner=field.name,
                     owner=value,
-                    config_owner=value.__class__.cdef.config,
+                    jconf_owner=value.__class__.cdef.jconf,
                     keypath_parent=field.name,
                     parent=value,
                     fdef=field.fdef)

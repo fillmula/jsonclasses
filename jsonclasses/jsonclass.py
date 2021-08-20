@@ -3,7 +3,7 @@ This module contains `jsonclass`, the decorator for JSON Classes.
 """
 from typing import Optional, Union, Callable, overload, cast
 from dataclasses import dataclass
-from .config import (Config, OnCreate, OnSave, CanCreate, OnDelete, CanUpdate,
+from .jconf import (JConf, OnCreate, OnSave, CanCreate, OnDelete, CanUpdate,
                      CanDelete, CanRead)
 from .jfield import JField
 from .cdef import Cdef
@@ -86,7 +86,7 @@ def jsonclass(
     if cls is not None:
         if not isinstance(cls, type):
             raise ValueError('@jsonclass should be used to decorate a class.')
-        config = Config(
+        jconf = JConf(
             cgraph=cast(str, cgraph),
             camelize_json_keys=camelize_json_keys,
             strict_input=strict_input,
@@ -104,9 +104,9 @@ def jsonclass(
             can_read=can_read)
         dcls: type = dataclass(init=False)(cls)
         jcls = jsonclassify(dcls)
-        cdef = Cdef(jcls, config)
+        cdef = Cdef(jcls, jconf)
         jcls.cdef = cdef
-        config.cgraph.put(cdef)
+        jconf.cgraph.put(cdef)
         return jcls
     else:
         def parametered_jsonclass(cls):

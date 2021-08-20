@@ -3,7 +3,7 @@ from typing import Any, Sequence, Union, cast
 from inflection import underscore, camelize
 from ..fdef import Fdef, FieldType, Nullability, Strictness
 from ..exceptions import ValidationException
-from ..config import Config
+from ..jconf import JConf
 from ..keypath import concat_keypath
 from ..rtypes import rtypes
 from ..ctxs import VCtx, TCtx, JCtx
@@ -44,14 +44,14 @@ class ShapeValidator(TypeValidator):
         super().validate(context)
         all_fields = context.all_fields
         if all_fields is None:
-            all_fields = context.config_owner.validate_all_fields
+            all_fields = context.jconf_owner.validate_all_fields
         keypath_messages = {}
-        for k, t in self.raw_shape_types(context.config_owner.cls).items():
+        for k, t in self.raw_shape_types(context.jconf_owner.cls).items():
             try:
                 value_at_key = context.value[k]
             except KeyError:
                 value_at_key = None
-            types = rtypes(t, context.config_owner)
+            types = rtypes(t, context.jconf_owner)
             if types:
                 try:
                     types.validator.validate(context.new(
@@ -72,19 +72,19 @@ class ShapeValidator(TypeValidator):
     def _has_field_value(self,
                          field_key: str,
                          keys: Sequence[str],
-                         config: Config) -> bool:
+                         jconf: JConf) -> bool:
         field_name = field_key
         json_field_name = field_name
-        if config.camelize_json_keys:
+        if jconf.camelize_json_keys:
             json_field_name = camelize(field_name, False)
         return json_field_name in keys or field_name in keys
 
     def _get_field_value(self,
                          field_key: str,
                          value: dict[str, Any],
-                         config: Config) -> Any:
+                         jconf: JConf) -> Any:
         field_value = value.get(field_key)
-        if field_value is None and config.camelize_json_keys:
+        if field_value is None and jconf.camelize_json_keys:
             field_value = value.get(camelize(field_key, False))
         return field_value
 
@@ -92,9 +92,9 @@ class ShapeValidator(TypeValidator):
                           value: dict[str, Any],
                           context: TCtx):
         value_keys = list(value.keys())
-        if context.config_owner.camelize_json_keys:
+        if context.jconf_owner.camelize_json_keys:
             value_keys = [underscore(k) for k in value_keys]
-        keys = self.raw_shape_types(context.config_owner.cls).keys()
+        keys = self.raw_shape_types(context.jconf_owner.cls).keys()
         for k in value_keys:
             if k not in keys:
                 raise ValidationException(
@@ -114,13 +114,13 @@ class ShapeValidator(TypeValidator):
         if fd.strictness == Strictness.STRICT:
             self._strictness_check(value, context)
         retval = {}
-        for fk, ft in self.raw_shape_types(context.config_owner.cls).items():
+        for fk, ft in self.raw_shape_types(context.jconf_owner.cls).items():
             fv = None
             if self._has_field_value(fk,
                                      list(value.keys()),
-                                     context.config_owner):
-                fv = self._get_field_value(fk, value, context.config_owner)
-            types = rtypes(ft, context.config_owner)
+                                     context.jconf_owner):
+                fv = self._get_field_value(fk, value, context.jconf_owner)
+            types = rtypes(ft, context.jconf_owner)
             retval[fk] = types.validator.transform(context.new(
                 value=fv,
                 keypath_root=concat_keypath(context.keypath_root, fk),
@@ -136,10 +136,10 @@ class ShapeValidator(TypeValidator):
         if not isinstance(context.value, dict):
             return context.value
         retval = {}
-        for k, t in self.raw_shape_types(context.config.cls).items():
-            key = camelize(k, False) if context.config.camelize_json_keys else k
+        for k, t in self.raw_shape_types(context.jconf.cls).items():
+            key = camelize(k, False) if context.jconf.camelize_json_keys else k
             value_at_key = context.value.get(k)
-            types = rtypes(t, context.config)
+            types = rtypes(t, context.jconf)
             if types:
                 retval[key] = types.validator.tojson(context.new(value=value_at_key))
             else:
@@ -152,9 +152,9 @@ class ShapeValidator(TypeValidator):
         if not isinstance(context.value, dict):
             return context.value
         retval = {}
-        for key, raw_types in self.raw_shape_types(context.config_owner.cls).items():
+        for key, raw_types in self.raw_shape_types(context.jconf_owner.cls).items():
             value_at_key = context.value.get(key)
-            types = rtypes(raw_types, context.config_owner)
+            types = rtypes(raw_types, context.jconf_owner)
             if types:
                 retval[key] = types.validator.serialize(context.new(
                     value=value_at_key,
