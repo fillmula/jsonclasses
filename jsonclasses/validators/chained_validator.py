@@ -1,6 +1,7 @@
 """module for chained validator."""
 from __future__ import annotations
 from typing import Any, Optional
+from functools import reduce
 from ..exceptions import ValidationException
 from .validator import Validator
 from .eager_validator import EagerValidator
@@ -12,168 +13,91 @@ class ChainedValidator(Validator):
     """Chained validator has a series of validators chained."""
 
     def __init__(self, validators: Optional[list[Validator]] = None) -> None:
-        self.validators = validators or []
+        self.vs = validators or []
 
     def append(self, *args: Validator) -> ChainedValidator:
         """Append validators to this chained validator chain."""
-        return ChainedValidator([*self.validators, *args])
+        return ChainedValidator([*self.vs, *args])
 
-    def _eager_validator_index_after_index(self,
-                                           vs: list[Validator],
-                                           index: int) -> Optional[int]:
-        """This function returns the first eager validator index after given
-        index.
-
-        Args:
-        vs (list[Validator]): A list of validators usually from chained
-        validator.
-        index (int): The starting index to begin search with.
+    def _first_vidx(self, cls: type[Validator]) -> Optional[int]:
+        """This function returns the first validator of class' index.
 
         Returns:
         Optional[int]: The found index or None.
         """
-        try:
-            return vs.index(next(v for v in vs[index:]
-                        if isinstance(v, EagerValidator)))
-        except StopIteration:
-            return None
+        v = next((v for v in self.vs if isinstance(v, cls)), None)
+        return self.vs.index(v)
 
-    def _preserialize_validator_index_after_index(self,
-                                                  vs: list[Validator],
-                                                  index: int) -> Optional[int]:
-        """This function returns the first preserialize validator index after
-        given index.
+    def _last_vidx(self, cls: type[Validator]) -> Optional[int]:
+        v = next((v for v in self.vs[::-1] if isinstance(v, cls)), None)
+        return self.vs.index(v)
 
-        Args:
-        vs (list[Validator]): A list of validators usually from chained
-        validator.
-        index (int): The starting index to begin search with.
+    @property
+    def _last_evidx(self) -> Optional[int]:
+        return self._last_vidx(EagerValidator)
 
-        Returns:
-        Optional[int]: The found index or None.
+    @property
+    def _first_pvidx(self) -> Optional[int]:
+        return self._first_vidx(PreserializeValidator)
+
+    @property
+    def _tvs(self) -> list[Validator]:
+        """The validators which should be perform eager validation on.
+
+        This is from the beginning to the last eager validator before the first
+        preserialize validator.
         """
-        try:
-            return vs.index(next(v for v in vs[index:]
-                        if isinstance(v, PreserializeValidator)))
-        except StopIteration:
-            return None
+        return self.vs[:self._last_evidx] # TODO: accounting into e and p
 
-    def _last_eager_validator_index(self,
-                                    vs: list[Validator]) -> Optional[int]:
-        """This function returns the last eager validator index.
-
-        Args:
-        vs (list[Validator]): A list of validators usually from chained
-        validator.
-
-        Returns:
-        Optional[int]: The found index or None.
+    @property
+    def _pvs(self) -> list[Validator]:
         """
-        try:
-            return max([i for (i, v) in enumerate(vs)
-                    if isinstance(v, EagerValidator)])
-        except ValueError:
-            return None
-
-    def _first_preserialize_validator_index(self, vs: list[Validator]) \
-                                                            -> Optional[int]:
-        """This function returns the first preserialize validator index.
-
-        Args:
-        vs (list[Validator]): A list of validators usually from chained
-        validator.
-
-        Returns:
-        Optional[int]: The found index or None.
         """
-        try:
-            return min([i for (i, v) in enumerate(vs)
-                    if isinstance(v, PreserializeValidator)])
-        except ValueError:
-            return None
+        return self.vs[self._first_pvidx:]
+
+    @property
+    def _nvs(self) -> list[Validator]:
+        """Validators between last eager validator and first preserialize
+        validator. These validators should be performed in normal validation
+        process.
+        """
+        return self.vs[self._last_evidx:self._first_pvidx]
+
+    def _vt(self, v: Validator, ctx: Ctx) -> Any:
+        """Validate as transform."""
+        retval = v.transform(ctx)
+        v.validate(ctx.nval(retval))
+        return retval
+
+    def _sv(self, v: Validator, ctx: Ctx) -> Any:
+        """Serialize as validate."""
+        val = v.serialize(ctx)
+        v.validate(ctx.nval(val))
+        return val
 
     def validate(self, ctx: Ctx) -> None:
         keypath_messages: dict[str, str] = {}
-        start = self._last_eager_validator_index(self.validators)
-        end = self._first_preserialize_validator_index(self.validators)
-        for validator in self.validators[start:end]:
+        for validator in self._nvs:
             try:
                 validator.validate(ctx)
             except ValidationException as exception:
                 keypath_messages.update(exception.keypath_messages)
-                if not ctx.all_fields:
+                if not ctx.ctxcfg.all_fields:
                     break
         if len(keypath_messages) > 0:
             raise ValidationException(keypath_messages, ctx.root)
 
-    def _validate_and_transform(self,
-                                validator: Validator,
-                                ctx: Ctx) -> Any:
-        """Validate as transform."""
-        validator.validate(ctx)
-        return validator.transform(ctx)
-
-    def _serialize_and_validate(self, validator: Validator, context: TCtx) -> Any:
-        """Serialize as validate."""
-        value = validator.serialize(context)
-        validator.validate(context.vctx())
-        return value
-
-    def _preserialize_validate(self, context: VCtx) -> None:
-        keypath_messages: dict[str, str] = {}
-        start = self._first_preserialize_validator_index(self.validators)
-        for validator in self.validators[start:]:
-            try:
-                validator.validate(context)
-            except ValidationException as exception:
-                keypath_messages.update(exception.keypath_messages)
-                if not context.all_fields:
-                    break
-        if len(keypath_messages) > 0:
-            raise ValidationException(keypath_messages, context.root)
-
-    # flake8: noqa: E501
     def transform(self, ctx: Ctx) -> Any:
-        curvalue = context.value
-        index = 0
-        next_index = self._eager_validator_index_after_index(
-                self.validators, index)
-        while next_index is not None:
-            validators = self.validators[index:next_index]
-            for validator in validators:
-                curvalue = self._validate_and_transform(
-                    validator,
-                    context.new(value=curvalue))
-            index = next_index + 1
-            next_index = self._eager_validator_index_after_index(
-                    self.validators, index)
-        validators = self.validators[index:]
-        for validator in validators:
-            curvalue = validator.transform(context.new(value=curvalue))
-        return curvalue
+        val = ctx.val
+        val = reduce(lambda val, v: self._vt(v, ctx.nval(val)), self._tvs, val)
+        val = reduce(lambda val, v: v.transform(ctx.nval(val)), self._nvs, val)
+        return val
 
     def tojson(self, ctx: Ctx) -> Any:
-        value = ctx.value
-        for validator in self.validators:
-            value = validator.tojson(ctx.new(value=value))
-        return value
+        return reduce(lambda val, v: v.tojson(ctx.nval(val)), self.vs, ctx.val)
 
     def serialize(self, ctx: Ctx) -> Any:
-        curvalue = ctx.value
-        index = self._preserialize_validator_index_after_index(
-                self.validators, 0)
-        next_index = self._preserialize_validator_index_after_index(
-                self.validators, index + 1) if index is not None else None
-        validators = self.validators[:index]
-        for validator in validators:
-            curvalue = validator.serialize(ctx.new(value=curvalue))
-        while index is not None:
-            validators = self.validators[index:next_index]
-            for validator in validators:
-                curvalue = self._serialize_and_validate(
-                    validator,
-                    ctx.new(value=curvalue))
-            index = next_index if next_index is not None else None
-            next_index = self._preserialize_validator_index_after_index(
-                    self.validators, index + 1) if index is not None else None
-        return curvalue
+        val = ctx.val
+        val = reduce(lambda val, v: v.transform(ctx.nval(val)), self._nvs, val)
+        val = reduce(lambda val, v: self._sv(v, ctx.nval(val)), self._pvs, val)
+        return val

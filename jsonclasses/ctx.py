@@ -39,6 +39,10 @@ class Ctx(NamedTuple):
     idchain: list[str] = []
 
     @property
+    def val(self: Ctx) -> Any:
+        return self.value
+
+    @property
     def cdefroot(self: Ctx) -> Cdef:
         return self.root.__class__.cdef
 
@@ -70,3 +74,10 @@ class Ctx(NamedTuple):
                    keypathp=[], fdef=types.objof(root.__class__).fdef,
                    operator=root._operator, mgraph=MGraph(), idchain=[])
 
+    def nval(self: Ctx, newval: Any) -> Ctx:
+        return Ctx(root=self.root, owner=self.owner, parent=self.parent,
+                   value=newval, original=self.original, ctxcfg=self.ctxcfg,
+                   keypatho=self.keypatho, keypathr=self.keypathr,
+                   keypathp=self.keypathp, fdef=self.fdef,
+                   operator=self.operator, mgraph=self.mgraph,
+                   idchain=self.idchain)
