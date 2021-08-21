@@ -39,27 +39,27 @@ class ShapeValidator(TypeValidator):
         fdef._raw_shape_types = self.raw_types
 
     def validate(self, ctx: Ctx) -> None:
-        if context.value is None:
+        if ctx.value is None:
             return
-        super().validate(context)
-        all_fields = context.all_fields
+        super().validate(ctx)
+        all_fields = ctx.all_fields
         if all_fields is None:
-            all_fields = context.jconf_owner.validate_all_fields
+            all_fields = ctx.jconf_owner.validate_all_fields
         keypath_messages = {}
-        for k, t in self.raw_shape_types(context.jconf_owner.cls).items():
+        for k, t in self.raw_shape_types(ctx.jconf_owner.cls).items():
             try:
-                value_at_key = context.value[k]
+                value_at_key = ctx.value[k]
             except KeyError:
                 value_at_key = None
             types = rtypes(t)
             if types:
                 try:
-                    types.validator.validate(context.new(
+                    types.validator.validate(ctx.new(
                         value=value_at_key,
-                        keypath_root=concat_keypath(context.keypath_root, k),
-                        keypath_owner=concat_keypath(context.keypath_owner, k),
+                        keypath_root=concat_keypath(ctx.keypath_root, k),
+                        keypath_owner=concat_keypath(ctx.keypath_owner, k),
                         keypath_parent=k,
-                        parent=context.value,
+                        parent=ctx.value,
                         fdef=types.fdef))
                 except ValidationException as exception:
                     if all_fields:
@@ -67,7 +67,7 @@ class ShapeValidator(TypeValidator):
                     else:
                         raise exception
         if len(keypath_messages) > 0:
-            raise ValidationException(keypath_messages, root=context.root)
+            raise ValidationException(keypath_messages, root=ctx.root)
 
     def _has_field_value(self,
                          field_key: str,

@@ -12,10 +12,10 @@ class MinValidator(Validator):
         self.min_value = min_value
 
     def validate(self, ctx: Ctx) -> None:
-        if context.value is None:
+        if ctx.value is None:
             return
-        if context.value < self.min_value:
+        if ctx.value < self.min_value:
             raise ValidationException(
-                {context.keypath_root: f'Value \'{context.value}\' at \'{context.keypath_root}\' should not be less than {self.min_value}.'},
-                context.root
+                {ctx.keypath_root: f'Value \'{ctx.value}\' at \'{ctx.keypath_root}\' should not be less than {self.min_value}.'},
+                ctx.root
             )

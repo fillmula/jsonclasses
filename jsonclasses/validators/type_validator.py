@@ -17,15 +17,15 @@ class TypeValidator(Validator):
         fdef._field_type = self.field_type
 
     def validate(self, ctx: Ctx) -> None:
-        if context.value is None:
+        if ctx.value is None:
             return
         if self.exact_type:
-            if type(context.value) is self.cls:
+            if type(ctx.value) is self.cls:
                 return
         else:
-            if isinstance(context.value, self.cls):
+            if isinstance(ctx.value, self.cls):
                 return
         raise ValidationException(
-            {context.keypath_root: f'Value \'{context.value}\' at \'{context.keypath_root}\' should be {self.cls.__name__}.'},
-            context.root
+            {ctx.keypath_root: f'Value \'{ctx.value}\' at \'{ctx.keypath_root}\' should be {self.cls.__name__}.'},
+            ctx.root
         )

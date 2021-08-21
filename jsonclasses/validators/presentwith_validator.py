@@ -15,16 +15,16 @@ class PresentWithValidator(Validator):
         self.referring_key = referring_key
 
     def validate(self, ctx: Ctx) -> None:
-        if context.value is not None:
+        if ctx.value is not None:
             return
         try:
-            referred_value = getattr(context.owner, self.referring_key)
+            referred_value = getattr(ctx.owner, self.referring_key)
         except AttributeError:
             raise ValueError(f'Unexist referring key \'{self.referring_key}\' '
                              'passed to present with validator.')
-        if referred_value is not None and context.value is None:
+        if referred_value is not None and ctx.value is None:
             raise ValidationException(
-                {context.keypath_root: (f'Value at \'{context.keypath_root}\''
+                {ctx.keypath_root: (f'Value at \'{ctx.keypath_root}\''
                                         ' should be present since it\'s '
                                         'referring value is presented.')},
-                context.root)
+                ctx.root)

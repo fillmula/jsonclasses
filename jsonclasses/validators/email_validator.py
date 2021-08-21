@@ -9,17 +9,17 @@ class EmailValidator(Validator):
     """Email validator raises if value is not valid email."""
 
     def validate(self, ctx: Ctx) -> None:
-        if context.value is None:
+        if ctx.value is None:
             return
-        value = context.value
+        value = ctx.value
         regex = compile(
             r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
         )
 
 
         if match(regex, value) is None:
-            kp = context.keypath_root
+            kp = ctx.keypath_root
             raise ValidationException(
                 {kp: f'email \'{value}\' at \'{kp}\' is not valid email.'},
-                context.root
+                ctx.root
             )

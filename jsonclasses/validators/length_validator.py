@@ -13,10 +13,10 @@ class LengthValidator(Validator):
         self.maxlength = maxlength if maxlength is not None else minlength
 
     def validate(self, ctx: Ctx) -> None:
-        if context.value is None:
+        if ctx.value is None:
             return
-        value = context.value
-        kp = context.keypath_root
+        value = ctx.value
+        kp = ctx.keypath_root
         if len(value) > self.maxlength or len(value) < self.minlength:
             if self.minlength != self.maxlength:
                 message = f'Length of value \'{value}\' at \'{kp}\' should not be greater than {self.maxlength} or less than {self.minlength}.'
@@ -24,5 +24,5 @@ class LengthValidator(Validator):
                 message = f'Length of value \'{value}\' at \'{kp}\' should be {self.minlength}.'
             raise ValidationException(
                 {kp: message},
-                context.root
+                ctx.root
             )

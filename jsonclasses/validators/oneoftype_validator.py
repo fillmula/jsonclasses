@@ -19,16 +19,16 @@ class OneOfTypeValidator(Validator):
         fdef._raw_union_types = [rtypes(t) for t in self.type_list]
 
     def validate(self, ctx: Ctx) -> None:
-        if context.value is None:
+        if ctx.value is None:
             return
-        for types in context.fdef.raw_union_types:
+        for types in ctx.fdef.raw_union_types:
             try:
-                types.validator.validate(context)
+                types.validator.validate(ctx)
                 return
             except ValidationException:
                 continue
         raise ValidationException(
-            {context.keypath_root: (f'Value \'{context.value}\' at '
-                                    f'\'{context.keypath_root}\' should be '
+            {ctx.keypath_root: (f'Value \'{ctx.value}\' at '
+                                    f'\'{ctx.keypath_root}\' should be '
                                     f'one of type {self.type_list}.')},
-            context.root)
+            ctx.root)

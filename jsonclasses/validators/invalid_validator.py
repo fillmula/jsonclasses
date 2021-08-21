@@ -10,6 +10,6 @@ class InvalidValidator(Validator):
     def validate(self, ctx: Ctx) -> None:
         """Raises invalid exception."""
         raise ValidationException(
-            {context.keypath_root: f'Value \'{context.value}\' at \'{context.keypath_root}\' is invalid.'},
-            context.root
+            {ctx.keypath_root: f'value is invalid'},
+            ctx.root
         )

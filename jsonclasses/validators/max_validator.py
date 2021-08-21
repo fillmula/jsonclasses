@@ -12,10 +12,10 @@ class MaxValidator(Validator):
         self.max_value = max_value
 
     def validate(self, ctx: Ctx) -> None:
-        if context.value is None:
-            return context.value
-        if context.value > self.max_value:
+        if ctx.value is None:
+            return ctx.value
+        if ctx.value > self.max_value:
             raise ValidationException(
-                {context.keypath_root: f'Value \'{context.value}\' at \'{context.keypath_root}\' should not be greater than {self.max_value}.'},
-                context.root
+                {ctx.keypath_root: f'Value \'{ctx.value}\' at \'{ctx.keypath_root}\' should not be greater than {self.max_value}.'},
+                ctx.root
             )

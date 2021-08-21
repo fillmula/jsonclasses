@@ -19,21 +19,21 @@ class PresentWithoutValidator(Validator):
             self.referring_keys = referring_keys
 
     def validate(self, ctx: Ctx) -> None:
-        if context.value is not None:
+        if ctx.value is not None:
             return
         for key in self.referring_keys:
             try:
-                referred_value = getattr(context.owner, key)
+                referred_value = getattr(ctx.owner, key)
             except AttributeError:
                 raise ValueError('Unexist referring key '
                                  f'\'{key}\' '
                                  'passed to present without validator.')
             if referred_value is not None:
                 return
-        if context.value is None:
+        if ctx.value is None:
             raise ValidationException(
-                {context.keypath_root: (f'Value at \'{context.keypath_root}\''
+                {ctx.keypath_root: (f'Value at \'{ctx.keypath_root}\''
                                         ' should be present since it\'s '
                                         'referring values are not '
                                         'presented.')},
-                context.root)
+                ctx.root)

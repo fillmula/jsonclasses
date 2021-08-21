@@ -15,8 +15,8 @@ class PresentValidator(Validator):
         fdef._required = True
 
     def validate(self, ctx: Ctx) -> None:
-        if context.value is None:
+        if ctx.value is None:
             raise ValidationException(
-                {context.keypath_root: (f'Value at \'{context.keypath_root}\''
+                {ctx.keypath_root: (f'Value at \'{ctx.keypath_root}\''
                                         ' should be present.')},
-                context.root)
+                ctx.root)

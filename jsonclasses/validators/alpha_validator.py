@@ -8,12 +8,12 @@ class AlphaValidator(Validator):
     """Alpha validator raises if value is not a alpha."""
 
     def validate(self, ctx: Ctx) -> None:
-        if context.value is None:
+        if ctx.value is None:
             return
-        value = context.value
+        value = ctx.value
         if not value.isalpha():
-            kp = context.keypath_root
+            kp = ctx.keypath_root
             raise ValidationException(
                 {kp: f'product_name \'{value}\' at \'{kp}\' is not a alpha.'},
-                context.root
+                ctx.root
             )

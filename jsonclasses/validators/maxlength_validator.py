@@ -11,10 +11,10 @@ class MaxlengthValidator(Validator):
         self.maxlength = maxlength
 
     def validate(self, ctx: Ctx) -> None:
-        if context.value is None:
+        if ctx.value is None:
             return
-        if len(context.value) > self.maxlength:
+        if len(ctx.value) > self.maxlength:
             raise ValidationException(
-                {context.keypath_root: f'Length of value \'{context.value}\' at \'{context.keypath_root}\' should not be greater than {self.maxlength}.'},
-                context.root
+                {ctx.keypath_root: f'Length of value \'{ctx.value}\' at \'{ctx.keypath_root}\' should not be greater than {self.maxlength}.'},
+                ctx.root
             )

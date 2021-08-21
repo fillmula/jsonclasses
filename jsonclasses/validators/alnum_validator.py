@@ -8,12 +8,12 @@ class AlnumValidator(Validator):
     """Alnum validator raises if value is not made up of alpha and number."""
 
     def validate(self, ctx: Ctx) -> None:
-        if context.value is None:
+        if ctx.value is None:
             return
-        value = context.value
+        value = ctx.value
         if not value.isalnum():
-            kp = context.keypath_root
+            kp = ctx.keypath_root
             raise ValidationException(
                 {kp: f'product_code \'{value}\' at \'{kp}\' is not made up of alpha and number.'},
-                context.root
+                ctx.root
             )

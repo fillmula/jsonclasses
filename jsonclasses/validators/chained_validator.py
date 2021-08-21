@@ -98,20 +98,20 @@ class ChainedValidator(Validator):
         end = self._first_preserialize_validator_index(self.validators)
         for validator in self.validators[start:end]:
             try:
-                validator.validate(context)
+                validator.validate(ctx)
             except ValidationException as exception:
                 keypath_messages.update(exception.keypath_messages)
-                if not context.all_fields:
+                if not ctx.all_fields:
                     break
         if len(keypath_messages) > 0:
-            raise ValidationException(keypath_messages, context.root)
+            raise ValidationException(keypath_messages, ctx.root)
 
     def _validate_and_transform(self,
                                 validator: Validator,
-                                context: TCtx) -> Any:
+                                ctx: Ctx) -> Any:
         """Validate as transform."""
-        validator.validate(context.vctx())
-        return validator.transform(context)
+        validator.validate(ctx)
+        return validator.transform(ctx)
 
     def _serialize_and_validate(self, validator: Validator, context: TCtx) -> Any:
         """Serialize as validate."""

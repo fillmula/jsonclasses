@@ -15,9 +15,9 @@ class AsopdValidator(Validator):
         fdef._requires_operator_assign = True
 
     def validate(self, ctx: Ctx) -> None:
-        if context.owner.is_new or context.keypath_owner in context.owner.modified_fields:
-            if context.value is None:
+        if ctx.owner.is_new or ctx.keypath_owner in ctx.owner.modified_fields:
+            if ctx.value is None:
                 raise ValidationException(
                     keypath_messages={
-                        context.keypath_root: "no operator being assigned"},
-                    root=context.root)
+                        ctx.keypath_root: "no operator being assigned"},
+                    root=ctx.root)

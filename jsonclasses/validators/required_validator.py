@@ -16,38 +16,38 @@ class RequiredValidator(Validator):
 
     def validate(self, ctx: Ctx) -> None:
         storage = FieldStorage.EMBEDDED
-        if context.fdef is not None:
-            storage = context.fdef.field_storage
+        if ctx.fdef is not None:
+            storage = ctx.fdef.field_storage
         if storage == FieldStorage.FOREIGN_KEY:  # we don't check foreign key
             return
         if storage == FieldStorage.LOCAL_KEY:
-            if context.value is None:  # check key presence
-                jconf: JConf = context.owner.__class__.cdef.jconf
-                ko = context.keypath_owner
-                field = context.owner.__class__.cdef.field_named(ko)
+            if ctx.value is None:  # check key presence
+                jconf: JConf = ctx.owner.__class__.cdef.jconf
+                ko = ctx.keypath_owner
+                field = ctx.owner.__class__.cdef.field_named(ko)
                 local_key = jconf.key_transformer(field)
-                if isinstance(context.parent, dict):
-                    if context.parent.get(local_key) is None:
+                if isinstance(ctx.parent, dict):
+                    if ctx.parent.get(local_key) is None:
                         raise ValidationException(
-                            {context.keypath_root: f'Value at \'{context.keypath_root}\' should not be None.'},
-                            context.root
+                            {ctx.keypath_root: f'Value at \'{ctx.keypath_root}\' should not be None.'},
+                            ctx.root
                         )
-                elif isjsonobject(context.parent):
+                elif isjsonobject(ctx.parent):
                     try:
-                        local_key_value = getattr(context.parent, local_key)
+                        local_key_value = getattr(ctx.parent, local_key)
                     except AttributeError:
                         raise ValidationException(
-                            {context.keypath_root: f'Value at \'{context.keypath_root}\' should not be None.'},
-                            context.root
+                            {ctx.keypath_root: f'Value at \'{ctx.keypath_root}\' should not be None.'},
+                            ctx.root
                         )
                     if local_key_value is None:
                         raise ValidationException(
-                            {context.keypath_root: f'Value at \'{context.keypath_root}\' should not be None.'},
-                            context.root
+                            {ctx.keypath_root: f'Value at \'{ctx.keypath_root}\' should not be None.'},
+                            ctx.root
                         )
             return
-        if context.value is None:
+        if ctx.value is None:
             raise ValidationException(
-                {context.keypath_root: f'Value at \'{context.keypath_root}\' should not be None.'},
-                context.root
+                {ctx.keypath_root: f'Value at \'{ctx.keypath_root}\' should not be None.'},
+                ctx.root
             )

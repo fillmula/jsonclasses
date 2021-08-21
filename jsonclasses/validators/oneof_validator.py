@@ -11,10 +11,10 @@ class OneOfValidator(Validator):
         self.str_list = str_list
 
     def validate(self, ctx: Ctx) -> None:
-        if context.value is None:
+        if ctx.value is None:
             return None
-        if context.value not in self.str_list:
+        if ctx.value not in self.str_list:
             raise ValidationException(
-                {context.keypath_root: f'Value \'{context.value}\' at \'{context.keypath_root}\' should be one of {self.str_list}.'},
-                context.root
+                {ctx.keypath_root: f'Value \'{ctx.value}\' at \'{ctx.keypath_root}\' should be one of {self.str_list}.'},
+                ctx.root
             )

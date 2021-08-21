@@ -12,12 +12,12 @@ class MatchValidator(Validator):
         self.pattern = pattern
 
     def validate(self, ctx: Ctx) -> None:
-        if context.value is None:
+        if ctx.value is None:
             return
-        value = context.value
+        value = ctx.value
         if search(self.pattern, value) is None:
-            kp = context.keypath_root
+            kp = ctx.keypath_root
             raise ValidationException(
                 {kp: f'Value \'{value}\' at \'{kp}\' should match \'{self.pattern}\'.'},
-                context.root
+                ctx.root
             )

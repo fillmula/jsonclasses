@@ -8,12 +8,12 @@ class DigitValidator(Validator):
     """Digit validator raises if value is not a digit."""
 
     def validate(self, ctx: Ctx) -> None:
-        if context.value is None:
+        if ctx.value is None:
             return
-        value = context.value
+        value = ctx.value
         if not value.isdigit():
-            kp = context.keypath_root
+            kp = ctx.keypath_root
             raise ValidationException(
                 {kp: f'product_id \'{value}\' at \'{kp}\' is not a digit.'},
-                context.root
+                ctx.root
             )

@@ -20,25 +20,25 @@ class CompareValidator(Validator):
 
     def validate(self, ctx: Ctx) -> None:
         from ..jobject import JObject
-        name = context.keypath_parent
-        parent = cast(JObject, context.parent)
+        name = ctx.keypath_parent
+        parent = cast(JObject, ctx.parent)
         if name not in parent.previous_values:
             return
         prev_value = parent.previous_values[name]
         params_len = len(signature(self.compare_callable).parameters)
         if params_len == 2:
-            result = self.compare_callable(prev_value, context.value)
+            result = self.compare_callable(prev_value, ctx.value)
         elif params_len == 3:
             result = self.compare_callable(prev_value,
-                                           context.value,
-                                           context)
+                                           ctx.value,
+                                           ctx)
         if result is True:
             return
         if result is False:
             raise ValidationException(
-                keypath_messages={context.keypath_root: 'compare failed'},
-                root=context.root)
+                keypath_messages={ctx.keypath_root: 'compare failed'},
+                root=ctx.root)
         if result is not None:
             raise ValidationException(
-                keypath_messages={context.keypath_root: result},
-                root=context.root)
+                keypath_messages={ctx.keypath_root: result},
+                root=ctx.root)
