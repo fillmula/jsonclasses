@@ -16,22 +16,24 @@ class DateValidator(TypeValidator):
         self.field_type = FieldType.DATE
 
     def transform(self, ctx: Ctx) -> Any:
-        if context.value is None:
+        if ctx.value is None:
             return None
-        elif isinstance(context.value, str):
+        elif isinstance(ctx.value, str):
             try:
-                return date.fromisoformat(context.value[:10])
+                return date.fromisoformat(ctx.value[:10])
             except ValueError:
                 raise ValidationException({
-                    context.keypath_root: 'Date string format error.'
-                }, context.root)
-        elif type(context.value) == datetime:
-            return date(context.value.year,
-                        context.value.month,
-                        context.value.day)
+                    ctx.keypath_root: 'Date string format error.'
+                }, ctx.root)
+        elif type(ctx.value) == datetime:
+            return date(ctx.value.year,
+                        ctx.value.month,
+                        ctx.value.day)
         else:
-            return context.value
+            return ctx.value
 
     def tojson(self, ctx: Ctx) -> Any:
-        if context.value is not None:
-            return context.value.isoformat() + 'T00:00:00.000Z'
+        return None if ctx.value is None else self._jsondate(ctx.value)
+
+    def _jsondate(self, d: date) -> str:
+        return d.isoformat() + 'T00:00:00.000Z'

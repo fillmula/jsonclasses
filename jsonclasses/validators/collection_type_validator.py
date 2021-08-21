@@ -106,21 +106,21 @@ class CollectionTypeValidator(TypeValidator):
         return retval
 
     def tojson(self, ctx: Ctx) -> Any:
-        if context.value is None:
+        if ctx.value is None:
             return None
-        if not isinstance(context.value, self.cls):
-            return context.value
-        itypes = self.item_types(context.jconf.cls)
+        if not isinstance(ctx.value, self.cls):
+            return ctx.value
+        itypes = self.item_types(ctx.jconf.cls)
         retval = self.empty_collection()
-        for i, v in self.enumerator(context.value):
-            transformed = itypes.validator.tojson(context.new(value=v))
+        for i, v in self.enumerator(ctx.value):
+            transformed = itypes.validator.tojson(ctx.new(value=v))
             self.append_value(
-                self.to_json_key(i, context.jconf),
+                self.to_json_key(i, ctx.jconf),
                 transformed,
                 retval)
         return retval
 
-    def serialize(self, context: TCtx) -> Any:
+    def serialize(self, context: Ctx) -> Any:
         if context.value is None:
             return None
         if not isinstance(context.value, self.cls):

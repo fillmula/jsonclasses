@@ -218,17 +218,18 @@ class InstanceOfValidator(Validator):
         return dest
 
     def tojson(self, ctx: Ctx) -> Any:
-        if context.value is None:
+        if ctx.value is None:
             return None
+        val = cast(JObject, ctx.value)
         retval = {}
-        entity_chain = context.entity_chain
-        cls_name = context.value.__class__.__name__
-        no_key_refs = cls_name in entity_chain
-        for field in context.value.__class__.cdef.fields:
-            field_value = getattr(context.value, field.name)
+        clschain = ctx.idchain
+        cls_name = val.__class__.cdef.name
+        no_key_refs = cls_name in clschain
+        for field in val.__class__.cdef.fields:
+            field_value = getattr(val, field.name)
             fd = field.types.fdef
             jf_name = field.json_name
-            ignore_writeonly = context.ignore_writeonly
+            ignore_writeonly = ctx.ignore_writeonly
             if fd.field_storage == FieldStorage.LOCAL_KEY and no_key_refs:
                 continue
             if fd.field_storage == FieldStorage.FOREIGN_KEY and no_key_refs:
@@ -240,11 +241,11 @@ class InstanceOfValidator(Validator):
             item_context = context.new(
                 value=field_value,
                 fdef=field.fdef,
-                entity_chain=[*entity_chain, cls_name])
+                entity_chain=[*clschain, cls_name])
             retval[jf_name] = field.types.validator.tojson(item_context)
         return retval
 
-    def serialize(self, context: TCtx) -> Any:
+    def serialize(self, context: Ctx) -> Any:
         from ..jobject import JObject
         value = cast(JObject, context.value)
         if value is None:

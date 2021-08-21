@@ -8,6 +8,5 @@ class ToTitleValidator(Validator):
     """Convert string to title format."""
 
     def transform(self, ctx: Ctx) -> Any:
-        if context.value is None:
-            return None
-        return context.value.title()
+        return None if ctx.value is None else ctx.value.title()
+

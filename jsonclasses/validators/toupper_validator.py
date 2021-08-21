@@ -8,6 +8,4 @@ class ToUpperValidator(Validator):
     """convert string into upper case"""
 
     def transform(self, ctx: Ctx) -> Any:
-        if context.value is None:
-            return None
-        return context.value.upper()
+        return None if ctx.value is None else ctx.value.upper()

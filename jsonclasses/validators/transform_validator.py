@@ -17,10 +17,10 @@ class TransformValidator(Validator):
         self.transformer = transformer
 
     def transform(self, ctx: Ctx) -> Any:
-        if context.value is None:
+        if ctx.value is None:
             return None
         params_len = len(signature(self.transformer).parameters)
         if params_len == 1:
-            return self.transformer(context.value)
+            return self.transformer(ctx.value)
         elif params_len == 2:
-            return self.transformer(context.value, context)
+            return self.transformer(ctx.value, ctx)

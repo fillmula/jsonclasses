@@ -7,12 +7,8 @@ from ..ctx import Ctx
 class TruncateValidator(Validator):
     """Truncate validator truncates value."""
 
-    def __init__(self, max_length: int) -> None:
-        self.max_length = max_length
+    def __init__(self, maxlen: int) -> None:
+        self.maxlen = maxlen
 
     def transform(self, ctx: Ctx) -> Any:
-        if context.value is None:
-            return None
-        if context.value.__len__() > self.max_length:
-            return context.value[:self.max_length]
-        return context.value
+        return None if ctx.value is None else ctx.value[:self.maxlen]

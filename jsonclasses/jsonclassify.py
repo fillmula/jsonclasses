@@ -145,8 +145,7 @@ def update(self: JObject, **kwargs: dict[str, Any]) -> JObject:
     return self
 
 
-def tojson(self: JObject,
-           ignore_writeonly: bool = False) -> dict[str, Any]:
+def tojson(self: JObject, ignore_writeonly: bool = False) -> dict[str, Any]:
     """Convert this JSON Class object to JSON dict.
 
     Args:
@@ -163,8 +162,7 @@ def tojson(self: JObject,
     return InstanceOfValidator(self.__class__).tojson(ctx)
 
 
-def validate(self: JObject,
-             validate_all_fields: Optional[bool] = None) -> JObject:
+def validate(self: JObject, all_fields: Optional[bool] = None) -> JObject:
     """Validate the jsonclass object's validity. Raises ValidationException
     on validation failed.
 
@@ -177,7 +175,7 @@ def validate(self: JObject,
         None: upon successful validation, returns nothing.
     """
     self._ensure_not_outdated()
-    ctxcfg = CtxCfg(all_fields=validate_all_fields)
+    ctxcfg = CtxCfg(all_fields=all_fields)
     ctx = Ctx.rootctx(self, ctxcfg)
     InstanceOfValidator(self.__class__).validate(ctx)
     return self

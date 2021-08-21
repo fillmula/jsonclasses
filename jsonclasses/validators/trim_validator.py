@@ -8,8 +8,5 @@ class TrimValidator(Validator):
     """Trim validator trims string values."""
 
     def transform(self, ctx: Ctx) -> Any:
-        if context.value is None:
-            return None
-        if not isinstance(context.value, str):
-            return context.value
-        return context.value.strip()
+        return None if ctx.value is None else ctx.value.strip()
+

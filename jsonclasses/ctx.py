@@ -30,8 +30,8 @@ class Ctx(NamedTuple):
     value: Any
     original: Any
     ctxcfg: CtxCfg
-    keypatho: list[Union[str, int]]
     keypathr: list[Union[str, int]]
+    keypatho: list[Union[str, int]]
     keypathp: list[Union[str, int]]
     fdef: Fdef
     operator: Any
@@ -50,6 +50,18 @@ class Ctx(NamedTuple):
     def iscreate(self: Ctx) -> bool:
         return self.original is None
 
+    @property
+    def skeypathr(self: Ctx) -> str:
+        return '.'.join([str(k) for k in self.keypathr])
+
+    @property
+    def skeypatho(self: Ctx) -> str:
+        return '.'.join([str(k) for k in self.keypatho])
+
+    @property
+    def skeypathp(self: Ctx) -> str:
+        return '.'.join([str(k) for k in self.keypathp])
+
     @classmethod
     def rootctx(cls: type[Ctx], root: JObject, ctxcfg: CtxCfg,
                 value: Any = None) -> Ctx:
@@ -57,3 +69,4 @@ class Ctx(NamedTuple):
                    original=root, ctxcfg=ctxcfg, keypatho=[], keypathr=[],
                    keypathp=[], fdef=types.objof(root.__class__).fdef,
                    operator=root._operator, mgraph=MGraph(), idchain=[])
+

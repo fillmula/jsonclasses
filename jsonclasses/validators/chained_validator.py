@@ -153,26 +153,26 @@ class ChainedValidator(Validator):
         return curvalue
 
     def tojson(self, ctx: Ctx) -> Any:
-        value = context.value
+        value = ctx.value
         for validator in self.validators:
-            value = validator.tojson(context.new(value=value))
+            value = validator.tojson(ctx.new(value=value))
         return value
 
-    def serialize(self, context: TCtx) -> Any:
-        curvalue = context.value
+    def serialize(self, ctx: Ctx) -> Any:
+        curvalue = ctx.value
         index = self._preserialize_validator_index_after_index(
                 self.validators, 0)
         next_index = self._preserialize_validator_index_after_index(
                 self.validators, index + 1) if index is not None else None
         validators = self.validators[:index]
         for validator in validators:
-            curvalue = validator.serialize(context.new(value=curvalue))
+            curvalue = validator.serialize(ctx.new(value=curvalue))
         while index is not None:
             validators = self.validators[index:next_index]
             for validator in validators:
                 curvalue = self._serialize_and_validate(
                     validator,
-                    context.new(value=curvalue))
+                    ctx.new(value=curvalue))
             index = next_index if next_index is not None else None
             next_index = self._preserialize_validator_index_after_index(
                     self.validators, index + 1) if index is not None else None
