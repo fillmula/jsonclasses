@@ -76,7 +76,7 @@ class JConf:
             can_read (Optional[Union[CanRead, list[CanRead]]]): The reading
                 guard.
         """
-        self._cls = None
+        self._cls: Optional[type[JObject]] = None
         self._cgraph = cgraph or 'default'
         self._camelize_json_keys = camelize_json_keys
         self._strict_input = strict_input
@@ -168,7 +168,7 @@ class JConf:
     def cls(self: JConf) -> type[JObject]:
         """The JSON class on which this class config is defined.
         """
-        return self._cls
+        return cast(type[JObject], self._cls)
 
     @property
     def cgraph(self: JConf) -> CGraph:

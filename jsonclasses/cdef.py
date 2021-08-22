@@ -6,11 +6,11 @@ and class field settings.
 """
 from __future__ import annotations
 from jsonclasses.jobject import JObject
-from typing import Optional, final, cast, TYPE_CHECKING
-from dataclasses import fields, Field
+from typing import Optional, final, TYPE_CHECKING
+from dataclasses import fields as dataclass_fields
 from inflection import camelize
 from .jfield import JField
-from .fdef import Fdef, FieldStorage, FieldType, DeleteRule
+from .fdef import FieldStorage, DeleteRule
 from .rtypes import rtypes
 from .exceptions import LinkedFieldUnmatchException
 if TYPE_CHECKING:
@@ -26,19 +26,19 @@ class Cdef:
     used by the framework to lookup class fields and class field settings.
     """
 
-    def __init__(self: Cdef, class_: type, jconf: JConf) -> None:
+    def __init__(self: Cdef, cls: type[JObject], jconf: JConf) -> None:
         """
         Initialize a new class definition.
 
         Args:
-            class_ (type): The JSON class for which the class definition is \
+            cls (type): The JSON class for which the class definition is \
                 created.
             jconf (JConf): The configuration object for the targeted class.
         """
         from .types import Types
-        self._cls: type = class_
-        jconf._cls = class_
-        self._name: str = class_.__name__
+        self._cls = cls
+        jconf._cls = cls
+        self._name: str = cls.__name__
         self._jconf: JConf = jconf
         self._list_fields: list[JField] = []
         self._dict_fields: dict[str, JField] = {}
@@ -56,14 +56,9 @@ class Cdef:
         self._reference_names: list[str] = []
         self._camelized_reference_names: list[str] = []
         self._assign_operator_fields: list[JField] = []
-        for field in fields(class_):
+        for field in dataclass_fields(cls):
             name = field.name
             self._field_names.append(name)
-            if jconf.camelize_json_keys:
-                json_name = camelize(name, False)
-                self._camelized_field_names.append(json_name)
-            else:
-                json_name = name
             if isinstance(field.default, Types):
                 types = field.default
                 default = None
@@ -73,14 +68,10 @@ class Cdef:
             else:
                 types = rtypes(field.type)
                 default = field.default
+            print("HERE RUNS")
             types.fdef._cdef = self
-            jfield = JField(
-                name=name,
-                json_name=json_name,
-                default=default,
-                types=types,
-                fdef=types.fdef,
-                validator=types.validator)
+            jfield = JField(cdef=self, name=name, default=default, types=types)
+            self._camelized_field_names.append(jfield.json_name)
             self._list_fields.append(jfield)
             self._dict_fields[name] = jfield
             if types.fdef._primary:
@@ -105,6 +96,7 @@ class Cdef:
                 self._cascade_fields.append(jfield)
             if types.fdef._requires_operator_assign:
                 self._assign_operator_fields.append(jfield)
+            print("HERE RUN FINISH")
         self._tuple_fields: tuple[JField] = tuple(self._list_fields)
         self._available_names: set[str] = set(self._field_names
                                               + self._camelized_field_names
@@ -218,7 +210,7 @@ class Cdef:
 
     def rfield(
             self: Cdef, fcls: type[JObject], fname: Optional[str],
-            fkey: Optional[str]) -> JField:
+            fkey: Optional[str]) -> Optional[JField]:
         for field in self._tuple_fields:
             if field.foreign_class is fcls:
                 if fname is not None:
@@ -249,7 +241,7 @@ class Cdef:
         #     for (storage, use_join) in accepted:
         #         if storage == FieldStorage.LOCAL_KEY:
         #             if fdef.foreign_key == field.name:
-        #                 local_matches = self._def_class_match(
+        #                 local_matches = self._def_clsmatch(
         #                     local_field.fdef, foreign_class)
         #                 foreign_matches = self._def_class_match(
         #                     field.fdef, self.cls)

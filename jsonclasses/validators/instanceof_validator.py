@@ -109,9 +109,9 @@ class InstanceOfValidator(Validator):
         from ..jobject import JObject
         # handle non normal value
         if ctx.value is None:
-            return ctx.dest
+            return ctx.original
         if not isinstance(ctx.value, dict):
-            return ctx.dest if ctx.dest is not None else ctx.value
+            return ctx.original if ctx.original is not None else ctx.value
         # figure out types, cls and dest
         cls = ctx.fdef.inst_cls
 
@@ -122,8 +122,8 @@ class InstanceOfValidator(Validator):
         else:
             pvalue = None
         soft_apply_mode = False
-        if ctx.dest is not None:
-            dest = ctx.dest
+        if ctx.original is not None:
+            dest = ctx.original
             if pvalue is not None:
                 ctx.mgraph.putp(pvalue, dest)
         elif pvalue is not None:

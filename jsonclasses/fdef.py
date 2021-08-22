@@ -317,6 +317,11 @@ class Fdef:
             return None
         if isjsonclass(self._raw_inst_types):
             self._inst_cls = self._raw_inst_types
+        if self.cdef:
+            print("HAS CDEF")
+        if not self.cdef:
+            print("NO CDEF!")
+            print(self)
         cgraph = self.cdef.jconf.cgraph
         inst_cls = cgraph.fetch(self._raw_inst_types).cls
         self._inst_cls = inst_cls
@@ -511,3 +516,6 @@ class Fdef:
         else:
             raise UnresolvedTypeNameException(
                 f"Unfound type named '{name}' in class '{self.cdef.name}'.")
+
+    def __str__(self):
+        return '<Fdef: ' + str(vars(self)) + '>'

@@ -2,6 +2,8 @@
 records the detailed information of a JSON class field.
 """
 from __future__ import annotations
+
+from inflection import camelize
 from jsonclasses.jobject import JObject
 from jsonclasses.fdef import FieldType
 from typing import Any, Optional, TYPE_CHECKING
@@ -19,20 +21,24 @@ class JField:
     """
 
     def __init__(
-            self: JField, name: str, json_name: str, default: Any,
-            types: Types, fdef: Fdef, validator: ChainedValidator) -> None:
+            self: JField, cdef: Cdef, name: str, default: Any,types: Types
+        ) -> None:
+        self._cdef = cdef
         self._name = name
-        self._json_name = json_name
         self._default = default
         self._types = types
-        self._fdef = fdef
-        self._validator = validator
         self._resolved_foreign = False
         self._foreign_cdef = None
         self._foreign_field = None
         self._foreign_fname = None
         self._resolved_foreign_class = False
         self._foreign_class = None
+
+    @property
+    def cdef(self: JField) -> Cdef:
+        """The class definition on which this field is defined.
+        """
+        return self._cdef
 
     @property
     def name(self: JField) -> str:
@@ -44,7 +50,9 @@ class JField:
     def json_name(self: JField) -> str:
         """The name of the field when converted into JSON dict.
         """
-        return self._json_name
+        if self.cdef.jconf.camelize_json_keys:
+            return camelize(self._name, False)
+        return self._name
 
     @property
     def default(self: JField) -> Any:
@@ -63,13 +71,13 @@ class JField:
     def fdef(self: JField) -> Fdef:
         """The detailed field definition defined with the types chain.
         """
-        return self._fdef
+        return self._types.fdef
 
     @property
     def validator(self: JField) -> ChainedValidator:
         """The chained validator of the field.
         """
-        return self._validator
+        return self._types.validator
 
     @property
     def foreign_cdef(self: JField) -> Optional[Cdef]:
