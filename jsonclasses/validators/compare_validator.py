@@ -36,9 +36,9 @@ class CompareValidator(Validator):
             return
         if result is False:
             raise ValidationException(
-                keypath_messages={ctx.keypath_root: 'compare failed'},
+                keypath_messages={'.'.join([str(k) for k in ctx.keypathr]): 'compare failed'},
                 root=ctx.root)
         if result is not None:
             raise ValidationException(
-                keypath_messages={ctx.keypath_root: result},
+                keypath_messages={'.'.join([str(k) for k in ctx.keypathr]): result},
                 root=ctx.root)

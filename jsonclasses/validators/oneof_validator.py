@@ -18,6 +18,6 @@ class OneOfValidator(Validator):
             return None
         if ctx.value not in self.str_list:
             raise ValidationException(
-                {ctx.keypath_root: f'Value \'{ctx.value}\' at \'{ctx.keypath_root}\' should be one of {self.str_list}.'},
+                {'.'.join([str(k) for k in ctx.keypathr]): f'Value \'{ctx.value}\' at \'{kp}\' should be one of {self.str_list}.'},
                 ctx.root
             )

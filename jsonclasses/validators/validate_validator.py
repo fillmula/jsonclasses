@@ -33,10 +33,10 @@ class ValidateValidator(Validator):
             return
         if result is False:
             raise ValidationException(
-                keypath_messages={ctx.keypath_root: 'invalid value'},
+                keypath_messages={'.'.join([str(k) for k in ctx.keypathr]): 'invalid value'},
                 root=ctx.root)
         if isinstance(result, str):
             raise ValidationException(
-                keypath_messages={ctx.keypath_root: result},
+                keypath_messages={'.'.join([str(k) for k in ctx.keypathr]): result},
                 root=ctx.root)
         raise ValueError('invalid validator')

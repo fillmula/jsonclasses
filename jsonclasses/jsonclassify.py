@@ -158,7 +158,7 @@ def tojson(self: JObject, ignore_writeonly: bool = False) -> dict[str, Any]:
     self._ensure_not_outdated()
     self._can_read_check()
     ctxcfg = CtxCfg(ignore_writeonly=ignore_writeonly)
-    ctx = Ctx(self, ctxcfg)
+    ctx = Ctx.rootctx(self, ctxcfg)
     return InstanceOfValidator(self.__class__).tojson(ctx)
 
 
@@ -190,7 +190,7 @@ def is_valid(self: JObject) -> bool:
         bool: the validity of the object.
     """
     try:
-        self.validate(validate_all_fields=False)
+        self.validate(all_fields=False)
     except ValidationException:
         return False
     return True
@@ -326,7 +326,7 @@ def save(self: JObject,
     else:
         self._run_on_save_callbacks()
     if not skip_validation:
-        self.validate(validate_all_fields=validate_all_fields)
+        self.validate(all_fields=validate_all_fields)
     self._set_on_save()
     self._database_write()
     for _, lst in self.unlinked_objects.items():
@@ -457,23 +457,8 @@ def _set_on_save(self: JObject) -> None:
     get setonsave called and saved.
     """
     validator = InstanceOfValidator(self.__class__)
-    jconf = self.__class__.cdef.jconf
-    operator = (getattr(self, '_operator')
-                if hasattr(self, '_operator') else None)
-    context = TCtx(
-        value=self,
-        keypath_root='',
-        root=self,
-        jconf_root=jconf,
-        keypath_owner='',
-        owner=self,
-        jconf_owner=jconf,
-        keypath_parent='',
-        parent=self,
-        fdef=None,
-        operator=operator,
-        mgraph=MGraph())
-    validator.serialize(context)
+    ctx = Ctx.rootctx(self, CtxCfg())
+    validator.serialize(ctx)
 
 
 def _clear_temp_fields(self: JObject) -> None:

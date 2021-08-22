@@ -31,5 +31,5 @@ class AsopValidator(Validator):
             if ctx.value is None:
                 raise ValidationException(
                     keypath_messages={
-                        ctx.keypath_root: "no operator being assigned"},
+                        '.'.join([str(k) for k in ctx.keypathr]): "no operator being assigned"},
                     root=ctx.root)

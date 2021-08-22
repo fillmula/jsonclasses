@@ -15,7 +15,7 @@ class AlnumValidator(Validator):
             return
         value = ctx.value
         if not value.isalnum():
-            kp = ctx.keypath_root
+            kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
                 {kp: f'product_code \'{value}\' at \'{kp}\' is not made up of alpha and number.'},
                 ctx.root

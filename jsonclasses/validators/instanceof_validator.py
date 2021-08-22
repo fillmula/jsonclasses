@@ -33,14 +33,13 @@ class InstanceOfValidator(Validator):
         if ctx.mgraph.has(ctx.value):
             return
         ctx.mgraph.put(ctx.value)
-
-        cls = ctx.fdef.inst_cls
-        all_fields = ctx.all_fields
+        cls = cast(type[JObject], ctx.fdef.inst_cls)
+        all_fields = ctx.ctxcfg.all_fields
         if all_fields is None:
             all_fields = cls.cdef.jconf.validate_all_fields
         if not isinstance(ctx.value, cls):
             raise ValidationException({
-                ctx.keypath_root: (f"Value at '{ctx.keypath_root}' "
+                '.'.join([str(k) for k in ctx.keypathr]): (f"Value at '{'.'.join([str(k) for k in ctx.keypathr])}' "
                                    f"should be instance of "
                                    f"'{cls.__name__}'.")
             }, ctx.root)
@@ -51,9 +50,9 @@ class InstanceOfValidator(Validator):
         keypath_messages = {}
         val = cast(JObject, ctx.val)
         for field in val.__class__.cdef.fields:
-            fval = getattr(ctx.val, fname)
             fname = field.name
             ffdef = field.fdef
+            fval = getattr(ctx.val, fname)
             if field.fdef.field_storage == FieldStorage.EMBEDDED:
                 if only_validate_modified and fname not in modified_fields:
                     continue
@@ -77,11 +76,11 @@ class InstanceOfValidator(Validator):
         available_names = dest.__class__.cdef._available_names
         for k in ctx.value.keys():
             if k not in available_names:
-                kp = concat_keypath(ctx.keypath_root, k)
-                if ctx.keypath_root == '':
+                kp = concat_keypath('.'.join([str(k) for k in ctx.keypathr]), k)
+                if '.'.join([str(k) for k in ctx.keypathr]) == '':
                     msg = f'Key \'{k}\' is not allowed.'
                 else:
-                    msg = f'Key \'{k}\' at \'{ctx.keypath_root}\' is not allowed.'
+                    msg = f'Key \'{k}\' at \'{kp}\' is not allowed.'
                 raise ValidationException({kp: msg}, ctx.root)
 
     def _fill_default_value(self, field: JField, dest: JObject, ctx: Ctx):
@@ -95,12 +94,10 @@ class InstanceOfValidator(Validator):
     def _has_field_value(self, field: JField, keys: Sequence[str]) -> bool:
         return field.json_name in keys or field.name in keys
 
-    def _get_field_value(self,
-                         field: JField,
-                         context: TCtx) -> Any:
-        field_value = context.value.get(field.json_name)
-        if field_value is None and context.jconf_owner.camelize_json_keys:
-            field_value = context.value.get(field.name)
+    def _get_field_value(self, field: JField, ctx: Ctx) -> Any:
+        field_value = ctx.value.get(field.json_name)
+        if field_value is None and ctx.cdefowner.jconf.camelize_json_keys:
+            field_value = ctx.value.get(field.name)
         return field_value
 
     # pylint: disable=arguments-differ, too-many-locals, too-many-branches
@@ -113,8 +110,7 @@ class InstanceOfValidator(Validator):
         if not isinstance(ctx.value, dict):
             return ctx.original if ctx.original is not None else ctx.value
         # figure out types, cls and dest
-        cls = ctx.fdef.inst_cls
-
+        cls = cast(type[JObject], ctx.fdef.inst_cls)
         pfield = cls.cdef.primary_field
         if pfield:
             pkey = pfield.name
@@ -167,7 +163,7 @@ class InstanceOfValidator(Validator):
                             setattr(dest, refname, ctx.value.get(crefname))
                     pass
                 elif ctx.ctxcfg.fill_dest_blanks and not soft_apply_mode:
-                    self._fill_default_value(field, dest, ctx, cls)
+                    self._fill_default_value(field, dest, ctx)
                 continue
             field_value = self._get_field_value(field, ctx)
             allow_write_field = True
@@ -182,7 +178,7 @@ class InstanceOfValidator(Validator):
                     allow_write_field = False
             if not allow_write_field:
                 if ctx.ctxcfg.fill_dest_blanks:
-                    self._fill_default_value(field, dest, ctx, cls)
+                    self._fill_default_value(field, dest, ctx)
                 continue
             fctx = ctx.nextv(field_value, field.name, field.fdef)
             tsfmd = field.types.validator.transform(fctx)
@@ -193,6 +189,7 @@ class InstanceOfValidator(Validator):
         return dest
 
     def tojson(self, ctx: Ctx) -> Any:
+        from ..jobject import JObject
         if ctx.value is None:
             return None
         val = cast(JObject, ctx.value)

@@ -24,7 +24,7 @@ class UrlValidator(Validator):
             r'(?::\d+)?'  # optional port
             r'(?:/?|[/?]\S+)$', IGNORECASE)
         if match(regex, value) is None:
-            kp = ctx.keypath_root
+            kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
                 {kp: f'Value \'{value}\' at \'{kp}\' is not valid url.'},
                 ctx.root

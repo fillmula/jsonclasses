@@ -34,7 +34,7 @@ class PresentWithoutValidator(Validator):
                 return
         if ctx.value is None:
             raise ValidationException(
-                {ctx.keypath_root: (f'Value at \'{ctx.keypath_root}\''
+                {'.'.join([str(k) for k in ctx.keypathr]): (f'Value at \'{kp}\''
                                         ' should be present since it\'s '
                                         'referring values are not '
                                         'presented.')},

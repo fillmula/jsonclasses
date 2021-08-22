@@ -19,7 +19,7 @@ class MatchValidator(Validator):
             return
         value = ctx.value
         if search(self.pattern, value) is None:
-            kp = ctx.keypath_root
+            kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
                 {kp: f'Value \'{value}\' at \'{kp}\' should match \'{self.pattern}\'.'},
                 ctx.root

@@ -41,7 +41,7 @@ class TestValidate(TestCase):
     def test_validate_validates_all_fields_if_option_is_passed(self):
         article = SimpleArticle()
         with self.assertRaises(ValidationException) as context:
-            article.validate(validate_all_fields=True)
+            article.validate(all_fields=True)
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 2)
         self.assertEqual(exception.keypath_messages['title'],
@@ -63,7 +63,7 @@ class TestValidate(TestCase):
     def test_validate_validates_one_field_if_explicitly_specified(self):
         language = SimpleLanguage()
         with self.assertRaises(ValidationException) as context:
-            language.validate(validate_all_fields=False)
+            language.validate(all_fields=False)
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 1)
         self.assertEqual(exception.keypath_messages['name'],
@@ -82,7 +82,7 @@ class TestValidate(TestCase):
     def test_validate_validates_all_list_fields_if_required(self):
         project = SimpleProject(name='Teo', attendees=['A', 'B', 'C', 'D'])
         with self.assertRaises(ValidationException) as context:
-            project.validate(validate_all_fields=True)
+            project.validate(all_fields=True)
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 4)
         self.assertEqual(exception.keypath_messages['attendees.0'],
@@ -113,7 +113,7 @@ class TestValidate(TestCase):
         chart = SimpleChart(name='Teo', partitions={
             'a': 2, 'b': 3, 'c': 4, 'd': 5})
         with self.assertRaises(ValidationException) as context:
-            chart.validate(validate_all_fields=True)
+            chart.validate(all_fields=True)
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 4)
         self.assertEqual(exception.keypath_messages['partitions.a'],
@@ -145,7 +145,7 @@ class TestValidate(TestCase):
             user='A',
             email={'auto_send': 'A', 'receive_promotion': 'B'})
         with self.assertRaises(ValidationException) as context:
-            setting.validate(validate_all_fields=True)
+            setting.validate(all_fields=True)
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 2)
         self.assertEqual(exception.keypath_messages['email.auto_send'],
@@ -168,7 +168,7 @@ class TestValidate(TestCase):
     def test_validate_validates_one_field_inside_nested_if_required(self):
         author = Author(name='A', articles=[{}, {}])
         with self.assertRaises(ValidationException) as context:
-            author.validate(validate_all_fields=False)
+            author.validate(all_fields=False)
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 1)
         self.assertEqual(exception.keypath_messages['articles.0.title'],
@@ -177,7 +177,7 @@ class TestValidate(TestCase):
     def test_validate_validates_all_field_inside_nested_if_required(self):
         author = Author(name='A', articles=[{}, {}])
         with self.assertRaises(ValidationException) as context:
-            author.validate(validate_all_fields=True)
+            author.validate(all_fields=True)
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 4)
         self.assertEqual(exception.keypath_messages['articles.0.title'],
@@ -194,7 +194,7 @@ class TestValidate(TestCase):
         article._mark_not_new()
         article.content = None
         article._modified_fields = []
-        article.validate(validate_all_fields=True)
+        article.validate(all_fields=True)
 
     def test_validate_validates_linked_objects_anyway(self):
         author = Author(name='Tsit Tiu',

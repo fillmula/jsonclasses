@@ -29,8 +29,9 @@ class OneOfTypeValidator(Validator):
                 return
             except ValidationException:
                 continue
+        kp = '.'.join([str(k) for k in ctx.keypathr])
         raise ValidationException(
-            {ctx.keypath_root: (f'Value \'{ctx.value}\' at '
-                                    f'\'{ctx.keypath_root}\' should be '
+            {'.'.join([str(k) for k in ctx.keypathr]): (f'Value \'{ctx.value}\' at '
+                                    f'\'{kp}\' should be '
                                     f'one of type {self.type_list}.')},
             ctx.root)

@@ -22,7 +22,7 @@ class OpValidator(Validator):
     def validate(self, ctx: Ctx) -> None:
         if ctx.operator is None:
             raise ValidationException(
-                {ctx.keypath_root: 'operator not present'},
+                {'.'.join([str(k) for k in ctx.keypathr]): 'operator not present'},
                 ctx.root)
         params_len = len(signature(self.op_callable).parameters)
         if params_len == 1:
@@ -39,10 +39,10 @@ class OpValidator(Validator):
             return
         if result is False:
             raise ValidationException(
-                keypath_messages={ctx.keypath_root: 'unauthorized operation'},
+                keypath_messages={'.'.join([str(k) for k in ctx.keypathr]): 'unauthorized operation'},
                 root=ctx.root)
         if isinstance(result, str):
             raise ValidationException(
-                keypath_messages={ctx.keypath_root: result},
+                keypath_messages={'.'.join([str(k) for k in ctx.keypathr]): result},
                 root=ctx.root)
         raise ValueError('invalid validator')

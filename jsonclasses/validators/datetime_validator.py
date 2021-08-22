@@ -25,7 +25,7 @@ class DatetimeValidator(TypeValidator):
                 return datetime.fromisoformat(ctx.value.replace('Z', ''))
             except ValueError:
                 raise ValidationException({
-                    ctx.keypath_root: 'Datetime string format error.'
+                    '.'.join([str(k) for k in ctx.keypathr]): 'Datetime string format error.'
                 }, ctx.root)
         elif type(ctx.value) is date:
             return datetime(ctx.value.year,

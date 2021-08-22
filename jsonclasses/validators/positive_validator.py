@@ -14,7 +14,7 @@ class PositiveValidator(Validator):
         if ctx.value is None:
             return ctx.value
         if ctx.value <= 0:
-            kp = ctx.keypath_root
+            kp = '.'.join([str(k) for k in ctx.keypathr])
             v = ctx.value
             raise ValidationException(
                 {kp: f'Value \'{v}\' at \'{kp}\' should be positive.'},

@@ -27,18 +27,18 @@ class ChainedValidator(Validator):
         Optional[int]: The found index or None.
         """
         v = next((v for v in self.vs if isinstance(v, cls)), None)
-        return self.vs.index(v)
+        return self.vs.index(v) if v is not None else None
 
     def _last_vidx(self, cls: type[Validator]) -> Optional[int]:
         v = next((v for v in self.vs[::-1] if isinstance(v, cls)), None)
-        return self.vs.index(v)
+        return self.vs.index(v) if v is not None else None
 
     @property
-    def _last_evidx(self) -> Optional[int]:
+    def _levidx(self) -> Optional[int]:
         return self._last_vidx(EagerValidator)
 
     @property
-    def _first_pvidx(self) -> Optional[int]:
+    def _fpvidx(self) -> Optional[int]:
         return self._first_vidx(PreserializeValidator)
 
     @property
@@ -48,13 +48,14 @@ class ChainedValidator(Validator):
         This is from the beginning to the last eager validator before the first
         preserialize validator.
         """
-        return self.vs[:self._last_evidx] # TODO: accounting into e and p
+        # TODO: accounting into e and p
+        return self.vs[:self._levidx] if self._levidx is not None else []
 
     @property
     def _pvs(self) -> list[Validator]:
         """
         """
-        return self.vs[self._first_pvidx:]
+        return self.vs[self._fpvidx:] if self._fpvidx is not None else []
 
     @property
     def _nvs(self) -> list[Validator]:
@@ -62,7 +63,7 @@ class ChainedValidator(Validator):
         validator. These validators should be performed in normal validation
         process.
         """
-        return self.vs[self._last_evidx:self._first_pvidx]
+        return self.vs[self._levidx:self._fpvidx]
 
     def _vt(self, v: Validator, ctx: Ctx) -> Any:
         """Validate as transform."""

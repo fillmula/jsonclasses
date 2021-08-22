@@ -18,6 +18,6 @@ class MinValidator(Validator):
             return
         if ctx.value < self.min_value:
             raise ValidationException(
-                {ctx.keypath_root: f'Value \'{ctx.value}\' at \'{ctx.keypath_root}\' should not be less than {self.min_value}.'},
+                {'.'.join([str(k) for k in ctx.keypathr]): f'Value \'{ctx.value}\' at \'{kp}\' should not be less than {self.min_value}.'},
                 ctx.root
             )

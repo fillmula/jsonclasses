@@ -69,9 +69,11 @@ class Ctx(NamedTuple):
     @classmethod
     def rootctx(cls: type[Ctx], root: JObject, ctxcfg: CtxCfg,
                 value: Any = None) -> Ctx:
+        fdef = types.objof(root.__class__).fdef
+        fdef._cdef = root.__class__.cdef
         return Ctx(root=root, owner=root, parent=root, value=value or root,
                    original=root, ctxcfg=ctxcfg, keypatho=[], keypathr=[],
-                   keypathp=[], fdef=types.objof(root.__class__).fdef,
+                   keypathp=[], fdef=fdef,
                    operator=root._operator, mgraph=MGraph(), idchain=[])
 
     def nval(self: Ctx, newval: Any) -> Ctx:

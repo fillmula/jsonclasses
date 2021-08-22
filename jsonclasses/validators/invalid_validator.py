@@ -13,6 +13,6 @@ class InvalidValidator(Validator):
     def validate(self, ctx: Ctx) -> None:
         """Raises invalid exception."""
         raise ValidationException(
-            {ctx.keypath_root: f'value is invalid'},
+            {'.'.join([str(k) for k in ctx.keypathr]): f'value is invalid'},
             ctx.root
         )

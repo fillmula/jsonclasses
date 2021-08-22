@@ -15,7 +15,7 @@ class AlphaValidator(Validator):
             return
         value = ctx.value
         if not value.isalpha():
-            kp = ctx.keypath_root
+            kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
                 {kp: f'product_name \'{value}\' at \'{kp}\' is not a alpha.'},
                 ctx.root

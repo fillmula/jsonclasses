@@ -30,7 +30,7 @@ class EnumValidator(Validator):
         if ctx.value is None:
             return None
         if isinstance(self.enum_or_name, str):
-            jconf = ctx.jconf_owner
+            jconf = ctx.cdefowner.jconf
             enum_class = jconf.cgraph.fetch_enum(self.enum_or_name)
         else:
             enum_class = self.enum_or_name
@@ -55,24 +55,24 @@ class EnumValidator(Validator):
                     pass
 
             raise ValidationException({
-                ctx.keypath_root: 'unknown enum value'
+                '.'.join([str(k) for k in ctx.keypathr]): 'unknown enum value'
             }, ctx.root)
         else:
             raise ValidationException({
-                ctx.keypath_root: 'unknown enum value'
+                '.'.join([str(k) for k in ctx.keypathr]): 'unknown enum value'
             }, ctx.root)
 
     def validate(self, ctx: Ctx) -> None:
         if ctx.value is None:
             return None
         if isinstance(self.enum_or_name, str):
-            jconf = ctx.jconf_owner
+            jconf = ctx.cdefowner.jconf
             enum_class = jconf.cgraph.fetch_enum(self.enum_or_name)
         else:
             enum_class = self.enum_or_name
         if not isinstance(ctx.value, enum_class):
             raise ValidationException({
-                ctx.keypath_root: 'invalid enum value'
+                '.'.join([str(k) for k in ctx.keypathr]): 'invalid enum value'
             }, ctx.root)
 
     def tojson(self, ctx: Ctx) -> Any:

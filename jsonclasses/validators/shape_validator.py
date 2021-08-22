@@ -44,7 +44,7 @@ class ShapeValidator(TypeValidator):
         if ctx.value is None:
             return
         super().validate(ctx)
-        all_fields = ctx.all_fields
+        all_fields = ctx.ctxcfg.all_fields
         if all_fields is None:
             all_fields = ctx.jconf_owner.validate_all_fields
         keypath_messages = {}
@@ -58,7 +58,7 @@ class ShapeValidator(TypeValidator):
                 try:
                     types.validator.validate(ctx.new(
                         value=value_at_key,
-                        keypath_root=concat_keypath(ctx.keypath_root, k),
+                        keypath_root=concat_keypath('.'.join([str(k) for k in ctx.keypathr]), k),
                         keypath_owner=concat_keypath(ctx.keypath_owner, k),
                         keypath_parent=k,
                         parent=ctx.value,
