@@ -28,7 +28,8 @@ class TypeValidator(Validator):
         else:
             if isinstance(ctx.value, self.cls):
                 return
+        kp = '.'.join([str(k) for k in ctx.keypathr])
         raise ValidationException(
-            {'.'.join([str(k) for k in ctx.keypathr]): f'Value \'{ctx.value}\' at \'{kp}\' should be {self.cls.__name__}.'},
+            {kp: f'Value \'{ctx.value}\' at \'{kp}\' should be {self.cls.__name__}.'},
             ctx.root
         )

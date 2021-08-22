@@ -26,31 +26,35 @@ class RequiredValidator(Validator):
         if storage == FieldStorage.LOCAL_KEY:
             if ctx.value is None:  # check key presence
                 jconf: JConf = ctx.owner.__class__.cdef.jconf
-                ko = ctx.keypath_owner
+                ko = str(ctx.keypatho[0])
                 field = ctx.owner.__class__.cdef.field_named(ko)
                 local_key = jconf.key_transformer(field)
                 if isinstance(ctx.parent, dict):
                     if ctx.parent.get(local_key) is None:
+                        kp = '.'.join([str(k) for k in ctx.keypathr])
                         raise ValidationException(
-                            {'.'.join([str(k) for k in ctx.keypathr]): f'Value at \'{kp}\' should not be None.'},
+                            {kp: f'Value at \'{kp}\' should not be None.'},
                             ctx.root
                         )
                 elif isjsonobject(ctx.parent):
                     try:
                         local_key_value = getattr(ctx.parent, local_key)
                     except AttributeError:
+                        kp = '.'.join([str(k) for k in ctx.keypathr])
                         raise ValidationException(
-                            {'.'.join([str(k) for k in ctx.keypathr]): f'Value at \'{kp}\' should not be None.'},
+                            {kp: f'Value at \'{kp}\' should not be None.'},
                             ctx.root
                         )
                     if local_key_value is None:
+                        kp = '.'.join([str(k) for k in ctx.keypathr])
                         raise ValidationException(
-                            {'.'.join([str(k) for k in ctx.keypathr]): f'Value at \'{kp}\' should not be None.'},
+                            {kp: f'Value at \'{kp}\' should not be None.'},
                             ctx.root
                         )
             return
         if ctx.value is None:
+            kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {'.'.join([str(k) for k in ctx.keypathr]): f'Value at \'{kp}\' should not be None.'},
+                {kp: f'Value at \'{kp}\' should not be None.'},
                 ctx.root
             )

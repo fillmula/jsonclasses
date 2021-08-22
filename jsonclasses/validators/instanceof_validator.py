@@ -201,7 +201,7 @@ class InstanceOfValidator(Validator):
             fval = getattr(val, field.name)
             fd = field.types.fdef
             jf_name = field.json_name
-            ignore_writeonly = ctx.ignore_writeonly
+            ignore_writeonly = ctx.ctxcfg.ignore_writeonly
             if fd.field_storage == FieldStorage.LOCAL_KEY and no_key_refs:
                 continue
             if fd.field_storage == FieldStorage.FOREIGN_KEY and no_key_refs:

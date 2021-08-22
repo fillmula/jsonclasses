@@ -19,7 +19,7 @@ class PresentValidator(Validator):
 
     def validate(self, ctx: Ctx) -> None:
         if ctx.value is None:
+            kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {'.'.join([str(k) for k in ctx.keypathr]): (f'Value at \'{kp}\''
-                                        ' should be present.')},
+                {kp: (f'Value at \'{kp}\' should be present.')},
                 ctx.root)

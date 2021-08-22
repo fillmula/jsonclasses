@@ -26,8 +26,9 @@ class PresentWithValidator(Validator):
             raise ValueError(f'Unexist referring key \'{self.referring_key}\' '
                              'passed to present with validator.')
         if referred_value is not None and ctx.value is None:
+            kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {'.'.join([str(k) for k in ctx.keypathr]): (f'Value at \'{kp}\''
+                {kp: (f'Value at \'{kp}\''
                                         ' should be present since it\'s '
                                         'referring value is presented.')},
                 ctx.root)
