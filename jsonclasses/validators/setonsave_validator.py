@@ -1,8 +1,10 @@
 """module for setonsave validator."""
-from typing import Callable, Any
+from __future__ import annotations
+from typing import Callable, Any, TYPE_CHECKING
 from inspect import signature
 from .validator import Validator
-from ..ctx import Ctx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class SetOnSaveValidator(Validator):
@@ -16,8 +18,8 @@ class SetOnSaveValidator(Validator):
             raise ValueError('not a valid setonsave setter')
         self.setter = setter
 
-    def serialize(self, context: TCtx) -> Any:
+    def serialize(self, ctx: Ctx) -> Any:
         params_len = len(signature(self.setter).parameters)
         if params_len == 1:
-            return self.setter(context.value)
+            return self.setter(ctx.val)
         return self.setter()

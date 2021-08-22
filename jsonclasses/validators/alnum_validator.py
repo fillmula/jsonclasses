@@ -3,7 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctx import Ctx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class AlnumValidator(Validator):

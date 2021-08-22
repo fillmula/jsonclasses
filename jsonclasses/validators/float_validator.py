@@ -1,8 +1,10 @@
 """module for float validator."""
-from typing import Any
+from __future__ import annotations
+from typing import TYPE_CHECKING, Any
 from .type_validator import TypeValidator
 from ..fdef import FieldType
-from ..ctx import Ctx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class FloatValidator(TypeValidator):

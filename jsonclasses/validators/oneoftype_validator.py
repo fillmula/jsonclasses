@@ -1,10 +1,12 @@
 """module for oneoftype validator."""
-from typing import Any
+from __future__ import annotations
+from typing import TYPE_CHECKING, Any
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctx import Ctx
 from ..rtypes import rtypes
 from ..fdef import Fdef, FieldType
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class OneOfTypeValidator(Validator):

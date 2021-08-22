@@ -1,4 +1,5 @@
 """module for compare validator."""
+from __future__ import annotations
 from typing import Callable, cast, TYPE_CHECKING
 from inspect import signature
 from ..exceptions import ValidationException

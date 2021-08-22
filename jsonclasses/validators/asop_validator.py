@@ -3,9 +3,10 @@ from __future__ import annotations
 from typing import Callable, TYPE_CHECKING
 from inspect import signature
 from ..exceptions import ValidationException
-from .validator import Validator
-from ..ctx import Ctx
 from ..fdef import Fdef
+from .validator import Validator
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class AsopValidator(Validator):

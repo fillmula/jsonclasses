@@ -1,8 +1,10 @@
 """module for onsave validator."""
-from typing import Callable, Any
+from __future__ import annotations
+from typing import Callable, Any, TYPE_CHECKING
 from inspect import signature
 from .validator import Validator
-from ..ctx import Ctx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class OnSaveValidator(Validator):
@@ -16,10 +18,10 @@ class OnSaveValidator(Validator):
             raise ValueError('not a valid onsave callable')
         self.callback = callback
 
-    def serialize(self, context: TCtx) -> Any:
+    def serialize(self, ctx: Ctx) -> Any:
         params_len = len(signature(self.callback).parameters)
         if params_len == 0:
             self.callback()
         elif params_len == 1:
-            self.callback(context.value)
-        return context.value
+            self.callback(ctx.val)
+        return ctx.val

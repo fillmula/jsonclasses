@@ -1,13 +1,15 @@
 """module for shape validator."""
-from typing import Any, Sequence, Union, cast
+from __future__ import annotations
+from typing import Any, Sequence, Union, cast, TYPE_CHECKING
 from inflection import underscore, camelize
 from ..fdef import Fdef, FieldType, Nullability, Strictness
 from ..exceptions import ValidationException
 from ..jconf import JConf
 from ..keypath import concat_keypath
 from ..rtypes import rtypes
-from ..ctx import Ctx
 from .type_validator import TypeValidator
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class ShapeValidator(TypeValidator):

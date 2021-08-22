@@ -1,8 +1,10 @@
 """module for length validator."""
-from typing import Optional
+from __future__ import annotations
+from typing import Optional, TYPE_CHECKING
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctx import Ctx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class LengthValidator(Validator):

@@ -1,8 +1,10 @@
 """module for onupdate validator."""
-from typing import Callable, Any, cast
+from __future__ import annotations
+from typing import Callable, Any, cast, TYPE_CHECKING
 from inspect import signature
 from .validator import Validator
-from ..ctx import Ctx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class OnUpdateValidator(Validator):
@@ -18,22 +20,22 @@ class OnUpdateValidator(Validator):
             raise ValueError('not a valid onupdate callable')
         self.callback = callback
 
-    def serialize(self, context: TCtx) -> Any:
+    def serialize(self, ctx: Ctx) -> Any:
         from ..jobject import JObject
-        name = context.keypath_parent
-        parent = cast(JObject, context.parent)
+        name = ctx.keypathp[-1]
+        parent = cast(JObject, ctx.parent)
         if name not in parent.previous_values:
-            return context.value
+            return ctx.val
         prev_value = parent.previous_values[name]
         params_len = len(signature(self.callback).parameters)
         if params_len == 0:
             self.callback()
         elif params_len == 1:
-            self.callback(context.value)
+            self.callback(ctx.val)
         elif params_len == 2:
-            self.callback(prev_value, context.value)
+            self.callback(prev_value, ctx.val)
         elif params_len == 3:
             self.callback(prev_value,
-                          context.value,
-                          context)
-        return context.value
+                          ctx.val,
+                          ctx)
+        return ctx.val

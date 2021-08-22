@@ -1,11 +1,13 @@
 """module for enum validator."""
-from typing import Any, Union
+from __future__ import annotations
+from typing import Any, Union, TYPE_CHECKING
 from enum import Enum
 from ..fdef import (FieldType, Fdef, EnumInput,
                                 EnumOutput)
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctx import Ctx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class EnumValidator(Validator):

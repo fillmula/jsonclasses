@@ -1,8 +1,10 @@
 """module for transform validator."""
-from typing import Callable, Any
+from __future__ import annotations
+from typing import Callable, Any, TYPE_CHECKING
 from inspect import signature
 from .validator import Validator
-from ..ctx import Ctx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class TransformValidator(Validator):

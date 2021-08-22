@@ -1,7 +1,9 @@
 """module for tocap validator."""
-from typing import Any, cast
+from __future__ import annotations
+from typing import Any, TYPE_CHECKING
 from .validator import Validator
-from ..ctx import Ctx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class ToCapValidator(Validator):

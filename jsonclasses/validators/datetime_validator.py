@@ -1,10 +1,12 @@
 """module for datetime validator."""
-from typing import Any
+from __future__ import annotations
+from typing import Any, TYPE_CHECKING
 from datetime import date, datetime
 from ..fdef import FieldType
 from ..exceptions import ValidationException
 from .type_validator import TypeValidator
-from ..ctx import Ctx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class DatetimeValidator(TypeValidator):
