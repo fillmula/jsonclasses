@@ -114,6 +114,15 @@ class Ctx(NamedTuple):
                    operator=self.operator, mgraph=self.mgraph,
                    idchain=[*self.idchain, c])
 
+    def colval(self: Ctx, val: Any, key: str | int, fdef: Fdef, p: Any) -> Ctx:
+        return Ctx(root=self.root, owner=self.owner, parent=p,
+                   value=val, original=None, ctxcfg=self.ctxcfg,
+                   keypatho=[*self.keypatho, key],
+                   keypathr=[*self.keypathr, key],
+                   keypathp=[key], fdef=fdef,
+                   operator=self.operator, mgraph=self.mgraph,
+                   idchain=self.idchain)
+
     def default(self: Ctx, owner: JObject, key: str | int, fdef: Fdef) -> Ctx:
         return Ctx(root=self.root, owner=owner, parent=owner, value=None,
                    original=None, ctxcfg=self.ctxcfg,

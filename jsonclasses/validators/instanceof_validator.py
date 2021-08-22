@@ -9,7 +9,6 @@ from ..fdef import (
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..keypath import concat_keypath, initial_keypaths
-from ..rtypes import rtypes
 from ..ctx import Ctx
 if TYPE_CHECKING:
     from ..jobject import JObject
