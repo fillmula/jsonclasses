@@ -1,16 +1,17 @@
 """module for listof validator."""
 from __future__ import annotations
 from typing import (
-    Any, Collection, Iterable, TypeVar, Union, cast, TYPE_CHECKING
+    Any, Collection, Iterable, TypeVar, Union, TYPE_CHECKING
 )
 from ..fdef import Fdef, Nullability
 from ..jconf import JConf
 from ..exceptions import ValidationException
 from .type_validator import TypeValidator
-from ..ctx import Ctx
 if TYPE_CHECKING:
     from ..jobject import JObject
     from ..types import Types
+    from ..ctx import Ctx
+
 
 T = TypeVar('T', bound=Collection)
 

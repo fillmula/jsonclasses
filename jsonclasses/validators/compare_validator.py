@@ -1,9 +1,10 @@
 """module for compare validator."""
-from typing import Callable, cast
+from typing import Callable, cast, TYPE_CHECKING
 from inspect import signature
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctx import Ctx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class CompareValidator(Validator):
@@ -20,18 +21,16 @@ class CompareValidator(Validator):
 
     def validate(self, ctx: Ctx) -> None:
         from ..jobject import JObject
-        name = ctx.keypath_parent
+        name = ctx.keypathp[-1]
         parent = cast(JObject, ctx.parent)
         if name not in parent.previous_values:
             return
         prev_value = parent.previous_values[name]
         params_len = len(signature(self.compare_callable).parameters)
         if params_len == 2:
-            result = self.compare_callable(prev_value, ctx.value)
+            result = self.compare_callable(prev_value, ctx.val)
         elif params_len == 3:
-            result = self.compare_callable(prev_value,
-                                           ctx.value,
-                                           ctx)
+            result = self.compare_callable(prev_value, ctx.val, ctx)
         if result is True:
             return
         if result is False:

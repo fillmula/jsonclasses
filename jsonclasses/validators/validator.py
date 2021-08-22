@@ -1,7 +1,9 @@
 """module for validator validator."""
-from typing import Any
+from __future__ import annotations
+from typing import Any, TYPE_CHECKING
 from ..fdef import Fdef
-from ..ctx import Ctx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class Validator:

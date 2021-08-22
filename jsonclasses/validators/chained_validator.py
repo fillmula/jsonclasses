@@ -1,12 +1,13 @@
 """module for chained validator."""
 from __future__ import annotations
-from typing import Any, Optional
+from typing import Any, Optional, TYPE_CHECKING
 from functools import reduce
 from ..exceptions import ValidationException
 from .validator import Validator
 from .eager_validator import EagerValidator
 from .preserialize_validator import PreserializeValidator
-from ..ctx import Ctx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class ChainedValidator(Validator):
