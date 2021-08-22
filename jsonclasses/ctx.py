@@ -1,6 +1,6 @@
 """This module defines JSON Class context objects."""
 from __future__ import annotations
-from typing import Any, NamedTuple, Union, TYPE_CHECKING
+from typing import Any, NamedTuple, Union, Optional, TYPE_CHECKING
 from .types import types
 from .mgraph import MGraph
 if TYPE_CHECKING:
@@ -11,15 +11,15 @@ if TYPE_CHECKING:
 
 class CtxCfg(NamedTuple):
 
-    all_fields: bool = False
+    all_fields: Optional[bool] = None
     """On validating, whether validate all fields.
     """
 
-    ignore_writeonly: bool = False
+    ignore_writeonly: Optional[bool] = False
     """On tojson, whether ignore writeonly.
     """
 
-    fill_dest_blanks: bool = False
+    fill_dest_blanks: Optional[bool] = False
     """On setting, whether fill default fields with None value.
     """
 
@@ -79,5 +79,46 @@ class Ctx(NamedTuple):
                    value=newval, original=self.original, ctxcfg=self.ctxcfg,
                    keypatho=self.keypatho, keypathr=self.keypathr,
                    keypathp=self.keypathp, fdef=self.fdef,
+                   operator=self.operator, mgraph=self.mgraph,
+                   idchain=self.idchain)
+
+    def nextv(self: Ctx, val: Any, key: str | int, fdef: Fdef) -> Ctx:
+        return Ctx(root=self.root, owner=self.owner, parent=self.parent,
+                   value=val, original=None, ctxcfg=self.ctxcfg,
+                   keypatho=[*self.keypatho, key],
+                   keypathr=[*self.keypathr, key],
+                   keypathp=[*self.keypathp, key], fdef=fdef,
+                   operator=self.operator, mgraph=self.mgraph,
+                   idchain=self.idchain)
+
+    def nexto(self: Ctx, val: Any, key: str | int, fdef: Fdef) -> Ctx:
+        return Ctx(root=self.root, owner=val, parent=val, value=val,
+                   original=None, ctxcfg=self.ctxcfg, keypatho=[],
+                   keypathr=[*self.keypathr, key], keypathp=[], fdef=fdef,
+                   operator=self.operator, mgraph=self.mgraph,
+                   idchain=self.idchain)
+
+    def nextvc(self: Ctx, val: Any, key: str | int, fdef: Fdef, c: str) -> Ctx:
+        return Ctx(root=self.root, owner=val, parent=val, value=val,
+                   original=None, ctxcfg=self.ctxcfg, keypatho=[],
+                   keypathr=[*self.keypathr, key], keypathp=[], fdef=fdef,
+                   operator=self.operator, mgraph=self.mgraph,
+                   idchain=[*self.idchain, c])
+
+    def nextoc(self: Ctx, val: Any, key: str | int, fdef: Fdef, c: str) -> Ctx:
+        return Ctx(root=self.root, owner=self.owner, parent=self.parent,
+                   value=val, original=None, ctxcfg=self.ctxcfg,
+                   keypatho=[*self.keypatho, key],
+                   keypathr=[*self.keypathr, key],
+                   keypathp=[*self.keypathp, key], fdef=fdef,
+                   operator=self.operator, mgraph=self.mgraph,
+                   idchain=[*self.idchain, c])
+
+    def default(self: Ctx, owner: JObject, key: str | int, fdef: Fdef) -> Ctx:
+        return Ctx(root=self.root, owner=owner, parent=owner, value=None,
+                   original=None, ctxcfg=self.ctxcfg,
+                   keypatho=[*self.keypatho, key],
+                   keypathr=[*self.keypathr, key],
+                   keypathp=[*self.keypathp, key], fdef=fdef,
                    operator=self.operator, mgraph=self.mgraph,
                    idchain=self.idchain)

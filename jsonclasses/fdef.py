@@ -273,6 +273,7 @@ class Fdef:
         if self._resolved_item_types is not None:
             return self._resolved_item_types
         self._resolved_item_types = rtypes(self.raw_item_types)
+        self._resolved_item_types.fdef._cdef = self.cdef
         return self._resolved_item_types
 
     @property

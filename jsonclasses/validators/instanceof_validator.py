@@ -3,8 +3,9 @@ from __future__ import annotations
 from jsonclasses.jfield import JField
 from typing import Any, Sequence, Union, cast, TYPE_CHECKING
 from inflection import camelize
-from ..fdef import (Fdef, FieldStorage, FieldType,
-                                Nullability, WriteRule, ReadRule, Strictness)
+from ..fdef import (
+    Fdef, FieldStorage, FieldType, Nullability, WriteRule, ReadRule, Strictness
+)
 from ..exceptions import ValidationException
 from .validator import Validator
 from ..keypath import concat_keypath, initial_keypaths
@@ -12,14 +13,12 @@ from ..rtypes import rtypes
 from ..ctx import Ctx
 if TYPE_CHECKING:
     from ..jobject import JObject
-    from ..types import Types
-    InstanceOfType = Union[Types, str, type[JObject]]
 
 
 class InstanceOfValidator(Validator):
     """InstanceOf validator validates and transforms JSON Class instance."""
 
-    def __init__(self, raw_type: InstanceOfType) -> None:
+    def __init__(self, raw_type: Union[str, type[JObject]]) -> None:
         self.raw_type = raw_type
 
     def define(self, fdef: Fdef) -> None:
@@ -28,44 +27,43 @@ class InstanceOfValidator(Validator):
 
     def validate(self, ctx: Ctx) -> None:
         from ..jobject import JObject
-        if context.value is None:
+        # only validate if there is a value
+        if ctx.value is None:
             return
-        types = rtypes(self.raw_type)
-        cls = cast(type[JObject], types.fdef.raw_inst_types)
-        all_fields = context.all_fields
+        # only validate an instance once in the circular referenced map
+        if ctx.mgraph.has(ctx.value):
+            return
+        ctx.mgraph.put(ctx.value)
+
+        cls = ctx.fdef.inst_cls
+        all_fields = ctx.all_fields
         if all_fields is None:
             all_fields = cls.cdef.jconf.validate_all_fields
-        if not isinstance(context.value, cls):
+        if not isinstance(ctx.value, cls):
             raise ValidationException({
-                context.keypath_root: (f"Value at '{context.keypath_root}' "
-                                       f"should be instance of "
-                                       f"'{cls.__name__}'.")
-            }, context.root)
-        if context.mgraph.has(context.value):
-            return
-        context.mgraph.put(context.value)
-        only_validate_modified = False
+                ctx.keypath_root: (f"Value at '{ctx.keypath_root}' "
+                                   f"should be instance of "
+                                   f"'{cls.__name__}'.")
+            }, ctx.root)
+        only_validate_modified = not ctx.value.is_new
         modified_fields = []
-        if not context.value.is_new:
-            only_validate_modified = True
-            modified_fields = list(initial_keypaths((context.value
-                                                     .modified_fields)))
+        if only_validate_modified:
+            modified_fields = list(initial_keypaths((ctx.val.modified_fields)))
         keypath_messages = {}
-        for field in context.value.__class__.cdef.fields:
+        val = cast(JObject, ctx.val)
+        for field in val.__class__.cdef.fields:
+            fval = getattr(ctx.val, fname)
             fname = field.name
+            ffdef = field.fdef
             if field.fdef.field_storage == FieldStorage.EMBEDDED:
                 if only_validate_modified and fname not in modified_fields:
                     continue
             try:
-                field.types.validator.validate(context.new(
-                    value=getattr(context.value, fname),
-                    keypath_root=concat_keypath(context.keypath_root, fname),
-                    keypath_owner=fname,
-                    owner=context.value,
-                    jconf_owner=context.value.__class__.cdef.jconf,
-                    keypath_parent=fname,
-                    parent=context.value,
-                    fdef=field.fdef))
+                if field.fdef.field_type == FieldType.INSTANCE:
+                    fval_ctx = ctx.nexto(fval, fname, ffdef)
+                else:
+                    fval_ctx = ctx.nextv(fval, fname, ffdef)
+                field.types.validator.validate(fval_ctx)
             except ValidationException as exception:
                 if all_fields:
                     keypath_messages.update(exception.keypath_messages)
@@ -74,38 +72,25 @@ class InstanceOfValidator(Validator):
         if len(keypath_messages) > 0:
             raise ValidationException(
                 keypath_messages=keypath_messages,
-                root=context.root)
+                root=ctx.root)
 
-    def _strictness_check(self,
-                          context: TCtx,
-                          dest: JObject) -> None:
+    def _strictness_check(self, ctx: Ctx, dest: JObject) -> None:
         available_names = dest.__class__.cdef._available_names
-        for k in context.value.keys():
+        for k in ctx.value.keys():
             if k not in available_names:
-                kp = concat_keypath(context.keypath_root, k)
-                if context.keypath_root == '':
+                kp = concat_keypath(ctx.keypath_root, k)
+                if ctx.keypath_root == '':
                     msg = f'Key \'{k}\' is not allowed.'
                 else:
-                    msg = f'Key \'{k}\' at \'{context.keypath_root}\' is not allowed.'
-                raise ValidationException({kp: msg}, context.root)
+                    msg = f'Key \'{k}\' at \'{ctx.keypath_root}\' is not allowed.'
+                raise ValidationException({kp: msg}, ctx.root)
 
-    def _fill_default_value(self,
-                            field: JField,
-                            dest: JObject,
-                            context: TCtx,
-                            cls: type[JObject]):
+    def _fill_default_value(self, field: JField, dest: JObject, ctx: Ctx):
         if field.default is not None:
             setattr(dest, field.name, field.default)
         else:
-            tsfmd = field.types.validator.transform(context.new(
-                value=None,
-                keypath_root=concat_keypath(context.keypath_root, field.name),
-                keypath_owner=field.name,
-                owner=context.value,
-                jconf_owner=cls.cdef.jconf,
-                keypath_parent=field.name,
-                parent=context.value,
-                fdef=field.fdef))
+            dctx = ctx.default(ctx.val, field.name, field.fdef)
+            tsfmd = field.types.validator.transform(dctx)
             setattr(dest, field.name, tsfmd)
 
     def _has_field_value(self, field: JField, keys: Sequence[str]) -> bool:
@@ -124,47 +109,47 @@ class InstanceOfValidator(Validator):
         from ..types import Types
         from ..jobject import JObject
         # handle non normal value
-        if context.value is None:
-            return context.dest
-        if not isinstance(context.value, dict):
-            return context.dest if context.dest is not None else context.value
+        if ctx.value is None:
+            return ctx.dest
+        if not isinstance(ctx.value, dict):
+            return ctx.dest if ctx.dest is not None else ctx.value
         # figure out types, cls and dest
-        types = rtypes(self.raw_type)
-        cls = cast(type[JObject], types.fdef.raw_inst_types)
-        this_pk_field = cls.cdef.primary_field
-        if this_pk_field:
-            pk = this_pk_field.name
-            pk_value = cast(Union[str, int], context.value.get(pk))
+        cls = ctx.fdef.inst_cls
+
+        pfield = cls.cdef.primary_field
+        if pfield:
+            pkey = pfield.name
+            pvalue = cast(Union[str, int, None], ctx.val.get(pkey))
         else:
-            pk_value = None
+            pvalue = None
         soft_apply_mode = False
-        if context.dest is not None:
-            dest = context.dest
-            if pk_value is not None:
-                context.mgraph.putp(pk_value, dest)
-        elif pk_value is not None:
-            exist_item = context.mgraph.getp(cls, pk_value)
+        if ctx.dest is not None:
+            dest = ctx.dest
+            if pvalue is not None:
+                ctx.mgraph.putp(pvalue, dest)
+        elif pvalue is not None:
+            exist_item = ctx.mgraph.getp(cls, pvalue)
             if exist_item is not None:
                 dest = exist_item
                 soft_apply_mode = True
             else:
                 dest = cls()
-                context.mgraph.putp(pk_value, dest)
+                ctx.mgraph.putp(pvalue, dest)
         else:
             dest = cls()
-            context.mgraph.put(dest)
+            ctx.mgraph.put(dest)
 
         # strictness check
         strictness = cast(bool, cls.cdef.jconf.strict_input)
-        if context.fdef is not None:
-            if context.fdef.strictness == Strictness.STRICT:
+        if ctx.fdef is not None:
+            if ctx.fdef.strictness == Strictness.STRICT:
                 strictness = True
-            elif context.fdef.strictness == Strictness.UNSTRICT:
+            elif ctx.fdef.strictness == Strictness.UNSTRICT:
                 strictness = False
         if strictness:
-            self._strictness_check(context, dest)
+            self._strictness_check(ctx, dest)
         # fill values
-        dict_keys = list(context.value.keys())
+        dict_keys = list(ctx.value.keys())
         nonnull_ref_lists: list[str] = []
         for field in dest.__class__.cdef.fields:
             if not self._has_field_value(field, dict_keys):
@@ -176,16 +161,16 @@ class InstanceOfValidator(Validator):
                     elif fdef.field_storage == FieldStorage.LOCAL_KEY:
                         tsfm = dest.__class__.cdef.jconf.key_transformer
                         refname = tsfm(field)
-                        if context.value.get(refname) is not None:
-                            setattr(dest, refname, context.value.get(refname))
+                        if ctx.value.get(refname) is not None:
+                            setattr(dest, refname, ctx.value.get(refname))
                         crefname = camelize(refname, False)
-                        if context.value.get(crefname) is not None:
-                            setattr(dest, refname, context.value.get(crefname))
+                        if ctx.value.get(crefname) is not None:
+                            setattr(dest, refname, ctx.value.get(crefname))
                     pass
-                elif context.fill_dest_blanks and not soft_apply_mode:
-                    self._fill_default_value(field, dest, context, cls)
+                elif ctx.ctxcfg.fill_dest_blanks and not soft_apply_mode:
+                    self._fill_default_value(field, dest, ctx, cls)
                 continue
-            field_value = self._get_field_value(field, context)
+            field_value = self._get_field_value(field, ctx)
             allow_write_field = True
             if field.fdef.write_rule == WriteRule.NO_WRITE:
                 allow_write_field = False
@@ -197,20 +182,11 @@ class InstanceOfValidator(Validator):
                 if field_value is None:
                     allow_write_field = False
             if not allow_write_field:
-                if context.fill_dest_blanks:
-                    self._fill_default_value(field, dest, context, cls)
+                if ctx.ctxcfg.fill_dest_blanks:
+                    self._fill_default_value(field, dest, ctx, cls)
                 continue
-            field_context = context.new(
-                value=field_value,
-                keypath_root=concat_keypath(context.keypath_root,
-                                            field.name),
-                keypath_owner=field.name,
-                owner=context.value,
-                jconf_owner=cls.cdef.jconf,
-                keypath_parent=field.name,
-                parent=context.value,
-                fdef=field.fdef)
-            tsfmd = field.types.validator.transform(field_context)
+            fctx = ctx.nextv(field_value, field.name, field.fdef)
+            tsfmd = field.types.validator.transform(fctx)
             setattr(dest, field.name, tsfmd)
         for cname in nonnull_ref_lists:
             if getattr(dest, cname) is None:
@@ -226,7 +202,7 @@ class InstanceOfValidator(Validator):
         cls_name = val.__class__.cdef.name
         no_key_refs = cls_name in clschain
         for field in val.__class__.cdef.fields:
-            field_value = getattr(val, field.name)
+            fval = getattr(val, field.name)
             fd = field.types.fdef
             jf_name = field.json_name
             ignore_writeonly = ctx.ignore_writeonly
@@ -238,22 +214,22 @@ class InstanceOfValidator(Validator):
                 continue
             if fd.is_temp_field:
                 continue
-            item_context = context.new(
-                value=field_value,
-                fdef=field.fdef,
-                entity_chain=[*clschain, cls_name])
-            retval[jf_name] = field.types.validator.tojson(item_context)
+            if field.fdef.field_type == FieldType.INSTANCE:
+                ictx = ctx.nextoc(fval, field.name, field.fdef, cls_name)
+            else:
+                ictx = ctx.nextvc(fval, field.name, field.fdef, cls_name)
+            retval[jf_name] = field.types.validator.tojson(ictx)
         return retval
 
-    def serialize(self, context: Ctx) -> Any:
+    def serialize(self, ctx: Ctx) -> Any:
         from ..jobject import JObject
-        value = cast(JObject, context.value)
+        value = cast(JObject, ctx.value)
         if value is None:
             return None
-        exist_item = context.mgraph.get(value)
+        exist_item = ctx.mgraph.get(value)
         if exist_item is not None:  # Don't do twice for an object
             return value
-        context.mgraph.put(value)
+        ctx.mgraph.put(value)
         should_update = True
         if not value.is_modified and not value.is_new:
             should_update = False
@@ -267,16 +243,7 @@ class InstanceOfValidator(Validator):
                         if getattr(value, tsf(field)) is not None:
                             continue
                 field_value = getattr(value, field.name)
-                field_context = context.new(
-                    value=field_value,
-                    keypath_root=concat_keypath(context.keypath_root,
-                                                field.name),
-                    keypath_owner=field.name,
-                    owner=value,
-                    jconf_owner=value.__class__.cdef.jconf,
-                    keypath_parent=field.name,
-                    parent=value,
-                    fdef=field.fdef)
-                tsfmd = field.types.validator.serialize(field_context)
+                fctx = ctx.nextv(field_value, field.name, field.fdef)
+                tsfmd = field.types.validator.serialize(fctx)
                 setattr(value, field.name, tsfmd)
         return value
