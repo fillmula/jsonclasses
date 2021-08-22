@@ -68,7 +68,6 @@ class Cdef:
             else:
                 types = rtypes(field.type)
                 default = field.default
-            print("HERE RUNS")
             types.fdef._cdef = self
             jfield = JField(cdef=self, name=name, default=default, types=types)
             self._camelized_field_names.append(jfield.json_name)
@@ -96,7 +95,6 @@ class Cdef:
                 self._cascade_fields.append(jfield)
             if types.fdef._requires_operator_assign:
                 self._assign_operator_fields.append(jfield)
-            print("HERE RUN FINISH")
         self._tuple_fields: tuple[JField] = tuple(self._list_fields)
         self._available_names: set[str] = set(self._field_names
                                               + self._camelized_field_names

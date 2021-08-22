@@ -1,10 +1,10 @@
 """This is an internal module."""
 from __future__ import annotations
-from jsonclasses.isjsonclass import isjsonclass
-from jsonclasses.jobject import JObject
 from typing import cast, Any, Callable, Optional, Union, TYPE_CHECKING
 from enum import Enum, Flag
 from .rtypes import rtypes
+from .isjsonclass import isjsonclass
+from .jobject import JObject
 from .exceptions import UnresolvedTypeNameException
 if TYPE_CHECKING:
     from .types import Types
@@ -151,7 +151,8 @@ class Fdef:
     def cdef(self: Fdef) -> Cdef:
         """The class definition which owns this field.
         """
-        return cast('Cdef', self._cdef)
+        from .cdef import Cdef
+        return cast(Cdef, self._cdef)
 
     @property
     def field_type(self: Fdef) -> FieldType:
@@ -316,12 +317,7 @@ class Fdef:
         if self._raw_inst_types is None:
             return None
         if isjsonclass(self._raw_inst_types):
-            self._inst_cls = self._raw_inst_types
-        if self.cdef:
-            print("HAS CDEF")
-        if not self.cdef:
-            print("NO CDEF!")
-            print(self)
+            self._inst_cls = cast(type[JObject], self._raw_inst_types)
         cgraph = self.cdef.jconf.cgraph
         inst_cls = cgraph.fetch(self._raw_inst_types).cls
         self._inst_cls = inst_cls
