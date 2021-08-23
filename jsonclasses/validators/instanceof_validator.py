@@ -182,6 +182,8 @@ class InstanceOfValidator(Validator):
                 continue
             fctx = ctx.nextv(field_value, field.name, field.fdef)
             tsfmd = field.types.validator.transform(fctx)
+            # if field.fdef.write_rule == WriteRule.WRITE_NONNULL:
+            #     print("COMPARE", getattr(dest, field.name), tsfmd)
             setattr(dest, field.name, tsfmd)
         for cname in nonnull_ref_lists:
             if getattr(dest, cname) is None:

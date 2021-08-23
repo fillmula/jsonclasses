@@ -101,20 +101,19 @@ class Ctx(NamedTuple):
                    idchain=self.idchain)
 
     def nextvc(self: Ctx, val: Any, key: str | int, fdef: Fdef, c: str) -> Ctx:
-        return Ctx(root=self.root, owner=val, parent=val, value=val,
-                   original=None, ctxcfg=self.ctxcfg, keypatho=[],
-                   keypathr=[*self.keypathr, key], keypathp=[], fdef=fdef,
-                   operator=self.operator, mgraph=self.mgraph,
-                   idchain=[*self.idchain, c])
-
-    def nextoc(self: Ctx, val: Any, key: str | int, fdef: Fdef, c: str) -> Ctx:
         return Ctx(root=self.root, owner=self.owner, parent=self.parent,
                    value=val, original=None, ctxcfg=self.ctxcfg,
                    keypatho=[*self.keypatho, key],
                    keypathr=[*self.keypathr, key],
-                   keypathp=[*self.keypathp, key], fdef=fdef,
-                   operator=self.operator, mgraph=self.mgraph,
-                   idchain=[*self.idchain, c])
+                   keypathp=[*self.keypathp, key], fdef=fdef, operator=self.operator,
+                   mgraph=self.mgraph, idchain=[*self.idchain, c])
+
+    def nextoc(self: Ctx, val: Any, key: str | int, fdef: Fdef, c: str) -> Ctx:
+        return Ctx(root=self.root, owner=val, parent=val,
+                   value=val, original=None, ctxcfg=self.ctxcfg,
+                   keypatho=[], keypathr=[*self.keypathr, key],
+                   keypathp=[], fdef=fdef, operator=self.operator,
+                   mgraph=self.mgraph, idchain=[*self.idchain, c])
 
     def colval(self: Ctx, val: Any, key: str | int, fdef: Fdef, p: Any) -> Ctx:
         return Ctx(root=self.root, owner=self.owner, parent=p,
