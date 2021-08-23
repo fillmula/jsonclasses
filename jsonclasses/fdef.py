@@ -123,7 +123,7 @@ class Fdef:
         self._enum_output: Optional[EnumOutput] = None
         self._raw_union_types: Optional[list[Types]] = None
         self._raw_item_types: Optional[Any] = None
-        self._raw_shape_types: Optional[dict[str, Any]] = None
+        self._raw_shape_types: Optional[dict[str, Any], str] = None
         self._raw_inst_types: Optional[Union[str, type[JObject]]] = None
         self._resolved_union_types: Optional[list[Types]] = None
         self._resolved_item_types: Optional[Types] = None
@@ -298,6 +298,8 @@ class Fdef:
                 {k: rtypes(t) for k, t in self._raw_shape_types.items()}
         else:
             self._resolved_shape_types = rtypes(self._raw_shape_types).fdef.raw_shape_types
+        for _, t in self._resolved_shape_types.items():
+            t.fdef._cdef = self.cdef
         return self._resolved_shape_types
 
     @property

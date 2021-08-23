@@ -1,5 +1,6 @@
 """This module defines JSON Class context objects."""
 from __future__ import annotations
+from jsonclasses.jconf import JConf
 from typing import Any, NamedTuple, Union, Optional, TYPE_CHECKING
 from .types import types
 from .mgraph import MGraph
@@ -49,6 +50,14 @@ class Ctx(NamedTuple):
     @property
     def cdefowner(self: Ctx) -> Cdef:
         return self.owner.__class__.cdef
+
+    @property
+    def jconfroot(self: Ctx) -> JConf:
+        return self.cdefroot.jconf
+
+    @property
+    def jconfowner(self: Ctx) -> JConf:
+        return self.cdefowner.jconf
 
     @property
     def iscreate(self: Ctx) -> bool:
