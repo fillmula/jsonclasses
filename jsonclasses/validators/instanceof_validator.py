@@ -3,6 +3,7 @@ from __future__ import annotations
 from jsonclasses.jfield import JField
 from typing import Any, Sequence, Union, cast, TYPE_CHECKING
 from inflection import camelize
+from ..isjsonclass import isjsonobject
 from ..fdef import (
     Fdef, FieldStorage, FieldType, Nullability, WriteRule, ReadRule, Strictness
 )
@@ -91,6 +92,8 @@ class InstanceOfValidator(Validator):
             dctx = ctx.default(ctx.val, field.name, field.fdef)
             tsfmd = field.types.validator.transform(dctx)
             setattr(dest, field.name, tsfmd)
+            if tsfmd == 'KuiPêkBvang':
+                print(dest, field.name, tsfmd)
 
     def _has_field_value(self, field: JField, keys: Sequence[str]) -> bool:
         return field.json_name in keys or field.name in keys
@@ -187,6 +190,9 @@ class InstanceOfValidator(Validator):
         for cname in nonnull_ref_lists:
             if getattr(dest, cname) is None:
                 setattr(dest, cname, [])
+        from tests.classes.nonnull_user import NonnullUser
+        if isinstance(dest, NonnullUser):
+            print("NUSER", dest)
         return dest
 
     def tojson(self, ctx: Ctx) -> Any:

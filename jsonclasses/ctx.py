@@ -16,11 +16,11 @@ class CtxCfg(NamedTuple):
     """On validating, whether validate all fields.
     """
 
-    ignore_writeonly: Optional[bool] = False
+    ignore_writeonly: Optional[bool] = None
     """On tojson, whether ignore writeonly.
     """
 
-    fill_dest_blanks: Optional[bool] = False
+    fill_dest_blanks: Optional[bool] = None
     """On setting, whether fill default fields with None value.
     """
 
@@ -80,7 +80,8 @@ class Ctx(NamedTuple):
                 value: Any = None) -> Ctx:
         fdef = types.objof(root.__class__).fdef
         fdef._cdef = root.__class__.cdef
-        return Ctx(root=root, owner=root, parent=root, value=value or root,
+        return Ctx(root=root, owner=root, parent=root,
+                   value=value if value is not None else root,
                    original=root, ctxcfg=ctxcfg, keypatho=[], keypathr=[],
                    keypathp=[], fdef=fdef,
                    operator=root._operator, mgraph=MGraph(), idchain=[])

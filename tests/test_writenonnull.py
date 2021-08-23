@@ -11,6 +11,7 @@ class TestWritenonnull(TestCase):
 
     def test_writenonnull_fields_can_accept_default_value(self):
         user = NonnullUser()
+        print("QAZZAQ", user)
         self.assertEqual(user.nickname, 'KuiPêkBvang')
 
     def test_writenonnull_fields_can_accept_nonnull_value(self):
