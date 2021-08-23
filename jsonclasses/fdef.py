@@ -288,17 +288,18 @@ class Fdef:
     def shape_types(self: Fdef) -> Optional[dict[str, Types]]:
         """The shape types of this collection field.
         """
+        from .types import Types
         self._resolve_if_needed()
         if self._raw_shape_types is None:
             return None
         if self._resolved_shape_types is not None:
             return self._resolved_shape_types
-        if isinstance(self._resolved_shape_types, dict):
+        if isinstance(self._raw_shape_types, dict):
             self._resolved_shape_types = \
                 {k: rtypes(t) for k, t in self._raw_shape_types.items()}
         else:
             self._resolved_shape_types = rtypes(self._raw_shape_types).fdef.raw_shape_types
-        for _, t in self._resolved_shape_types.items():
+        for _, t in cast(dict[str, Types], self._resolved_shape_types).items():
             t.fdef._cdef = self.cdef
         return self._resolved_shape_types
 
@@ -493,7 +494,7 @@ class Fdef:
             self._unresolved_name = None
 
     def _resolve(self: Fdef) -> None:
-        name = self._unresolved_name
+        name = cast(str, self._unresolved_name)
         cgraph = self.cdef.jconf.cgraph
         if cgraph.has(name):
             cdef = cgraph.fetch(name)

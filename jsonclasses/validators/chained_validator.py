@@ -100,6 +100,6 @@ class ChainedValidator(Validator):
 
     def serialize(self, ctx: Ctx) -> Any:
         val = ctx.val
-        val = reduce(lambda val, v: v.transform(ctx.nval(val)), self._nvs, val)
+        val = reduce(lambda val, v: v.serialize(ctx.nval(val)), self._nvs, val)
         val = reduce(lambda val, v: self._sv(v, ctx.nval(val)), self._pvs, val)
         return val

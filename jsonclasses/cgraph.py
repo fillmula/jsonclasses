@@ -1,7 +1,7 @@
 """This module defineds the JSON class mapping graph."""
 from __future__ import annotations
 from typing import Union, final, TYPE_CHECKING
-
+from enum import Enum
 from .jconf import JConf
 from .keypath import reference_key
 from .exceptions import (JSONClassRedefinitionException,
@@ -188,7 +188,7 @@ class CGraph:
             name = dc_or_name
         return self._dict_map.get(name) is not None
 
-    def put_enum(self: CGraph, enum_class: type) -> None:
+    def put_enum(self: CGraph, enum_class: type[Enum]) -> None:
         """Put a enum class onto this class graph.
 
         Args:
@@ -206,7 +206,7 @@ class CGraph:
         self._enum_map[enum_class.__name__] = enum_class
 
     def fetch_enum(self: CGraph,
-                   ec_or_name: Union[type[dict], str]) -> type[dict]:
+                   ec_or_name: Union[type[dict], str]) -> type[Enum]:
         """Fetch a enum class by it's name from this class graph.
 
         Args:
@@ -227,7 +227,7 @@ class CGraph:
             raise JSONClassTypedDictNotFoundException(name, self.name)
 
     def has_enum(self: CGraph,
-                 ec_or_name: Union[type[dict], str]) -> bool:
+                 ec_or_name: Union[type[Enum], str]) -> bool:
         """Test if a enum class with name is registered in the graph.
 
         Args:

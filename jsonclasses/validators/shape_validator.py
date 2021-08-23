@@ -5,8 +5,6 @@ from inflection import underscore, camelize
 from ..fdef import Fdef, FieldType, Nullability, Strictness
 from ..exceptions import ValidationException
 from ..jconf import JConf
-from ..keypath import concat_keypath
-from ..rtypes import rtypes
 from .type_validator import TypeValidator
 if TYPE_CHECKING:
     from ..ctx import Ctx
@@ -34,21 +32,19 @@ class ShapeValidator(TypeValidator):
         if all_fields is None:
             all_fields = ctx.cdefowner.jconf.validate_all_fields
         keypath_messages = {}
-        for k, t in ctx.fdef.shape_types.items():
+        for k, types in ctx.fdef.shape_types.items():
             try:
                 value_at_key = ctx.value[k]
             except KeyError:
                 value_at_key = None
-            types = rtypes(t)
-            if types:
-                try:
-                    ival = ctx.colval(value_at_key, k, types.fdef, ctx.val)
-                    types.validator.validate(ival)
-                except ValidationException as exception:
-                    if all_fields:
-                        keypath_messages.update(exception.keypath_messages)
-                    else:
-                        raise exception
+            try:
+                ival = ctx.colval(value_at_key, k, types.fdef, ctx.val)
+                types.validator.validate(ival)
+            except ValidationException as exception:
+                if all_fields:
+                    keypath_messages.update(exception.keypath_messages)
+                else:
+                    raise exception
         if len(keypath_messages) > 0:
             raise ValidationException(keypath_messages, root=ctx.root)
 
@@ -94,11 +90,10 @@ class ShapeValidator(TypeValidator):
         if fd.strictness == Strictness.STRICT:
             self._strictness_check(value, ctx)
         retval = {}
-        for fk, ft in ctx.fdef.shape_types.items():
+        for fk, types in ctx.fdef.shape_types.items():
             fv = None
             if self._has_field_value(fk, list(value.keys()), ctx.jconfowner):
                 fv = self._get_field_value(fk, value, ctx.jconfowner)
-            types = rtypes(ft)
             ictx = ctx.colval(fv, fk, types.fdef, value)
             retval[fk] = types.validator.transform(ictx)
         return retval
@@ -109,10 +104,9 @@ class ShapeValidator(TypeValidator):
         if not isinstance(ctx.value, dict):
             return ctx.value
         retval = {}
-        for k, t in ctx.fdef.shape_types.items():
+        for k, types in ctx.fdef.shape_types.items():
             key = camelize(k, False) if ctx.jconfowner.camelize_json_keys else k
             value_at_key = ctx.value.get(k)
-            types = rtypes(t)
             if types:
                 retval[key] = types.validator.tojson(ctx.nval(value_at_key))
             else:
@@ -125,9 +119,8 @@ class ShapeValidator(TypeValidator):
         if not isinstance(ctx.value, dict):
             return ctx.value
         retval = {}
-        for key, raw_types in ctx.fdef.shape_types.items():
+        for key, types in ctx.fdef.shape_types.items():
             value_at_key = ctx.value.get(key)
-            types = rtypes(raw_types)
             if types:
                 ictx = ctx.colval(value_at_key, key, types.fdef, ctx.val)
                 retval[key] = types.validator.serialize(ictx)
