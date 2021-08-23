@@ -79,6 +79,9 @@ class ShapeValidator(TypeValidator):
                     {kp: (f'Unallowed key \'{k}\' at \'{kp}\'.')}, ctx.root)
 
     def transform(self, ctx: Ctx) -> Any:
+        from ..isjsonclass import isjsonobject
+        if not isjsonobject(ctx.owner):
+            print(ctx)
         value = ctx.value
         fd = ctx.fdef
         if fd.collection_nullability == Nullability.NONNULL and value is None:

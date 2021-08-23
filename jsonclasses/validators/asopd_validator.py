@@ -17,7 +17,7 @@ class AsopdValidator(Validator):
         fdef._requires_operator_assign = True
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.owner.is_new or ctx.keypath_owner in ctx.owner.modified_fields:
+        if ctx.root.is_new or ctx.keypathr[-1] in ctx.owner.modified_fields:
             if ctx.value is None:
                 raise ValidationException(
                     keypath_messages={
