@@ -36,6 +36,7 @@ class Cdef:
             jconf (JConf): The configuration object for the targeted class.
         """
         from .types import Types
+        self._ref_resolved = False
         self._cls = cls
         jconf._cls = cls
         self._name: str = cls.__name__
@@ -81,12 +82,6 @@ class Cdef:
                 self._updated_at_field = jfield
             elif types.fdef._usage == 'deleted_at':
                 self._deleted_at_field = jfield
-            if types.fdef._field_storage == FieldStorage.LOCAL_KEY:
-                key_transformer = jconf.key_transformer
-                self._reference_names.append(key_transformer(jfield))
-                if jconf.camelize_json_keys:
-                    self._camelized_reference_names.append(
-                        camelize(key_transformer(jfield), False))
             if types.fdef._delete_rule == DeleteRule.DENY:
                 self._deny_fields.append(jfield)
             elif types.fdef._delete_rule == DeleteRule.NULLIFY:
@@ -96,6 +91,20 @@ class Cdef:
             if types.fdef._requires_operator_assign:
                 self._assign_operator_fields.append(jfield)
         self._tuple_fields: tuple[JField] = tuple(self._list_fields)
+
+    def _resolve_ref_if_needed(self: Cdef) -> None:
+        if self._ref_resolved is False:
+            self._resolve_ref_names()
+            self._ref_resolved = True
+
+    def _resolve_ref_names(self: Cdef) -> None:
+        for jfield in self._tuple_fields:
+            if jfield.types.fdef._field_storage == FieldStorage.LOCAL_KEY:
+                key_transformer = self.jconf.key_transformer
+                self._reference_names.append(key_transformer(jfield))
+                if self.jconf.camelize_json_keys:
+                    self._camelized_reference_names.append(
+                        camelize(key_transformer(jfield), False))
         self._available_names: set[str] = set(self._field_names
                                               + self._camelized_field_names
                                               + self._reference_names
@@ -220,6 +229,16 @@ class Cdef:
                         return field
         else:
             return None
+
+    @property
+    def available_names(self: Cdef) -> set[str]:
+        self._resolve_ref_if_needed()
+        return self._available_names
+
+    @property
+    def update_names(self: Cdef) -> set[str]:
+        self._resolve_ref_if_needed()
+        return self._update_names
 
         # accepted: list[tuple[FieldStorage, bool]] = []
         # if fdef.field_storage == FieldStorage.LOCAL_KEY:

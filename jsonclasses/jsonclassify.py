@@ -134,7 +134,7 @@ def update(self: JObject, **kwargs: dict[str, Any]) -> JObject:
     """
     self._ensure_not_outdated()
     unallowed_keys = (set(kwargs.keys())
-                      - set(self.__class__.cdef._update_names))
+                      - set(self.__class__.cdef.update_names))
     unallowed_keys_length = len(unallowed_keys)
     if unallowed_keys_length > 0:
         keys_list = "', '".join(list(unallowed_keys))
