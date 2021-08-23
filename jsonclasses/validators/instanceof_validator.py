@@ -86,14 +86,11 @@ class InstanceOfValidator(Validator):
 
     def _fill_default_value(self, field: JField, dest: JObject, ctx: Ctx):
         if field.default is not None:
-            print("FIELD DEFAULT IS", field.default)
             setattr(dest, field.name, field.default)
         else:
             dctx = ctx.default(ctx.val, field.name, field.fdef)
             tsfmd = field.types.validator.transform(dctx)
             setattr(dest, field.name, tsfmd)
-            if tsfmd == 'KuiPêkBvang':
-                print(dest, field.name, tsfmd)
 
     def _has_field_value(self, field: JField, keys: Sequence[str]) -> bool:
         return field.json_name in keys or field.name in keys
@@ -190,9 +187,6 @@ class InstanceOfValidator(Validator):
         for cname in nonnull_ref_lists:
             if getattr(dest, cname) is None:
                 setattr(dest, cname, [])
-        from tests.classes.nonnull_user import NonnullUser
-        if isinstance(dest, NonnullUser):
-            print("NUSER", dest)
         return dest
 
     def tojson(self, ctx: Ctx) -> Any:
