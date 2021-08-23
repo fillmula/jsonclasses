@@ -80,8 +80,8 @@ class ShapeValidator(TypeValidator):
 
     def transform(self, ctx: Ctx) -> Any:
         from ..isjsonclass import isjsonobject
-        if not isjsonobject(ctx.owner):
-            print(ctx)
+        #if not isjsonobject(ctx.owner):
+            #print(ctx)
         value = ctx.value
         fd = ctx.fdef
         if fd.collection_nullability == Nullability.NONNULL and value is None:

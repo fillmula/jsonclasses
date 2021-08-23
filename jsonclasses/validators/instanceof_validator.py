@@ -60,7 +60,7 @@ class InstanceOfValidator(Validator):
                 if field.fdef.field_type == FieldType.INSTANCE:
                     fval_ctx = ctx.nexto(fval, fname, ffdef)
                 else:
-                    fval_ctx = ctx.nextv(fval, fname, ffdef)
+                    fval_ctx = ctx.nextvo(fval, fname, ffdef, ctx.original or val)
                 field.types.validator.validate(fval_ctx)
             except ValidationException as exception:
                 if all_fields:
@@ -85,6 +85,7 @@ class InstanceOfValidator(Validator):
 
     def _fill_default_value(self, field: JField, dest: JObject, ctx: Ctx):
         if field.default is not None:
+            print("FIELD DEFAULT IS", field.default)
             setattr(dest, field.name, field.default)
         else:
             dctx = ctx.default(ctx.val, field.name, field.fdef)
@@ -180,10 +181,8 @@ class InstanceOfValidator(Validator):
                 if ctx.ctxcfg.fill_dest_blanks:
                     self._fill_default_value(field, dest, ctx)
                 continue
-            fctx = ctx.nextv(field_value, field.name, field.fdef)
+            fctx = ctx.nextvo(field_value, field.name, field.fdef, dest)
             tsfmd = field.types.validator.transform(fctx)
-            # if field.fdef.write_rule == WriteRule.WRITE_NONNULL:
-            #     print("COMPARE", getattr(dest, field.name), tsfmd)
             setattr(dest, field.name, tsfmd)
         for cname in nonnull_ref_lists:
             if getattr(dest, cname) is None:
@@ -228,13 +227,11 @@ class InstanceOfValidator(Validator):
         if exist_item is not None:  # Don't do twice for an object
             return value
         ctx.mgraph.put(value)
-        should_update = True
-        if not value.is_modified and not value.is_new:
-            should_update = False
+        should_update = False
+        if value.is_modified or value.is_new:
+            should_update = True
         for field in value.__class__.cdef.fields:
-            if (field.fdef.is_ref
-                    or field.fdef.is_inst
-                    or should_update):
+            if field.fdef.is_ref or field.fdef.is_inst or should_update:
                 if field.fdef.field_storage == FieldStorage.LOCAL_KEY:
                     if getattr(value, field.name) is None:
                         tsf = value.__class__.cdef.jconf.key_transformer

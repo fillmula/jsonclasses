@@ -124,6 +124,15 @@ class Ctx(NamedTuple):
                    keypathp=[], fdef=fdef, operator=self.operator,
                    mgraph=self.mgraph, idchain=[*self.idchain, c])
 
+    def nextvo(self: Ctx, val: Any, key: str | int, fdef: Fdef, o: JObject) -> Ctx:
+        return Ctx(root=self.root, owner=o, parent=self.parent,
+                   value=val, original=None, ctxcfg=self.ctxcfg,
+                   keypatho=[*self.keypatho, key],
+                   keypathr=[*self.keypathr, key],
+                   keypathp=[*self.keypathp, key], fdef=fdef,
+                   operator=self.operator, mgraph=self.mgraph,
+                   idchain=self.idchain)
+
     def colval(self: Ctx, val: Any, key: str | int, fdef: Fdef, p: Any) -> Ctx:
         return Ctx(root=self.root, owner=self.owner, parent=p,
                    value=val, original=None, ctxcfg=self.ctxcfg,

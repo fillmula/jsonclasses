@@ -1,6 +1,6 @@
 from typing import Tuple
 from jsonclasses import jsonclass, types
-from jsonclasses.ctx import TCtx
+from jsonclasses.ctx import Ctx
 
 val = 0
 oldval = -1
@@ -31,11 +31,11 @@ def callbackd(old_value: int, new_value: int) -> None:
 
 def callbackt(old_value: int,
               new_value: int,
-              context: TCtx) -> None:
+              ctx: Ctx) -> None:
     global val, newval, oldval
     val = val + 1
-    newval = new_value + context.value
-    oldval = old_value + context.value
+    newval = new_value + ctx.value
+    oldval = old_value + ctx.value
 
 
 def callbackz() -> None:

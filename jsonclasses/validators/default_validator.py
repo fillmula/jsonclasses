@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 
 class DefaultValidator(Validator):
-    """Default validator assigns value a default value if value is `None`."""
+    """Default validator assigns field a default value if value is `None`."""
 
     def __init__(self, default: Any) -> None:
         self.default = default
