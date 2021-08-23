@@ -200,6 +200,7 @@ class Cdef:
         """
         return self._primary_field
 
+    @property
     def assign_operator_fields(self: Cdef) -> list[JField]:
         """The class definition's fields which require operator assigning on
         object creation.
@@ -214,7 +215,7 @@ class Cdef:
                 if fname is not None:
                     if field.name == fname:
                         return field
-                elif fkey is None:
+                elif fkey is not None:
                     if field.fdef.foreign_key == fkey:
                         return field
         else:
