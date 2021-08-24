@@ -88,7 +88,7 @@ class InstanceOfValidator(Validator):
         if field.default is not None:
             setattr(dest, field.name, field.default)
         else:
-            dctx = ctx.default(ctx.val, field.name, field.fdef)
+            dctx = ctx.default(ctx.original, field.name, field.fdef)
             tsfmd = field.types.validator.transform(dctx)
             setattr(dest, field.name, tsfmd)
 

@@ -1,6 +1,6 @@
 """module for shape validator."""
 from __future__ import annotations
-from typing import Any, Sequence, Union, cast, TYPE_CHECKING
+from typing import Any, Sequence, Union, TYPE_CHECKING
 from inflection import underscore, camelize
 from ..fdef import Fdef, FieldType, Nullability, Strictness
 from ..exceptions import ValidationException
@@ -79,9 +79,6 @@ class ShapeValidator(TypeValidator):
                     {kp: (f'Unallowed key \'{k}\' at \'{kp}\'.')}, ctx.root)
 
     def transform(self, ctx: Ctx) -> Any:
-        from ..isjsonclass import isjsonobject
-        if not isjsonobject(ctx.owner):
-            print("SEE", ctx.fdef.field_type)
         value = ctx.value
         fd = ctx.fdef
         if fd.collection_nullability == Nullability.NONNULL and value is None:
