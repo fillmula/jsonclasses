@@ -31,7 +31,7 @@ def apply_link_specifier(types: Types, specifier: str) -> Types:
         match_data = match("^linkedby\\('(.+)'\\)", specifier)
         assert match_data is not None
         fk = match_data.group(1)
-        if types.fdef.field_type == FieldType.LIST:
+        if types.fdef._field_type == FieldType.LIST:
             return types.nonnull.linkedby(fk)
         else:
             return types.linkedby(fk)

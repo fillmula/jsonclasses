@@ -43,8 +43,6 @@ class Cdef:
         self._jconf: JConf = jconf
         self._list_fields: list[JField] = []
         self._dict_fields: dict[str, JField] = {}
-        self._foreign_fields: dict[str, Optional[tuple[Cdef, str]]]\
-            = {}
         self._primary_field: Optional[JField] = None
         self._created_at_field: Optional[JField] = None
         self._updated_at_field: Optional[JField] = None
