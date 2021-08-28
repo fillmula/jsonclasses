@@ -77,7 +77,8 @@ class InstanceOfValidator(Validator):
         available_names = dest.__class__.cdef.available_names
         for k in ctx.value.keys():
             if k not in available_names:
-                kp = concat_keypath('.'.join([str(k) for k in ctx.keypathr]), k)
+                #kp = concat_keypath('.'.join([str(k) for k in ctx.keypathr]), k)
+                kp = concat_keypath('.'.join([str(k) for k in ctx.keypathr]))
                 if '.'.join([str(k) for k in ctx.keypathr]) == '':
                     msg = f'Key \'{k}\' is not allowed.'
                 else:

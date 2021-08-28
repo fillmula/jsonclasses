@@ -8,8 +8,10 @@ from typing import (
 from datetime import date, datetime
 from enum import Enum
 from re import match, split
+from .exceptions import UnresolvedTypeNameException
 if TYPE_CHECKING:
     from .types import Types
+    from .cgraph import CGraph
 
 
 def apply_link_specifier(types: Types, specifier: str) -> Types:
@@ -217,7 +219,6 @@ def rtypes(anytypes: Any) -> Types:
 
     Args:
         anytypes (Any): The user specified any types.
-        anyowner (Any): The configuration of the field's owner class.
 
     Returns:
         Types: A types which describes the field.
@@ -226,3 +227,35 @@ def rtypes(anytypes: Any) -> Types:
     if isinstance(anytypes, Types):
         return anytypes
     return to_types(anytypes)
+
+
+def rnamedtypes(types: Types, cgraph: CGraph, cname: str) -> Types:
+    """
+    Resolve unresolved named types after JSONClasses with references are fully
+    loaded.
+
+    Args:
+        types (Types): The unresolved string name types.
+
+    Returns:
+        Types: a types which is fully resolved.
+    """
+    if not types.fdef._unresolved_name:
+        return types
+    name = types.fdef._unresolved_name
+    if cgraph.has(name):
+        cdef = cgraph.fetch(name)
+        types = types.instanceof(cdef.cls)
+    elif cgraph.has_dict(name):
+        dictcls = cgraph.fetch_dict(name)
+        types = types.shape(dictcls)
+        # self._collection_nullability = Nullability.NONNULL
+    elif cgraph.has_enum(name):
+        enumcls = cgraph.fetch_enum(name)
+        types = types.enum(enumcls)
+    else:
+        raise UnresolvedTypeNameException(
+            f"Unfound type named '{name}' in class '{cname}'.")
+    types.fdef._unresolved = False
+    types.fdef._unresolved_name = None
+    return types

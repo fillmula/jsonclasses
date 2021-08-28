@@ -11,7 +11,7 @@ from dataclasses import fields as dataclass_fields
 from inflection import camelize
 from .jfield import JField
 from .fdef import FieldStorage, DeleteRule
-from .rtypes import rtypes
+from .rtypes import rtypes, rnamedtypes
 from .exceptions import LinkedFieldUnmatchException
 if TYPE_CHECKING:
     from .jconf import JConf
@@ -36,7 +36,8 @@ class Cdef:
             jconf (JConf): The configuration object for the targeted class.
         """
         from .types import Types
-        self._ref_resolved = False
+        self._ref_names_resolved = False
+        self._ref_types_resolved = False
         self._cls = cls
         jconf._cls = cls
         self._name: str = cls.__name__
@@ -90,10 +91,21 @@ class Cdef:
                 self._assign_operator_fields.append(jfield)
         self._tuple_fields: tuple[JField] = tuple(self._list_fields)
 
-    def _resolve_ref_if_needed(self: Cdef) -> None:
-        if self._ref_resolved is False:
+    def _resolve_ref_types_if_needed(self: Cdef) -> None:
+        if self._ref_types_resolved is False:
+            self._resolve_types()
+            self._ref_types_resolved = True
+
+    def _resolve_ref_names_if_needed(self: Cdef) -> None:
+        if self._ref_names_resolved is False:
             self._resolve_ref_names()
-            self._ref_resolved = True
+            self._ref_names_resolved = True
+
+    def _resolve_types(self: Cdef) -> None:
+        for jfield in self._tuple_fields:
+            if jfield.types.fdef._unresolved:
+                cgraph = self.jconf.cgraph
+                jfield._types = rnamedtypes(jfield.types, cgraph, self.name)
 
     def _resolve_ref_names(self: Cdef) -> None:
         for jfield in self._tuple_fields:
@@ -230,12 +242,12 @@ class Cdef:
 
     @property
     def available_names(self: Cdef) -> set[str]:
-        self._resolve_ref_if_needed()
+        self._resolve_ref_names_if_needed()
         return self._available_names
 
     @property
     def update_names(self: Cdef) -> set[str]:
-        self._resolve_ref_if_needed()
+        self._resolve_ref_names_if_needed()
         return self._update_names
 
         # accepted: list[tuple[FieldStorage, bool]] = []

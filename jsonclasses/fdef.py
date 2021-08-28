@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import cast, Any, Callable, Optional, Union, TYPE_CHECKING
 from enum import Enum, Flag
-from .rtypes import rtypes
+from .rtypes import rnamedtypes, rtypes
 from .isjsonclass import isjsonclass
 from .jobject import JObject
 from .exceptions import UnresolvedTypeNameException
@@ -275,6 +275,10 @@ class Fdef:
             return self._resolved_item_types
         self._resolved_item_types = rtypes(self.raw_item_types)
         self._resolved_item_types.fdef._cdef = self.cdef
+        self._resolved_item_types = rnamedtypes(
+            self._resolved_item_types,
+            self.cdef.jconf.cgraph,
+            self.cdef.name)
         return self._resolved_item_types
 
     @property
@@ -299,8 +303,11 @@ class Fdef:
                 {k: rtypes(t) for k, t in self._raw_shape_types.items()}
         else:
             self._resolved_shape_types = rtypes(self._raw_shape_types).fdef.raw_shape_types
-        for _, t in cast(dict[str, Types], self._resolved_shape_types).items():
+        rnamedshapetypes = {}
+        for k, t in cast(dict[str, Types], self._resolved_shape_types).items():
             t.fdef._cdef = self.cdef
+            cgraph = self.cdef.jconf.cgraph
+            rnamedshapetypes[k] = rnamedtypes(t, cgraph, self.cdef.name)
         return self._resolved_shape_types
 
     @property
@@ -494,27 +501,8 @@ class Fdef:
             self._unresolved_name = None
 
     def _resolve(self: Fdef) -> None:
-        name = cast(str, self._unresolved_name)
-        cgraph = self.cdef.jconf.cgraph
-        if cgraph.has(name):
-            cdef = cgraph.fetch(name)
-            self._field_type = FieldType.INSTANCE
-            self._raw_inst_types = cdef.cls
-            self._inst_cls = cdef.cls
-        elif cgraph.has_dict(name):
-            dictcls = cgraph.fetch_dict(name)
-            self._field_type = FieldType.SHAPE
-            self._collection_nullability = Nullability.NONNULL
-            self._raw_shape_types = dictcls
-        elif cgraph.has_enum(name):
-            enumcls = cgraph.fetch_enum(name)
-            self._field_type = FieldType.ENUM
-            self._enum_class = enumcls
-            self._enum_input = EnumInput.NAME
-            self._enum_output = EnumOutput.NAME
-        else:
-            raise UnresolvedTypeNameException(
-                f"Unfound type named '{name}' in class '{self.cdef.name}'.")
+        self.cdef._resolve_ref_types_if_needed()
+
 
     def __str__(self):
         return '<Fdef: ' + str(vars(self)) + '>'

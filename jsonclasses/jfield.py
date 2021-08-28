@@ -81,6 +81,7 @@ class JField:
 
     @property
     def foreign_cdef(self: JField) -> Optional[Cdef]:
+        self.cdef._resolve_ref_types_if_needed()
         if self._resolved_foreign:
             return self._foreign_cdef
         self._resolve_foreign()
@@ -88,6 +89,7 @@ class JField:
 
     @property
     def foreign_fname(self: JField) -> Optional[str]:
+        self.cdef._resolve_ref_types_if_needed()
         if self._resolved_foreign:
             return self._foreign_fname
         self._resolve_foreign()
@@ -95,6 +97,7 @@ class JField:
 
     @property
     def foreign_field(self: JField) -> Optional[JField]:
+        self.cdef._resolve_ref_types_if_needed()
         if self._resolved_foreign:
             return self._foreign_field
         self._resolve_foreign()
@@ -102,6 +105,7 @@ class JField:
 
     @property
     def foreign_class(self: JField) -> Optional[type[JObject]]:
+        self.cdef._resolve_ref_types_if_needed()
         if self._resolved_foreign_class:
             return self._foreign_class
         if self.fdef.field_type == FieldType.INSTANCE:
@@ -127,16 +131,20 @@ class JField:
         elif self.fdef.field_type == FieldType.LIST:
             fcls = self.foreign_class
             stype = 'list'
+        if not fcls:
+            return
         self._foreign_cdef = fcls.cdef
         if slocal:
             ffield = fcls.cdef.rfield(scls, None, self.name)
-            self._foreign_field = ffield
-            self._foreign_fname = ffield.name
+            if ffield:
+                self._foreign_field = ffield
+                self._foreign_fname = ffield.name
         else:
             fkey = self.fdef.foreign_key
             ffield = fcls.cdef.rfield(scls, fkey, None)
-            self._foreign_field = ffield
-            self._foreign_fname = ffield.name
+            if ffield:
+                self._foreign_field = ffield
+                self._foreign_fname = ffield.name
 
         """Get the linked foreign field for local field named `name`.
 
