@@ -40,6 +40,7 @@ class TestInitialize(TestCase):
         with self.assertRaises(ValidationException) as context:
             SimpleArticle(dzimsikai='Ku Piang Hoê')
         self.assertTrue(len(context.exception.keypath_messages) == 1)
+        print("ERRMSG: ", context.exception.keypath_messages)
         self.assertEqual(context.exception.keypath_messages['dzimsikai'],
                          "Key 'dzimsikai' is not allowed.")
 

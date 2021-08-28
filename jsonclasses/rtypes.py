@@ -130,7 +130,7 @@ def str_to_types(anytypes: str, opt: bool = False) -> Types:
         types = str_to_types(instance_type, opt)
         return apply_link_specifier(types, link_specifier)
     else:
-        return types._unresolved(anytypes)
+        return types._unresolved(anytypes) if opt else types._unresolved(anytypes).required
 
 
 def to_types(anytypes: Any, opt: bool = False) -> Types:

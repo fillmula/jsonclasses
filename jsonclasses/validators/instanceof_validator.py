@@ -77,12 +77,12 @@ class InstanceOfValidator(Validator):
         available_names = dest.__class__.cdef.available_names
         for k in ctx.value.keys():
             if k not in available_names:
-                #kp = concat_keypath('.'.join([str(k) for k in ctx.keypathr]), k)
-                kp = concat_keypath('.'.join([str(k) for k in ctx.keypathr]))
+                kp = concat_keypath('.'.join([str(k) for k in ctx.keypathr]), k)
                 if '.'.join([str(k) for k in ctx.keypathr]) == '':
                     msg = f'Key \'{k}\' is not allowed.'
                 else:
-                    msg = f'Key \'{k}\' at \'{kp}\' is not allowed.'
+                    kpnok = concat_keypath('.'.join([str(k) for k in ctx.keypathr]))
+                    msg = f'Key \'{k}\' at \'{kpnok}\' is not allowed.'
                 raise ValidationException({kp: msg}, ctx.root)
 
     def _fill_default_value(self, field: JField, dest: JObject, ctx: Ctx):
