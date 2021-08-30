@@ -19,10 +19,10 @@ class TransformValidator(Validator):
         self.transformer = transformer
 
     def transform(self, ctx: Ctx) -> Any:
-        if ctx.value is None:
+        if ctx.val is None:
             return None
         params_len = len(signature(self.transformer).parameters)
         if params_len == 1:
-            return self.transformer(ctx.value)
+            return self.transformer(ctx.val)
         elif params_len == 2:
-            return self.transformer(ctx.value, ctx)
+            return self.transformer(ctx.val, ctx)

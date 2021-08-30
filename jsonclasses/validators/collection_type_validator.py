@@ -44,7 +44,7 @@ class CollectionTypeValidator(TypeValidator):
         return key
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.value is None:
+        if ctx.val is None:
             return
         super().validate(ctx)
         itypes = ctx.fdef.item_types
@@ -52,7 +52,7 @@ class CollectionTypeValidator(TypeValidator):
             ctx.ctxcfg.all_fields,
             ctx.cdefowner.jconf.validate_all_fields] if b is not None)
         keypath_messages = {}
-        for i, v in self.enumerator(ctx.value):
+        for i, v in self.enumerator(ctx.val):
             try:
                 ictx = ctx.colval(v, i, itypes.fdef, ctx.val)
                 itypes.validator.validate(ictx)
@@ -67,16 +67,16 @@ class CollectionTypeValidator(TypeValidator):
                 root=ctx.root)
 
     def transform(self, ctx: Ctx) -> Any:
-        if ctx.value is None:
+        if ctx.val is None:
             if ctx.fdef.collection_nullability == Nullability.NONNULL:
                 return self.empty_collection()
             else:
                 return None
-        if not isinstance(ctx.value, self.cls):
-            return ctx.value
+        if not isinstance(ctx.val, self.cls):
+            return ctx.val
         itypes = ctx.fdef.item_types
         retval = self.empty_collection()
-        for i, v in self.enumerator(ctx.value):
+        for i, v in self.enumerator(ctx.val):
             ictx = ctx.colval(v, i, itypes.fdef, ctx.val)
             tsfmd = itypes.validator.transform(ictx)
             self.append_value(
@@ -84,13 +84,13 @@ class CollectionTypeValidator(TypeValidator):
         return retval
 
     def tojson(self, ctx: Ctx) -> Any:
-        if ctx.value is None:
+        if ctx.val is None:
             return None
-        if not isinstance(ctx.value, self.cls):
-            return ctx.value
+        if not isinstance(ctx.val, self.cls):
+            return ctx.val
         itypes = ctx.fdef.item_types
         retval = self.empty_collection()
-        for i, v in self.enumerator(ctx.value):
+        for i, v in self.enumerator(ctx.val):
             ictx = ctx.colval(v, i, itypes.fdef, ctx.val)
             tsfmd = itypes.validator.tojson(ictx)
             self.append_value(
@@ -98,13 +98,13 @@ class CollectionTypeValidator(TypeValidator):
         return retval
 
     def serialize(self, ctx: Ctx) -> Any:
-        if ctx.value is None:
+        if ctx.val is None:
             return None
-        if not isinstance(ctx.value, self.cls):
-            return ctx.value
+        if not isinstance(ctx.val, self.cls):
+            return ctx.val
         itypes = ctx.fdef.item_types
         retval = self.empty_collection()
-        for i, v in self.enumerator(ctx.value):
+        for i, v in self.enumerator(ctx.val):
             ictx = ctx.colval(v, i, itypes.fdef, ctx.val)
             tsfmd = itypes.validator.serialize(ictx)
             self.append_value(

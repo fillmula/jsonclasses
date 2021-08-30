@@ -21,7 +21,7 @@ class OneOfTypeValidator(Validator):
         fdef._raw_union_types = [rtypes(t) for t in self.type_list]
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.value is None:
+        if ctx.val is None:
             return
         for types in ctx.fdef.raw_union_types:
             try:
@@ -31,7 +31,7 @@ class OneOfTypeValidator(Validator):
                 continue
         kp = '.'.join([str(k) for k in ctx.keypathr])
         raise ValidationException(
-            {'.'.join([str(k) for k in ctx.keypathr]): (f'Value \'{ctx.value}\' at '
+            {'.'.join([str(k) for k in ctx.keypathr]): (f'Value \'{ctx.val}\' at '
                                     f'\'{kp}\' should be '
                                     f'one of type {self.type_list}.')},
             ctx.root)

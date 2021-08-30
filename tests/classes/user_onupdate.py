@@ -34,8 +34,8 @@ def callbackt(old_value: int,
               ctx: Ctx) -> None:
     global val, newval, oldval
     val = val + 1
-    newval = new_value + ctx.value
-    oldval = old_value + ctx.value
+    newval = new_value + ctx.val
+    oldval = old_value + ctx.val
 
 
 def callbackz() -> None:

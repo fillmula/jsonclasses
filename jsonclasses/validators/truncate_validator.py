@@ -13,4 +13,4 @@ class TruncateValidator(Validator):
         self.maxlen = maxlen
 
     def transform(self, ctx: Ctx) -> Any:
-        return None if ctx.value is None else ctx.value[:self.maxlen]
+        return None if ctx.val is None else ctx.val[:self.maxlen]

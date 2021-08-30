@@ -10,4 +10,4 @@ class ToLowerValidator(Validator):
     """convert string into lower case"""
 
     def transform(self, ctx: Ctx) -> Any:
-        return None if ctx.value is None else ctx.value.lower()
+        return None if ctx.val is None else ctx.val.lower()

@@ -15,9 +15,9 @@ class MatchValidator(Validator):
         self.pattern = pattern
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.value is None:
+        if ctx.val is None:
             return
-        value = ctx.value
+        value = ctx.val
         if search(self.pattern, value) is None:
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(

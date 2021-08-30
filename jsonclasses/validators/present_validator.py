@@ -18,7 +18,7 @@ class PresentValidator(Validator):
         fdef._required = True
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.value is None:
+        if ctx.val is None:
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
                 {kp: (f'Value at \'{kp}\' should be present.')},

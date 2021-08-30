@@ -29,7 +29,7 @@ class Ctx(NamedTuple):
     owner: JObject
     parent: Union[list, dict, JObject]
     holder: Optional[JObject]
-    value: Any
+    val: Any
     original: Any
     ctxcfg: CtxCfg
     keypathr: list[Union[str, int]]
@@ -40,10 +40,6 @@ class Ctx(NamedTuple):
     operator: Any
     mgraph: MGraph = MGraph()
     idchain: list[str] = []
-
-    @property
-    def val(self: Ctx) -> Any:
-        return self.value
 
     @property
     def cdefroot(self: Ctx) -> Cdef:
@@ -95,14 +91,14 @@ class Ctx(NamedTuple):
         fdef = types.objof(root.__class__).fdef
         fdef._cdef = root.__class__.cdef
         return Ctx(root=root, owner=root, parent=root, holder=None,
-                   value=value if value is not None else root,
+                   val=value if value is not None else root,
                    original=root, ctxcfg=ctxcfg, keypatho=[], keypathr=[],
                    keypathp=[], keypathh=[], fdef=fdef,
                    operator=root._operator, mgraph=MGraph(), idchain=[])
 
     def nval(self: Ctx, newval: Any) -> Ctx:
         return Ctx(root=self.root, owner=self.owner, parent=self.parent,
-                   holder=self.holder, value=newval, original=self.original,
+                   holder=self.holder, val=newval, original=self.original,
                    ctxcfg=self.ctxcfg, keypatho=self.keypatho,
                    keypathr=self.keypathr, keypathp=self.keypathp,
                    keypathh=self.keypathh, fdef=self.fdef,
@@ -111,7 +107,7 @@ class Ctx(NamedTuple):
 
     def nextv(self: Ctx, val: Any, key: str | int, fdef: Fdef) -> Ctx:
         return Ctx(root=self.root, owner=self.owner, parent=self.parent,
-                   holder=self.holder, value=val, original=None,
+                   holder=self.holder, val=val, original=None,
                    ctxcfg=self.ctxcfg, keypatho=[*self.keypatho, key],
                    keypathr=[*self.keypathr, key],
                    keypathp=[*self.keypathp, key],
@@ -121,14 +117,14 @@ class Ctx(NamedTuple):
 
     def nexto(self: Ctx, val: Any, key: str | int, fdef: Fdef) -> Ctx:
         return Ctx(root=self.root, owner=val, parent=val, holder=self.owner,
-                   value=val, original=None, ctxcfg=self.ctxcfg, keypatho=[],
+                   val=val, original=None, ctxcfg=self.ctxcfg, keypatho=[],
                    keypathr=[*self.keypathr, key], keypathp=[],
                    keypathh=[key], fdef=fdef, operator=self.operator,
                    mgraph=self.mgraph, idchain=self.idchain)
 
     def nextvc(self: Ctx, val: Any, key: str | int, fdef: Fdef, c: str) -> Ctx:
         return Ctx(root=self.root, owner=self.owner, parent=self.parent,
-                   holder=self.holder, value=val, original=None,
+                   holder=self.holder, val=val, original=None,
                    ctxcfg=self.ctxcfg, keypatho=[*self.keypatho, key],
                    keypathr=[*self.keypathr, key],
                    keypathp=[*self.keypathp, key],
@@ -138,7 +134,7 @@ class Ctx(NamedTuple):
 
     def nextoc(self: Ctx, val: Any, key: str | int, fdef: Fdef, c: str) -> Ctx:
         return Ctx(root=self.root, owner=val, parent=val, holder=self.owner,
-                   value=val, original=None, ctxcfg=self.ctxcfg,
+                   val=val, original=None, ctxcfg=self.ctxcfg,
                    keypatho=[], keypathr=[*self.keypathr, key],
                    keypathp=[], keypathh=[key], fdef=fdef,
                    operator=self.operator, mgraph=self.mgraph,
@@ -146,7 +142,7 @@ class Ctx(NamedTuple):
 
     def nextvo(self: Ctx, val: Any, key: str | int, fdef: Fdef, o: JObject) -> Ctx:
         return Ctx(root=self.root, owner=o, parent=self.parent,
-                   holder=self.holder, value=val, original=None,
+                   holder=self.holder, val=val, original=None,
                    ctxcfg=self.ctxcfg, keypatho=[*self.keypatho, key],
                    keypathr=[*self.keypathr, key],
                    keypathp=[*self.keypathp, key],
@@ -157,7 +153,7 @@ class Ctx(NamedTuple):
     def colval(self: Ctx, val: Any, key: str | int, fdef: Fdef, p: Any) -> Ctx:
         return Ctx(root=self.root, owner=self.owner, parent=p,
                    holder=self.holder,
-                   value=val, original=None, ctxcfg=self.ctxcfg,
+                   val=val, original=None, ctxcfg=self.ctxcfg,
                    keypatho=[*self.keypatho, key],
                    keypathr=[*self.keypathr, key],
                    keypathp=[key], keypathh=[*self.keypathh, key], fdef=fdef,
@@ -166,7 +162,7 @@ class Ctx(NamedTuple):
 
     def default(self: Ctx, owner: JObject, key: str | int, fdef: Fdef) -> Ctx:
         return Ctx(root=self.root, owner=owner, parent=owner,
-                   holder=self.holder, value=None,
+                   holder=self.holder, val=None,
                    original=None, ctxcfg=self.ctxcfg,
                    keypatho=[*self.keypatho, key],
                    keypathr=[*self.keypathr, key],

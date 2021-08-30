@@ -24,7 +24,7 @@ class RequiredValidator(Validator):
         if storage == FieldStorage.FOREIGN_KEY:  # we don't check foreign key
             return
         if storage == FieldStorage.LOCAL_KEY:
-            if ctx.value is None:  # check key presence
+            if ctx.val is None:  # check key presence
                 jconf: JConf = ctx.holder.__class__.cdef.jconf
                 ko = str(ctx.keypathh[0])
                 field = ctx.holder.__class__.cdef.field_named(ko)
@@ -52,7 +52,7 @@ class RequiredValidator(Validator):
                             ctx.root
                         )
             return
-        if ctx.value is None:
+        if ctx.val is None:
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
                 {kp: f'Value at \'{kp}\' should not be None.'},

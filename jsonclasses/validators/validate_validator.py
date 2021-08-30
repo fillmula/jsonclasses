@@ -20,13 +20,13 @@ class ValidateValidator(Validator):
         self.validate_callable = validate_callable
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.value is None:
+        if ctx.val is None:
             return
         params_len = len(signature(self.validate_callable).parameters)
         if params_len == 1:
-            result = self.validate_callable(ctx.value)
+            result = self.validate_callable(ctx.val)
         elif params_len == 2:
-            result = self.validate_callable(ctx.value, ctx)
+            result = self.validate_callable(ctx.val, ctx)
         if result is None:
             return
         if result is True:

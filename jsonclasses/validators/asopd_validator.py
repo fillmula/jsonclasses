@@ -18,7 +18,7 @@ class AsopdValidator(Validator):
 
     def validate(self, ctx: Ctx) -> None:
         if ctx.holder.is_new or ctx.keypathr[-1] in ctx.holder.modified_fields:
-            if ctx.value is None:
+            if ctx.val is None:
                 raise ValidationException(
                     keypath_messages={
                         '.'.join([str(k) for k in ctx.keypathr]): "no operator being assigned"},

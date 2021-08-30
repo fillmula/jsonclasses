@@ -13,8 +13,8 @@ class DefaultValidator(Validator):
         self.default = default
 
     def transform(self, ctx: Ctx) -> Any:
-        if ctx.value is not None:
-            return ctx.value
+        if ctx.val is not None:
+            return ctx.val
         if callable(self.default):
             return self.default()
         else:

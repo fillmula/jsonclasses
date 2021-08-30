@@ -14,11 +14,11 @@ class MinValidator(Validator):
         self.min_value = min_value
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.value is None:
+        if ctx.val is None:
             return
-        if ctx.value < self.min_value:
+        if ctx.val < self.min_value:
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {kp: f'Value \'{ctx.value}\' at \'{kp}\' should not be less than {self.min_value}.'},
+                {kp: f'Value \'{ctx.val}\' at \'{kp}\' should not be less than {self.min_value}.'},
                 ctx.root
             )

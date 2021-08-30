@@ -16,8 +16,8 @@ class FloatValidator(TypeValidator):
         self.field_type = FieldType.FLOAT
 
     def transform(self, ctx: Ctx) -> Any:
-        if ctx.value is None:
+        if ctx.val is None:
             return None
-        if type(ctx.value) is int:
-            return float(ctx.value)
-        return ctx.value
+        if type(ctx.val) is int:
+            return float(ctx.val)
+        return ctx.val

@@ -25,7 +25,7 @@ class ShapeValidator(TypeValidator):
         fdef._raw_shape_types = self.raw_types
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.value is None:
+        if ctx.val is None:
             return
         super().validate(ctx)
         all_fields = ctx.ctxcfg.all_fields
@@ -34,7 +34,7 @@ class ShapeValidator(TypeValidator):
         keypath_messages = {}
         for k, types in ctx.fdef.shape_types.items():
             try:
-                value_at_key = ctx.value[k]
+                value_at_key = ctx.val[k]
             except KeyError:
                 value_at_key = None
             try:
@@ -79,7 +79,7 @@ class ShapeValidator(TypeValidator):
                     {kp: (f'Unallowed key \'{k}\' at \'{kp}\'.')}, ctx.root)
 
     def transform(self, ctx: Ctx) -> Any:
-        value = ctx.value
+        value = ctx.val
         fd = ctx.fdef
         if fd.collection_nullability == Nullability.NONNULL and value is None:
             value = {}
@@ -99,14 +99,14 @@ class ShapeValidator(TypeValidator):
         return retval
 
     def tojson(self, ctx: Ctx) -> Any:
-        if ctx.value is None:
+        if ctx.val is None:
             return None
-        if not isinstance(ctx.value, dict):
-            return ctx.value
+        if not isinstance(ctx.val, dict):
+            return ctx.val
         retval = {}
         for k, types in ctx.fdef.shape_types.items():
             key = camelize(k, False) if ctx.jconfowner.camelize_json_keys else k
-            value_at_key = ctx.value.get(k)
+            value_at_key = ctx.val.get(k)
             if types:
                 retval[key] = types.validator.tojson(ctx.nval(value_at_key))
             else:
@@ -114,13 +114,13 @@ class ShapeValidator(TypeValidator):
         return retval
 
     def serialize(self, ctx: Ctx) -> Any:
-        if ctx.value is None:
+        if ctx.val is None:
             return None
-        if not isinstance(ctx.value, dict):
-            return ctx.value
+        if not isinstance(ctx.val, dict):
+            return ctx.val
         retval = {}
         for key, types in ctx.fdef.shape_types.items():
-            value_at_key = ctx.value.get(key)
+            value_at_key = ctx.val.get(key)
             if types:
                 ictx = ctx.colval(value_at_key, key, types.fdef, ctx.val)
                 retval[key] = types.validator.serialize(ictx)

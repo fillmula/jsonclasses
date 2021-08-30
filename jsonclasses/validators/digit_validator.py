@@ -11,9 +11,9 @@ class DigitValidator(Validator):
     """Digit validator raises if value is not a digit."""
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.value is None:
+        if ctx.val is None:
             return
-        value = ctx.value
+        value = ctx.val
         if not value.isdigit():
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(

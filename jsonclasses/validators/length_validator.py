@@ -15,9 +15,9 @@ class LengthValidator(Validator):
         self.maxlength = maxlength if maxlength is not None else minlength
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.value is None:
+        if ctx.val is None:
             return
-        value = ctx.value
+        value = ctx.val
         kp = '.'.join([str(k) for k in ctx.keypathr])
         if len(value) > self.maxlength or len(value) < self.minlength:
             if self.minlength != self.maxlength:

@@ -30,9 +30,9 @@ class OpValidator(Validator):
         elif params_len == 2:
             result = self.op_callable(ctx.operator, ctx.owner)
         elif params_len == 3:
-            result = self.op_callable(ctx.operator, ctx.owner, ctx.value)
+            result = self.op_callable(ctx.operator, ctx.owner, ctx.val)
         elif params_len == 4:
-            result = self.op_callable(ctx.operator, ctx.owner, ctx.value, ctx)
+            result = self.op_callable(ctx.operator, ctx.owner, ctx.val, ctx)
         if result is None:
             return
         if result is True:

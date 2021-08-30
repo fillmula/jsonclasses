@@ -27,30 +27,30 @@ class EnumValidator(Validator):
         return
 
     def transform(self, ctx: Ctx) -> Any:
-        if ctx.value is None:
+        if ctx.val is None:
             return None
         if isinstance(self.enum_or_name, str):
             jconf = ctx.cdefowner.jconf
             enum_class = jconf.cgraph.fetch_enum(self.enum_or_name)
         else:
             enum_class = self.enum_or_name
-        if isinstance(ctx.value, enum_class):
-            return ctx.value
+        if isinstance(ctx.val, enum_class):
+            return ctx.val
         enum_input = ctx.fdef.enum_input
         if enum_input.__contains__(EnumInput.VALUE):
             try:
-                return enum_class(ctx.value)
+                return enum_class(ctx.val)
             except ValueError:
                 pass
-        elif isinstance(ctx.value, str):
+        elif isinstance(ctx.val, str):
             if enum_input.__contains__(EnumInput.NAME):
                 try:
-                    return enum_class[ctx.value]
+                    return enum_class[ctx.val]
                 except KeyError:
                     pass
             if enum_input.__contains__(EnumInput.LOWERCASE_NAME):
                 try:
-                    return enum_class[ctx.value.upper()]
+                    return enum_class[ctx.val.upper()]
                 except KeyError:
                     pass
 
@@ -63,24 +63,24 @@ class EnumValidator(Validator):
             }, ctx.root)
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.value is None:
+        if ctx.val is None:
             return None
         if isinstance(self.enum_or_name, str):
             jconf = ctx.cdefowner.jconf
             enum_class = jconf.cgraph.fetch_enum(self.enum_or_name)
         else:
             enum_class = self.enum_or_name
-        if not isinstance(ctx.value, enum_class):
+        if not isinstance(ctx.val, enum_class):
             raise ValidationException({
                 '.'.join([str(k) for k in ctx.keypathr]): 'invalid enum value'
             }, ctx.root)
 
     def tojson(self, ctx: Ctx) -> Any:
-        if ctx.value is None:
+        if ctx.val is None:
             return None
         if ctx.fdef.enum_output == EnumOutput.VALUE:
-            return ctx.value.value
+            return ctx.val.value
         elif ctx.fdef.enum_output == EnumOutput.NAME:
-            return ctx.value.name
+            return ctx.val.name
         elif ctx.fdef.enum_output == EnumOutput.LOWERCASE_NAME:
-            return ctx.value.name.lower()
+            return ctx.val.name.lower()

@@ -27,23 +27,23 @@ class InstanceOfValidator(Validator):
     def validate(self, ctx: Ctx) -> None:
         from ..jobject import JObject
         # only validate if there is a value
-        if ctx.value is None:
+        if ctx.val is None:
             return
         # only validate an instance once in the circular referenced map
-        if ctx.mgraph.has(ctx.value):
+        if ctx.mgraph.has(ctx.val):
             return
-        ctx.mgraph.put(ctx.value)
+        ctx.mgraph.put(ctx.val)
         cls = cast(type[JObject], ctx.fdef.inst_cls)
         all_fields = ctx.ctxcfg.all_fields
         if all_fields is None:
             all_fields = cls.cdef.jconf.validate_all_fields
-        if not isinstance(ctx.value, cls):
+        if not isinstance(ctx.val, cls):
             raise ValidationException({
                 '.'.join([str(k) for k in ctx.keypathr]): (f"Value at '{'.'.join([str(k) for k in ctx.keypathr])}' "
                                    f"should be instance of "
                                    f"'{cls.__name__}'.")
             }, ctx.root)
-        only_validate_modified = not ctx.value.is_new
+        only_validate_modified = not ctx.val.is_new
         modified_fields = []
         if only_validate_modified:
             modified_fields = list(initial_keypaths((ctx.val.modified_fields)))
@@ -74,7 +74,7 @@ class InstanceOfValidator(Validator):
 
     def _strictness_check(self, ctx: Ctx, dest: JObject) -> None:
         available_names = dest.__class__.cdef.available_names
-        for k in ctx.value.keys():
+        for k in ctx.val.keys():
             if k not in available_names:
                 kp = concat_keypath('.'.join([str(k) for k in ctx.keypathr]), k)
                 if '.'.join([str(k) for k in ctx.keypathr]) == '':
@@ -96,9 +96,9 @@ class InstanceOfValidator(Validator):
         return field.json_name in keys or field.name in keys
 
     def _get_field_value(self, field: JField, ctx: Ctx) -> Any:
-        field_value = ctx.value.get(field.json_name)
+        field_value = ctx.val.get(field.json_name)
         if field_value is None and ctx.cdefowner.jconf.camelize_json_keys:
-            field_value = ctx.value.get(field.name)
+            field_value = ctx.val.get(field.name)
         return field_value
 
     # pylint: disable=arguments-differ, too-many-locals, too-many-branches
@@ -106,10 +106,10 @@ class InstanceOfValidator(Validator):
         from ..types import Types
         from ..jobject import JObject
         # handle non normal value
-        if ctx.value is None:
+        if ctx.val is None:
             return ctx.original
-        if not isinstance(ctx.value, dict):
-            return ctx.original if ctx.original is not None else ctx.value
+        if not isinstance(ctx.val, dict):
+            return ctx.original if ctx.original is not None else ctx.val
         # figure out types, cls and dest
         cls = cast(type[JObject], ctx.fdef.inst_cls)
         pfield = cls.cdef.primary_field
@@ -145,7 +145,7 @@ class InstanceOfValidator(Validator):
         if strictness:
             self._strictness_check(ctx, dest)
         # fill values
-        dict_keys = list(ctx.value.keys())
+        dict_keys = list(ctx.val.keys())
         nonnull_ref_lists: list[str] = []
         for field in dest.__class__.cdef.fields:
             if not self._has_field_value(field, dict_keys):
@@ -157,11 +157,11 @@ class InstanceOfValidator(Validator):
                     elif fdef.field_storage == FieldStorage.LOCAL_KEY:
                         tsfm = dest.__class__.cdef.jconf.key_transformer
                         refname = tsfm(field)
-                        if ctx.value.get(refname) is not None:
-                            setattr(dest, refname, ctx.value.get(refname))
+                        if ctx.val.get(refname) is not None:
+                            setattr(dest, refname, ctx.val.get(refname))
                         crefname = camelize(refname, False)
-                        if ctx.value.get(crefname) is not None:
-                            setattr(dest, refname, ctx.value.get(crefname))
+                        if ctx.val.get(crefname) is not None:
+                            setattr(dest, refname, ctx.val.get(crefname))
                     pass
                 elif ctx.ctxcfg.fill_dest_blanks and not soft_apply_mode:
                     self._fill_default_value(field, dest, ctx)
@@ -191,9 +191,9 @@ class InstanceOfValidator(Validator):
 
     def tojson(self, ctx: Ctx) -> Any:
         from ..jobject import JObject
-        if ctx.value is None:
+        if ctx.val is None:
             return None
-        val = cast(JObject, ctx.value)
+        val = cast(JObject, ctx.val)
         retval = {}
         clschain = ctx.idchain
         cls_name = val.__class__.cdef.name
@@ -220,7 +220,7 @@ class InstanceOfValidator(Validator):
 
     def serialize(self, ctx: Ctx) -> Any:
         from ..jobject import JObject
-        value = cast(JObject, ctx.value)
+        value = cast(JObject, ctx.val)
         if value is None:
             return None
         exist_item = ctx.mgraph.get(value)

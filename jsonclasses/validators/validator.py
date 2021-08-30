@@ -17,11 +17,11 @@ class Validator:
 
     def transform(self, ctx: Ctx) -> Any:
         """Transform raw input object into JSON Class acceptable object."""
-        return ctx.value
+        return ctx.val
 
     def tojson(self, ctx: Ctx) -> Any:
         """Transform JSON Class object and fields into JSON dict and values."""
-        return ctx.value
+        return ctx.val
 
     def serialize(self, ctx: Ctx) -> Any:
         """A chance for validators to update the object's value before the
@@ -31,4 +31,4 @@ class Validator:
         Unmodified objects won't cause serialize to trigger. JSON Classes which
         are not subclasses of ORMObject won't trigger this.
         """
-        return ctx.value
+        return ctx.val

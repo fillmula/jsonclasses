@@ -10,4 +10,4 @@ class ToCapValidator(Validator):
     """capitalize string"""
 
     def transform(self, ctx: Ctx) -> Any:
-        return None if ctx.value is None else ctx.value.capitalize()
+        return None if ctx.val is None else ctx.val.capitalize()

@@ -12,9 +12,9 @@ class UrlValidator(Validator):
     """URL validator raises if value is not valid url."""
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.value is None:
+        if ctx.val is None:
             return
-        value = ctx.value
+        value = ctx.val
         # https://stackoverflow.com/questions/7160737/how-to-validate-a-url-in-python-malformed-or-not
         regex = compile(
             r'^(?:http|ftp)s?://'  # http:// or https://

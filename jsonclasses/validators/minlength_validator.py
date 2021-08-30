@@ -14,11 +14,11 @@ class MinlengthValidator(Validator):
         self.minlength = minlength
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.value is None:
+        if ctx.val is None:
             return
-        if len(ctx.value) < self.minlength:
+        if len(ctx.val) < self.minlength:
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {kp: f'Length of value \'{ctx.value}\' at \'{kp}\' should not be less than {self.minlength}.'},
+                {kp: f'Length of value \'{ctx.val}\' at \'{kp}\' should not be less than {self.minlength}.'},
                 ctx.root
             )

@@ -11,9 +11,9 @@ class AlphaValidator(Validator):
     """Alpha validator raises if value is not a alpha."""
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.value is None:
+        if ctx.val is None:
             return
-        value = ctx.value
+        value = ctx.val
         if not value.isalpha():
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(

@@ -14,11 +14,11 @@ class MaxValidator(Validator):
         self.max_value = max_value
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.value is None:
-            return ctx.value
-        if ctx.value > self.max_value:
+        if ctx.val is None:
+            return ctx.val
+        if ctx.val > self.max_value:
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {kp: f'Value \'{ctx.value}\' at \'{kp}\' should not be greater than {self.max_value}.'},
+                {kp: f'Value \'{ctx.val}\' at \'{kp}\' should not be greater than {self.max_value}.'},
                 ctx.root
             )

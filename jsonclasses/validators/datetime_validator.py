@@ -18,21 +18,21 @@ class DatetimeValidator(TypeValidator):
         self.field_type = FieldType.DATETIME
 
     def transform(self, ctx: Ctx) -> Any:
-        if ctx.value is None:
+        if ctx.val is None:
             return None
-        elif isinstance(ctx.value, str):
+        elif isinstance(ctx.val, str):
             try:
-                return datetime.fromisoformat(ctx.value.replace('Z', ''))
+                return datetime.fromisoformat(ctx.val.replace('Z', ''))
             except ValueError:
                 raise ValidationException({
                     '.'.join([str(k) for k in ctx.keypathr]): 'Datetime string format error.'
                 }, ctx.root)
-        elif type(ctx.value) is date:
-            return datetime(ctx.value.year,
-                            ctx.value.month,
-                            ctx.value.day, 0, 0, 0)
+        elif type(ctx.val) is date:
+            return datetime(ctx.val.year,
+                            ctx.val.month,
+                            ctx.val.day, 0, 0, 0)
         else:
-            return ctx.value
+            return ctx.val
 
     def tojson(self, ctx: Ctx) -> Any:
-        return None if ctx.value is None else ctx.value.isoformat()[:23] + 'Z'
+        return None if ctx.val is None else ctx.val.isoformat()[:23] + 'Z'

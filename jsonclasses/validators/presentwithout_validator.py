@@ -21,7 +21,7 @@ class PresentWithoutValidator(Validator):
             self.referring_keys = referring_keys
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.value is not None:
+        if ctx.val is not None:
             return
         for key in self.referring_keys:
             try:
@@ -32,7 +32,7 @@ class PresentWithoutValidator(Validator):
                                  'passed to present without validator.')
             if referred_value is not None:
                 return
-        if ctx.value is None:
+        if ctx.val is None:
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
                 {kp: (f'Value at \'{kp}\' should be present since it\'s '
