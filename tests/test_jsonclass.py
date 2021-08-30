@@ -83,7 +83,7 @@ class TestJsonClass(TestCase):
     def test_jsonclass_raises_if_duplicate_names_on_same_graph(self):
         with self.assertRaisesRegex(JSONClassRedefinitionException,
                                     'jsonclass name conflict in graph'):
-            @jsonclass(cgraph='simplecompany')
+            @jsonclass(class_graph='simplecompany')
             class SimpleCompany:
                 str_field: str
                 int_field: str

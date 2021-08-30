@@ -18,7 +18,7 @@ def jsonclass(cls: type) -> type: ...
 @overload
 def jsonclass(
     cls: None,
-    cgraph: Optional[str] = 'default',
+    class_graph: Optional[str] = 'default',
     camelize_json_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
     key_transformer: Optional[Callable[[JField], str]] = None,
@@ -39,7 +39,7 @@ def jsonclass(
 @overload
 def jsonclass(
     cls: type,
-    cgraph: Optional[str] = 'default',
+    class_graph: Optional[str] = 'default',
     camelize_json_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
     key_transformer: Optional[Callable[[JField], str]] = None,
@@ -59,7 +59,7 @@ def jsonclass(
 
 def jsonclass(
     cls: Optional[type] = None,
-    cgraph: Optional[str] = 'default',
+    class_graph: Optional[str] = 'default',
     camelize_json_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
     key_transformer: Optional[Callable[[JField], str]] = None,
@@ -87,7 +87,7 @@ def jsonclass(
         if not isinstance(cls, type):
             raise ValueError('@jsonclass should be used to decorate a class.')
         jconf = JConf(
-            cgraph=cast(str, cgraph),
+            cgraph=cast(str, class_graph),
             camelize_json_keys=camelize_json_keys,
             strict_input=strict_input,
             key_transformer=key_transformer,
@@ -112,7 +112,7 @@ def jsonclass(
         def parametered_jsonclass(cls):
             return jsonclass(
                 cls,
-                cgraph=cgraph,
+                class_graph=class_graph,
                 camelize_json_keys=camelize_json_keys,
                 strict_input=strict_input,
                 key_transformer=key_transformer,
