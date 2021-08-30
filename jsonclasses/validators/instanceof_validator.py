@@ -3,7 +3,6 @@ from __future__ import annotations
 from jsonclasses.jfield import JField
 from typing import Any, Sequence, Union, cast, TYPE_CHECKING
 from inflection import camelize
-from ..isjsonclass import isjsonobject
 from ..fdef import (
     Fdef, FieldStorage, FieldType, Nullability, WriteRule, ReadRule, Strictness
 )
