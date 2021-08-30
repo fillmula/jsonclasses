@@ -25,20 +25,20 @@ class RequiredValidator(Validator):
             return
         if storage == FieldStorage.LOCAL_KEY:
             if ctx.value is None:  # check key presence
-                jconf: JConf = ctx.owner.__class__.cdef.jconf
-                ko = str(ctx.keypatho[0])
-                field = ctx.owner.__class__.cdef.field_named(ko)
+                jconf: JConf = ctx.holder.__class__.cdef.jconf
+                ko = str(ctx.keypathh[0])
+                field = ctx.holder.__class__.cdef.field_named(ko)
                 local_key = jconf.key_transformer(field)
-                if isinstance(ctx.parent, dict):
-                    if ctx.parent.get(local_key) is None:
+                if isinstance(ctx.holder, dict):
+                    if ctx.holder.get(local_key) is None:
                         kp = '.'.join([str(k) for k in ctx.keypathr])
                         raise ValidationException(
                             {kp: f'Value at \'{kp}\' should not be None.'},
                             ctx.root
                         )
-                elif isjsonobject(ctx.parent):
+                elif isjsonobject(ctx.holder):
                     try:
-                        local_key_value = getattr(ctx.parent, local_key)
+                        local_key_value = getattr(ctx.holder, local_key)
                     except AttributeError:
                         kp = '.'.join([str(k) for k in ctx.keypathr])
                         raise ValidationException(
