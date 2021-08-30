@@ -1,6 +1,6 @@
 from __future__ import annotations
 from unittest import TestCase
-from jsonclasses.exceptions import UnauthorizedActionException
+from jsonclasses.excs import UnauthorizedActionException
 from tests.classes.gs_article import GSArticle, GSAuthor
 from tests.classes.gm_article import GMArticle, GMAuthor
 

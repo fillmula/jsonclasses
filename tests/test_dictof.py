@@ -1,6 +1,6 @@
 from __future__ import annotations
 from unittest import TestCase
-from jsonclasses.exceptions import ValidationException
+from jsonclasses.excs import ValidationException
 from tests.classes.simple_record import SimpleRecord
 from tests.classes.typed_record import TypedRecord
 from tests.classes.nullable_record import NullableRecord

@@ -3,7 +3,7 @@ from unittest import TestCase
 from datetime import datetime, date
 from jsonclasses import jsonclass
 from jsonclasses.fdef import FieldType, FieldStorage
-from jsonclasses.exceptions import ValidationException
+from jsonclasses.excs import ValidationException
 from tests.classes.linked_author import LinkedAuthor
 from tests.classes.linked_article import LinkedArticle
 from tests.classes.linked_user import LinkedUser

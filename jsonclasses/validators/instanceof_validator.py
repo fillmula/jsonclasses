@@ -6,7 +6,7 @@ from inflection import camelize
 from ..fdef import (
     Fdef, FieldStorage, FieldType, Nullability, WriteRule, ReadRule, Strictness
 )
-from ..exceptions import ValidationException
+from ..excs import ValidationException
 from .validator import Validator
 from ..keypath import concat_keypath, initial_keypaths
 if TYPE_CHECKING:

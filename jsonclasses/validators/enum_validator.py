@@ -4,7 +4,7 @@ from typing import Any, Union, TYPE_CHECKING
 from enum import Enum
 from ..fdef import (FieldType, Fdef, EnumInput,
                                 EnumOutput)
-from ..exceptions import ValidationException
+from ..excs import ValidationException
 from .validator import Validator
 if TYPE_CHECKING:
     from ..ctx import Ctx

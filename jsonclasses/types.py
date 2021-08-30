@@ -176,7 +176,7 @@ class Types:
         return 400 automatically.
 
         If you are implementing jsonclasses ORM integration, you should use
-        UniqueFieldException provided by jsonclasses.exceptions to keep
+        UniqueFieldException provided by jsonclasses.excs to keep
         consistency with other jsonclasses integrations.
         """
         return Types(self, UniqueValidator())

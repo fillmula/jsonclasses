@@ -12,7 +12,7 @@ from inflection import camelize
 from .jfield import JField
 from .fdef import FieldStorage, DeleteRule
 from .rtypes import rtypes, rnamedtypes
-from .exceptions import LinkedFieldUnmatchException
+from .excs import LinkedFieldUnmatchException
 if TYPE_CHECKING:
     from .jconf import JConf
     from .types import Types

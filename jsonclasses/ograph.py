@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Iterator, NamedTuple, Union, TYPE_CHECKING
 from .isjsonclass import isjsonobject
-from .exceptions import (UnlinkableJSONClassException,
+from .excs import (UnlinkableJSONClassException,
                          JSONClassGraphMergeConflictException)
 if TYPE_CHECKING:
     from .jobject import JObject

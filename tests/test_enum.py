@@ -1,6 +1,6 @@
 from __future__ import annotations
 from unittest import TestCase
-from jsonclasses.exceptions import ValidationException
+from jsonclasses.excs import ValidationException
 from tests.classes.enum_user import Gender, EnumUser
 from tests.classes.value_gender_user import ValueGender, ValueGenderUser
 from tests.classes.lname_gender_user import LnameGender, LnameGenderUser

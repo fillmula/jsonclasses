@@ -5,7 +5,7 @@ from jsonclasses.isjsonclass import isjsonclass
 from jsonclasses.jconf import JConf
 from jsonclasses.keypath import reference_key
 from jsonclasses.cgraph import CGraph
-from jsonclasses.exceptions import JSONClassRedefinitionException
+from jsonclasses.excs import JSONClassRedefinitionException
 from tests.classes.simple_account import SimpleAccount
 from tests.classes.simple_company import SimpleCompany
 from tests.classes.simple_employee import SimpleEmployee

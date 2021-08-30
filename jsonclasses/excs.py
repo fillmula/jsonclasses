@@ -1,4 +1,4 @@
-"""This module defines all exceptions that JSON classes uses."""
+"""This module defines all excs that JSON classes uses."""
 from __future__ import annotations
 from typing import Any
 from inspect import getmodule, getsourcelines

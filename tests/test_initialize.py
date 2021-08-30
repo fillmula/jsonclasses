@@ -2,7 +2,7 @@ from __future__ import annotations
 from jsonclasses.fdef import FieldType
 from unittest import TestCase
 from datetime import date
-from jsonclasses.exceptions import ValidationException
+from jsonclasses.excs import ValidationException
 from tests.classes.simple_article import SimpleArticle
 from tests.classes.simple_order import SimpleOrder
 from tests.classes.simple_address import SimpleAddress

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Sequence, Union, TYPE_CHECKING
 from inflection import underscore, camelize
 from ..fdef import Fdef, FieldType, Nullability, Strictness
-from ..exceptions import ValidationException
+from ..excs import ValidationException
 from ..jconf import JConf
 from .type_validator import TypeValidator
 if TYPE_CHECKING:

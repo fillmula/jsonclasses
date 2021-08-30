@@ -4,7 +4,7 @@ from typing import Union, final, TYPE_CHECKING
 from enum import Enum
 from .jconf import JConf
 from .keypath import reference_key
-from .exceptions import (JSONClassRedefinitionException,
+from .excs import (JSONClassRedefinitionException,
                          JSONClassTypedDictRedefinitionException,
                          JSONClassNotFoundException,
                          JSONClassTypedDictNotFoundException)

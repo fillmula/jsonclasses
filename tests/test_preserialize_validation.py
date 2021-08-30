@@ -1,5 +1,5 @@
 from unittest import TestCase
-from jsonclasses.exceptions import ValidationException
+from jsonclasses.excs import ValidationException
 from tests.classes.ps_user import (PsUserL, PsUserN, PsUserV, PsUserD, PsUserT,
                                    PsUserE, PsUserE2, PsUserE3, PsUserCV,
                                    PsUserLE, PsUserDI, PsUserDE, PsUserS,

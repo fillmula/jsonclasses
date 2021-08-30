@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Callable, cast, TYPE_CHECKING
 from inspect import signature
-from ..exceptions import ValidationException
+from ..excs import ValidationException
 from .validator import Validator
 if TYPE_CHECKING:
     from ..ctx import Ctx

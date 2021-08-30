@@ -5,7 +5,7 @@ from typing import (
 )
 from ..fdef import Fdef, Nullability
 from ..jconf import JConf
-from ..exceptions import ValidationException
+from ..excs import ValidationException
 from .type_validator import TypeValidator
 if TYPE_CHECKING:
     from ..jobject import JObject

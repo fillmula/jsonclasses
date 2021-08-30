@@ -1,6 +1,6 @@
 from __future__ import annotations
 from unittest import TestCase
-from jsonclasses.exceptions import JSONClassResetNotEnabledError
+from jsonclasses.excs import JSONClassResetNotEnabledError
 from tests.classes.resetable_score import ResetableScore
 from tests.classes.simple_article import SimpleArticle
 

@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any, Optional, TYPE_CHECKING
 from functools import reduce
-from ..exceptions import ValidationException
+from ..excs import ValidationException
 from .validator import Validator
 from .eager_validator import EagerValidator
 from .preserialize_validator import PreserializeValidator

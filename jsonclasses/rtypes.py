@@ -8,7 +8,7 @@ from typing import (
 from datetime import date, datetime
 from enum import Enum
 from re import match, split
-from .exceptions import UnresolvedTypeNameException
+from .excs import UnresolvedTypeNameException
 if TYPE_CHECKING:
     from .types import Types
     from .cgraph import CGraph

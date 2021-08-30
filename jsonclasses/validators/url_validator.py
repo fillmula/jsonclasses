@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from re import compile, match, IGNORECASE
-from ..exceptions import ValidationException
+from ..excs import ValidationException
 from .validator import Validator
 if TYPE_CHECKING:
     from ..ctx import Ctx

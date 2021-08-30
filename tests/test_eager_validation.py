@@ -1,5 +1,5 @@
 from unittest import TestCase
-from jsonclasses.exceptions import ValidationException
+from jsonclasses.excs import ValidationException
 from tests.classes.ev_user import EvUser, EvUserL, EvUserD, EvUserS
 
 

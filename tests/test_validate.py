@@ -1,6 +1,6 @@
 from __future__ import annotations
 from unittest import TestCase
-from jsonclasses.exceptions import ValidationException
+from jsonclasses.excs import ValidationException
 from tests.classes.simple_article import SimpleArticle
 from tests.classes.simple_language import SimpleLanguage
 from tests.classes.simple_project import SimpleProject

@@ -2,7 +2,7 @@ from __future__ import annotations
 from unittest import TestCase
 from typing import List, Dict, Optional
 from jsonclasses import jsonclass, types
-from jsonclasses.exceptions import ValidationException
+from jsonclasses.excs import ValidationException
 
 
 @jsonclass(cgraph='test_instanceof_22')

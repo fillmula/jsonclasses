@@ -1,7 +1,7 @@
 """module for assigning operator directly validator."""
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from ..exceptions import ValidationException
+from ..excs import ValidationException
 from .validator import Validator
 from ..fdef import Fdef
 if TYPE_CHECKING:

@@ -1,7 +1,7 @@
 """module for validator validator."""
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from ..exceptions import ValidationException
+from ..excs import ValidationException
 from ..fdef import Fdef, FieldType
 from .validator import Validator
 if TYPE_CHECKING:

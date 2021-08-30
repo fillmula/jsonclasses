@@ -1,6 +1,6 @@
 from unittest import TestCase
 from datetime import date
-from jsonclasses.exceptions import ValidationException
+from jsonclasses.excs import ValidationException
 from tests.classes.simple_book import SimpleBook
 from tests.classes.simple_deadline import SimpleDeadline
 from tests.classes.simple_article import SimpleArticle

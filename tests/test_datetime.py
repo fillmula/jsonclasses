@@ -1,7 +1,7 @@
 from __future__ import annotations
 from unittest import TestCase
 from datetime import date, datetime
-from jsonclasses.exceptions import ValidationException
+from jsonclasses.excs import ValidationException
 from tests.classes.simple_balance import SimpleBalance
 
 

@@ -21,7 +21,7 @@ from .keypath import (
     concat_keypath, initial_keypath, reference_key, single_key_args,
     compound_key_args, keypath_split
 )
-from .exceptions import (AbstractJSONClassException, ValidationException,
+from .excs import (AbstractJSONClassException, ValidationException,
                          JSONClassResetError, JSONClassResetNotEnabledError,
                          UnlinkableJSONClassException,
                          UnauthorizedActionException)
