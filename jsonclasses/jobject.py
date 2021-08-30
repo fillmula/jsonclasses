@@ -40,14 +40,13 @@ class JObject(Protocol):
         """
         ...
 
-    def tojson(self: T,
-               ignore_writeonly: Optional[bool]) -> dict[str, Any]:
+    def tojson(self: T, ignore_writeonly: Optional[bool]) -> dict[str, Any]:
         """This tojson method returns a json dict representation of the JSON
         class object.
         """
         ...
 
-    def validate(self: T, validate_all_fields: Optional[bool]) -> T:
+    def validate(self: T, all_fields: Optional[bool]) -> T:
         """This validate method validates the JSON class object. It raises if
         it's not valid.
         """

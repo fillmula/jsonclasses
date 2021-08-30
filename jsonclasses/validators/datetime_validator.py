@@ -1,10 +1,12 @@
 """module for datetime validator."""
-from typing import Any
+from __future__ import annotations
+from typing import Any, TYPE_CHECKING
 from datetime import date, datetime
 from ..fdef import FieldType
 from ..exceptions import ValidationException
 from .type_validator import TypeValidator
-from ..ctxs import TCtx, JCtx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class DatetimeValidator(TypeValidator):
@@ -15,23 +17,22 @@ class DatetimeValidator(TypeValidator):
         self.cls = datetime
         self.field_type = FieldType.DATETIME
 
-    def transform(self, context: TCtx) -> Any:
-        if context.value is None:
+    def transform(self, ctx: Ctx) -> Any:
+        if ctx.value is None:
             return None
-        elif isinstance(context.value, str):
+        elif isinstance(ctx.value, str):
             try:
-                return datetime.fromisoformat(context.value.replace('Z', ''))
+                return datetime.fromisoformat(ctx.value.replace('Z', ''))
             except ValueError:
                 raise ValidationException({
-                    context.keypath_root: 'Datetime string format error.'
-                }, context.root)
-        elif type(context.value) is date:
-            return datetime(context.value.year,
-                            context.value.month,
-                            context.value.day, 0, 0, 0)
+                    '.'.join([str(k) for k in ctx.keypathr]): 'Datetime string format error.'
+                }, ctx.root)
+        elif type(ctx.value) is date:
+            return datetime(ctx.value.year,
+                            ctx.value.month,
+                            ctx.value.day, 0, 0, 0)
         else:
-            return context.value
+            return ctx.value
 
-    def tojson(self, context: JCtx) -> Any:
-        if context.value is not None:
-            return context.value.isoformat()[:23] + 'Z'
+    def tojson(self, ctx: Ctx) -> Any:
+        return None if ctx.value is None else ctx.value.isoformat()[:23] + 'Z'

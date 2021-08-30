@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Iterable, Collection
 from inflection import underscore, camelize
 from ..fdef import FieldType
-from ..config import Config
+from ..jconf import JConf
 from .collection_type_validator import CollectionTypeValidator
 
 
@@ -24,8 +24,8 @@ class DictOfValidator(CollectionTypeValidator):
     def append_value(self, i: str, v: Any, col: dict):
         col[i] = v
 
-    def to_object_key(self, key: str, conf: Config) -> str:
+    def to_object_key(self, key: str, conf: JConf) -> str:
         return underscore(key) if conf.camelize_json_keys else key
 
-    def to_json_key(self, key: str, conf: Config) -> str:
+    def to_json_key(self, key: str, conf: JConf) -> str:
         return camelize(key, False) if conf.camelize_json_keys else key

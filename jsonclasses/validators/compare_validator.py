@@ -1,9 +1,11 @@
 """module for compare validator."""
-from typing import Callable, cast
+from __future__ import annotations
+from typing import Callable, cast, TYPE_CHECKING
 from inspect import signature
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import VCtx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class CompareValidator(Validator):
@@ -18,27 +20,25 @@ class CompareValidator(Validator):
             raise ValueError('not a valid compare callable')
         self.compare_callable = compare_callable
 
-    def validate(self, context: VCtx) -> None:
+    def validate(self, ctx: Ctx) -> None:
         from ..jobject import JObject
-        name = context.keypath_parent
-        parent = cast(JObject, context.parent)
+        name = ctx.keypathp[-1]
+        parent = cast(JObject, ctx.parent)
         if name not in parent.previous_values:
             return
         prev_value = parent.previous_values[name]
         params_len = len(signature(self.compare_callable).parameters)
         if params_len == 2:
-            result = self.compare_callable(prev_value, context.value)
+            result = self.compare_callable(prev_value, ctx.val)
         elif params_len == 3:
-            result = self.compare_callable(prev_value,
-                                           context.value,
-                                           context)
+            result = self.compare_callable(prev_value, ctx.val, ctx)
         if result is True:
             return
         if result is False:
             raise ValidationException(
-                keypath_messages={context.keypath_root: 'compare failed'},
-                root=context.root)
+                keypath_messages={'.'.join([str(k) for k in ctx.keypathr]): 'compare failed'},
+                root=ctx.root)
         if result is not None:
             raise ValidationException(
-                keypath_messages={context.keypath_root: result},
-                root=context.root)
+                keypath_messages={'.'.join([str(k) for k in ctx.keypathr]): result},
+                root=ctx.root)

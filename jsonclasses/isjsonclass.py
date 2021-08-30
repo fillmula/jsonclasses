@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Any
 
 
-def isjsonclass(class_: type) -> bool:
+def isjsonclass(cls: Any) -> bool:
     """Check if a class is jsonclass.
 
     Args:
@@ -11,7 +11,9 @@ def isjsonclass(class_: type) -> bool:
     Returns:
         bool: True if it's a jsonclass, otherwise False.
     """
-    return hasattr(class_, '__is_jsonclass__')
+    if not isinstance(cls, type):
+        return False
+    return hasattr(cls, '__is_jsonclass__')
 
 
 def isjsonobject(object: Any) -> bool:

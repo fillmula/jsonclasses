@@ -1,13 +1,13 @@
 """module for tocap validator."""
-from typing import Any
+from __future__ import annotations
+from typing import Any, TYPE_CHECKING
 from .validator import Validator
-from ..ctxs import TCtx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class ToCapValidator(Validator):
     """capitalize string"""
 
-    def transform(self, context: TCtx) -> Any:
-        if context.value is None:
-            return None
-        return context.value.capitalize()
+    def transform(self, ctx: Ctx) -> Any:
+        return None if ctx.value is None else ctx.value.capitalize()

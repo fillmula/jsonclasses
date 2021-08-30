@@ -1,15 +1,14 @@
 """module for trim validator."""
-from typing import Any
+from __future__ import annotations
+from typing import Any, TYPE_CHECKING
 from .validator import Validator
-from ..ctxs import TCtx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class TrimValidator(Validator):
     """Trim validator trims string values."""
 
-    def transform(self, context: TCtx) -> Any:
-        if context.value is None:
-            return None
-        if not isinstance(context.value, str):
-            return context.value
-        return context.value.strip()
+    def transform(self, ctx: Ctx) -> Any:
+        return None if ctx.value is None else ctx.value.strip()
+

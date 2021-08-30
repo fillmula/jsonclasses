@@ -1,7 +1,10 @@
 """module for required validator."""
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import VCtx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class PresentWithValidator(Validator):
@@ -14,17 +17,18 @@ class PresentWithValidator(Validator):
     def __init__(self, referring_key: str) -> None:
         self.referring_key = referring_key
 
-    def validate(self, context: VCtx) -> None:
-        if context.value is not None:
+    def validate(self, ctx: Ctx) -> None:
+        if ctx.value is not None:
             return
         try:
-            referred_value = getattr(context.owner, self.referring_key)
+            referred_value = getattr(ctx.owner, self.referring_key)
         except AttributeError:
             raise ValueError(f'Unexist referring key \'{self.referring_key}\' '
                              'passed to present with validator.')
-        if referred_value is not None and context.value is None:
+        if referred_value is not None and ctx.value is None:
+            kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {context.keypath_root: (f'Value at \'{context.keypath_root}\''
+                {kp: (f'Value at \'{kp}\''
                                         ' should be present since it\'s '
                                         'referring value is presented.')},
-                context.root)
+                ctx.root)

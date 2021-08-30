@@ -1,9 +1,11 @@
 """module for operator validator."""
-from typing import Callable
+from __future__ import annotations
+from typing import Callable, TYPE_CHECKING
 from inspect import signature
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import VCtx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class OpValidator(Validator):
@@ -17,30 +19,30 @@ class OpValidator(Validator):
             raise ValueError('not a valid op validator')
         self.op_callable = op_callable
 
-    def validate(self, context: VCtx) -> None:
-        if context.operator is None:
+    def validate(self, ctx: Ctx) -> None:
+        if ctx.operator is None:
             raise ValidationException(
-                {context.keypath_root: 'operator not present'},
-                context.root)
+                {'.'.join([str(k) for k in ctx.keypathr]): 'operator not present'},
+                ctx.root)
         params_len = len(signature(self.op_callable).parameters)
         if params_len == 1:
-            result = self.op_callable(context.operator)
+            result = self.op_callable(ctx.operator)
         elif params_len == 2:
-            result = self.op_callable(context.operator, context.owner)
+            result = self.op_callable(ctx.operator, ctx.owner)
         elif params_len == 3:
-            result = self.op_callable(context.operator, context.owner, context.value)
+            result = self.op_callable(ctx.operator, ctx.owner, ctx.value)
         elif params_len == 4:
-            result = self.op_callable(context.operator, context.owner, context.value, context)
+            result = self.op_callable(ctx.operator, ctx.owner, ctx.value, ctx)
         if result is None:
             return
         if result is True:
             return
         if result is False:
             raise ValidationException(
-                keypath_messages={context.keypath_root: 'unauthorized operation'},
-                root=context.root)
+                keypath_messages={'.'.join([str(k) for k in ctx.keypathr]): 'unauthorized operation'},
+                root=ctx.root)
         if isinstance(result, str):
             raise ValidationException(
-                keypath_messages={context.keypath_root: result},
-                root=context.root)
+                keypath_messages={'.'.join([str(k) for k in ctx.keypathr]): result},
+                root=ctx.root)
         raise ValueError('invalid validator')

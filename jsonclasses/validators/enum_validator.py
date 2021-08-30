@@ -1,84 +1,86 @@
 """module for enum validator."""
-from typing import Any, Union
+from __future__ import annotations
+from typing import Any, Union, TYPE_CHECKING
+from enum import Enum
 from ..fdef import (FieldType, Fdef, EnumInput,
                                 EnumOutput)
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import TCtx, JCtx, VCtx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class EnumValidator(Validator):
     """Enum validator validates value against provided enum type."""
 
-    def __init__(self, enum_or_name: Union[type, str]):
+    def __init__(self, enum_or_name: Union[type[Enum], str]):
         super().__init__()
         self.enum_or_name = enum_or_name
-        self.field_type = FieldType.ENUM
 
     def define(self, fdef: Fdef) -> None:
         fdef._field_type = FieldType.ENUM
-        fdef._enum_class = self.enum_or_name
+        fdef._raw_enum_class = self.enum_or_name
         if fdef.enum_input is None:
             fdef._enum_input = EnumInput.NAME
         if fdef.enum_output is None:
             fdef._enum_output = EnumOutput.NAME
         return
 
-    def transform(self, context: TCtx) -> Any:
-        if context.value is None:
+    def transform(self, ctx: Ctx) -> Any:
+        if ctx.value is None:
             return None
         if isinstance(self.enum_or_name, str):
-            config = context.config_owner
-            enum_class = config.cgraph.fetch_enum(self.enum_or_name)
+            jconf = ctx.cdefowner.jconf
+            enum_class = jconf.cgraph.fetch_enum(self.enum_or_name)
         else:
             enum_class = self.enum_or_name
-        if isinstance(context.value, enum_class):
-            return context.value
-        enum_input = context.fdef.enum_input
+        if isinstance(ctx.value, enum_class):
+            return ctx.value
+        enum_input = ctx.fdef.enum_input
         if enum_input.__contains__(EnumInput.VALUE):
             try:
-                return enum_class(context.value)
+                return enum_class(ctx.value)
             except ValueError:
                 pass
-        elif isinstance(context.value, str):
+        elif isinstance(ctx.value, str):
             if enum_input.__contains__(EnumInput.NAME):
                 try:
-                    return enum_class[context.value]
+                    return enum_class[ctx.value]
                 except KeyError:
                     pass
             if enum_input.__contains__(EnumInput.LOWERCASE_NAME):
                 try:
-                    return enum_class[context.value.upper()]
+                    return enum_class[ctx.value.upper()]
                 except KeyError:
                     pass
 
             raise ValidationException({
-                context.keypath_root: 'unknown enum value'
-            }, context.root)
+                '.'.join([str(k) for k in ctx.keypathr]): 'unknown enum value'
+            }, ctx.root)
         else:
             raise ValidationException({
-                context.keypath_root: 'unknown enum value'
-            }, context.root)
+                '.'.join([str(k) for k in ctx.keypathr]): 'unknown enum value'
+            }, ctx.root)
 
-    def validate(self, context: VCtx) -> None:
-        if context.value is None:
+    def validate(self, ctx: Ctx) -> None:
+        if ctx.value is None:
             return None
         if isinstance(self.enum_or_name, str):
-            config = context.config_owner
-            enum_class = config.cgraph.fetch_enum(self.enum_or_name)
+            jconf = ctx.cdefowner.jconf
+            enum_class = jconf.cgraph.fetch_enum(self.enum_or_name)
         else:
             enum_class = self.enum_or_name
-        if not isinstance(context.value, enum_class):
+        if not isinstance(ctx.value, enum_class):
             raise ValidationException({
-                context.keypath_root: 'invalid enum value'
-            }, context.root)
+                '.'.join([str(k) for k in ctx.keypathr]): 'invalid enum value'
+            }, ctx.root)
 
-    def tojson(self, context: JCtx) -> Any:
-        if context.value is None:
+    def tojson(self, ctx: Ctx) -> Any:
+        if ctx.value is None:
             return None
-        if context.fdef.enum_output == EnumOutput.VALUE:
-            return context.value.value
-        elif context.fdef.enum_output == EnumOutput.NAME:
-            return context.value.name
-        elif context.fdef.enum_output == EnumOutput.LOWERCASE_NAME:
-            return context.value.name.lower()
+        if ctx.fdef.enum_output == EnumOutput.VALUE:
+            return ctx.value.value
+        elif ctx.fdef.enum_output == EnumOutput.NAME:
+            return ctx.value.name
+        elif ctx.fdef.enum_output == EnumOutput.LOWERCASE_NAME:
+            return ctx.value.name.lower()

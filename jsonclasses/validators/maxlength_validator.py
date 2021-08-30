@@ -1,7 +1,10 @@
 """module for maxlength validator."""
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import VCtx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class MaxlengthValidator(Validator):
@@ -10,11 +13,12 @@ class MaxlengthValidator(Validator):
     def __init__(self, maxlength: int) -> None:
         self.maxlength = maxlength
 
-    def validate(self, context: VCtx) -> None:
-        if context.value is None:
+    def validate(self, ctx: Ctx) -> None:
+        if ctx.value is None:
             return
-        if len(context.value) > self.maxlength:
+        if len(ctx.value) > self.maxlength:
+            kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {context.keypath_root: f'Length of value \'{context.value}\' at \'{context.keypath_root}\' should not be greater than {self.maxlength}.'},
-                context.root
+                {kp: f'Length of value \'{ctx.value}\' at \'{kp}\' should not be greater than {self.maxlength}.'},
+                ctx.root
             )

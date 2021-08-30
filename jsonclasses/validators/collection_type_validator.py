@@ -1,16 +1,17 @@
 """module for listof validator."""
 from __future__ import annotations
-from typing import Any, Collection, Iterable, TypeVar, Union, cast, TYPE_CHECKING
+from typing import (
+    Any, Collection, Iterable, TypeVar, Union, TYPE_CHECKING
+)
 from ..fdef import Fdef, Nullability
-from ..config import Config
+from ..jconf import JConf
 from ..exceptions import ValidationException
 from .type_validator import TypeValidator
-from ..keypath import concat_keypath
-from ..rtypes import rtypes
-from ..ctxs import VCtx, TCtx, JCtx
 if TYPE_CHECKING:
     from ..jobject import JObject
     from ..types import Types
+    from ..ctx import Ctx
+
 
 T = TypeVar('T', bound=Collection)
 
@@ -27,16 +28,6 @@ class CollectionTypeValidator(TypeValidator):
         super().define(fdef)
         fdef._raw_item_types = self.raw_item_types
 
-    def item_types(self, owner_cls: type[JObject]) -> Types:
-        if hasattr(self, '_item_types'):
-            return getattr(self, '_item_types')
-        else:
-            itypes = rtypes(self.raw_item_types, owner_cls)
-            if itypes.fdef.item_nullability == Nullability.UNDEFINED:
-                itypes = itypes.required
-            setattr(self, '_item_types', itypes)
-            return itypes
-
     def enumerator(self, value: Collection) -> Iterable:
         raise NotImplementedError('please implement enumerator')
 
@@ -46,30 +37,25 @@ class CollectionTypeValidator(TypeValidator):
     def append_value(self, i: Union[str, int], v: Any, col: Collection):
         raise NotImplementedError('please implement append_value')
 
-    def to_object_key(self, key: T, conf: Config) -> T:
+    def to_object_key(self, key: T, conf: JConf) -> T:
         return key
 
-    def to_json_key(self, key: T, conf: Config) -> T:
+    def to_json_key(self, key: T, conf: JConf) -> T:
         return key
 
-    def validate(self, context: VCtx) -> None:
-        if context.value is None:
+    def validate(self, ctx: Ctx) -> None:
+        if ctx.value is None:
             return
-        super().validate(context)
-        types = self.item_types(context.config_owner.cls)
+        super().validate(ctx)
+        itypes = ctx.fdef.item_types
         all_fields = next(b for b in [
-            context.all_fields,
-            context.config_owner.validate_all_fields] if b is not None)
+            ctx.ctxcfg.all_fields,
+            ctx.cdefowner.jconf.validate_all_fields] if b is not None)
         keypath_messages = {}
-        for i, v in self.enumerator(context.value):
+        for i, v in self.enumerator(ctx.value):
             try:
-                types.validator.validate(context.new(
-                    value=v,
-                    keypath_root=concat_keypath(context.keypath_root, i),
-                    keypath_owner=concat_keypath(context.keypath_owner, i),
-                    keypath_parent=i,
-                    parent=context.value,
-                    fdef=types.fdef))
+                ictx = ctx.colval(v, i, itypes.fdef, ctx.val)
+                itypes.validator.validate(ictx)
             except ValidationException as exception:
                 if all_fields:
                     keypath_messages.update(exception.keypath_messages)
@@ -78,65 +64,49 @@ class CollectionTypeValidator(TypeValidator):
         if len(keypath_messages) > 0:
             raise ValidationException(
                 keypath_messages=keypath_messages,
-                root=context.root)
+                root=ctx.root)
 
-    def transform(self, context: TCtx) -> Any:
-        fdef = cast(Fdef, context.fdef)
-        if context.value is None:
-            if fdef.collection_nullability == Nullability.NONNULL:
+    def transform(self, ctx: Ctx) -> Any:
+        if ctx.value is None:
+            if ctx.fdef.collection_nullability == Nullability.NONNULL:
                 return self.empty_collection()
             else:
                 return None
-        if not isinstance(context.value, self.cls):
-            return context.value
-        itypes = self.item_types(context.config_owner.cls)
+        if not isinstance(ctx.value, self.cls):
+            return ctx.value
+        itypes = ctx.fdef.item_types
         retval = self.empty_collection()
-        for i, v in self.enumerator(context.value):
-            transformed = itypes.validator.transform(context.new(
-                value=v,
-                keypath_root=concat_keypath(context.keypath_root, i),
-                keypath_owner=concat_keypath(context.keypath_owner, i),
-                keypath_parent=i,
-                parent=context.value,
-                fdef=itypes.fdef))
+        for i, v in self.enumerator(ctx.value):
+            ictx = ctx.colval(v, i, itypes.fdef, ctx.val)
+            tsfmd = itypes.validator.transform(ictx)
             self.append_value(
-                self.to_object_key(i, context.config_owner),
-                transformed,
-                retval)
+                self.to_object_key(i, ctx.owner.cdef.jconf), tsfmd, retval)
         return retval
 
-    def tojson(self, context: JCtx) -> Any:
-        if context.value is None:
+    def tojson(self, ctx: Ctx) -> Any:
+        if ctx.value is None:
             return None
-        if not isinstance(context.value, self.cls):
-            return context.value
-        itypes = self.item_types(context.config.cls)
+        if not isinstance(ctx.value, self.cls):
+            return ctx.value
+        itypes = ctx.fdef.item_types
         retval = self.empty_collection()
-        for i, v in self.enumerator(context.value):
-            transformed = itypes.validator.tojson(context.new(value=v))
+        for i, v in self.enumerator(ctx.value):
+            ictx = ctx.colval(v, i, itypes.fdef, ctx.val)
+            tsfmd = itypes.validator.tojson(ictx)
             self.append_value(
-                self.to_json_key(i, context.config),
-                transformed,
-                retval)
+                    self.to_json_key(i, ctx.owner.cdef.jconf), tsfmd, retval)
         return retval
 
-    def serialize(self, context: TCtx) -> Any:
-        if context.value is None:
+    def serialize(self, ctx: Ctx) -> Any:
+        if ctx.value is None:
             return None
-        if not isinstance(context.value, self.cls):
-            return context.value
-        itypes = self.item_types(context.config_owner.cls)
+        if not isinstance(ctx.value, self.cls):
+            return ctx.value
+        itypes = ctx.fdef.item_types
         retval = self.empty_collection()
-        for i, v in self.enumerator(context.value):
-            transformed = itypes.validator.serialize(context.new(
-                value=v,
-                keypath_root=concat_keypath(context.keypath_root, i),
-                keypath_owner=concat_keypath(context.keypath_owner, i),
-                keypath_parent=i,
-                parent=context.value,
-                fdef=itypes.fdef))
+        for i, v in self.enumerator(ctx.value):
+            ictx = ctx.colval(v, i, itypes.fdef, ctx.val)
+            tsfmd = itypes.validator.serialize(ictx)
             self.append_value(
-                self.to_json_key(i, context.config_owner),
-                transformed,
-                retval)
+                    self.to_json_key(i, ctx.cdefowner.jconf), tsfmd, retval)
         return retval

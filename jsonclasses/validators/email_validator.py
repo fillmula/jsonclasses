@@ -1,25 +1,28 @@
 """module for email validator."""
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from re import compile, match
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import VCtx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class EmailValidator(Validator):
     """Email validator raises if value is not valid email."""
 
-    def validate(self, context: VCtx) -> None:
-        if context.value is None:
+    def validate(self, ctx: Ctx) -> None:
+        if ctx.value is None:
             return
-        value = context.value
+        value = ctx.value
         regex = compile(
             r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
         )
 
 
         if match(regex, value) is None:
-            kp = context.keypath_root
+            kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
                 {kp: f'email \'{value}\' at \'{kp}\' is not valid email.'},
-                context.root
+                ctx.root
             )

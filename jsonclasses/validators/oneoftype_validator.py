@@ -1,10 +1,12 @@
 """module for oneoftype validator."""
-from typing import Any
+from __future__ import annotations
+from typing import TYPE_CHECKING, Any
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import VCtx
 from ..rtypes import rtypes
 from ..fdef import Fdef, FieldType
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class OneOfTypeValidator(Validator):
@@ -18,17 +20,18 @@ class OneOfTypeValidator(Validator):
         fdef._field_type = FieldType.UNION
         fdef._raw_union_types = [rtypes(t) for t in self.type_list]
 
-    def validate(self, context: VCtx) -> None:
-        if context.value is None:
+    def validate(self, ctx: Ctx) -> None:
+        if ctx.value is None:
             return
-        for types in context.fdef.raw_union_types:
+        for types in ctx.fdef.raw_union_types:
             try:
-                types.validator.validate(context)
+                types.validator.validate(ctx)
                 return
             except ValidationException:
                 continue
+        kp = '.'.join([str(k) for k in ctx.keypathr])
         raise ValidationException(
-            {context.keypath_root: (f'Value \'{context.value}\' at '
-                                    f'\'{context.keypath_root}\' should be '
+            {'.'.join([str(k) for k in ctx.keypathr]): (f'Value \'{ctx.value}\' at '
+                                    f'\'{kp}\' should be '
                                     f'one of type {self.type_list}.')},
-            context.root)
+            ctx.root)

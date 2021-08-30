@@ -1,8 +1,11 @@
 """module for validator validator."""
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from ..exceptions import ValidationException
 from ..fdef import Fdef, FieldType
-from ..ctxs import VCtx
 from .validator import Validator
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class TypeValidator(Validator):
@@ -16,16 +19,17 @@ class TypeValidator(Validator):
     def define(self, fdef: Fdef) -> None:
         fdef._field_type = self.field_type
 
-    def validate(self, context: VCtx) -> None:
-        if context.value is None:
+    def validate(self, ctx: Ctx) -> None:
+        if ctx.value is None:
             return
         if self.exact_type:
-            if type(context.value) is self.cls:
+            if type(ctx.value) is self.cls:
                 return
         else:
-            if isinstance(context.value, self.cls):
+            if isinstance(ctx.value, self.cls):
                 return
+        kp = '.'.join([str(k) for k in ctx.keypathr])
         raise ValidationException(
-            {context.keypath_root: f'Value \'{context.value}\' at \'{context.keypath_root}\' should be {self.cls.__name__}.'},
-            context.root
+            {kp: f'Value \'{ctx.value}\' at \'{kp}\' should be {self.cls.__name__}.'},
+            ctx.root
         )

@@ -1,17 +1,20 @@
 """module for match validator."""
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from re import compile, match, IGNORECASE
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import VCtx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class UrlValidator(Validator):
     """URL validator raises if value is not valid url."""
 
-    def validate(self, context: VCtx) -> None:
-        if context.value is None:
+    def validate(self, ctx: Ctx) -> None:
+        if ctx.value is None:
             return
-        value = context.value
+        value = ctx.value
         # https://stackoverflow.com/questions/7160737/how-to-validate-a-url-in-python-malformed-or-not
         regex = compile(
             r'^(?:http|ftp)s?://'  # http:// or https://
@@ -21,8 +24,8 @@ class UrlValidator(Validator):
             r'(?::\d+)?'  # optional port
             r'(?:/?|[/?]\S+)$', IGNORECASE)
         if match(regex, value) is None:
-            kp = context.keypath_root
+            kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
                 {kp: f'Value \'{value}\' at \'{kp}\' is not valid url.'},
-                context.root
+                ctx.root
             )

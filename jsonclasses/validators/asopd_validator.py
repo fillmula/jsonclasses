@@ -1,9 +1,11 @@
 """module for assigning operator directly validator."""
-from typing import Any
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import VCtx
 from ..fdef import Fdef
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class AsopdValidator(Validator):
@@ -14,10 +16,10 @@ class AsopdValidator(Validator):
     def define(self, fdef: Fdef) -> None:
         fdef._requires_operator_assign = True
 
-    def validate(self, context: VCtx) -> None:
-        if context.owner.is_new or context.keypath_owner in context.owner.modified_fields:
-            if context.value is None:
+    def validate(self, ctx: Ctx) -> None:
+        if ctx.holder.is_new or ctx.keypathr[-1] in ctx.holder.modified_fields:
+            if ctx.value is None:
                 raise ValidationException(
                     keypath_messages={
-                        context.keypath_root: "no operator being assigned"},
-                    root=context.root)
+                        '.'.join([str(k) for k in ctx.keypathr]): "no operator being assigned"},
+                    root=ctx.root)

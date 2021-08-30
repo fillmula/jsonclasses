@@ -140,7 +140,7 @@ class TestSet(TestCase):
         author.set(**{'articles[0][title]': 'QQQQQ'})
         self.assertEqual(author.articles[0].title, 'QQQQQ')
 
-    
+
     def test_set_accepts_nested_keypaths_for_shape_in_shape_with_mix_indexing(self):
         user = NestShapeUser(**{'name': 'N', 'grouped': {
             'ios': {'on': True, 'off': False},

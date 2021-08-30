@@ -34,7 +34,8 @@ from .validators import (UseForValidator, BoolValidator, ChainedValidator,
                          AsopdValidator, UrlValidator, EmailValidator,
                          DigitValidator,AlphaValidator,NumericValidator,
                          AlnumValidator,ToTitleValidator,ToCapValidator,
-                         ToLowerValidator,ToUpperValidator)
+                         ToLowerValidator,ToUpperValidator,
+                         UnresolvedValidator)
 
 Str = str
 Int = int
@@ -489,6 +490,11 @@ class Types:
         """
         return Types(self, InstanceOfValidator(json_object_class))
 
+    def objof(self, jcls: Any) -> Types:
+        """Fields marked with objof are objects of given class.
+        """
+        return Types(self, InstanceOfValidator(jcls))
+
     def oneoftype(self, type_list: list[Any]) -> Types:
         """Fields marked with oneoftype accepts value from these types.
         """
@@ -777,6 +783,12 @@ class Types:
           Types: A new types chained with this marker.
         """
         return Types(self, NonnullValidator())
+
+    def _unresolved(self: Types, arg: str) -> Types:
+        """This marker marks unresolved status. This is used internally. Do not
+        use this.
+        """
+        return Types(self, UnresolvedValidator(arg))
 
 
 types = Types()

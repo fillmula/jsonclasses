@@ -1,4 +1,4 @@
-"""This module defines `Config`. Each JSON class has its own configuration. The
+"""This module defines `JConf`. Each JSON class has its own configuration. The
 configuration object tweaks the behavior of JSON classes.
 """
 from __future__ import annotations
@@ -19,13 +19,13 @@ CanRead = Callable[[JObject, Any], Union[bool, None, str]]
 
 
 @final
-class Config:
+class JConf:
     """The configuration of JSON classes. Each JSON class has its own
     configuration that each instance shares. This object tweaks the behavior of
     JSON classes.
     """
 
-    def __init__(self: Config,
+    def __init__(self: JConf,
                  cgraph: Optional[str],
                  camelize_json_keys: Optional[bool],
                  strict_input: Optional[bool],
@@ -76,7 +76,7 @@ class Config:
             can_read (Optional[Union[CanRead, list[CanRead]]]): The reading
                 guard.
         """
-        self._cls = None
+        self._cls: Optional[type[JObject]] = None
         self._cgraph = cgraph or 'default'
         self._camelize_json_keys = camelize_json_keys
         self._strict_input = strict_input
@@ -128,10 +128,10 @@ class Config:
         else:
             self._can_read = []
 
-    def __eq__(self: Config, other: Any) -> bool:
-        if not isinstance(other, Config):
+    def __eq__(self: JConf, other: Any) -> bool:
+        if not isinstance(other, JConf):
             return False
-        other_config = cast(Config, other)
+        other_config = cast(JConf, other)
         if self.cgraph != other_config.cgraph:
             return False
         if self.camelize_json_keys != other_config.camelize_json_keys:
@@ -165,20 +165,20 @@ class Config:
         return True
 
     @property
-    def cls(self: Config) -> type[JObject]:
+    def cls(self: JConf) -> type[JObject]:
         """The JSON class on which this class config is defined.
         """
-        return self._cls
+        return cast(type[JObject], self._cls)
 
     @property
-    def cgraph(self: Config) -> CGraph:
+    def cgraph(self: JConf) -> CGraph:
         """The name of the class graph on which the JSON class is defined.
         """
         from .cgraph import CGraph
         return CGraph(self._cgraph)
 
     @property
-    def camelize_json_keys(self: Config) -> bool:
+    def camelize_json_keys(self: JConf) -> bool:
         """Whether camelize keys when outputing JSON.
         """
         if self._camelize_json_keys is None:
@@ -186,7 +186,7 @@ class Config:
         return self._camelize_json_keys
 
     @property
-    def strict_input(self: Config) -> bool:
+    def strict_input(self: JConf) -> bool:
         """Whether raise errors on receiving invalid input keys.
         """
         if self._strict_input is None:
@@ -194,7 +194,7 @@ class Config:
         return self._strict_input
 
     @property
-    def key_transformer(self: Config) -> Callable[[JField], str]:
+    def key_transformer(self: JConf) -> Callable[[JField], str]:
         """The reference field local key conversion function.
         """
         if self._key_transformer is None:
@@ -202,7 +202,7 @@ class Config:
         return self._key_transformer
 
     @property
-    def validate_all_fields(self: Config) -> bool:
+    def validate_all_fields(self: JConf) -> bool:
         """The default field validating method when performing saving and
         validating.
         """
@@ -211,7 +211,7 @@ class Config:
         return self._validate_all_fields
 
     @property
-    def soft_delete(self: Config) -> bool:
+    def soft_delete(self: JConf) -> bool:
         """Whether perform soft delete on deletion.
         """
         if self._soft_delete is None:
@@ -219,7 +219,7 @@ class Config:
         return self._soft_delete
 
     @property
-    def abstract(self: Config) -> bool:
+    def abstract(self: JConf) -> bool:
         """Instance of abstract classes cannot be initialized.
         """
         if self._abstract is None:
@@ -227,7 +227,7 @@ class Config:
         return self._abstract
 
     @property
-    def reset_all_fields(self: Config) -> bool:
+    def reset_all_fields(self: JConf) -> bool:
         """Whether record all previous values of an object and enable reset
         functionality.
         """
@@ -236,43 +236,43 @@ class Config:
         return self._reset_all_fields
 
     @property
-    def on_create(self: Config) -> list[OnCreate]:
+    def on_create(self: JConf) -> list[OnCreate]:
         """The object creation callback.
         """
         return self._on_create
 
     @property
-    def on_save(self: Config) -> list[OnSave]:
+    def on_save(self: JConf) -> list[OnSave]:
         """The object saving callback.
         """
         return self._on_save
 
     @property
-    def on_delete(self: Config) -> list[OnDelete]:
+    def on_delete(self: JConf) -> list[OnDelete]:
         """The object deleting callback.
         """
         return self._on_delete
 
     @property
-    def can_create(self: Config) -> list[CanCreate]:
+    def can_create(self: JConf) -> list[CanCreate]:
         """The object creation guard.
         """
         return self._can_create
 
     @property
-    def can_update(self: Config) -> list[CanUpdate]:
+    def can_update(self: JConf) -> list[CanUpdate]:
         """The object updation guard.
         """
         return self._can_update
 
     @property
-    def can_delete(self: Config) -> list[CanDelete]:
+    def can_delete(self: JConf) -> list[CanDelete]:
         """The object deletion guard.
         """
         return self._can_delete
 
     @property
-    def can_read(self: Config) -> list[CanRead]:
+    def can_read(self: JConf) -> list[CanRead]:
         """The object reading guard.
         """
         return self._can_read

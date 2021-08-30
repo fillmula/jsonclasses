@@ -1,8 +1,10 @@
 """module for float validator."""
-from typing import Any
+from __future__ import annotations
+from typing import TYPE_CHECKING, Any
 from .type_validator import TypeValidator
 from ..fdef import FieldType
-from ..ctxs import TCtx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class FloatValidator(TypeValidator):
@@ -13,9 +15,9 @@ class FloatValidator(TypeValidator):
         self.cls = float
         self.field_type = FieldType.FLOAT
 
-    def transform(self, context: TCtx) -> Any:
-        if context.value is None:
+    def transform(self, ctx: Ctx) -> Any:
+        if ctx.value is None:
             return None
-        if type(context.value) is int:
-            return float(context.value)
-        return context.value
+        if type(ctx.value) is int:
+            return float(ctx.value)
+        return ctx.value

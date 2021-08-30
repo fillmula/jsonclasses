@@ -1,19 +1,21 @@
 """module for default validator."""
-from typing import Any
+from __future__ import annotations
+from typing import Any, TYPE_CHECKING
 from .validator import Validator
-from ..ctxs import TCtx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class DefaultValidator(Validator):
-    """Default validator assigns value a default value if value is `None`."""
+    """Default validator assigns field a default value if value is `None`."""
 
-    def __init__(self, default_value: Any) -> None:
-        self.default_value = default_value
+    def __init__(self, default: Any) -> None:
+        self.default = default
 
-    def transform(self, context: TCtx) -> Any:
-        if context.value is not None:
-            return context.value
-        if callable(self.default_value):
-            return self.default_value()
+    def transform(self, ctx: Ctx) -> Any:
+        if ctx.value is not None:
+            return ctx.value
+        if callable(self.default):
+            return self.default()
         else:
-            return self.default_value
+            return self.default

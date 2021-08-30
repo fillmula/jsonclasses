@@ -1,8 +1,10 @@
 """module for required validator."""
-from typing import Union
+from __future__ import annotations
+from typing import Union, TYPE_CHECKING
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import VCtx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class PresentWithoutValidator(Validator):
@@ -18,22 +20,21 @@ class PresentWithoutValidator(Validator):
         else:
             self.referring_keys = referring_keys
 
-    def validate(self, context: VCtx) -> None:
-        if context.value is not None:
+    def validate(self, ctx: Ctx) -> None:
+        if ctx.value is not None:
             return
         for key in self.referring_keys:
             try:
-                referred_value = getattr(context.owner, key)
+                referred_value = getattr(ctx.owner, key)
             except AttributeError:
                 raise ValueError('Unexist referring key '
                                  f'\'{key}\' '
                                  'passed to present without validator.')
             if referred_value is not None:
                 return
-        if context.value is None:
+        if ctx.value is None:
+            kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {context.keypath_root: (f'Value at \'{context.keypath_root}\''
-                                        ' should be present since it\'s '
-                                        'referring values are not '
-                                        'presented.')},
-                context.root)
+                {kp: (f'Value at \'{kp}\' should be present since it\'s '
+                      'referring values are not presented.')},
+                ctx.root)

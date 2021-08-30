@@ -1,7 +1,10 @@
 """module for oneof validator."""
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import VCtx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class OneOfValidator(Validator):
@@ -10,11 +13,11 @@ class OneOfValidator(Validator):
     def __init__(self, str_list: list[str]) -> None:
         self.str_list = str_list
 
-    def validate(self, context: VCtx) -> None:
-        if context.value is None:
+    def validate(self, ctx: Ctx) -> None:
+        if ctx.value is None:
             return None
-        if context.value not in self.str_list:
+        if ctx.value not in self.str_list:
             raise ValidationException(
-                {context.keypath_root: f'Value \'{context.value}\' at \'{context.keypath_root}\' should be one of {self.str_list}.'},
-                context.root
+                {'.'.join([str(k) for k in ctx.keypathr]): f'Value \'{ctx.value}\' at \'{kp}\' should be one of {self.str_list}.'},
+                ctx.root
             )

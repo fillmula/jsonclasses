@@ -1,9 +1,11 @@
 """module for validate validator."""
-from typing import Callable
+from __future__ import annotations
+from typing import Callable, TYPE_CHECKING
 from inspect import signature
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import VCtx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class ValidateValidator(Validator):
@@ -17,24 +19,24 @@ class ValidateValidator(Validator):
             raise ValueError('not a valid validator')
         self.validate_callable = validate_callable
 
-    def validate(self, context: VCtx) -> None:
-        if context.value is None:
+    def validate(self, ctx: Ctx) -> None:
+        if ctx.value is None:
             return
         params_len = len(signature(self.validate_callable).parameters)
         if params_len == 1:
-            result = self.validate_callable(context.value)
+            result = self.validate_callable(ctx.value)
         elif params_len == 2:
-            result = self.validate_callable(context.value, context)
+            result = self.validate_callable(ctx.value, ctx)
         if result is None:
             return
         if result is True:
             return
         if result is False:
             raise ValidationException(
-                keypath_messages={context.keypath_root: 'invalid value'},
-                root=context.root)
+                keypath_messages={'.'.join([str(k) for k in ctx.keypathr]): 'invalid value'},
+                root=ctx.root)
         if isinstance(result, str):
             raise ValidationException(
-                keypath_messages={context.keypath_root: result},
-                root=context.root)
+                keypath_messages={'.'.join([str(k) for k in ctx.keypathr]): result},
+                root=ctx.root)
         raise ValueError('invalid validator')

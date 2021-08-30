@@ -4,9 +4,7 @@ from typing import Any, Optional, Union
 from datetime import datetime
 from inspect import signature
 from .jobject import JObject
-from .types import Types
-from .rtypes import rtypes
-from .ctxs import TCtx, VCtx, JCtx
+from .ctx import Ctx, CtxCfg
 from .fdef import Fdef, FieldStorage, FieldType
 from .validators.instanceof_validator import InstanceOfValidator
 from .jfield import JField
@@ -15,10 +13,14 @@ from .mgraph import MGraph
 from .ograph import OGraph
 from .owned_dict import OwnedDict
 from .owned_list import OwnedList
-from .owned_collection_utils import (to_owned_dict, to_shape_dict,
-                                     to_owned_list,
-                                     unowned_copy_dict, unowned_copy_list)
-from .keypath import concat_keypath, initial_keypath, reference_key, single_key_args, compound_key_args,keypath_split
+from .owned_collection_utils import (
+    to_owned_dict, to_shape_dict, to_owned_list, unowned_copy_dict,
+    unowned_copy_list
+)
+from .keypath import (
+    concat_keypath, initial_keypath, reference_key, single_key_args,
+    compound_key_args, keypath_split
+)
 from .exceptions import (AbstractJSONClassException, ValidationException,
                          JSONClassResetError, JSONClassResetNotEnabledError,
                          UnlinkableJSONClassException,
@@ -31,13 +33,13 @@ def __init__(self: JObject, **kwargs: dict[str, Any]) -> None:
     validation and transformation are applied during the initialization
     process.
     """
-    if self.__class__.cdef.config.abstract:
+    if self.__class__.cdef.jconf.abstract:
         raise AbstractJSONClassException(self.__class__)
     self._set_initial_status()
     for field in self.__class__.cdef.fields:
         setattr(self, field.name, None)
         if field.fdef.field_storage == FieldStorage.LOCAL_KEY:
-            transformer = self.__class__.cdef.config.key_transformer
+            transformer = self.__class__.cdef.jconf.key_transformer
             local_key = transformer(field)
             setattr(self, local_key, None)
             self._local_keys.add(local_key)
@@ -67,27 +69,9 @@ def jsonobject_set(self: JObject, **kwargs: dict[str, Any]) -> JObject:
 def _set(self: JObject,
          kwargs: dict[str, Any], fill_blanks: bool = False) -> None:
     """Set values of a jsonclass object internally."""
-    validator = InstanceOfValidator(self.__class__)
-    config = self.__class__.cdef.config
-    operator = (getattr(self, '_operator')
-                if hasattr(self, '_operator') else None)
-    context = TCtx(
-        value=kwargs,
-        keypath_root='',
-        root=self,
-        config_root=config,
-        keypath_owner='',
-        owner=self,
-        config_owner=config,
-        keypath_parent='',
-        parent=self,
-        fdef=None,
-        operator=operator,
-        all_fields=True,
-        dest=self,
-        fill_dest_blanks=fill_blanks,
-        mgraph=MGraph())
-    validator.transform(context)
+    ctxcfg = CtxCfg(fill_dest_blanks=fill_blanks, all_fields=False)
+    ctx = Ctx.rootctx(self, ctxcfg, kwargs)
+    InstanceOfValidator(self.__class__).transform(ctx)
 
 
 def _keypath_set(self: JObject, kwargs: dict[str, Any]) -> None:
@@ -150,7 +134,7 @@ def update(self: JObject, **kwargs: dict[str, Any]) -> JObject:
     """
     self._ensure_not_outdated()
     unallowed_keys = (set(kwargs.keys())
-                      - set(self.__class__.cdef._update_names))
+                      - set(self.__class__.cdef.update_names))
     unallowed_keys_length = len(unallowed_keys)
     if unallowed_keys_length > 0:
         keys_list = "', '".join(list(unallowed_keys))
@@ -161,8 +145,7 @@ def update(self: JObject, **kwargs: dict[str, Any]) -> JObject:
     return self
 
 
-def tojson(self: JObject,
-           ignore_writeonly: bool = False) -> dict[str, Any]:
+def tojson(self: JObject, ignore_writeonly: bool = False) -> dict[str, Any]:
     """Convert this JSON Class object to JSON dict.
 
     Args:
@@ -174,17 +157,12 @@ def tojson(self: JObject,
     """
     self._ensure_not_outdated()
     self._can_read_check()
-    validator = InstanceOfValidator(self.__class__)
-    config = self.__class__.cdef.config
-    context = JCtx(value=self,
-                            config=config,
-                            fdef=None,
-                            ignore_writeonly=ignore_writeonly)
-    return validator.tojson(context)
+    ctxcfg = CtxCfg(ignore_writeonly=ignore_writeonly)
+    ctx = Ctx.rootctx(self, ctxcfg)
+    return InstanceOfValidator(self.__class__).tojson(ctx)
 
 
-def validate(self: JObject,
-             validate_all_fields: Optional[bool] = None) -> JObject:
+def validate(self: JObject, all_fields: Optional[bool] = None) -> JObject:
     """Validate the jsonclass object's validity. Raises ValidationException
     on validation failed.
 
@@ -197,24 +175,9 @@ def validate(self: JObject,
         None: upon successful validation, returns nothing.
     """
     self._ensure_not_outdated()
-    config = self.__class__.cdef.config
-    operator = (getattr(self, '_operator')
-                if hasattr(self, '_operator') else None)
-    context = VCtx(
-        value=self,
-        keypath_root='',
-        root=self,
-        config_root=config,
-        keypath_owner='',
-        owner=self,
-        config_owner=config,
-        keypath_parent='',
-        parent=self,
-        fdef=None,
-        operator=operator,
-        all_fields=validate_all_fields,
-        mgraph=MGraph())
-    InstanceOfValidator(self.__class__).validate(context)
+    ctxcfg = CtxCfg(all_fields=all_fields)
+    ctx = Ctx.rootctx(self, ctxcfg)
+    InstanceOfValidator(self.__class__).validate(ctx)
     return self
 
 
@@ -227,7 +190,7 @@ def is_valid(self: JObject) -> bool:
         bool: the validity of the object.
     """
     try:
-        self.validate(validate_all_fields=False)
+        self.validate(all_fields=False)
     except ValidationException:
         return False
     return True
@@ -340,7 +303,7 @@ def unlinked_objects(self: JObject) -> dict[str, list[JObject]]:
 def reset(self: JObject) -> None:
     """Reset this object to it's unmodified status.
     """
-    if not self.__class__.cdef.config.reset_all_fields:
+    if not self.__class__.cdef.jconf.reset_all_fields:
         raise JSONClassResetNotEnabledError()
     if self.is_new:
         raise JSONClassResetError()
@@ -363,7 +326,7 @@ def save(self: JObject,
     else:
         self._run_on_save_callbacks()
     if not skip_validation:
-        self.validate(validate_all_fields=validate_all_fields)
+        self.validate(all_fields=validate_all_fields)
     self._set_on_save()
     self._database_write()
     for _, lst in self.unlinked_objects.items():
@@ -494,23 +457,8 @@ def _set_on_save(self: JObject) -> None:
     get setonsave called and saved.
     """
     validator = InstanceOfValidator(self.__class__)
-    config = self.__class__.cdef.config
-    operator = (getattr(self, '_operator')
-                if hasattr(self, '_operator') else None)
-    context = TCtx(
-        value=self,
-        keypath_root='',
-        root=self,
-        config_root=config,
-        keypath_owner='',
-        owner=self,
-        config_owner=config,
-        keypath_parent='',
-        parent=self,
-        fdef=None,
-        operator=operator,
-        mgraph=MGraph())
-    validator.serialize(context)
+    ctx = Ctx.rootctx(self, CtxCfg())
+    validator.serialize(ctx)
 
 
 def _clear_temp_fields(self: JObject) -> None:
@@ -533,7 +481,7 @@ def _orm_restore(self: JObject) -> None:
 
 def _can_create_or_update_check(self: JObject) -> None:
     if self.is_new:
-        for callback in self.__class__.cdef.config.can_create:
+        for callback in self.__class__.cdef.jconf.can_create:
             operator = getattr(self, '_operator')
             if operator is None:
                 raise UnauthorizedActionException('no operator')
@@ -544,7 +492,7 @@ def _can_create_or_update_check(self: JObject) -> None:
                 else:
                     raise UnauthorizedActionException('cannot create')
     else:
-        for callback in self.__class__.cdef.config.can_update:
+        for callback in self.__class__.cdef.jconf.can_update:
             operator = getattr(self, '_operator')
             if operator is None:
                 raise UnauthorizedActionException('no operator')
@@ -557,7 +505,7 @@ def _can_create_or_update_check(self: JObject) -> None:
 
 
 def _can_delete_check(self: JObject) -> None:
-    for callback in self.__class__.cdef.config.can_delete:
+    for callback in self.__class__.cdef.jconf.can_delete:
         operator = getattr(self, '_operator')
         if operator is None:
             raise UnauthorizedActionException('no operator')
@@ -570,7 +518,7 @@ def _can_delete_check(self: JObject) -> None:
 
 
 def _can_read_check(self: JObject) -> None:
-    for callback in self.__class__.cdef.config.can_read:
+    for callback in self.__class__.cdef.jconf.can_read:
         operator = getattr(self, '_operator')
         if operator is None:
             raise UnauthorizedActionException('no operator')
@@ -583,7 +531,7 @@ def _can_read_check(self: JObject) -> None:
 
 
 def _run_on_create_callbacks(self: JObject) -> None:
-    for callback in self.__class__.cdef.config.on_create:
+    for callback in self.__class__.cdef.jconf.on_create:
         params_len = len(signature(callback).parameters)
         if params_len == 1:
             callback(self)
@@ -592,7 +540,7 @@ def _run_on_create_callbacks(self: JObject) -> None:
 
 
 def _run_on_save_callbacks(self: JObject) -> None:
-    for callback in self.__class__.cdef.config.on_save:
+    for callback in self.__class__.cdef.jconf.on_save:
         params_len = len(signature(callback).parameters)
         if params_len == 1:
             callback(self)
@@ -601,7 +549,7 @@ def _run_on_save_callbacks(self: JObject) -> None:
 
 
 def _run_on_delete_callbacks(self: JObject) -> None:
-    for callback in self.__class__.cdef.config.on_delete:
+    for callback in self.__class__.cdef.jconf.on_delete:
         params_len = len(signature(callback).parameters)
         if params_len == 1:
             callback(self)
@@ -688,7 +636,7 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
     if not self.is_new:
         setattr(self, '_is_modified', True)
         self._modified_fields.add(name)
-        if self.__class__.cdef.config.reset_all_fields or \
+        if self.__class__.cdef.jconf.reset_all_fields or \
                 field.fdef.has_reset_validator:
             if name not in self.previous_values:
                 self.previous_values[name] = getattr(self, name)
@@ -706,10 +654,10 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
         self.__original_setattr__(name, value)
         if field.fdef.field_storage == FieldStorage.LOCAL_KEY:
             if value is None:
-                transformer = self.__class__.cdef.config.key_transformer
+                transformer = self.__class__.cdef.jconf.key_transformer
                 self.__original_setattr__(transformer(field), None)
             if isjsonobject(value):
-                transformer = self.__class__.cdef.config.key_transformer
+                transformer = self.__class__.cdef.jconf.key_transformer
                 self.__original_setattr__(transformer(field), value._id)
         self.__link_field__(field, value)
     else:
@@ -720,7 +668,7 @@ def __odict_will_change__(self: JObject, odict: OwnedDict) -> None:
     # record previous value
     name = initial_keypath(odict.keypath)
     field = self.__class__.cdef.field_named(name)
-    if self.__class__.cdef.config.reset_all_fields or \
+    if self.__class__.cdef.jconf.reset_all_fields or \
             field.fdef.has_reset_validator:
         if field.fdef.has_linked:
             return
@@ -757,7 +705,7 @@ def __olist_will_change__(self, olist: OwnedList) -> None:
     # record previous value
     name = initial_keypath(olist.keypath)
     field = self.__class__.cdef.field_named(name)
-    if self.__class__.cdef.config.reset_all_fields or \
+    if self.__class__.cdef.jconf.reset_all_fields or \
             field.fdef.has_reset_validator:
         if field.fdef.has_linked:
             return
@@ -770,10 +718,7 @@ def __olist_will_change__(self, olist: OwnedList) -> None:
                     getattr(self, name))
 
 
-def __olist_add__(self: JObject,
-                  olist: OwnedList,
-                  idx: int,
-                  val: Any) -> None:
+def __olist_add__(self: JObject, olist: OwnedList, idx: int, val: Any) -> None:
     cdef = self.__class__.cdef
     try:
         field = cdef.field_named(olist.keypath)
@@ -814,9 +759,7 @@ def __olist_sor__(self, olist: OwnedList) -> None:
         self._modified_fields.add(olist.keypath)
 
 
-def __unlink_field__(self: JObject,
-                     field: JField,
-                     value: Any) -> None:
+def __unlink_field__(self: JObject, field: JField, value: Any) -> None:
     items: list[JObject] = []
     if field.fdef.field_type == FieldType.INSTANCE:
         if not isjsonobject(value):
@@ -836,7 +779,7 @@ def __unlink_field__(self: JObject,
                 item.__original_setattr__(other_field.name, None)
                 of = other_field
                 if of.fdef.field_storage == FieldStorage.LOCAL_KEY:
-                    tsfm = item.__class__.cdef.config.key_transformer
+                    tsfm = item.__class__.cdef.jconf.key_transformer
                     item.__original_setattr__(tsfm(other_field), None)
                     item._modified_fields.add(other_field.name)
                 item._add_unlinked_object(other_field.name, self)
@@ -848,9 +791,7 @@ def __unlink_field__(self: JObject,
                     item._add_unlinked_object(other_field.name, self)
 
 
-def __link_field__(self: JObject,
-                   field: JField,
-                   value: Any) -> None:
+def __link_field__(self: JObject, field: JField, value: Any) -> None:
     items: list[JObject] = []
     if field.fdef.field_type == FieldType.INSTANCE:
         if not isjsonobject(value):

@@ -1,8 +1,10 @@
 """module for length validator."""
-from typing import Optional
+from __future__ import annotations
+from typing import Optional, TYPE_CHECKING
 from ..exceptions import ValidationException
 from .validator import Validator
-from ..ctxs import VCtx
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class LengthValidator(Validator):
@@ -12,11 +14,11 @@ class LengthValidator(Validator):
         self.minlength = minlength
         self.maxlength = maxlength if maxlength is not None else minlength
 
-    def validate(self, context: VCtx) -> None:
-        if context.value is None:
+    def validate(self, ctx: Ctx) -> None:
+        if ctx.value is None:
             return
-        value = context.value
-        kp = context.keypath_root
+        value = ctx.value
+        kp = '.'.join([str(k) for k in ctx.keypathr])
         if len(value) > self.maxlength or len(value) < self.minlength:
             if self.minlength != self.maxlength:
                 message = f'Length of value \'{value}\' at \'{kp}\' should not be greater than {self.maxlength} or less than {self.minlength}.'
@@ -24,5 +26,5 @@ class LengthValidator(Validator):
                 message = f'Length of value \'{value}\' at \'{kp}\' should be {self.minlength}.'
             raise ValidationException(
                 {kp: message},
-                context.root
+                ctx.root
             )
