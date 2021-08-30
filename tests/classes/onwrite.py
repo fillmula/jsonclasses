@@ -21,7 +21,7 @@ def callbackd(value: int) -> None:
 
 def callbackt(value: int, context: Any) -> None:
     global val
-    val = val + value + context.value
+    val = val + value + context.val
 
 
 @jsonclass

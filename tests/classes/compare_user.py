@@ -36,7 +36,7 @@ def callbacks(old: int, new: int, context: VCtx) -> None:
     val = val + 1
     oldval = old
     newval = new
-    if context.value == new + old:
+    if context.val == new + old:
         return None
     else:
         return 'invalid'

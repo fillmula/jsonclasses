@@ -19,7 +19,7 @@ class ValidPasswordMessage:
 @jsonclass
 class CValidPassword:
     name: Optional[str]
-    password: str = types.str.validate(lambda p, c: c.value == p).required
+    password: str = types.str.validate(lambda p, c: c.val == p).required
 
 
 @jsonclass

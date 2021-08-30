@@ -10,4 +10,4 @@ class TransformName:
 
 @jsonclass
 class CTransformName:
-    name: Optional[str] = types.str.transform(lambda s, c: s + c.value)
+    name: Optional[str] = types.str.transform(lambda s, c: s + c.val)
