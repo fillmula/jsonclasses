@@ -20,9 +20,9 @@ class EnumValidator(Validator):
     def define(self, fdef: Fdef) -> None:
         fdef._field_type = FieldType.ENUM
         fdef._raw_enum_class = self.enum_or_name
-        if fdef.enum_input is None:
+        if fdef._enum_input is None:
             fdef._enum_input = EnumInput.NAME
-        if fdef.enum_output is None:
+        if fdef._enum_output is None:
             fdef._enum_output = EnumOutput.NAME
         return
 
