@@ -5,7 +5,6 @@ from enum import Enum, Flag
 from .rtypes import rnamedtypes, rtypes
 from .isjsonclass import isjsonclass
 from .jobject import JObject
-from .exceptions import UnresolvedTypeNameException
 if TYPE_CHECKING:
     from .types import Types
     from .cdef import Cdef
@@ -123,7 +122,8 @@ class Fdef:
         self._enum_output: Optional[EnumOutput] = None
         self._raw_union_types: Optional[list[Types]] = None
         self._raw_item_types: Optional[Any] = None
-        self._raw_shape_types: Optional[dict[str, Any], str] = None
+        self._raw_shape_types: Optional[Union[dict[str, Any], str]] = None
+        self._shape_parent: Optional[Fdef] = None
         self._raw_inst_types: Optional[Union[str, type[JObject]]] = None
         self._resolved_union_types: Optional[list[Types]] = None
         self._resolved_item_types: Optional[Types] = None
@@ -279,6 +279,8 @@ class Fdef:
             self._resolved_item_types,
             self.cdef.jconf.cgraph,
             self.cdef.name)
+        if self._resolved_item_types.fdef.item_nullability == Nullability.UNDEFINED:
+            self._resolved_item_types = self._resolved_item_types.required
         return self._resolved_item_types
 
     @property
@@ -307,8 +309,15 @@ class Fdef:
         for k, t in cast(dict[str, Types], self._resolved_shape_types).items():
             t.fdef._cdef = self.cdef
             cgraph = self.cdef.jconf.cgraph
-            rnamedshapetypes[k] = rnamedtypes(t, cgraph, self.cdef.name)
+            resolved = rnamedtypes(t, cgraph, self.cdef.name)
+            if resolved.fdef.field_type == FieldType.SHAPE:
+                resolved.fdef.shape_types # this has resolve side-effect
+            rnamedshapetypes[k] = resolved
+        self._resolved_shape_types = rnamedshapetypes
         return self._resolved_shape_types
+
+    def _resolved_shape_children_types_if_needed(self: Fdef) -> None:
+        pass
 
     @property
     def raw_inst_types(self: Fdef) -> Optional[Union[str, type[JObject]]]:
@@ -501,8 +510,10 @@ class Fdef:
             self._unresolved_name = None
 
     def _resolve(self: Fdef) -> None:
-        self.cdef._resolve_ref_types_if_needed()
-
+        if self._shape_parent:
+            self._shape_parent._resolved_shape_children_types_if_needed()
+        else:
+            self.cdef._resolve_ref_types_if_needed()
 
     def __str__(self):
         return '<Fdef: ' + str(vars(self)) + '>'
