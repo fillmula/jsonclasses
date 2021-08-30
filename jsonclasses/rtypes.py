@@ -248,8 +248,7 @@ def rnamedtypes(types: Types, cgraph: CGraph, cname: str) -> Types:
         types = types.instanceof(cdef.cls)
     elif cgraph.has_dict(name):
         dictcls = cgraph.fetch_dict(name)
-        types = types.shape(dictcls)
-        # self._collection_nullability = Nullability.NONNULL
+        types = types.nonnull.shape(dictcls)
     elif cgraph.has_enum(name):
         enumcls = cgraph.fetch_enum(name)
         types = types.enum(enumcls)
