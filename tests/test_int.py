@@ -16,7 +16,7 @@ class TestInt(TestCase):
             order.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
         self.assertEqual(context.exception.keypath_messages['quantity'],
-                         "Value '10.5' at 'quantity' should be int.")
+                         "value is not int")
 
     def test_int_is_int_when_tojson(self):
         order = SimpleOrder(quantity=5)

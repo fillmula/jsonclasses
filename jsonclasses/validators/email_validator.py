@@ -23,6 +23,6 @@ class EmailValidator(Validator):
         if match(regex, value) is None:
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {kp: f'email \'{value}\' at \'{kp}\' is not valid email.'},
+                {kp: f'value is not email string'},
                 ctx.root
             )

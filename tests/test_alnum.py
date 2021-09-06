@@ -24,7 +24,7 @@ class TestAlnum(TestCase):
             analysis.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
         self.assertEqual(context.exception.keypath_messages['product_code'],
-                         "product_code 'aa1.12' at 'product_code' is not made up of alpha and number.")
+                         "value is not alnum str")
 
 
     def test_alnum_raises_if_value_contains_special_character(self):
@@ -33,4 +33,4 @@ class TestAlnum(TestCase):
             analysis.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
         self.assertEqual(context.exception.keypath_messages['product_code'],
-                         "product_code '12a!' at 'product_code' is not made up of alpha and number.")
+                         "value is not alnum str")

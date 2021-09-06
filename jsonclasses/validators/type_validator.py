@@ -30,6 +30,6 @@ class TypeValidator(Validator):
                 return
         kp = '.'.join([str(k) for k in ctx.keypathr])
         raise ValidationException(
-            {kp: f'Value \'{ctx.val}\' at \'{kp}\' should be {self.cls.__name__}.'},
+            {kp: f'value is not {self.cls.__name__}'},
             ctx.root
         )

@@ -138,7 +138,7 @@ class TestValidate(TestCase):
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 1)
         self.assertEqual(exception.keypath_messages['email.auto_send'],
-                         "Value 'A' at 'email.auto_send' should be bool.")
+                         "value is not bool")
 
     def test_validate_validates_all_fields_inside_shape_if_required(self):
         setting = SimpleSetting(
@@ -149,10 +149,9 @@ class TestValidate(TestCase):
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 2)
         self.assertEqual(exception.keypath_messages['email.auto_send'],
-                         "Value 'A' at 'email.auto_send' should be bool.")
+                         "value is not bool")
         self.assertEqual(exception.keypath_messages['email.receive_promotion'],
-                         "Value 'B' at 'email.receive_promotion' should be "
-                         "bool.")
+                         "value is not bool")
 
     def test_validate_validates_with_class_config_by_default(self):
         author = Author(name='A', articles=[{}, {}])

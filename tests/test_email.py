@@ -32,7 +32,7 @@ class TestEmail(TestCase):
             analysis.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
         self.assertEqual(context.exception.keypath_messages['email'],
-                         "email '@qq.com' at 'email' is not valid email.")
+                         "value is not email string")
 
     def test_email_raises_if_email_contains_special_charaters(self):
         analysis = EmailUser(username='hello', email='!a@qq.com')
@@ -40,7 +40,7 @@ class TestEmail(TestCase):
             analysis.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
         self.assertEqual(context.exception.keypath_messages['email'],
-                         "email '!a@qq.com' at 'email' is not valid email.")
+                         "value is not email string")
 
     def test_email_raises_exception_if_email_contains_hashtag(self):
         analysis = EmailUser(username='hello', email='#@qq.com')
@@ -48,4 +48,4 @@ class TestEmail(TestCase):
             analysis.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
         self.assertEqual(context.exception.keypath_messages['email'],
-                         "email '#@qq.com' at 'email' is not valid email.")
+                         "value is not email string")

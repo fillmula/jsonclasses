@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
 
 class AlphaValidator(Validator):
-    """Alpha validator raises if value is not a alpha."""
+    """Alpha validator raises if value is not alpha string."""
 
     def validate(self, ctx: Ctx) -> None:
         if ctx.val is None:
@@ -17,6 +17,6 @@ class AlphaValidator(Validator):
         if not value.isalpha():
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {kp: f'product_name \'{value}\' at \'{kp}\' is not a alpha.'},
+                {kp: f'value is not alpha str'},
                 ctx.root
             )

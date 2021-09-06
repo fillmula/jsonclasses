@@ -17,7 +17,7 @@ class TestStr(TestCase):
             article.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
         self.assertEqual(context.exception.keypath_messages['title'],
-                         "Value '66' at 'title' should be str.")
+                         "value is not str")
 
     def test_str_is_str_when_tojson(self):
         article = SimpleArticle(title='Lak Lak')

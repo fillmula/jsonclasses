@@ -32,7 +32,7 @@ class TestDatetime(TestCase):
             balance.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
         self.assertEqual(context.exception.keypath_messages['date'],
-                         "Value 'True' at 'date' should be datetime.")
+                         "value is not datetime")
 
     def test_datetime_is_datetime_str_when_tojson(self):
         balance = SimpleBalance(date='2020-11-20T03:03:03.333Z')

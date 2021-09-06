@@ -33,15 +33,13 @@ class InstanceOfValidator(Validator):
         if ctx.mgraph.has(ctx.val):
             return
         ctx.mgraph.put(ctx.val)
-        cls = cast(type[JObject], ctx.fdef.inst_cls)
+        cls = cast(type, ctx.fdef.inst_cls)
         all_fields = ctx.ctxcfg.all_fields
         if all_fields is None:
             all_fields = cls.cdef.jconf.validate_all_fields
         if not isinstance(ctx.val, cls):
             raise ValidationException({
-                '.'.join([str(k) for k in ctx.keypathr]): (f"Value at '{'.'.join([str(k) for k in ctx.keypathr])}' "
-                                   f"should be instance of "
-                                   f"'{cls.__name__}'.")
+                '.'.join([str(k) for k in ctx.keypathr]): f"value is not instance of {cls.__name__}"
             }, ctx.root)
         only_validate_modified = not ctx.val.is_new
         modified_fields = []

@@ -21,7 +21,7 @@ class TestFloat(TestCase):
             balance.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
         self.assertEqual(context.exception.keypath_messages['balance'],
-                         "Value '20' at 'balance' should be float.")
+                         "value is not float")
 
     def test_float_is_float_when_tojson(self):
         balance = SimpleBalance(balance=5.0)

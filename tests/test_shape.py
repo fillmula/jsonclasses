@@ -16,8 +16,7 @@ class TestShape(TestCase):
         setting.email['auto_send'] = '5'
         setting.email['receive_promotion'] = '5'
         self.assertRaisesRegex(ValidationException,
-                               "Value '5' at 'email.auto_send' should be "
-                               "bool.",
+                               "'email\\.auto_send': value is not bool",
                                setting.validate)
 
     def test_shape_accepts_optional_shorthand_types(self):
@@ -25,8 +24,7 @@ class TestShape(TestCase):
         setting.email['auto_send'] = '5'
         setting.email['receive_promotion'] = '5'
         self.assertRaisesRegex(ValidationException,
-                               "Value '5' at 'email.auto_send' should be "
-                               "bool.",
+                               "'email\\.auto_send': value is not bool",
                                setting.validate)
         setting = SimpleShorthandSetting()
         setting.validate()
@@ -36,7 +34,7 @@ class TestShape(TestCase):
             settings={'ios': '2', 'android': '2', 'name': '4'})
         self.assertRaisesRegex(
             ValidationException,
-            "Value '2' at 'settings.ios' should be bool.",
+            "'settings\\.ios': value is not bool",
             value.validate)
 
     def test_shape_validates_inner_fields(self):

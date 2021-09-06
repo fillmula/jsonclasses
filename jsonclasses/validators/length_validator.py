@@ -21,9 +21,9 @@ class LengthValidator(Validator):
         kp = '.'.join([str(k) for k in ctx.keypathr])
         if len(value) > self.maxlength or len(value) < self.minlength:
             if self.minlength != self.maxlength:
-                message = f'Length of value \'{value}\' at \'{kp}\' should not be greater than {self.maxlength} or less than {self.minlength}.'
+                message = f'length of value should be in between {self.minlength} and {self.maxlength}'
             else:
-                message = f'Length of value \'{value}\' at \'{kp}\' should be {self.minlength}.'
+                message = f'length of value is not {self.minlength}'
             raise ValidationException(
                 {kp: message},
                 ctx.root

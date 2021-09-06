@@ -16,7 +16,7 @@ class TestBool(TestCase):
             book.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
         self.assertEqual(context.exception.keypath_messages['published'],
-                         "Value '1' at 'published' should be bool.")
+                         "value is not bool")
 
     def test_bool_is_bool_when_tojson(self):
         book = SimpleBook(published=False)

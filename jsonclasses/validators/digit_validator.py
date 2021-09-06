@@ -17,6 +17,6 @@ class DigitValidator(Validator):
         if not value.isdigit():
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {kp: f'product_id \'{value}\' at \'{kp}\' is not a digit.'},
+                {kp: f'value is not digit string'},
                 ctx.root
             )

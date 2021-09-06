@@ -143,7 +143,7 @@ class TestInstanceOfValidator(TestCase):
         user.address = NewAddress(line3='1', line4='2')
         self.assertRaisesRegex(
             ValidationException,
-            "Value at 'address' should be instance of 'Address'\\.",
+            "value is not instance of Address",
             user.validate)
 
     def test_instanceof_validator_validates_using_validator_inside(self):

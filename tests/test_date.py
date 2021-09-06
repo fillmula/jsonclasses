@@ -32,7 +32,7 @@ class TestDate(TestCase):
             deadline.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
         self.assertEqual(context.exception.keypath_messages['ended_at'],
-                         "Value 'True' at 'ended_at' should be date.")
+                         "value is not date")
 
     def test_date_is_datetime_str_when_tojson(self):
         deadline = SimpleDeadline(ended_at='2020-11-20T03:03:03.333Z')
