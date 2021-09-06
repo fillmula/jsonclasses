@@ -52,7 +52,6 @@ class CGraph:
                                       strict_input=True,
                                       key_transformer=reference_key,
                                       validate_all_fields=False,
-                                      soft_delete=False,
                                       abstract=False,
                                       reset_all_fields=False,
                                       on_create=[],

@@ -27,7 +27,6 @@ class TestJsonClass(TestCase):
                                 strict_input=True,
                                 key_transformer=reference_key,
                                 validate_all_fields=False,
-                                soft_delete=False,
                                 abstract=False,
                                 reset_all_fields=False,
                                 on_create=[],
@@ -60,10 +59,6 @@ class TestJsonClass(TestCase):
     def test_jsonclass_validate_all_fields_changes_config(self):
         self.assertEqual(
             SimpleEmployee.cdef.jconf.validate_all_fields, True)
-
-    def test_jsonclass_soft_delete_changes_config(self):
-        self.assertEqual(
-            SimpleEmployee.cdef.jconf.soft_delete, True)
 
     def test_jsonclass_abstract_changes_config(self):
         self.assertEqual(

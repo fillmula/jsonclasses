@@ -31,7 +31,6 @@ class JConf:
                  strict_input: Optional[bool],
                  key_transformer: Optional[Callable[[JField], str]],
                  validate_all_fields: Optional[bool],
-                 soft_delete: Optional[bool],
                  abstract: Optional[bool],
                  reset_all_fields: Optional[bool],
                  on_create: Optional[Union[OnCreate, list[OnCreate]]],
@@ -55,8 +54,6 @@ class JConf:
                 reference field local key conversion function.
             validate_all_fields (Optional[bool]): The default field \
                 validating method when performing saving and validating.
-            soft_delete (Optional[bool]): Whether perform soft delete on \
-                deletion.
             abstract (Optional[bool]): Instance of abstract classes cannot \
                 be initialized.
             reset_all_fields (Optional[bool]): Whether record all previous \
@@ -82,7 +79,6 @@ class JConf:
         self._strict_input = strict_input
         self._key_transformer = key_transformer
         self._validate_all_fields = validate_all_fields
-        self._soft_delete = soft_delete
         self._abstract = abstract
         self._reset_all_fields = reset_all_fields
         if callable(on_create):
@@ -141,8 +137,6 @@ class JConf:
         if self.key_transformer != other_config.key_transformer:
             return False
         if self.validate_all_fields != other_config.validate_all_fields:
-            return False
-        if self.soft_delete != other_config.soft_delete:
             return False
         if self.abstract != other_config.abstract:
             return False
@@ -209,14 +203,6 @@ class JConf:
         if self._validate_all_fields is None:
             return self.cgraph.default_config.validate_all_fields
         return self._validate_all_fields
-
-    @property
-    def soft_delete(self: JConf) -> bool:
-        """Whether perform soft delete on deletion.
-        """
-        if self._soft_delete is None:
-            return self.cgraph.default_config.soft_delete
-        return self._soft_delete
 
     @property
     def abstract(self: JConf) -> bool:
