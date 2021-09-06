@@ -16,7 +16,7 @@ from .modifiers import (UseForModifier, BoolModifier, ChainedModifier,
                         MatchModifier, MaxModifier, MaxlengthModifier,
                         MinModifier, MinlengthModifier, NegativeModifier,
                         NonnullModifier, NullableModifier, OneOfModifier,
-                        OneOfTypeModifier, OnWriteModifier, OnSaveModifier,
+                        UnionModifier, OnWriteModifier, OnSaveModifier,
                         OnUpdateModifier, OutputLnameModifier,
                         OutputNameModifier, OutputValueModifier,
                         PositiveModifier, PresentModifier,
@@ -495,10 +495,10 @@ class Types:
         """
         return Types(self, InstanceOfModifier(jcls))
 
-    def oneoftype(self, type_list: list[Any]) -> Types:
-        """Fields marked with oneoftype accepts value from these types.
+    def union(self, type_list: list[Any]) -> Types:
+        """Fields marked with union accepts value from these types.
         """
-        return Types(self, OneOfTypeModifier(type_list))
+        return Types(self, UnionModifier(type_list))
 
     @property
     def any(self) -> Types:

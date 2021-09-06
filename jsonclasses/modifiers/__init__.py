@@ -93,7 +93,7 @@ from .strict_modifier import StrictModifier
 from .instanceof_modifier import InstanceOfModifier
 
 # mixed type modifier
-from .oneoftype_modifier import OneOfTypeModifier
+from .union_modifier import UnionModifier
 from .any_modifier import AnyModifier
 
 # nullability modifiers

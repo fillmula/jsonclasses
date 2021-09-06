@@ -105,8 +105,8 @@ def str_to_types(anytypes: str, opt: bool = False) -> Types:
         results = []
         for t in types_to_build_union:
             results.append(str_to_types(t, True))
-        oneoftype = types.oneoftype(results)
-        return oneoftype if opt else oneoftype.required
+        union = types.union(results)
+        return union if opt else union.required
     elif anytypes.startswith('Optional['):
         match_data = match('Optional\\[(.*)\\]', anytypes)
         assert match_data is not None
@@ -185,8 +185,8 @@ def to_types(anytypes: Any, opt: bool = False) -> Types:
             results = []
             for t in types_to_build_union:
                 results.append(to_types(t, True))
-            oneoftype = types.oneoftype(results)
-            return oneoftype if not required else oneoftype.required
+            union = types.union(results)
+            return union if not required else union.required
     elif get_origin(anytypes) == Annotated:
         annotated_args = get_args(anytypes)
         len_args = len(annotated_args)

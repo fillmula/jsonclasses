@@ -9,8 +9,8 @@ if TYPE_CHECKING:
     from ..ctx import Ctx
 
 
-class OneOfTypeModifier(Modifier):
-    """One of type modifier validates value against a list of available types.
+class UnionModifier(Modifier):
+    """Union type modifier validates value against a list of available types.
     """
 
     def __init__(self, type_list: list[Any]) -> None:

@@ -6,4 +6,4 @@ from jsonclasses import jsonclass, types
 @jsonclass
 class SimpleMixed:
     name: Optional[str]
-    mixed: Optional[Union[int, str]] = types.oneoftype([str, int])
+    mixed: Optional[Union[int, str]] = types.union([str, int])
