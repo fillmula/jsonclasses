@@ -91,7 +91,7 @@ class TestShape(TestCase):
 
     def test_strict_shape_raises_if_key_is_not_allowed(self):
         with self.assertRaisesRegex(ValidationException,
-                                    "key 'a' is not allowed"):
+                                    "'config\\.a': key is not allowed"):
             SimpleFolder(config={'a': True, 'b': False})
 
     def test_shape_can_be_accessed_with_dot_notation(self):

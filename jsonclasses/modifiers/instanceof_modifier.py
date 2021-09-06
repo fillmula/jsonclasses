@@ -72,8 +72,7 @@ class InstanceOfModifier(Modifier):
         for k in ctx.val.keys():
             if k not in available_names:
                 kp = concat_keypath(ctx.skeypathr, k)
-                msg = 'key is not allowed'
-                raise ValidationException({kp: msg}, ctx.root)
+                ctx.raise_mvexc({kp: 'key is not allowed'})
 
     def _fill_default_value(self, field: JField, dest: JObject, ctx: Ctx):
         if field.default is not None:

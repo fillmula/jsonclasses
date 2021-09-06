@@ -1,5 +1,7 @@
 """module for shape modifier."""
 from __future__ import annotations
+from jsonclasses.keypath import concat_keypath
+from jsonclasses.vmsgcollector import VMsgCollector
 from typing import Any, Sequence, Union, TYPE_CHECKING
 from inflection import underscore, camelize
 from ..fdef import Fdef, FieldType, Nullability, Strictness
@@ -31,7 +33,7 @@ class ShapeModifier(TypeModifier):
         all_fields = ctx.ctxcfg.all_fields
         if all_fields is None:
             all_fields = ctx.cdefowner.jconf.validate_all_fields
-        keypath_messages = {}
+        ctor = VMsgCollector()
         for k, types in ctx.fdef.shape_types.items():
             try:
                 value_at_key = ctx.val[k]
@@ -42,11 +44,11 @@ class ShapeModifier(TypeModifier):
                 types.modifier.validate(ival)
             except ValidationException as exception:
                 if all_fields:
-                    keypath_messages.update(exception.keypath_messages)
+                    ctor.receive(exception.keypath_messages)
                 else:
                     raise exception
-        if len(keypath_messages) > 0:
-            raise ValidationException(keypath_messages, root=ctx.root)
+        if ctor.has_msgs:
+            ctx.raise_mvexc(ctor.messages)
 
     def _has_field_value(self,
                          field_key: str,
@@ -74,9 +76,8 @@ class ShapeModifier(TypeModifier):
         keys = ctx.fdef.shape_types.keys()
         for k in value_keys:
             if k not in keys:
-                kp = '.'.join([str(k) for k in ctx.keypathr])
-                raise ValidationException(
-                    {kp: (f'key \'{k}\' is not allowed')}, ctx.root)
+                kp = concat_keypath(ctx.skeypathr, k)
+                ctx.raise_mvexc({kp: 'key is not allowed'})
 
     def transform(self, ctx: Ctx) -> Any:
         value = ctx.val

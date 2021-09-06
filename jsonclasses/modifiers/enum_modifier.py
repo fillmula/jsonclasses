@@ -4,7 +4,6 @@ from typing import Any, Union, TYPE_CHECKING
 from enum import Enum
 from ..fdef import (FieldType, Fdef, EnumInput,
                                 EnumOutput)
-from ..excs import ValidationException
 from .modifier import Modifier
 if TYPE_CHECKING:
     from ..ctx import Ctx
@@ -53,14 +52,9 @@ class EnumModifier(Modifier):
                     return enum_class[ctx.val.upper()]
                 except KeyError:
                     pass
-
-            raise ValidationException({
-                '.'.join([str(k) for k in ctx.keypathr]): 'unknown enum value'
-            }, ctx.root)
+            ctx.raise_vexc('unknown enum value')
         else:
-            raise ValidationException({
-                '.'.join([str(k) for k in ctx.keypathr]): 'unknown enum value'
-            }, ctx.root)
+            ctx.raise_vexc('unknown enum value')
 
     def validate(self, ctx: Ctx) -> None:
         if ctx.val is None:

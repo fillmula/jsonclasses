@@ -24,9 +24,7 @@ class DateModifier(TypeModifier):
             try:
                 return date.fromisoformat(ctx.val[:10])
             except ValueError:
-                raise ValidationException({
-                    '.'.join([str(k) for k in ctx.keypathr]): 'wrong date format'
-                }, ctx.root)
+                ctx.raise_vexc('wrong date format')
         elif type(ctx.val) == datetime:
             return date(ctx.val.year,
                         ctx.val.month,

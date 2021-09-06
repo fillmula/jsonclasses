@@ -1,5 +1,6 @@
 """module for chained modifier."""
 from __future__ import annotations
+from jsonclasses.vmsgcollector import VMsgCollector
 from typing import Any, Optional, TYPE_CHECKING
 from functools import reduce
 from ..excs import ValidationException
@@ -78,16 +79,16 @@ class ChainedModifier(Modifier):
         return val
 
     def validate(self, ctx: Ctx) -> None:
-        keypath_messages: dict[str, str] = {}
+        ctor = VMsgCollector()
         for modifier in self._nvs:
             try:
                 modifier.validate(ctx)
             except ValidationException as exception:
-                keypath_messages.update(exception.keypath_messages)
+                ctor.receive(exception.keypath_messages)
                 if not ctx.ctxcfg.all_fields:
                     break
-        if len(keypath_messages) > 0:
-            raise ValidationException(keypath_messages, ctx.root)
+        if ctor.has_msgs:
+            ctx.raise_mvexc(ctor.messages)
 
     def transform(self, ctx: Ctx) -> Any:
         val = ctx.val
