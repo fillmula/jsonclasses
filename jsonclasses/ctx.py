@@ -1,9 +1,10 @@
 """This module defines JSON Class context objects."""
 from __future__ import annotations
-from jsonclasses.jconf import JConf
 from typing import Any, NamedTuple, Union, Optional, TYPE_CHECKING
+from .jconf import JConf
 from .types import types
 from .mgraph import MGraph
+from .vmsgcollector import VMsgCollector
 from .excs import ValidationException
 if TYPE_CHECKING:
     from .cdef import Cdef
@@ -176,3 +177,6 @@ class Ctx(NamedTuple):
         """Raise validation error with message.
         """
         raise ValidationException({self.skeypathr: msg}, self.root)
+
+    def raise_mvexc(self: Ctx, msgs: dict[str, str]) -> None:
+        raise ValidationException(msgs, self.root)

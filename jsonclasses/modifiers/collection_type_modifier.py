@@ -1,5 +1,6 @@
 """module for listof modifier."""
 from __future__ import annotations
+from jsonclasses.vmsgcollector import VMsgCollector
 from typing import (
     Any, Collection, Iterable, TypeVar, Union, TYPE_CHECKING
 )
@@ -51,20 +52,18 @@ class CollectionTypeModifier(TypeModifier):
         all_fields = next(b for b in [
             ctx.ctxcfg.all_fields,
             ctx.cdefowner.jconf.validate_all_fields] if b is not None)
-        keypath_messages = {}
+        vmsgctor = VMsgCollector()
         for i, v in self.enumerator(ctx.val):
             try:
                 ictx = ctx.colval(v, i, itypes.fdef, ctx.val)
                 itypes.modifier.validate(ictx)
             except ValidationException as exception:
                 if all_fields:
-                    keypath_messages.update(exception.keypath_messages)
+                    vmsgctor.receive(exception.keypath_messages)
                 else:
                     raise exception
-        if len(keypath_messages) > 0:
-            raise ValidationException(
-                keypath_messages=keypath_messages,
-                root=ctx.root)
+        if vmsgctor.has_msgs:
+            ctx.raise_mvexc(vmsgctor.messages)
 
     def transform(self, ctx: Ctx) -> Any:
         if ctx.val is None:
