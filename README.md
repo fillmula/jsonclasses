@@ -6,25 +6,18 @@ JSONClasses
 [![License][license-image]][license-url]
 [![PR Welcome][pr-image]][pr-url]
 
-The modern declarative data flow and data graph framework for the AI empowered
-generation.
-
-JSONClasses eliminates the separated and redundant coding of data sanitization,
-data validation, data format converting and data serialization.
-
-JSONClasses transforms all the redundant procedures into declarative
-annotations and markers defined right on the dataclasses.
-
-Just like how React.js changed the paradigms of frontend development,
-JSONClasses aims leading the transforming of the insdustry backend development
-standards.
+JSONClasses is a data flow pipeline and data graph framework written in Python.
+It supports data sanitization, data validation, data transformation, data
+presentation, data serialization, data graphing and data querying. It
+eliminates the redundant coding of the process by an intuitive and innovative
+declarative manner.
 
 ## How JSONClasses Works?
 
-JSONClasses is built on top of Python dataclasses. With the great
-metaprogramming functionalities that Python dataclasses offers, we can easily
-extend it into a great DSL for declaring data structures, transforming rules
-and validation rules.
+JSONClasses uses several Python features like type hinting and dataclasses.
+With the great metaprogramming functionalities that Python offers, we can
+easily extend it into a great DSL for declaring data structures, transforming
+rules and validation rules.
 
 ## Why Not Create Another DSL?
 
@@ -32,8 +25,8 @@ GraphQL's Schema Definition Language cannot work well with programming
 languages' syntax checking and type completion. To support more and more
 functions, a DSL would become more and more like a programming language.
 
-This is similar to why React.js embedded HTML into JavaScript/TypeScript and
-Apple built new Swift language features for SwiftUI.
+This is similar React.js, Jetpack Compose and SwiftUI. The structures of the
+declaration is embedded in code, not in a special text file.
 
 ## Why Python Is Chosen?
 
@@ -108,7 +101,7 @@ async def delete_user(request, id):
 
 ## Documentation
 
-Read our documentation on bla bla bla.
+[Read the Documentation](https://docs.jsonclasses.com)
 
 ## Database & Web Framework Integrations
 
@@ -153,7 +146,7 @@ SOFTWARE.
 [python-image]: https://img.shields.io/pypi/pyversions/jsonclasses?style=flat-square
 [python-url]: https://pypi.org/project/jsonclasses/
 [travis-image]: https://img.shields.io/travis/fillmula/jsonclasses.svg?style=flat-square&color=blue&logo=travis
-[travis-url]: https://travis-ci.org/fillmula/jsonclasses
+[travis-url]: https://travis-ci.com/fillmula/jsonclasses
 [license-image]: https://img.shields.io/github/license/fillmula/jsonclasses.svg?style=flat-square
 [license-url]: https://github.com/fillmula/jsonclasses/blob/master/LICENSE
 [pr-image]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square

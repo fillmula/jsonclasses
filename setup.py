@@ -10,9 +10,9 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name='jsonclasses',
-    version='2.6.8',
-    description=('The Modern Declarative Data Flow and Data Graph Framework '
-                 'for the AI Empowered Generation.'),
+    version='2.7.0',
+    description=('The modern declarative data flow pipeline and data graph '
+                 'framework for the AI empowered generation.'),
     long_description=README,
     long_description_content_type='text/markdown',
     author='Fillmula Inc.',
