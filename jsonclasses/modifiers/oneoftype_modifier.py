@@ -29,9 +29,4 @@ class OneOfTypeModifier(Modifier):
                 return
             except ValidationException:
                 continue
-        kp = '.'.join([str(k) for k in ctx.keypathr])
-        raise ValidationException(
-            {'.'.join([str(k) for k in ctx.keypathr]): (f'Value \'{ctx.val}\' at '
-                                    f'\'{kp}\' should be '
-                                    f'one of type {self.type_list}.')},
-            ctx.root)
+        ctx.raise_vexc('value is not of any provided type')
