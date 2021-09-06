@@ -12,7 +12,7 @@ from .jobject import JObject
 
 
 @overload
-def jsonclass(cls: type) -> type: ...
+def jsonclass(cls: type) -> type[JObject]: ...
 
 
 @overload
