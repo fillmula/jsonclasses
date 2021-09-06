@@ -13,7 +13,7 @@ class TestPreserializeValidator(TestCase):
             user = PsUserN(username='123')
             user._set_on_save()
         exception = context.exception
-        self.assertEqual(exception.keypath_messages['updated_at'], "Value at 'updated_at' should not be None.")
+        self.assertEqual(exception.keypath_messages['updated_at'], "value required")
 
     def test_preserialize_validator_does_not_validate_on_normal_validate(self):
         user = PsUserN(username='123')
@@ -69,7 +69,7 @@ class TestPreserializeValidator(TestCase):
             user = PsUserLE(counts=[123, 456])
             user._set_on_save()
         exception = context.exception
-        self.assertEqual(exception.keypath_messages['counts.0'], "Value at 'counts.0' should not be None.")
+        self.assertEqual(exception.keypath_messages['counts.0'], "value required")
 
     def test_preserialize_validator_should_validate_and_setonsave_inside_dict(self):
         user = PsUserDI(counts={'a': 123, 'b': 456})
@@ -82,7 +82,7 @@ class TestPreserializeValidator(TestCase):
             user = PsUserDE(counts={'a': 123, 'b': 456})
             user._set_on_save()
         exception = context.exception
-        self.assertEqual(exception.keypath_messages['counts.a'], "Value at 'counts.a' should not be None.")
+        self.assertEqual(exception.keypath_messages['counts.a'], "value required")
 
     def test_preserialize_validator_should_validate_and_setonsave_inside_shape(self):
         user = PsUserS(counts={'a': 123, 'b': 456})
@@ -95,4 +95,4 @@ class TestPreserializeValidator(TestCase):
             user = PsUserSE(counts={'a': 123, 'b': 456})
             user._set_on_save()
         exception = context.exception
-        self.assertEqual(exception.keypath_messages['counts.b'], "Value at 'counts.b' should not be None.")
+        self.assertEqual(exception.keypath_messages['counts.b'], "value required")

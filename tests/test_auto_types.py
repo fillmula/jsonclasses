@@ -388,14 +388,14 @@ class TestAutoTypes(TestCase):
         setting = AutoSetting()
         self.assertRaisesRegex(
             ValidationException,
-            "Value at 'preference.ios' should not be None.",
+            "'preference\\.ios': value required",
             setting.validate)
 
     def test_auto_generates_nonnull_shape_with_typed_dict_str_form(self):
         setting = AutoStrSetting()
         self.assertRaisesRegex(
             ValidationException,
-            "Value at 'preference.ios' should not be None.",
+            "'preference\\.ios': value required",
             setting.validate)
 
     def test_auto_generates_1_to_1_links(self):

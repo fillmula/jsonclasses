@@ -36,7 +36,7 @@ class TestValidate(TestCase):
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 1)
         self.assertEqual(exception.keypath_messages['title'],
-                         "Value at 'title' should not be None.")
+                         "value required")
 
     def test_validate_validates_all_fields_if_option_is_passed(self):
         article = SimpleArticle()
@@ -45,9 +45,9 @@ class TestValidate(TestCase):
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 2)
         self.assertEqual(exception.keypath_messages['title'],
-                         "Value at 'title' should not be None.")
+                         "value required")
         self.assertEqual(exception.keypath_messages['content'],
-                         "Value at 'content' should not be None.")
+                         "value required")
 
     def test_validate_validates_all_fields_if_class_config_is_on(self):
         language = SimpleLanguage()
@@ -56,9 +56,9 @@ class TestValidate(TestCase):
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 2)
         self.assertEqual(exception.keypath_messages['name'],
-                         "Value at 'name' should not be None.")
+                         "value required")
         self.assertEqual(exception.keypath_messages['code'],
-                         "Value at 'code' should not be None.")
+                         "value required")
 
     def test_validate_validates_one_field_if_explicitly_specified(self):
         language = SimpleLanguage()
@@ -67,7 +67,7 @@ class TestValidate(TestCase):
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 1)
         self.assertEqual(exception.keypath_messages['name'],
-                         "Value at 'name' should not be None.")
+                         "value required")
 
     def test_validate_validates_one_list_field_by_default(self):
         project = SimpleProject(name='Teo', attendees=['A', 'B', 'C', 'D'])
@@ -161,9 +161,9 @@ class TestValidate(TestCase):
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 2)
         self.assertEqual(exception.keypath_messages['articles.0.title'],
-                         "Value at 'articles.0.title' should not be None.")
+                         "value required")
         self.assertEqual(exception.keypath_messages['articles.0.content'],
-                         "Value at 'articles.0.content' should not be None.")
+                         "value required")
 
     def test_validate_validates_one_field_inside_nested_if_required(self):
         author = Author(name='A', articles=[{}, {}])
@@ -172,7 +172,7 @@ class TestValidate(TestCase):
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 1)
         self.assertEqual(exception.keypath_messages['articles.0.title'],
-                         "Value at 'articles.0.title' should not be None.")
+                         "value required")
 
     def test_validate_validates_all_field_inside_nested_if_required(self):
         author = Author(name='A', articles=[{}, {}])
@@ -181,13 +181,13 @@ class TestValidate(TestCase):
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 4)
         self.assertEqual(exception.keypath_messages['articles.0.title'],
-                         "Value at 'articles.0.title' should not be None.")
+                         "value required")
         self.assertEqual(exception.keypath_messages['articles.0.content'],
-                         "Value at 'articles.0.content' should not be None.")
+                         "value required")
         self.assertEqual(exception.keypath_messages['articles.1.title'],
-                         "Value at 'articles.1.title' should not be None.")
+                         "value required")
         self.assertEqual(exception.keypath_messages['articles.1.content'],
-                         "Value at 'articles.1.content' should not be None.")
+                         "value required")
 
     def test_validate_only_validate_modified_fields_for_non_new_object(self):
         article = SimpleArticle(title='my', content='side')
@@ -211,7 +211,7 @@ class TestValidate(TestCase):
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 1)
         self.assertEqual(exception.keypath_messages['articles.0.content'],
-                         "Value at 'articles.0.content' should not be None.")
+                         "value required")
 
     def test_validate_linked_objects_no_infinite_loop(self):
         profile = LinkedProfile(name='Ua Bê Tshiu Pên')

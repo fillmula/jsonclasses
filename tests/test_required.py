@@ -12,14 +12,14 @@ class TestRequired(TestCase):
         article = SimpleArticle()
         self.assertRaisesRegex(
             ValidationException,
-            "Value at 'title' should not be None\\.",
+            "'title': value required",
             article.validate)
 
     def test_required_raises_when_local_key_is_none(self):
         profile = LinkedProfile(name='profile')
         self.assertRaisesRegex(
             ValidationException,
-            "Value at 'user' should not be None\\.",
+            "'user': value required",
             profile.validate)
 
     def test_required_does_not_raise_when_local_key_is_present(self):

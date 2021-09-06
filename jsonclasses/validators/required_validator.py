@@ -32,29 +32,17 @@ class RequiredValidator(Validator):
                 if isinstance(ctx.holder, dict):
                     if ctx.holder.get(local_key) is None:
                         kp = '.'.join([str(k) for k in ctx.keypathr])
-                        raise ValidationException(
-                            {kp: f'Value at \'{kp}\' should not be None.'},
-                            ctx.root
-                        )
+                        raise ValidationException({kp: f'value required'}, ctx.root)
                 elif isjsonobject(ctx.holder):
                     try:
                         local_key_value = getattr(ctx.holder, local_key)
                     except AttributeError:
                         kp = '.'.join([str(k) for k in ctx.keypathr])
-                        raise ValidationException(
-                            {kp: f'Value at \'{kp}\' should not be None.'},
-                            ctx.root
-                        )
+                        raise ValidationException({kp: 'value required'}, ctx.root)
                     if local_key_value is None:
                         kp = '.'.join([str(k) for k in ctx.keypathr])
-                        raise ValidationException(
-                            {kp: f'Value at \'{kp}\' should not be None.'},
-                            ctx.root
-                        )
+                        raise ValidationException({kp: 'value required'}, ctx.root)
             return
         if ctx.val is None:
             kp = '.'.join([str(k) for k in ctx.keypathr])
-            raise ValidationException(
-                {kp: f'Value at \'{kp}\' should not be None.'},
-                ctx.root
-            )
+            raise ValidationException({kp: 'value required'}, ctx.root)

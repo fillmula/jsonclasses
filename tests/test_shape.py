@@ -42,7 +42,7 @@ class TestShape(TestCase):
     def test_shape_validates_inner_fields(self):
         user = SimpleConfigUser(config={})
         self.assertRaisesRegex(ValidationException,
-                               '\'config\\.ios\' should not be None',
+                               '\'config\\.ios\': value required',
                                user.validate)
 
     def test_shape_doesnt_raise_on_validation_if_inner_fields_are_ok(self):
@@ -89,7 +89,7 @@ class TestShape(TestCase):
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 1)
         self.assertEqual(exception.keypath_messages['config.display_size'],
-                         "Value at 'config.display_size' should not be None.")
+                         "value required")
 
     def test_strict_shape_raises_if_key_is_not_allowed(self):
         with self.assertRaisesRegex(ValidationException,

@@ -157,7 +157,9 @@ class TestInstanceOfValidator(TestCase):
             name: str = types.str
             address: Address = types.instanceof(Address)
         user = User(**{'name': 'John', 'address': {'line2': 'Road'}})
-        self.assertRaisesRegex(ValidationException, 'Value at \'address\\.line1\' should not be None.', user.validate)
+        self.assertRaisesRegex(ValidationException,
+            "'address\\.line1': value required",
+            user.validate)
 
     def test_instanceof_validator_convert_subfields_to_json(self):
         @jsonclass(class_graph='test_instanceof_3')
