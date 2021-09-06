@@ -6,7 +6,7 @@ from inspect import signature
 from .jobject import JObject
 from .ctx import Ctx, CtxCfg
 from .fdef import Fdef, FieldStorage, FieldType
-from .validators.instanceof_validator import InstanceOfValidator
+from .modifiers.instanceof_modifier import InstanceOfModifier
 from .jfield import JField
 from .isjsonclass import isjsonobject
 from .mgraph import MGraph
@@ -71,7 +71,7 @@ def _set(self: JObject,
     """Set values of a jsonclass object internally."""
     ctxcfg = CtxCfg(fill_dest_blanks=fill_blanks, all_fields=False)
     ctx = Ctx.rootctx(self, ctxcfg, kwargs)
-    InstanceOfValidator(self.__class__).transform(ctx)
+    InstanceOfModifier(self.__class__).transform(ctx)
 
 
 def _keypath_set(self: JObject, kwargs: dict[str, Any]) -> None:
@@ -159,7 +159,7 @@ def tojson(self: JObject, ignore_writeonly: bool = False) -> dict[str, Any]:
     self._can_read_check()
     ctxcfg = CtxCfg(ignore_writeonly=ignore_writeonly)
     ctx = Ctx.rootctx(self, ctxcfg)
-    return InstanceOfValidator(self.__class__).tojson(ctx)
+    return InstanceOfModifier(self.__class__).tojson(ctx)
 
 
 def validate(self: JObject, all_fields: Optional[bool] = None) -> JObject:
@@ -177,7 +177,7 @@ def validate(self: JObject, all_fields: Optional[bool] = None) -> JObject:
     self._ensure_not_outdated()
     ctxcfg = CtxCfg(all_fields=all_fields)
     ctx = Ctx.rootctx(self, ctxcfg)
-    InstanceOfValidator(self.__class__).validate(ctx)
+    InstanceOfModifier(self.__class__).validate(ctx)
     return self
 
 
@@ -456,9 +456,9 @@ def _set_on_save(self: JObject) -> None:
     is a graph operation. Objects chained with the saving object will also
     get setonsave called and saved.
     """
-    validator = InstanceOfValidator(self.__class__)
+    modifier = InstanceOfModifier(self.__class__)
     ctx = Ctx.rootctx(self, CtxCfg())
-    validator.serialize(ctx)
+    modifier.serialize(ctx)
 
 
 def _clear_temp_fields(self: JObject) -> None:
@@ -637,7 +637,7 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
         setattr(self, '_is_modified', True)
         self._modified_fields.add(name)
         if self.__class__.cdef.jconf.reset_all_fields or \
-                field.fdef.has_reset_validator:
+                field.fdef.has_reset_modifier:
             if name not in self.previous_values:
                 self.previous_values[name] = getattr(self, name)
     # make list and dict assignments owned and monitored
@@ -669,7 +669,7 @@ def __odict_will_change__(self: JObject, odict: OwnedDict) -> None:
     name = initial_keypath(odict.keypath)
     field = self.__class__.cdef.field_named(name)
     if self.__class__.cdef.jconf.reset_all_fields or \
-            field.fdef.has_reset_validator:
+            field.fdef.has_reset_modifier:
         if field.fdef.has_linked:
             return
         if name not in self.previous_values:
@@ -706,7 +706,7 @@ def __olist_will_change__(self, olist: OwnedList) -> None:
     name = initial_keypath(olist.keypath)
     field = self.__class__.cdef.field_named(name)
     if self.__class__.cdef.jconf.reset_all_fields or \
-            field.fdef.has_reset_validator:
+            field.fdef.has_reset_modifier:
         if field.fdef.has_linked:
             return
         if name not in self.previous_values:

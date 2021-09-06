@@ -141,9 +141,9 @@ class Fdef:
         self._collection_nullability: Nullability = Nullability.NULLABLE
         self._item_nullability: Nullability = Nullability.UNDEFINED
         self._strictness: Strictness = Strictness.UNDEFINED
-        self._has_eager_validator: bool = False
-        self._has_reset_validator: bool = False
-        self._has_preserialize_validator: bool = False
+        self._has_eager_modifier: bool = False
+        self._has_reset_modifier: bool = False
+        self._has_preserialize_modifier: bool = False
         self._requires_operator_assign: bool = False
         self._operator_assign_transformer: Optional[Callable] = None
 
@@ -432,28 +432,28 @@ class Fdef:
         self._resolve_if_needed()
         return self._strictness
 
-    # special validator marks
+    # special modifier marks
 
     @property
-    def has_eager_validator(self: Fdef) -> bool:
-        """Whether there is at least an eager validator in the chain.
+    def has_eager_modifier(self: Fdef) -> bool:
+        """Whether there is at least an eager modifier in the chain.
         """
         self._resolve_if_needed()
-        return self._has_eager_validator
+        return self._has_eager_modifier
 
     @property
-    def has_reset_validator(self: Fdef) -> bool:
-        """Whether there is at least an reset validator in the chain.
+    def has_reset_modifier(self: Fdef) -> bool:
+        """Whether there is at least an reset modifier in the chain.
         """
         self._resolve_if_needed()
-        return self._has_reset_validator
+        return self._has_reset_modifier
 
     @property
-    def has_preserialize_validator(self: Fdef) -> bool:
-        """Whether there is at least a preserialize validator in the chain.
+    def has_preserialize_modifier(self: Fdef) -> bool:
+        """Whether there is at least a preserialize modifier in the chain.
         """
         self._resolve_if_needed()
-        return self._has_preserialize_validator
+        return self._has_preserialize_modifier
 
     # operator
 

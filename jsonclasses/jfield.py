@@ -11,13 +11,13 @@ if TYPE_CHECKING:
     from .types import Types
     from .fdef import Fdef
     from .cdef import Cdef
-    from .validators import ChainedValidator
+    from .modifiers import ChainedModifier
 
 
 class JField:
     """The detailed field information of a JSON class field. This includes
     field names in different circumstances, assigned default value, field
-    description and main validator.
+    description and main modifier.
     """
 
     def __init__(
@@ -74,10 +74,10 @@ class JField:
         return self._types.fdef
 
     @property
-    def validator(self: JField) -> ChainedValidator:
-        """The chained validator of the field.
+    def modifier(self: JField) -> ChainedModifier:
+        """The chained modifier of the field.
         """
-        return self._types.validator
+        return self._types.modifier
 
     @property
     def foreign_cdef(self: JField) -> Optional[Cdef]:

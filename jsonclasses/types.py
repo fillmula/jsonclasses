@@ -3,39 +3,39 @@ from __future__ import annotations
 from typing import Callable, Any, Optional, Union, Literal
 from copy import deepcopy
 from .fdef import Fdef
-from .validators import (UseForValidator, BoolValidator, ChainedValidator,
-                         CompareValidator, DateValidator, DatetimeValidator,
-                         DefaultValidator, DictOfValidator, EagerValidator,
-                         EmbeddedValidator, EnumValidator,
-                         FloatValidator, IndexValidator, InputAllValidator,
-                         InputNameValidator, InputLnameValidator,
-                         InputValueValidator, InstanceOfValidator,
-                         IntValidator, InvalidValidator, LengthValidator,
-                         LinkedByValidator, LinkedInValidator,
-                         LinkedThruValidator, LinkToValidator, ListOfValidator,
-                         MatchValidator, MaxValidator, MaxlengthValidator,
-                         MinValidator, MinlengthValidator, NegativeValidator,
-                         NonnullValidator, NullableValidator, OneOfValidator,
-                         OneOfTypeValidator, OnWriteValidator, OnSaveValidator,
-                         OnUpdateValidator, OutputLnameValidator,
-                         OutputNameValidator, OutputValueValidator,
-                         PositiveValidator, PresentValidator,
-                         PresentWithValidator, PresentWithoutValidator,
-                         PreserializeValidator, PrimaryValidator,
-                         RangeValidator, ReadonlyValidator, ReadwriteValidator,
-                         RefereeValidator, ReferrerValidator,
-                         RequiredValidator, ResetValidator, SetOnSaveValidator,
-                         ShapeValidator, StrValidator, StrictValidator,
-                         TempValidator, TransformValidator, TrimValidator,
-                         TruncateValidator, UniqueValidator, ValidateValidator,
-                         Validator, WriteNonnullValidator, WriteonceValidator,
-                         WriteonlyValidator, DenyValidator, CascadeValidator,
-                         NullifyValidator, OpValidator, AsopValidator,
-                         AsopdValidator, UrlValidator, EmailValidator,
-                         DigitValidator,AlphaValidator,NumericValidator,
-                         AlnumValidator,ToTitleValidator,ToCapValidator,
-                         ToLowerValidator,ToUpperValidator,
-                         UnresolvedValidator)
+from .modifiers import (UseForModifier, BoolModifier, ChainedModifier,
+                         CompareModifier, DateModifier, DatetimeModifier,
+                         DefaultModifier, DictOfModifier, EagerModifier,
+                         EmbeddedModifier, EnumModifier,
+                         FloatModifier, IndexModifier, InputAllModifier,
+                         InputNameModifier, InputLnameModifier,
+                         InputValueModifier, InstanceOfModifier,
+                         IntModifier, InvalidModifier, LengthModifier,
+                         LinkedByModifier, LinkedInModifier,
+                         LinkedThruModifier, LinkToModifier, ListOfModifier,
+                         MatchModifier, MaxModifier, MaxlengthModifier,
+                         MinModifier, MinlengthModifier, NegativeModifier,
+                         NonnullModifier, NullableModifier, OneOfModifier,
+                         OneOfTypeModifier, OnWriteModifier, OnSaveModifier,
+                         OnUpdateModifier, OutputLnameModifier,
+                         OutputNameModifier, OutputValueModifier,
+                         PositiveModifier, PresentModifier,
+                         PresentWithModifier, PresentWithoutModifier,
+                         PreserializeModifier, PrimaryModifier,
+                         RangeModifier, ReadonlyModifier, ReadwriteModifier,
+                         RefereeModifier, ReferrerModifier,
+                         RequiredModifier, ResetModifier, SetOnSaveModifier,
+                         ShapeModifier, StrModifier, StrictModifier,
+                         TempModifier, TransformModifier, TrimModifier,
+                         TruncateModifier, UniqueModifier, ValidateModifier,
+                         Modifier, WriteNonnullModifier, WriteonceModifier,
+                         WriteonlyModifier, DenyModifier, CascadeModifier,
+                         NullifyModifier, OpModifier, AsopModifier,
+                         AsopdModifier, UrlModifier, EmailModifier,
+                         DigitModifier,AlphaModifier,NumericModifier,
+                         AlnumModifier,ToTitleModifier,ToCapModifier,
+                         ToLowerModifier,ToUpperModifier,
+                         UnresolvedModifier)
 
 Str = str
 Int = int
@@ -51,38 +51,38 @@ class Types:
     def __init__(  # pylint: disable=keyword-arg-before-vararg
         self,
         original: Optional[Types] = None,
-        *args: Validator
+        *args: Modifier
     ) -> None:
         if not original:
             self.fdef = Fdef()
-            self.validator = ChainedValidator()
+            self.modifier = ChainedModifier()
         else:
             self.fdef = deepcopy(original.fdef)
-            validator = original.validator
+            modifier = original.modifier
             for arg in args:
-                validator = validator.append(arg)
+                modifier = modifier.append(arg)
                 arg.define(self.fdef)
-            self.validator = validator
+            self.modifier = modifier
 
     @property
     def invalid(self) -> Types:
         """Fields marked with invalid will never be valid, thus these fields
         will never pass validation.
         """
-        return Types(self, InvalidValidator())
+        return Types(self, InvalidModifier())
 
     @property
     def primary(self) -> Types:
         """Field marked with primary become the object's primary key.
         """
-        return Types(self, PrimaryValidator())
+        return Types(self, PrimaryModifier())
 
     def usefor(self, usage: str) -> Types:
         """Field marked with usefor are queried by JSON Class and it's ORM
         implementations to get user designated fields to perform special
         actions.
         """
-        return Types(self, UseForValidator(usage))
+        return Types(self, UseForModifier(usage))
 
     def timestamp(self,
                   usage: Literal['created', 'updated', 'deleted']) -> Types:
@@ -90,7 +90,7 @@ class Types:
         and it's ORM implementations use this information to perform special
         actions on timestamp fields.
         """
-        return Types(self, UseForValidator(f'{usage}_at'))
+        return Types(self, UseForModifier(f'{usage}_at'))
 
     @property
     def readonly(self) -> Types:
@@ -102,14 +102,14 @@ class Types:
         `writeonce`, `readonly` and `writenonnull` cannot be presented
         together.
         """
-        return Types(self, ReadonlyValidator())
+        return Types(self, ReadonlyModifier())
 
     @property
     def writeonly(self) -> Types:
         """Fields marked with writeonly will not be available in outgoing json
         form. Users' password is a great example of writeonly.
         """
-        return Types(self, WriteonlyValidator())
+        return Types(self, WriteonlyModifier())
 
     @property
     def readwrite(self) -> Types:
@@ -117,7 +117,7 @@ class Types:
         outputs. This is the default behavior. And this specifier can be
         omitted.
         """
-        return Types(self, ReadwriteValidator())
+        return Types(self, ReadwriteModifier())
 
     @property
     def writeonce(self) -> Types:
@@ -129,7 +129,7 @@ class Types:
         `writeonce`, `readonly` and `writenonnull` cannot be presented
         together.
         """
-        return Types(self, WriteonceValidator())
+        return Types(self, WriteonceModifier())
 
     @property
     def writenonnull(self) -> Types:
@@ -140,7 +140,7 @@ class Types:
         `writeonce`, `readonly` and `writenonnull` cannot be presented
         together.
         """
-        return Types(self, WriteNonnullValidator())
+        return Types(self, WriteNonnullModifier())
 
     @property
     def internal(self) -> Types:
@@ -148,7 +148,7 @@ class Types:
         will not be present in output. These fields are internal and hidden
         from users.
         """
-        return Types(self, ReadonlyValidator(), WriteonlyValidator())
+        return Types(self, ReadonlyModifier(), WriteonlyModifier())
 
     @property
     def temp(self) -> Types:
@@ -157,7 +157,7 @@ class Types:
         None. Examples of it's use cases are authentication code validation,
         input validation, etc.
         """
-        return Types(self, TempValidator())
+        return Types(self, TempModifier())
 
     @property
     def index(self) -> Types:
@@ -165,7 +165,7 @@ class Types:
         database column index for you. This marker doesn't have any effect
         around transforming and validating.
         """
-        return Types(self, IndexValidator())
+        return Types(self, IndexModifier())
 
     @property
     def unique(self) -> Types:
@@ -179,92 +179,92 @@ class Types:
         UniqueFieldException provided by jsonclasses.excs to keep
         consistency with other jsonclasses integrations.
         """
-        return Types(self, UniqueValidator())
+        return Types(self, UniqueModifier())
 
     @property
     def embedded(self) -> Types:
         """Instance fields marked with the embedded mark is embedded into the
         hosting document for noSQL databases.
         """
-        return Types(self, EmbeddedValidator())
+        return Types(self, EmbeddedModifier())
 
     @property
     def linkto(self) -> Types:
         """In a database relationship, fields marked with linkto save an id of
         the object being referenced at the local table.
         """
-        return Types(self, LinkToValidator())
+        return Types(self, LinkToModifier())
 
     def linkedby(self, foreign_key: str) -> Types:
         """In a database relationship, fields marked with linkedby find
         reference from the destination table.
         """
-        return Types(self, LinkedByValidator(foreign_key))
+        return Types(self, LinkedByModifier(foreign_key))
 
     def linkedthru(self, foreign_key: str) -> Types:
         """In a database relationship, fields marked with linkedthru save
         relationships to a designated association table and find references
         through it.
         """
-        return Types(self, LinkedThruValidator(foreign_key))
+        return Types(self, LinkedThruModifier(foreign_key))
 
     def linkedin(self, cls: Any) -> Types:
         """In a database relationship, fields marked with linkedin save
         relationships to the table under provided class.
         """
-        return Types(self, LinkedInValidator(cls))
+        return Types(self, LinkedInModifier(cls))
 
     def referrer(self, referrer_key: str) -> Types:
         """In a many to many database relationship, fields marked with referrer
         has a provided custom key name in the association table.
         """
-        return Types(self, ReferrerValidator(referrer_key))
+        return Types(self, ReferrerModifier(referrer_key))
 
     def referee(self, referee_key: str) -> Types:
         """In a many to many database relationship, fields marked with referee
         reference the other side of the relationship with this provided custom
         key name.
         """
-        return Types(self, RefereeValidator(referee_key))
+        return Types(self, RefereeModifier(referee_key))
 
     @property
     def nullify(self) -> Types:
         """When an object is deleted, linked objects' references are set to
         null instead of deleted.
         """
-        return Types(self, NullifyValidator())
+        return Types(self, NullifyModifier())
 
     @property
     def cascade(self) -> Types:
         """When an object is deleted, linked objects with cascade relationship
         are deleted.
         """
-        return Types(self, CascadeValidator())
+        return Types(self, CascadeModifier())
 
     @property
     def deny(self) -> Types:
         """When an object is deleted, linked objects with deny relationship
         prevent this object being deleted.
         """
-        return Types(self, DenyValidator())
+        return Types(self, DenyModifier())
 
     @property
     def str(self) -> Types:
         """Fields marked with str should be str type. This is a type marker.
         """
-        return Types(self, StrValidator())
+        return Types(self, StrModifier())
 
     def match(self, pattern: Str) -> Types:
         """Fields marked with match are tested againest the argument regular
         expression pattern.
         """
-        return Types(self, MatchValidator(pattern))
+        return Types(self, MatchModifier(pattern))
 
     def oneof(self, str_list: list[Str]) -> Types:
         """This is the enum equivalent for jsonclasses. Values in the provided
         list are considered valid values.
         """
-        return Types(self, OneOfValidator(str_list))
+        return Types(self, OneOfModifier(str_list))
 
     def minlength(self, length: int) -> Types:
         """Values at fields marked with minlength should have a length which is
@@ -276,7 +276,7 @@ class Types:
         Returns:
           Types: A new types chained with this marker.
         """
-        return Types(self, MinlengthValidator(length))
+        return Types(self, MinlengthModifier(length))
 
     def maxlength(self, length: int) -> Types:
         """Values at fields marked with maxlength should have a length which is
@@ -288,7 +288,7 @@ class Types:
         Returns:
           Types: A new types chained with this marker.
         """
-        return Types(self, MaxlengthValidator(length))
+        return Types(self, MaxlengthModifier(length))
 
     def length(self, minlength: int, maxlength: Optional[int] = None) -> Types:
         """Fields marked with length should have a length which is between the
@@ -302,203 +302,203 @@ class Types:
         Returns:
           Types: A new types chained with this marker.
         """
-        return Types(self, LengthValidator(minlength, maxlength))
+        return Types(self, LengthModifier(minlength, maxlength))
 
     @property
     def url(self) -> Types:
         """Fields marked with url should be valid url string. This is a
-        validator marker.
+        modifier marker.
         """
-        return Types(self, UrlValidator())
+        return Types(self, UrlModifier())
 
     @property
     def digit(self) -> Types:
         """Values of fields marked with digit should be valid digit string. This is a
-        validator marker.
+        modifier marker.
         """
-        return Types(self, DigitValidator())
+        return Types(self, DigitModifier())
 
     @property
     def alpha(self) -> Types:
         """Values of fields marked with alpha should be valid alpha string. This is a
-        validator marker.
+        modifier marker.
         """
-        return Types(self, AlphaValidator())
+        return Types(self, AlphaModifier())
 
     @property
     def numeric(self) -> Types:
         """Values of fields marked with numeric should be valid numeric string. This is a
-        validator marker.
+        modifier marker.
         """
-        return Types(self, NumericValidator())
+        return Types(self, NumericModifier())
 
     @property
     def email(self) -> Types:
         """Values of fields marked with email should be valid email format. This is a
-        validator marker.
+        modifier marker.
         """
-        return Types(self, EmailValidator())
+        return Types(self, EmailModifier())
 
     @property
     def alnum(self) -> Types:
         """Values fields marked with alnum should be valid alnum strings. This is a
-        validator marker.
+        modifier marker.
         """
-        return Types(self, AlnumValidator())
+        return Types(self, AlnumModifier())
 
     @property
     def int(self) -> Types:
         """Fields marked with int should be int type. This is a type marker.
         """
-        return Types(self, IntValidator())
+        return Types(self, IntModifier())
 
     @property
     def float(self) -> Types:
         """Fields marked with float should be float type. This is a type
         marker.
         """
-        return Types(self, FloatValidator())
+        return Types(self, FloatModifier())
 
     def min(self, value: Float) -> Types:
         """Fields marked with min are tested again this value. Values less than
         the argument value are considered invalid.
         """
-        return Types(self, MinValidator(value))
+        return Types(self, MinModifier(value))
 
     def max(self, value: Float) -> Types:
         """Fields marked with max are tested again this value. Values greater
         than the argument value are considered invalid.
         """
-        return Types(self, MaxValidator(value))
+        return Types(self, MaxModifier(value))
 
     def range(self, min_value: Float, max_value: Float) -> Types:
         """Fields marked with range are tested again argument values. Only
         values between the arguments range are considered valid.
         """
-        return Types(self, RangeValidator(min_value, max_value))
+        return Types(self, RangeModifier(min_value, max_value))
 
     @property
     def negative(self) -> Types:
         """Fields marked with negative should have a value less than zero.
         """
-        return Types(self, NegativeValidator())
+        return Types(self, NegativeModifier())
 
     @property
     def positive(self) -> Types:
         """Fields marked with negative should have a value greater than zero.
         """
-        return Types(self, PositiveValidator())
+        return Types(self, PositiveModifier())
 
     @property
     def bool(self) -> Types:
         """Fields marked with bool should be bool type. This is a type marker.
         """
-        return Types(self, BoolValidator())
+        return Types(self, BoolModifier())
 
     @property
     def date(self) -> Types:
         """Fields marked with date should be date type. This is a type marker.
         """
-        return Types(self, DateValidator())
+        return Types(self, DateModifier())
 
     @property
     def datetime(self) -> Types:
         """Fields marked with datetime should be datetime type. This is a type
         marker.
         """
-        return Types(self, DatetimeValidator())
+        return Types(self, DatetimeModifier())
 
     def enum(self, enum_class: Union[type, str]) -> Types:
         """Fields marked with enum should be enum value of provided enum type.
         This is a type marker.
         """
-        return Types(self, EnumValidator(enum_class))
+        return Types(self, EnumModifier(enum_class))
 
     @property
     def inputall(self) -> Types:
         """Inputall makes enum field to accept all kinds of acceptable enum
         values in any forms.
         """
-        return Types(self, InputAllValidator())
+        return Types(self, InputAllModifier())
 
     @property
     def inputlname(self) -> Types:
         """Inputlname makes enum field to accept enum's lowercase name as
         input.
         """
-        return Types(self, InputLnameValidator())
+        return Types(self, InputLnameModifier())
 
     @property
     def inputname(self) -> Types:
         """Inputlname makes enum field to accept enum's uppercase name as
         input.
         """
-        return Types(self, InputNameValidator())
+        return Types(self, InputNameModifier())
 
     @property
     def inputvalue(self) -> Types:
         """Inputlname makes enum field to accept enum's value as input.
         """
-        return Types(self, InputValueValidator())
+        return Types(self, InputValueModifier())
 
     @property
     def outputlname(self) -> Types:
         """Outputlname makes enum field to output lowercase name as display
         value.
         """
-        return Types(self, OutputLnameValidator())
+        return Types(self, OutputLnameModifier())
 
     @property
     def outputname(self) -> Types:
         """Outputname makes enum field to output uppercase name as display
         value.
         """
-        return Types(self, OutputNameValidator())
+        return Types(self, OutputNameModifier())
 
     @property
     def outputvalue(self) -> Types:
         """Outputvalue makes enum field to output value as display value.
         """
-        return Types(self, OutputValueValidator())
+        return Types(self, OutputValueModifier())
 
     def listof(self, item_types: Any) -> Types:
         """Fields marked with listof should be a list of the given type. This
         is a type marker.
         """
-        return Types(self, ListOfValidator(item_types))
+        return Types(self, ListOfModifier(item_types))
 
     def dictof(self, item_types: Any) -> Types:
         """Fields marked with listof should be a str keyed dict of the given
         type. This is a type marker.
         """
-        return Types(self, DictOfValidator(item_types))
+        return Types(self, DictOfModifier(item_types))
 
     def shape(self, item_types_map: dict[Str, Any]) -> Types:
         """Fields marked with shape are objects shaped with given shape. This
         is a type marker.
         """
-        return Types(self, ShapeValidator(item_types_map))
+        return Types(self, ShapeModifier(item_types_map))
 
     @property
     def strict(self) -> Types:
         """Shape fields marked with strict disallow undefined keys.
         """
-        return Types(self, StrictValidator())
+        return Types(self, StrictModifier())
 
     def instanceof(self, json_object_class: Any) -> Types:
         """Fields marked with instance of are objects of given class.
         """
-        return Types(self, InstanceOfValidator(json_object_class))
+        return Types(self, InstanceOfModifier(json_object_class))
 
     def objof(self, jcls: Any) -> Types:
         """Fields marked with objof are objects of given class.
         """
-        return Types(self, InstanceOfValidator(jcls))
+        return Types(self, InstanceOfModifier(jcls))
 
     def oneoftype(self, type_list: list[Any]) -> Types:
         """Fields marked with oneoftype accepts value from these types.
         """
-        return Types(self, OneOfTypeValidator(type_list))
+        return Types(self, OneOfTypeModifier(type_list))
 
     @property
     def required(self) -> Types:
@@ -507,7 +507,7 @@ class Types:
         Returns:
           Types: A new types chained with this marker.
         """
-        return Types(self, RequiredValidator())
+        return Types(self, RequiredModifier())
 
     @property
     def nullable(self) -> Types:
@@ -519,7 +519,7 @@ class Types:
         Returns:
           Types: A new types chained with this marker.
         """
-        return Types(self, NullableValidator())
+        return Types(self, NullableModifier())
 
     @property
     def present(self) -> Types:
@@ -527,26 +527,26 @@ class Types:
         if it has a None value. This is useful for foreign key fields to do
         required validation.
         """
-        return Types(self, PresentValidator())
+        return Types(self, PresentModifier())
 
     def presentwith(self, referring_key: str) -> Types:
-        """Fields marked with presentwith validator are forced presented if
+        """Fields marked with presentwith modifier are forced presented if
         referring field is present. If referring field has None value, this
         field's value is optional. If referring field has non None value, value
         of this field is required.
         """
-        return Types(self, PresentWithValidator(referring_key))
+        return Types(self, PresentWithModifier(referring_key))
 
     def presentwithout(self, referring_keys: Union[str, list[str]]) -> Types:
-        """Fields marked with presentwithout validator are forced presented if
+        """Fields marked with presentwithout modifier are forced presented if
         referring field is not present. If referring field has None value, this
         field's value should be present. If referring field has non None value,
         value of this field is not forced to be present.
         """
-        return Types(self, PresentWithoutValidator(referring_keys))
+        return Types(self, PresentWithoutModifier(referring_keys))
 
     def validate(self, validate_callable: Callable) -> Types:
-        """The validate field mark takes a validator callable as its sole
+        """The validate field mark takes a modifier callable as its sole
         argument. Use this to define custom field value validations.
 
         Args:
@@ -558,12 +558,12 @@ class Types:
         Returns:
             Types: A new types chained with this marker.
         """
-        return Types(self, ValidateValidator(validate_callable))
+        return Types(self, ValidateModifier(validate_callable))
 
     def op(self, op_callable: Callable) -> Types:
-        """Operator validator validates value against the operator object user
-        passed in. This validator is special and doesn't bypass None value. If
-        the operator is not present, this validator fails.
+        """Operator modifier validates value against the operator object user
+        passed in. This modifier is special and doesn't bypass None value. If
+        the operator is not present, this modifier fails.
 
         Args:
             op_callable (Callable): The op callable takes 1 to 4 arguments. The
@@ -575,11 +575,11 @@ class Types:
         Returns:
             Types: A new types chained with this marker.
         """
-        return Types(self, OpValidator(op_callable))
+        return Types(self, OpModifier(op_callable))
 
     def compare(self, compare_callable: Callable) -> Types:
-        """The compare field mark takes a validator callable as its sole
-        argument. If value of compared fields are changed, this validator is
+        """The compare field mark takes a modifier callable as its sole
+        argument. If value of compared fields are changed, this modifier is
         called with 2 to 5 arguments.
 
         Args:
@@ -592,8 +592,8 @@ class Types:
             Types: A new types chained with this marker.
         """
         return Types(self,
-                     ResetValidator(),
-                     CompareValidator(compare_callable))
+                     ResetModifier(),
+                     CompareModifier(compare_callable))
 
     # transformers
 
@@ -608,7 +608,7 @@ class Types:
         Returns:
           Types: A new types chained with this marker.
         """
-        return Types(self, DefaultValidator(value))
+        return Types(self, DefaultModifier(value))
 
     def truncate(self, max_length: Int) -> Types:
         """During initialization and set, if string value is too long, it's
@@ -620,7 +620,7 @@ class Types:
         Returns:
           Types: A new types chained with this marker.
         """
-        return Types(self, EagerValidator(), TruncateValidator(max_length))
+        return Types(self, EagerModifier(), TruncateModifier(max_length))
 
     @property
     def trim(self) -> Types:
@@ -630,7 +630,7 @@ class Types:
         Returns:
             Types: A new types chained with this marker.
         """
-        return Types(self, EagerValidator(), TrimValidator())
+        return Types(self, EagerModifier(), TrimModifier())
 
     @property
     def totitle(self) -> Types:
@@ -639,7 +639,7 @@ class Types:
         Returns:
             Types: A new types chained with this marker.
         """
-        return Types(self, EagerValidator(), ToTitleValidator())
+        return Types(self, EagerModifier(), ToTitleModifier())
 
     @property
     def tocap(self) -> Types:
@@ -648,7 +648,7 @@ class Types:
         Returns:
             Types: A new types chained with this marker.
         """
-        return Types(self, EagerValidator(), ToCapValidator())
+        return Types(self, EagerModifier(), ToCapModifier())
 
     @property
     def tolower(self) -> Types:
@@ -657,7 +657,7 @@ class Types:
         Returns:
             Types: A new types chained with this marker.
         """
-        return Types(self, EagerValidator(), ToLowerValidator())
+        return Types(self, EagerModifier(), ToLowerModifier())
 
     @property
     def toupper(self) -> Types:
@@ -666,7 +666,7 @@ class Types:
         Returns:
             Types: A new types chained with this marker.
         """
-        return Types(self, EagerValidator(), ToUpperValidator())
+        return Types(self, EagerModifier(), ToUpperModifier())
 
     def transform(self, transformer: Callable) -> Types:
         """This mark applies transfromer on the value. When value is None, the
@@ -680,7 +680,7 @@ class Types:
         Returns:
           Types: A new types chained with this marker.
         """
-        return Types(self, EagerValidator(), TransformValidator(transformer))
+        return Types(self, EagerModifier(), TransformModifier(transformer))
 
     def uploader(self, uploader: Callable) -> Types:
         """Uploader is barely a syntax alias for transformer. Uploaded files
@@ -694,7 +694,7 @@ class Types:
         Returns:
           Types: A new types chained with this marker.
         """
-        return Types(self, EagerValidator(), TransformValidator(uploader))
+        return Types(self, EagerModifier(), TransformModifier(uploader))
 
     def asop(self, asop_transformer: Callable) -> Types:
         """Asop marker assigns transformed operator value to this field. When
@@ -708,7 +708,7 @@ class Types:
         Returns:
             Types: A new types chained with this marker.
         """
-        return Types(self, AsopValidator(asop_transformer))
+        return Types(self, AsopModifier(asop_transformer))
 
     @property
     def asopd(self) -> Types:
@@ -719,7 +719,7 @@ class Types:
         Returns:
             Types: A new types chained with this marker.
         """
-        return Types(self, AsopdValidator())
+        return Types(self, AsopdModifier())
 
     def setonsave(self, setter: Callable) -> Types:
         """Setonsave marker marks a field to be updated just before serializing
@@ -732,10 +732,10 @@ class Types:
         Returns:
           Types: A new types chained with this marker.
         """
-        return Types(self, PreserializeValidator(), SetOnSaveValidator(setter))
+        return Types(self, PreserializeModifier(), SetOnSaveModifier(setter))
 
     def onsave(self, callback: Callable) -> Types:
-        """Onsave inserts a callback into the validator chain. If save action
+        """Onsave inserts a callback into the modifier chain. If save action
         is triggered, the callback is called with the current value.
 
         Args:
@@ -745,10 +745,10 @@ class Types:
         Returns:
             Types: A new types chained with this marker.
         """
-        return Types(self, OnSaveValidator(callback))
+        return Types(self, OnSaveModifier(callback))
 
     def onupdate(self, callback: Callable) -> Types:
-        """Onupdate is a callback validator. If value updated when saving, this
+        """Onupdate is a callback modifier. If value updated when saving, this
         callback is called with the current value or both values.
 
         Args:
@@ -757,10 +757,10 @@ class Types:
         Returns:
             Types: A new types chained with this marker.
         """
-        return Types(self, ResetValidator(), OnUpdateValidator(callback))
+        return Types(self, ResetModifier(), OnUpdateModifier(callback))
 
     def onwrite(self, callback: Callable) -> Types:
-        """Onwrite is a callback validator. Whenever a new value is being
+        """Onwrite is a callback modifier. Whenever a new value is being
         serialized into the database, this is called.
 
         Args:
@@ -769,12 +769,12 @@ class Types:
         Returns:
             Types: A new types chained with this marker.
         """
-        return Types(self, OnWriteValidator(callback))
+        return Types(self, OnWriteModifier(callback))
 
     @property
     def nonnull(self) -> Types:
         """This marker is a instructional transformer designated for shape, dictof
-        and listof. This is not a validator. To mark a field is required and should
+        and listof. This is not a modifier. To mark a field is required and should
         not be null, use `required` instead. This transformer should be used right
         before shape, dictof and listof, to given an instruction of not leaving
         null for the field.
@@ -782,18 +782,18 @@ class Types:
         Returns:
           Types: A new types chained with this marker.
         """
-        return Types(self, NonnullValidator())
+        return Types(self, NonnullModifier())
 
     def _unresolved(self: Types, arg: str) -> Types:
         """This marker marks unresolved status. This is used internally. Do not
         use this.
         """
-        return Types(self, UnresolvedValidator(arg))
+        return Types(self, UnresolvedModifier(arg))
 
 
 types = Types()
 """The root of the types marker. To mark an field with type annotation,
-accessor annotation, validator annotation and transformer annotation, use types
+accessor annotation, modifier annotation and transformer annotation, use types
 like this:
 
   @jsonclass

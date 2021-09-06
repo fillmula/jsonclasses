@@ -95,9 +95,9 @@ input = {
 }
 
 
-class TestInstanceOfValidator(TestCase):
+class TestInstanceOfModifier(TestCase):
 
-    def test_instanceof_validator_creates_instanceof_designated_class_on_transforming(self):
+    def test_instanceof_modifier_creates_instanceof_designated_class_on_transforming(self):
         @jsonclass(class_graph='test_instanceof_1')
         class Address:
             line1: str = types.str
@@ -110,7 +110,7 @@ class TestInstanceOfValidator(TestCase):
         user = User(**{'name': 'John', 'address': {'line1': 'London', 'line2': 'Road'}})
         self.assertIsInstance(user.address, Address)
 
-    def test_instanceof_validator_fill_children_defaults(self):
+    def test_instanceof_modifier_fill_children_defaults(self):
         @jsonclass(class_graph='test_instanceof_1_0')
         class Address:
             line1: str = types.str.default('Line1').required
@@ -124,7 +124,7 @@ class TestInstanceOfValidator(TestCase):
         self.assertEqual(user.address.line1, 'Line1')
         self.assertEqual(user.address.line2, 'Line2')
 
-    def test_instanceof_validator_raises_if_type_doesnt_match(self):
+    def test_instanceof_modifier_raises_if_type_doesnt_match(self):
         @jsonclass(class_graph='test_instanceof_1_2')
         class Address:
             line1: str = types.str.required
@@ -146,7 +146,7 @@ class TestInstanceOfValidator(TestCase):
             "value is not instance of Address",
             user.validate)
 
-    def test_instanceof_validator_validates_using_validator_inside(self):
+    def test_instanceof_modifier_validates_using_modifier_inside(self):
         @jsonclass(class_graph='test_instanceof_2')
         class Address:
             line1: str = types.str.required
@@ -161,7 +161,7 @@ class TestInstanceOfValidator(TestCase):
             "'address\\.line1': value required",
             user.validate)
 
-    def test_instanceof_validator_convert_subfields_to_json(self):
+    def test_instanceof_modifier_convert_subfields_to_json(self):
         @jsonclass(class_graph='test_instanceof_3')
         class Address:
             line1: str = types.str.required
@@ -175,7 +175,7 @@ class TestInstanceOfValidator(TestCase):
         result = user.tojson()
         self.assertEqual(result, {'name': 'John', 'address': {'line1': 'OK', 'line2': 'Road'}})
 
-    def test_instanceof_validator_creates_instances_inside_list(self):
+    def test_instanceof_modifier_creates_instances_inside_list(self):
         @jsonclass(class_graph='test_instanceof_4')
         class Address:
             line1: str = types.str
@@ -195,7 +195,7 @@ class TestInstanceOfValidator(TestCase):
         self.assertEqual(user.addresses[0]._data_dict, {'line1': 'London', 'line2': 'Road'})
         self.assertEqual(user.addresses[1]._data_dict, {'line1': 'Paris', 'line2': 'Road'})
 
-    def test_instanceof_validator_validates_instances_inside_list(self):
+    def test_instanceof_modifier_validates_instances_inside_list(self):
         @jsonclass(class_graph='test_instanceof_5')
         class Address:
             line1: str = types.str.required
@@ -211,7 +211,7 @@ class TestInstanceOfValidator(TestCase):
         ]})
         self.assertRaises(ValidationException, user.validate)
 
-    def test_instanceof_validator_converts_to_json_inside_list(self):
+    def test_instanceof_modifier_converts_to_json_inside_list(self):
         @jsonclass(class_graph='test_instanceof_6')
         class Address:
             line1: str = types.str
@@ -229,7 +229,7 @@ class TestInstanceOfValidator(TestCase):
         desired = {'name': 'John', 'addresses': [{'line1': 'London', 'line2': 'Road'}, {'line1': 'Paris', 'line2': 'Road'}]}
         self.assertEqual(result, desired)
 
-    def test_instanceof_validator_allow_argument_to_be_string(self):
+    def test_instanceof_modifier_allow_argument_to_be_string(self):
         @jsonclass(class_graph='test_instanceof_7')
         class Post:
             title: str = types.str

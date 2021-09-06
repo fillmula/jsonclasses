@@ -3,7 +3,7 @@ from unittest import TestCase
 from tests.classes.role_user import RoleUser
 
 
-class TestReadonlyValidator(TestCase):
+class TestReadonlyModifier(TestCase):
 
     def test_readonly_will_not_be_set_through_init(self):
         user = RoleUser(username='John', role='I want to change haha XD')
