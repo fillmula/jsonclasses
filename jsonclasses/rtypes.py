@@ -94,6 +94,8 @@ def str_to_types(anytypes: str, opt: bool = False) -> Types:
         return types.date if opt else types.date.required
     elif anytypes == 'datetime':
         return types.datetime if opt else types.datetime.required
+    elif anytypes == 'Any':
+        return types.any if opt else types.any.required
     elif anytypes.startswith('Union['):
         match_data = match('Union\\[(.*)\\]', anytypes)
         assert match_data is not None
@@ -160,6 +162,8 @@ def to_types(anytypes: Any, opt: bool = False) -> Types:
         return types.date if opt else types.date.required
     elif anytypes is datetime:
         return types.datetime if opt else types.datetime.required
+    elif anytypes is Any:
+        return types.any if opt else types.any.required
     elif get_origin(anytypes) is list:
         list_type = types.listof(get_args(anytypes)[0])
         return list_type if opt else list_type.required

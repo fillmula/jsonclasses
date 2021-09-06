@@ -94,6 +94,7 @@ from .instanceof_modifier import InstanceOfModifier
 
 # mixed type modifier
 from .oneoftype_modifier import OneOfTypeModifier
+from .any_modifier import AnyModifier
 
 # nullability modifiers
 from .required_modifier import RequiredModifier

@@ -4,38 +4,38 @@ from typing import Callable, Any, Optional, Union, Literal
 from copy import deepcopy
 from .fdef import Fdef
 from .modifiers import (UseForModifier, BoolModifier, ChainedModifier,
-                         CompareModifier, DateModifier, DatetimeModifier,
-                         DefaultModifier, DictOfModifier, EagerModifier,
-                         EmbeddedModifier, EnumModifier,
-                         FloatModifier, IndexModifier, InputAllModifier,
-                         InputNameModifier, InputLnameModifier,
-                         InputValueModifier, InstanceOfModifier,
-                         IntModifier, InvalidModifier, LengthModifier,
-                         LinkedByModifier, LinkedInModifier,
-                         LinkedThruModifier, LinkToModifier, ListOfModifier,
-                         MatchModifier, MaxModifier, MaxlengthModifier,
-                         MinModifier, MinlengthModifier, NegativeModifier,
-                         NonnullModifier, NullableModifier, OneOfModifier,
-                         OneOfTypeModifier, OnWriteModifier, OnSaveModifier,
-                         OnUpdateModifier, OutputLnameModifier,
-                         OutputNameModifier, OutputValueModifier,
-                         PositiveModifier, PresentModifier,
-                         PresentWithModifier, PresentWithoutModifier,
-                         PreserializeModifier, PrimaryModifier,
-                         RangeModifier, ReadonlyModifier, ReadwriteModifier,
-                         RefereeModifier, ReferrerModifier,
-                         RequiredModifier, ResetModifier, SetOnSaveModifier,
-                         ShapeModifier, StrModifier, StrictModifier,
-                         TempModifier, TransformModifier, TrimModifier,
-                         TruncateModifier, UniqueModifier, ValidateModifier,
-                         Modifier, WriteNonnullModifier, WriteonceModifier,
-                         WriteonlyModifier, DenyModifier, CascadeModifier,
-                         NullifyModifier, OpModifier, AsopModifier,
-                         AsopdModifier, UrlModifier, EmailModifier,
-                         DigitModifier,AlphaModifier,NumericModifier,
-                         AlnumModifier,ToTitleModifier,ToCapModifier,
-                         ToLowerModifier,ToUpperModifier,
-                         UnresolvedModifier)
+                        CompareModifier, DateModifier, DatetimeModifier,
+                        DefaultModifier, DictOfModifier, EagerModifier,
+                        EmbeddedModifier, EnumModifier,
+                        FloatModifier, IndexModifier, InputAllModifier,
+                        InputNameModifier, InputLnameModifier,
+                        InputValueModifier, InstanceOfModifier,
+                        IntModifier, InvalidModifier, LengthModifier,
+                        LinkedByModifier, LinkedInModifier,
+                        LinkedThruModifier, LinkToModifier, ListOfModifier,
+                        MatchModifier, MaxModifier, MaxlengthModifier,
+                        MinModifier, MinlengthModifier, NegativeModifier,
+                        NonnullModifier, NullableModifier, OneOfModifier,
+                        OneOfTypeModifier, OnWriteModifier, OnSaveModifier,
+                        OnUpdateModifier, OutputLnameModifier,
+                        OutputNameModifier, OutputValueModifier,
+                        PositiveModifier, PresentModifier,
+                        PresentWithModifier, PresentWithoutModifier,
+                        PreserializeModifier, PrimaryModifier,
+                        RangeModifier, ReadonlyModifier, ReadwriteModifier,
+                        RefereeModifier, ReferrerModifier,
+                        RequiredModifier, ResetModifier, SetOnSaveModifier,
+                        ShapeModifier, StrModifier, StrictModifier,
+                        TempModifier, TransformModifier, TrimModifier,
+                        TruncateModifier, UniqueModifier, ValidateModifier,
+                        Modifier, WriteNonnullModifier, WriteonceModifier,
+                        WriteonlyModifier, DenyModifier, CascadeModifier,
+                        NullifyModifier, OpModifier, AsopModifier,
+                        AsopdModifier, UrlModifier, EmailModifier,
+                        DigitModifier,AlphaModifier,NumericModifier,
+                        AlnumModifier,ToTitleModifier,ToCapModifier,
+                        ToLowerModifier,ToUpperModifier,
+                        UnresolvedModifier, AnyModifier)
 
 Str = str
 Int = int
@@ -499,6 +499,12 @@ class Types:
         """Fields marked with oneoftype accepts value from these types.
         """
         return Types(self, OneOfTypeModifier(type_list))
+
+    @property
+    def any(self) -> Types:
+        """Fields marked with any can be any value.
+        """
+        return Types(self, AnyModifier())
 
     @property
     def required(self) -> Types:

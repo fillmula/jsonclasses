@@ -1,7 +1,6 @@
 """module for modifier modifier."""
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from ..excs import ValidationException
 from ..fdef import Fdef, FieldType
 from .modifier import Modifier
 if TYPE_CHECKING:
