@@ -1,5 +1,6 @@
 """module for instanceof modifier."""
 from __future__ import annotations
+from jsonclasses.vmsgcollector import VMsgCollector
 from jsonclasses.jfield import JField
 from typing import Any, Sequence, Union, cast, TYPE_CHECKING
 from inflection import camelize
@@ -43,7 +44,7 @@ class InstanceOfModifier(Modifier):
         modified_fields = []
         if only_validate_modified:
             modified_fields = list(initial_keypaths((ctx.val.modified_fields)))
-        keypath_messages = {}
+        ctor = VMsgCollector()
         val = cast(JObject, ctx.val)
         for field in val.__class__.cdef.fields:
             fname = field.name
@@ -60,13 +61,11 @@ class InstanceOfModifier(Modifier):
                 field.types.modifier.validate(fval_ctx)
             except ValidationException as exception:
                 if all_fields:
-                    keypath_messages.update(exception.keypath_messages)
+                    ctor.receive(exception.keypath_messages)
                 else:
                     raise exception
-        if len(keypath_messages) > 0:
-            raise ValidationException(
-                keypath_messages=keypath_messages,
-                root=ctx.root)
+        if ctor.has_msgs:
+            ctx.raise_mvexc(ctor.messages)
 
     def _strictness_check(self, ctx: Ctx, dest: JObject) -> None:
         available_names = dest.__class__.cdef.available_names

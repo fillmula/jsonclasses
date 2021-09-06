@@ -16,5 +16,6 @@ class VMsgCollector:
     def messages(self: VMsgCollector) -> dict[str, str]:
         return self.msgs
 
+    @property
     def has_msgs(self: VMsgCollector) -> bool:
         return len(self.msgs) > 0
