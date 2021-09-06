@@ -14,8 +14,7 @@ class TestPresentWithout(TestCase):
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 1)
         self.assertEqual(exception.keypath_messages['email'],
-                         "Value at 'email' should be present since it's "
-                         "referring values are not presented.")
+                         "value is not present without ['phone_number']")
 
     def test_presentwithout_doesnt_raise_if_one_presented(self):
         SimpleUserAccount(email='a@g.com').validate()
@@ -28,8 +27,7 @@ class TestPresentWithout(TestCase):
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 1)
         self.assertEqual(exception.keypath_messages['email'],
-                         "Value at 'email' should be present since it's "
-                         "referring values are not presented.")
+                         "value is not present without ['phone_no', 'address']")
 
     def test_presentwithout_doesnt_raise_if_one_of_many_presented(self):
         SimpleContact(email='a@g.com').validate()

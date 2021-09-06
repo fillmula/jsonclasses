@@ -20,4 +20,4 @@ class TestUrl(TestCase):
             analysis.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
         self.assertEqual(context.exception.keypath_messages['cover'],
-                         "Value 'https://google' at 'cover' is not valid url.")
+                         "value is not valid url string")

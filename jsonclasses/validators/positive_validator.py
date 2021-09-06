@@ -17,6 +17,6 @@ class PositiveValidator(Validator):
             kp = '.'.join([str(k) for k in ctx.keypathr])
             v = ctx.val
             raise ValidationException(
-                {kp: f'Value \'{v}\' at \'{kp}\' should be positive.'},
+                {kp: f'value is not positive'},
                 ctx.root
             )

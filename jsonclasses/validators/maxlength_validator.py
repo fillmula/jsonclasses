@@ -19,6 +19,6 @@ class MaxlengthValidator(Validator):
         if len(ctx.val) > self.maxlength:
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {kp: f'Length of value \'{ctx.val}\' at \'{kp}\' should not be greater than {self.maxlength}.'},
+                {kp: f'length of value is not less than or equal {self.maxlength}'},
                 ctx.root
             )

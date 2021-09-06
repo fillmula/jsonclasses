@@ -27,14 +27,13 @@ class PresentWithoutValidator(Validator):
             try:
                 referred_value = getattr(ctx.owner, key)
             except AttributeError:
-                raise ValueError('Unexist referring key '
+                raise ValueError('unexist referring key '
                                  f'\'{key}\' '
-                                 'passed to present without validator.')
+                                 'passed to present without validator')
             if referred_value is not None:
                 return
         if ctx.val is None:
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {kp: (f'Value at \'{kp}\' should be present since it\'s '
-                      'referring values are not presented.')},
+                {kp: (f'value is not present without {self.referring_keys}')},
                 ctx.root)

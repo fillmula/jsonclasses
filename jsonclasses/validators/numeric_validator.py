@@ -17,6 +17,6 @@ class NumericValidator(Validator):
         if not value.isnumeric():
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {kp: f'product_id \'{value}\' at \'{kp}\' is not a numeric.'},
+                {kp: f'value is not numeric string'},
                 ctx.root
             )

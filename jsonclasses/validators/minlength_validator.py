@@ -19,6 +19,6 @@ class MinlengthValidator(Validator):
         if len(ctx.val) < self.minlength:
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {kp: f'Length of value \'{ctx.val}\' at \'{kp}\' should not be less than {self.minlength}.'},
+                {kp: f'length of value is not greater than or equal {self.minlength}'},
                 ctx.root
             )

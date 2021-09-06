@@ -75,5 +75,4 @@ class TestDictOf(TestCase):
             quiz.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
         self.assertEqual(context.exception.keypath_messages['numbers.b'],
-                         "Value '2' at 'numbers.b' should not be less than "
-                         "100.")
+                         "value is not greater than or equal 100")

@@ -19,6 +19,6 @@ class MaxValidator(Validator):
         if ctx.val > self.max_value:
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {kp: f'Value \'{ctx.val}\' at \'{kp}\' should not be greater than {self.max_value}.'},
+                {kp: f'value is not less than or equal {self.max_value}'},
                 ctx.root
             )

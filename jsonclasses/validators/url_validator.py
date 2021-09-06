@@ -26,6 +26,6 @@ class UrlValidator(Validator):
         if match(regex, value) is None:
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {kp: f'Value \'{value}\' at \'{kp}\' is not valid url.'},
+                {kp: f'value is not valid url string'},
                 ctx.root
             )

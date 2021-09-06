@@ -21,5 +21,5 @@ class PresentValidator(Validator):
         if ctx.val is None:
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {kp: (f'Value at \'{kp}\' should be present.')},
+                {kp: (f'value is not present')},
                 ctx.root)

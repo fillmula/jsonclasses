@@ -76,7 +76,7 @@ class ShapeValidator(TypeValidator):
             if k not in keys:
                 kp = '.'.join([str(k) for k in ctx.keypathr])
                 raise ValidationException(
-                    {kp: (f'Unallowed key \'{k}\' at \'{kp}\'.')}, ctx.root)
+                    {kp: (f'key \'{k}\' is not allowed')}, ctx.root)
 
     def transform(self, ctx: Ctx) -> Any:
         value = ctx.val

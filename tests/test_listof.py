@@ -51,5 +51,4 @@ class TestListOf(TestCase):
             quiz.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
         self.assertEqual(context.exception.keypath_messages['numbers.1'],
-                         "Value '2' at 'numbers.1' should not be less than "
-                         "100.")
+                         "value is not greater than or equal 100")

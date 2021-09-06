@@ -21,6 +21,6 @@ class MatchValidator(Validator):
         if search(self.pattern, value) is None:
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {kp: f'Value \'{value}\' at \'{kp}\' should match \'{self.pattern}\'.'},
+                {kp: f'value does not match \'{self.pattern}\''},
                 ctx.root
             )

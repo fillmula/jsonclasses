@@ -8,8 +8,7 @@ class TestEagerValidation(TestCase):
     def test_eager_validator_validates_on_init(self):
         with self.assertRaises(ValidationException) as context:
             EvUser(password='123')
-        self.assertEqual("Length of value '123' at 'password' should not be "
-                         "less than 8.",
+        self.assertEqual("length of value is not greater than or equal 8",
                          context.exception.keypath_messages['password'])
 
     def test_eager_validator_doesnt_cause_other_fields_to_validate_on_init(self):
@@ -26,8 +25,7 @@ class TestEagerValidation(TestCase):
         user = EvUser()
         with self.assertRaises(ValidationException) as context:
             user.set(password='123')
-        self.assertEqual("Length of value '123' at 'password' should not be "
-                         "less than 8.",
+        self.assertEqual("length of value is not greater than or equal 8",
                          context.exception.keypath_messages['password'])
 
     def test_eager_validator_will_not_work_on_update(self):

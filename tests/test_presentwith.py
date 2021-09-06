@@ -13,8 +13,7 @@ class TestPresentWith(TestCase):
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 1)
         self.assertEqual(exception.keypath_messages['calling_code'],
-                         "Value at 'calling_code' should be present since "
-                         "it's referring value is presented.")
+                         "value is not present with 'phone_number'")
 
     def test_presentwith_doesnt_raise_if_both_value_not_present(self):
         code = SimpleAuthCode(code='4466')

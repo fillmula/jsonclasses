@@ -76,8 +76,7 @@ class TestValidate(TestCase):
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 1)
         self.assertEqual(exception.keypath_messages['attendees.0'],
-                         "Length of value 'A' at 'attendees.0' should not be "
-                         "less than 2.")
+                         "length of value is not greater than or equal 2")
 
     def test_validate_validates_all_list_fields_if_required(self):
         project = SimpleProject(name='Teo', attendees=['A', 'B', 'C', 'D'])
@@ -86,17 +85,13 @@ class TestValidate(TestCase):
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 4)
         self.assertEqual(exception.keypath_messages['attendees.0'],
-                         "Length of value 'A' at 'attendees.0' should not be "
-                         "less than 2.")
+                         "length of value is not greater than or equal 2")
         self.assertEqual(exception.keypath_messages['attendees.1'],
-                         "Length of value 'B' at 'attendees.1' should not be "
-                         "less than 2.")
+                         "length of value is not greater than or equal 2")
         self.assertEqual(exception.keypath_messages['attendees.2'],
-                         "Length of value 'C' at 'attendees.2' should not be "
-                         "less than 2.")
+                         "length of value is not greater than or equal 2")
         self.assertEqual(exception.keypath_messages['attendees.3'],
-                         "Length of value 'D' at 'attendees.3' should not be "
-                         "less than 2.")
+                         "length of value is not greater than or equal 2")
 
     def test_validate_validates_one_dict_field_by_default(self):
         chart = SimpleChart(name='Teo', partitions={
@@ -106,8 +101,7 @@ class TestValidate(TestCase):
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 1)
         self.assertEqual(exception.keypath_messages['partitions.a'],
-                         "Value '2.0' at 'partitions.a' should not be "
-                         "greater than 1.")
+                         "value is not less than or equal 1")
 
     def test_validate_validates_all_dict_fields_if_required(self):
         chart = SimpleChart(name='Teo', partitions={
@@ -117,17 +111,13 @@ class TestValidate(TestCase):
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 4)
         self.assertEqual(exception.keypath_messages['partitions.a'],
-                         "Value '2.0' at 'partitions.a' should not be "
-                         "greater than 1.")
+                         "value is not less than or equal 1")
         self.assertEqual(exception.keypath_messages['partitions.b'],
-                         "Value '3.0' at 'partitions.b' should not be "
-                         "greater than 1.")
+                         "value is not less than or equal 1")
         self.assertEqual(exception.keypath_messages['partitions.c'],
-                         "Value '4.0' at 'partitions.c' should not be "
-                         "greater than 1.")
+                         "value is not less than or equal 1")
         self.assertEqual(exception.keypath_messages['partitions.d'],
-                         "Value '5.0' at 'partitions.d' should not be "
-                         "greater than 1.")
+                         "value is not less than or equal 1")
 
     def test_validate_validates_one_field_inside_shape_by_default(self):
         setting = SimpleSetting(

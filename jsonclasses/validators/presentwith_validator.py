@@ -28,7 +28,5 @@ class PresentWithValidator(Validator):
         if referred_value is not None and ctx.val is None:
             kp = '.'.join([str(k) for k in ctx.keypathr])
             raise ValidationException(
-                {kp: (f'Value at \'{kp}\''
-                                        ' should be present since it\'s '
-                                        'referring value is presented.')},
+                {kp: (f'value is not present with \'{self.referring_key}\'')},
                 ctx.root)
