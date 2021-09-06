@@ -4,6 +4,7 @@ from jsonclasses.jconf import JConf
 from typing import Any, NamedTuple, Union, Optional, TYPE_CHECKING
 from .types import types
 from .mgraph import MGraph
+from .excs import ValidationException
 if TYPE_CHECKING:
     from .cdef import Cdef
     from .fdef import Fdef
@@ -170,3 +171,8 @@ class Ctx(NamedTuple):
                    keypathh=[*self.keypathh, key], fdef=fdef,
                    operator=self.operator, mgraph=self.mgraph,
                    idchain=self.idchain)
+
+    def raise_vexc(self: Ctx, msg: str) -> None:
+        """Raise validation error with message.
+        """
+        raise ValidationException({self.skeypathr: msg}, self.root)

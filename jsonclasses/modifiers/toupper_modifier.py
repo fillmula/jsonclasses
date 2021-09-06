@@ -10,4 +10,4 @@ class ToUpperModifier(Modifier):
     """convert string into upper case"""
 
     def transform(self, ctx: Ctx) -> Any:
-        return None if ctx.val is None else ctx.val.upper()
+        return ctx.val.upper() if isinstance(ctx.val, str) else ctx.val

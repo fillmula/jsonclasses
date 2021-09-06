@@ -10,4 +10,4 @@ class ToLowerModifier(Modifier):
     """convert string into lower case"""
 
     def transform(self, ctx: Ctx) -> Any:
-        return None if ctx.val is None else ctx.val.lower()
+        return ctx.val.lower() if isinstance(ctx.val, str) else ctx.val

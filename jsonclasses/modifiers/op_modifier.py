@@ -21,9 +21,7 @@ class OpModifier(Modifier):
 
     def validate(self, ctx: Ctx) -> None:
         if ctx.operator is None:
-            raise ValidationException(
-                {'.'.join([str(k) for k in ctx.keypathr]): 'operator not present'},
-                ctx.root)
+            ctx.raise_vexc('operator not present')
         params_len = len(signature(self.op_callable).parameters)
         if params_len == 1:
             result = self.op_callable(ctx.operator)
@@ -38,11 +36,7 @@ class OpModifier(Modifier):
         if result is True:
             return
         if result is False:
-            raise ValidationException(
-                keypath_messages={'.'.join([str(k) for k in ctx.keypathr]): 'unauthorized operation'},
-                root=ctx.root)
+            ctx.raise_vexc('unauthorized operation')
         if isinstance(result, str):
-            raise ValidationException(
-                keypath_messages={'.'.join([str(k) for k in ctx.keypathr]): result},
-                root=ctx.root)
+            ctx.raise_vexc(result)
         raise ValueError('invalid modifier')

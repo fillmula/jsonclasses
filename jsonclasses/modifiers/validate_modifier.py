@@ -32,11 +32,7 @@ class ValidateModifier(Modifier):
         if result is True:
             return
         if result is False:
-            raise ValidationException(
-                keypath_messages={'.'.join([str(k) for k in ctx.keypathr]): 'invalid value'},
-                root=ctx.root)
+            ctx.raise_vexc('invalid value')
         if isinstance(result, str):
-            raise ValidationException(
-                keypath_messages={'.'.join([str(k) for k in ctx.keypathr]): result},
-                root=ctx.root)
+            ctx.raise_vexc(result)
         raise ValueError('invalid modifier')

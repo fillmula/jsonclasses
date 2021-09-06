@@ -10,5 +10,5 @@ class TrimModifier(Modifier):
     """Trim modifier trims string values."""
 
     def transform(self, ctx: Ctx) -> Any:
-        return None if ctx.val is None else ctx.val.strip()
+        return ctx.val.strip() if isinstance(ctx.val, str) else ctx.val
 

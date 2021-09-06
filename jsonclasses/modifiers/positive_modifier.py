@@ -11,12 +11,6 @@ class PositiveModifier(Modifier):
     """Positive modifier marks value valid for large than zero."""
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.val is None:
-            return ctx.val
-        if ctx.val <= 0:
-            kp = '.'.join([str(k) for k in ctx.keypathr])
-            v = ctx.val
-            raise ValidationException(
-                {kp: f'value is not positive'},
-                ctx.root
-            )
+        is_number = type(ctx.val) is int or type(ctx.val) is float
+        if is_number and ctx.val <= 0:
+            ctx.raise_vexc('value is not positive')

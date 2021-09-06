@@ -19,7 +19,4 @@ class PresentModifier(Modifier):
 
     def validate(self, ctx: Ctx) -> None:
         if ctx.val is None:
-            kp = '.'.join([str(k) for k in ctx.keypathr])
-            raise ValidationException(
-                {kp: (f'value is not present')},
-                ctx.root)
+            ctx.raise_vexc('value is not present')

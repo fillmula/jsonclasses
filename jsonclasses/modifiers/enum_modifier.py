@@ -71,9 +71,7 @@ class EnumModifier(Modifier):
         else:
             enum_class = self.enum_or_name
         if not isinstance(ctx.val, enum_class):
-            raise ValidationException({
-                '.'.join([str(k) for k in ctx.keypathr]): 'invalid enum value'
-            }, ctx.root)
+            ctx.raise_vexc('invalid enum value')
 
     def tojson(self, ctx: Ctx) -> Any:
         if ctx.val is None:

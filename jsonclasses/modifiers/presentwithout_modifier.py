@@ -33,7 +33,4 @@ class PresentWithoutModifier(Modifier):
             if referred_value is not None:
                 return
         if ctx.val is None:
-            kp = '.'.join([str(k) for k in ctx.keypathr])
-            raise ValidationException(
-                {kp: (f'value is not present without {self.referring_keys}')},
-                ctx.root)
+            ctx.raise_vexc(f'value is not present without {self.referring_keys}')

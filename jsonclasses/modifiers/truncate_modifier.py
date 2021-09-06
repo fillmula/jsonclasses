@@ -9,8 +9,8 @@ if TYPE_CHECKING:
 class TruncateModifier(Modifier):
     """Truncate modifier truncates value."""
 
-    def __init__(self, maxlen: int) -> None:
-        self.maxlen = maxlen
+    def __init__(self, mlen: int) -> None:
+        self.mlen = mlen
 
     def transform(self, ctx: Ctx) -> Any:
-        return None if ctx.val is None else ctx.val[:self.maxlen]
+        return ctx.val[:self.mlen] if hasattr(ctx.val, '__len__') else ctx.val

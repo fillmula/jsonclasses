@@ -11,12 +11,6 @@ class DigitModifier(Modifier):
     """Digit modifier raises if value is not a digit."""
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.val is None:
-            return
-        value = ctx.val
-        if not value.isdigit():
-            kp = '.'.join([str(k) for k in ctx.keypathr])
-            raise ValidationException(
-                {kp: f'value is not digit string'},
-                ctx.root
-            )
+        if isinstance(ctx.val, str) and not ctx.val.isdigit():
+            ctx.raise_vexc('value is not digit string')
+

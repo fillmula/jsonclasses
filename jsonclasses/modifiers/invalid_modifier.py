@@ -12,7 +12,4 @@ class InvalidModifier(Modifier):
 
     def validate(self, ctx: Ctx) -> None:
         """Raises invalid exception."""
-        raise ValidationException(
-            {'.'.join([str(k) for k in ctx.keypathr]): f'value is invalid'},
-            ctx.root
-        )
+        ctx.raise_vexc('value is invalid')

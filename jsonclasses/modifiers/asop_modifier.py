@@ -2,7 +2,6 @@
 from __future__ import annotations
 from typing import Callable, TYPE_CHECKING
 from inspect import signature
-from ..excs import ValidationException
 from ..fdef import Fdef
 from .modifier import Modifier
 if TYPE_CHECKING:
@@ -29,7 +28,4 @@ class AsopModifier(Modifier):
     def validate(self, ctx: Ctx) -> None:
         if ctx.holder.is_new or ctx.keypathr[-1] in ctx.holder.modified_fields:
             if ctx.val is None:
-                raise ValidationException(
-                    keypath_messages={
-                        '.'.join([str(k) for k in ctx.keypathr]): "no operator being assigned"},
-                    root=ctx.root)
+                ctx.raise_vexc('no operator being assigned')

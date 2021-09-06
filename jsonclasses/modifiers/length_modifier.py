@@ -18,13 +18,9 @@ class LengthModifier(Modifier):
         if ctx.val is None:
             return
         value = ctx.val
-        kp = '.'.join([str(k) for k in ctx.keypathr])
         if len(value) > self.maxlength or len(value) < self.minlength:
             if self.minlength != self.maxlength:
                 message = f'length of value should be in between {self.minlength} and {self.maxlength}'
             else:
                 message = f'length of value is not {self.minlength}'
-            raise ValidationException(
-                {kp: message},
-                ctx.root
-            )
+            ctx.raise_vexc(message)

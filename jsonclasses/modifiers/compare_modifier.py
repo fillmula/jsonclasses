@@ -35,10 +35,6 @@ class CompareModifier(Modifier):
         if result is True:
             return
         if result is False:
-            raise ValidationException(
-                keypath_messages={'.'.join([str(k) for k in ctx.keypathr]): 'compare failed'},
-                root=ctx.root)
+            ctx.raise_vexc('compare failed')
         if result is not None:
-            raise ValidationException(
-                keypath_messages={'.'.join([str(k) for k in ctx.keypathr]): result},
-                root=ctx.root)
+            ctx.raise_vexc(result)

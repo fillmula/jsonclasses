@@ -2,7 +2,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from ..fdef import Fdef
-from ..excs import ValidationException
 from .modifier import Modifier
 from ..fdef import FieldStorage
 from ..jconf import JConf
@@ -31,18 +30,14 @@ class RequiredModifier(Modifier):
                 local_key = jconf.key_transformer(field)
                 if isinstance(ctx.holder, dict):
                     if ctx.holder.get(local_key) is None:
-                        kp = '.'.join([str(k) for k in ctx.keypathr])
-                        raise ValidationException({kp: f'value required'}, ctx.root)
+                        ctx.raise_vexc('value required')
                 elif isjsonobject(ctx.holder):
                     try:
                         local_key_value = getattr(ctx.holder, local_key)
                     except AttributeError:
-                        kp = '.'.join([str(k) for k in ctx.keypathr])
-                        raise ValidationException({kp: 'value required'}, ctx.root)
+                        ctx.raise_vexc('value required')
                     if local_key_value is None:
-                        kp = '.'.join([str(k) for k in ctx.keypathr])
-                        raise ValidationException({kp: 'value required'}, ctx.root)
+                        ctx.raise_vexc('value required')
             return
         if ctx.val is None:
-            kp = '.'.join([str(k) for k in ctx.keypathr])
-            raise ValidationException({kp: 'value required'}, ctx.root)
+            ctx.raise_vexc('value required')

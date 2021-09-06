@@ -38,9 +38,7 @@ class InstanceOfModifier(Modifier):
         if all_fields is None:
             all_fields = cls.cdef.jconf.validate_all_fields
         if not isinstance(ctx.val, cls):
-            raise ValidationException({
-                '.'.join([str(k) for k in ctx.keypathr]): f"value is not instance of {cls.__name__}"
-            }, ctx.root)
+            ctx.raise_vexc(f'value is not instance of {cls.__name__}')
         only_validate_modified = not ctx.val.is_new
         modified_fields = []
         if only_validate_modified:

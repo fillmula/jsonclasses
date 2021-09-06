@@ -10,4 +10,4 @@ class ToCapModifier(Modifier):
     """capitalize string"""
 
     def transform(self, ctx: Ctx) -> Any:
-        return None if ctx.val is None else ctx.val.capitalize()
+        return ctx.val.capitalize() if isinstance(ctx.val, str) else ctx.val

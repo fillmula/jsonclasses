@@ -17,8 +17,5 @@ class MaxlengthModifier(Modifier):
         if ctx.val is None:
             return
         if len(ctx.val) > self.maxlength:
-            kp = '.'.join([str(k) for k in ctx.keypathr])
-            raise ValidationException(
-                {kp: f'length of value is not less than or equal {self.maxlength}'},
-                ctx.root
-            )
+            ctx.raise_vexc('length of value is not less than or equal '
+                           f'{self.maxlength}')

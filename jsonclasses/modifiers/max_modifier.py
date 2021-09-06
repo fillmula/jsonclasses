@@ -14,11 +14,6 @@ class MaxModifier(Modifier):
         self.max_value = max_value
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.val is None:
-            return ctx.val
-        if ctx.val > self.max_value:
-            kp = '.'.join([str(k) for k in ctx.keypathr])
-            raise ValidationException(
-                {kp: f'value is not less than or equal {self.max_value}'},
-                ctx.root
-            )
+        is_number = type(ctx.val) is int or type(ctx.val) is float
+        if is_number and ctx.val > self.max_value:
+            ctx.raise_vexc(f'value is not less than or equal {self.max_value}')

@@ -14,11 +14,7 @@ class MinModifier(Modifier):
         self.min_value = min_value
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.val is None:
-            return
-        if ctx.val < self.min_value:
-            kp = '.'.join([str(k) for k in ctx.keypathr])
-            raise ValidationException(
-                {kp: f'value is not greater than or equal {self.min_value}'},
-                ctx.root
-            )
+        is_number = type(ctx.val) is int or type(ctx.val) is float
+        if is_number and ctx.val < self.min_value:
+            ctx.raise_vexc('value is not greater than or equal '
+                           f'{self.min_value}')

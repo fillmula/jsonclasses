@@ -10,5 +10,5 @@ class ToTitleModifier(Modifier):
     """Convert string to title format."""
 
     def transform(self, ctx: Ctx) -> Any:
-        return None if ctx.val is None else ctx.val.title()
+        return ctx.val.title() if isinstance(ctx.val, str) else ctx.val
 

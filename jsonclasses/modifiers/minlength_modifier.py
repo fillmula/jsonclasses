@@ -17,8 +17,5 @@ class MinlengthModifier(Modifier):
         if ctx.val is None:
             return
         if len(ctx.val) < self.minlength:
-            kp = '.'.join([str(k) for k in ctx.keypathr])
-            raise ValidationException(
-                {kp: f'length of value is not greater than or equal {self.minlength}'},
-                ctx.root
-            )
+            ctx.raise_vexc('length of value is not greater than or equal '
+                           f'{self.minlength}')

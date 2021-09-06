@@ -8,21 +8,11 @@ if TYPE_CHECKING:
     from ..ctx import Ctx
 
 
+email_regex = compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
+
 class EmailModifier(Modifier):
     """Email modifier raises if value is not valid email."""
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.val is None:
-            return
-        value = ctx.val
-        regex = compile(
-            r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
-        )
-
-
-        if match(regex, value) is None:
-            kp = '.'.join([str(k) for k in ctx.keypathr])
-            raise ValidationException(
-                {kp: f'value is not email string'},
-                ctx.root
-            )
+        if isinstance(ctx.val, str) and match(email_regex, ctx.val) is None:
+            ctx.raise_vexc('value is not email string')

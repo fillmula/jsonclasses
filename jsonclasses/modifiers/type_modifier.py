@@ -28,8 +28,4 @@ class TypeModifier(Modifier):
         else:
             if isinstance(ctx.val, self.cls):
                 return
-        kp = '.'.join([str(k) for k in ctx.keypathr])
-        raise ValidationException(
-            {kp: f'value is not {self.cls.__name__}'},
-            ctx.root
-        )
+        ctx.raise_vexc(f'value is not {self.cls.__name__}')

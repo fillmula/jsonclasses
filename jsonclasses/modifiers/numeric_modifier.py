@@ -11,12 +11,6 @@ class NumericModifier(Modifier):
     """Numeric modifier raises if value is not a numeric."""
 
     def validate(self, ctx: Ctx) -> None:
-        if ctx.val is None:
-            return
-        value = ctx.val
-        if not value.isnumeric():
-            kp = '.'.join([str(k) for k in ctx.keypathr])
-            raise ValidationException(
-                {kp: f'value is not numeric string'},
-                ctx.root
-            )
+        if isinstance(ctx.val, str) and not ctx.val.isnumeric():
+            ctx.raise_vexc('value is not numeric string')
+

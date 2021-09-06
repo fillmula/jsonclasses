@@ -23,10 +23,7 @@ class PresentWithModifier(Modifier):
         try:
             referred_value = getattr(ctx.owner, self.referring_key)
         except AttributeError:
-            raise ValueError(f'Unexist referring key \'{self.referring_key}\' '
-                             'passed to present with modifier.')
+            raise ValueError(f'unexist referring key \'{self.referring_key}\' '
+                             'passed to present with modifier')
         if referred_value is not None and ctx.val is None:
-            kp = '.'.join([str(k) for k in ctx.keypathr])
-            raise ValidationException(
-                {kp: (f'value is not present with \'{self.referring_key}\'')},
-                ctx.root)
+            ctx.raise_vexc(f"value is not present with '{self.referring_key}'")
