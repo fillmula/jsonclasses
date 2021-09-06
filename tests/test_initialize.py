@@ -42,7 +42,7 @@ class TestInitialize(TestCase):
             SimpleArticle(dzimsikai='Ku Piang Hoê')
         self.assertTrue(len(context.exception.keypath_messages) == 1)
         self.assertEqual(context.exception.keypath_messages['dzimsikai'],
-                         "Key 'dzimsikai' is not allowed.")
+                         "key is not allowed")
 
     def test_initialize_underscore_key_cases_by_default(self):
         address = SimpleAddress(**{'lineOne': 'NgouOu', 'lineTwo': 'Sihai'})

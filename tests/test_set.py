@@ -67,7 +67,7 @@ class TestSet(TestCase):
             article.set(makcêcê='Tu Ngê Dzu Ngê')
         self.assertTrue(len(context.exception.keypath_messages) == 1)
         self.assertEqual(context.exception.keypath_messages['makcêcê'],
-                         "Key 'makcêcê' is not allowed.")
+                         "key is not allowed")
 
     def test_set_accepts_object_list(self):
         article = Article(title='Khi Sit', content='Ua Sim Lai Tsa Tiu E Tsai')

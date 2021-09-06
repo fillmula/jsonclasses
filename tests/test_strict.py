@@ -13,7 +13,7 @@ class TestStrict(TestCase):
             SimpleArticle(author='Victor Teo')
         self.assertEqual(len(context.exception.keypath_messages), 1)
         self.assertEqual(context.exception.keypath_messages['author'],
-                         "Key 'author' is not allowed.")
+                         "key is not allowed")
 
     def test_without_strict_nothing_raises_in_init_on_unallowed_keys(self):
         tenant = SimpleTenant(name='Victor Teo', host='Emily Ho')
@@ -26,7 +26,7 @@ class TestStrict(TestCase):
             article.set(author='Victor Teo')
         self.assertEqual(len(context.exception.keypath_messages), 1)
         self.assertEqual(context.exception.keypath_messages['author'],
-                         "Key 'author' is not allowed.")
+                         "key is not allowed")
 
     def test_without_strict_nothing_raises_in_set_on_unallowed_keys(self):
         tenant = SimpleTenant(name='Victor Teo', host='Emily Ho')

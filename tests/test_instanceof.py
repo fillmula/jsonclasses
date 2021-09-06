@@ -333,7 +333,7 @@ class TestInstanceOfModifier(TestCase):
         class User:
             name: str
             staff: Staff = types.instanceof('Staff').strict.required
-        with self.assertRaisesRegex(ValidationException, "Key 'boom' at 'staff' is not allowed\\."):
+        with self.assertRaisesRegex(ValidationException, "key is not allowed"):
             User(**{'name': 'John', 'staff': {'position': 'CEO', 'boom': True}})
 
     def test_instanceof_raises_if_strict_instance(self):
@@ -346,7 +346,7 @@ class TestInstanceOfModifier(TestCase):
         class User:
             name: str
             staff: Staff = types.instanceof('Staff').required
-        with self.assertRaisesRegex(ValidationException, "Key 'boom' at 'staff' is not allowed\\."):
+        with self.assertRaisesRegex(ValidationException, "'staff\\.boom': key is not allowed"):
             User(**{'name': 'John', 'staff': {'position': 'CEO', 'boom': True}})
 
     def test_instanceof_create_circular_ref_for_local_and_foreign_binding(self):

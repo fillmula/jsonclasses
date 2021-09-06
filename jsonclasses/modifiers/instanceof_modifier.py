@@ -71,12 +71,8 @@ class InstanceOfModifier(Modifier):
         available_names = dest.__class__.cdef.available_names
         for k in ctx.val.keys():
             if k not in available_names:
-                kp = concat_keypath('.'.join([str(k) for k in ctx.keypathr]), k)
-                if '.'.join([str(k) for k in ctx.keypathr]) == '':
-                    msg = f'Key \'{k}\' is not allowed.'
-                else:
-                    kpnok = concat_keypath('.'.join([str(k) for k in ctx.keypathr]))
-                    msg = f'Key \'{k}\' at \'{kpnok}\' is not allowed.'
+                kp = concat_keypath(ctx.skeypathr, k)
+                msg = 'key is not allowed'
                 raise ValidationException({kp: msg}, ctx.root)
 
     def _fill_default_value(self, field: JField, dest: JObject, ctx: Ctx):
