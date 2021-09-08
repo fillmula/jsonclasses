@@ -60,7 +60,6 @@ def jsonobject_set(self: JObject, **kwargs: dict[str, Any]) -> JObject:
     method triggers eager validation and transform. This method returns
     self, thus you can chain calling with other instance methods.
     """
-    self._ensure_not_outdated()
     self._set(single_key_args(kwargs), fill_blanks=False)
     self._keypath_set(compound_key_args(kwargs))
     return self
@@ -132,7 +131,6 @@ def update(self: JObject, **kwargs: dict[str, Any]) -> JObject:
     through this method. This method returns self, thus you can chain
     calling with other instance methods.
     """
-    self._ensure_not_outdated()
     unallowed_keys = (set(kwargs.keys())
                       - set(self.__class__.cdef.update_names))
     unallowed_keys_length = len(unallowed_keys)
@@ -155,7 +153,6 @@ def tojson(self: JObject, ignore_writeonly: bool = False) -> dict[str, Any]:
     Returns:
         dict[str, Any]: A dict represents this object's JSON object.
     """
-    self._ensure_not_outdated()
     self._can_read_check()
     ctxcfg = CtxCfg(ignore_writeonly=ignore_writeonly)
     ctx = Ctx.rootctx(self, ctxcfg)
@@ -174,7 +171,6 @@ def validate(self: JObject, all_fields: Optional[bool] = None) -> JObject:
     Returns:
         None: upon successful validation, returns nothing.
     """
-    self._ensure_not_outdated()
     ctxcfg = CtxCfg(all_fields=all_fields)
     ctx = Ctx.rootctx(self, ctxcfg)
     InstanceOfModifier(self.__class__).validate(ctx)
@@ -246,14 +242,6 @@ def is_partial(self: JObject) -> bool:
     database.
     """
     return self._is_partial
-
-
-@property
-def is_outdated(self: JObject) -> bool:
-    """Whether a jsonclass object is outdated. This object cannot be used
-    anymore since it represents an outdated state of the same database record.
-    """
-    return self._is_outdated
 
 
 @property
@@ -368,16 +356,6 @@ def _orm_complete(self: JObject) -> JObject:
     pass
 
 
-def _ensure_not_outdated(self: JObject) -> None:
-    """Raises if this JSON class object is outdated.
-
-    Raises:
-        ValueError: This exception is raised if the object is outdated.
-    """
-    if self.is_outdated:
-        raise ValueError(f'JSON class object {self} is outdated')
-
-
 @property
 def _data_dict(self: JObject) -> dict[str, Any]:
     """A dict which is a subview of __dict__ that only contains public data
@@ -411,7 +389,6 @@ def _set_initial_status(self: JObject) -> None:
     """Set the initial status of the JSON class object."""
     self._mark_new()
     setattr(self, '_is_partial', False)
-    setattr(self, '_is_outdated', False)
     setattr(self, '_is_deleted', False)
     setattr(self, '_previous_values', {})
     setattr(self, '_local_keys', set())
@@ -565,14 +542,6 @@ def _id(self: JObject) -> Union[str, int, None]:
     return getattr(self, field.name)
 
 
-@property
-def _updated_at(self: JObject) -> Optional[datetime]:
-    field = self.__class__.cdef.updated_at_field
-    if not field:
-        return None
-    return getattr(self, field.name)
-
-
 def __is_private_attr__(name: str) -> bool:
     """Returns true if the attribute name indicates private attribute."""
     return name.startswith('_')
@@ -605,7 +574,6 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
         self.__original_setattr__(name, value)
         return
     # this is a JSON class field attribute
-    self._ensure_not_outdated()
     if hasattr(self, name) and value == getattr(self, name):
         lk = field.fdef.field_storage is FieldStorage.LOCAL_KEY
         value_none = value is None
@@ -843,7 +811,6 @@ def jsonclassify(class_: type) -> type[JObject]:
     class_.opby = opby
     class_.is_new = is_new
     class_.is_modified = is_modified
-    class_.is_outdated = is_outdated
     class_.is_deleted = is_deleted
     class_.modified_fields = modified_fields
     class_.persisted_modified_fields = persisted_modified_fields
@@ -856,7 +823,6 @@ def jsonclassify(class_: type) -> type[JObject]:
     class_.complete = complete
     # protected methods
     class_._orm_complete = _orm_complete
-    class_._ensure_not_outdated = _ensure_not_outdated
     class_._data_dict = _data_dict
     class_._mark_new = _mark_new
     class_._mark_unmodified = _mark_unmodified
@@ -877,7 +843,6 @@ def jsonclassify(class_: type) -> type[JObject]:
     class_._run_on_update_callbacks = _run_on_update_callbacks
     class_._run_on_delete_callbacks = _run_on_delete_callbacks
     class_._id = _id
-    class_._updated_at = _updated_at
     # private methods
     class_.__original_setattr__ = class_.__setattr__
     class_.__setattr__ = __setattr__

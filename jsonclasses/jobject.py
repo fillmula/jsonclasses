@@ -80,9 +80,6 @@ class JObject(Protocol):
     def is_deleted(self: T) -> bool: ...
 
     @property
-    def is_outdated(self: T) -> bool: ...
-
-    @property
     def modified_fields(self: T) -> Set[str]: ...
 
     @property
@@ -102,6 +99,3 @@ class JObject(Protocol):
 
     @property
     def _id(self: JObject) -> Union[str, int, None]: ...
-
-    @property
-    def _updated_at(self: JObject) -> Optional[datetime]: ...

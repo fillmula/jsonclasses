@@ -229,6 +229,5 @@ class JSONClassGraphMergeConflictException(Exception):
     jsonclass objects.
     """
 
-    def __init__(self, message: str) -> None:
-        self.message = message
-        super().__init__(f'cannot merge graph: {self.message}')
+    def __init__(self, message: str, object: Any) -> None:
+        super().__init__(f'{message}{object}')

@@ -8,16 +8,6 @@ if TYPE_CHECKING:
     from .jobject import JObject
 
 
-class CompareResult(NamedTuple):
-    """When merging object graph, conflicted objects will be compared. One will
-    be kept and one will be outdated.
-    """
-    kept: JObject
-    """The updated one to keep."""
-    outdated: JObject
-    """The obsolete one to remove."""
-
-
 class OGraph:
     """The object graph is a graph containing JSON Class objects. It has two
     main usages. First, it's used for tracking and referencing objects within
@@ -93,36 +83,12 @@ class OGraph:
                 new_graph._maps[key][name] = obj
         return new_graph
 
-    def compare(self: OGraph,
-                obj1: JObject,
-                obj2: JObject) -> CompareResult:
-        if obj1.is_new and obj2.is_new:
-            raise JSONClassGraphMergeConflictException('both objects are new')
-        elif obj1.is_new or obj2.is_new:
-            raise JSONClassGraphMergeConflictException('1 object is new')
-        if obj1._updated_at == obj2._updated_at:
-            if obj1.is_modified and obj2.is_modified:
-                raise JSONClassGraphMergeConflictException('both objects are '
-                                                           'modified')
-            elif obj2.is_modified:
-                return CompareResult(kept=obj2, outdated=obj1)
-            else:
-                return CompareResult(kept=obj1, outdated=obj2)
-        elif obj1._updated_at is None:
-            return CompareResult(kept=obj2, outdated=obj1)
-        elif obj2._updated_at is None:
-            return CompareResult(kept=obj1, outdated=obj2)
-        elif obj1._updated_at > obj2._updated_at:
-            return CompareResult(kept=obj1, outdated=obj2)
-        else:
-            return CompareResult(kept=obj2, outdated=obj1)
 
     def merged_graph(self: OGraph, graph2: OGraph) -> OGraph:
         """Get a new graph which is a combination of two graphs.
         """
         if self is graph2:
             return self
-        pool: list[CompareResult] = []
         graph = self.copy()
         for object in graph2:
             if not graph.has(object):
@@ -130,40 +96,8 @@ class OGraph:
             elif graph.get(object) is object:
                 graph.put(object)
             else:
-                result = self.compare(graph.get(object), object)
-                graph.put(result.kept)
-                if result not in pool:
-                    pool.append(result)
-        for result in pool:
-            self.alter_links(result)
+                raise JSONClassGraphMergeConflictException(
+                    'multiple objects represent same object: ', object)
         for object in graph:
             object._graph = graph
         return graph
-
-    def alter_links(self: OGraph, result: CompareResult) -> None:
-        """Alter all linked objects reference to the new object.
-        """
-        for field in result.outdated.__class__.cdef.fields:
-            if not field.fdef.is_ref:
-                continue
-            item_or_items = getattr(result.outdated, field.name)
-            items: list[JObject] = []
-            if isjsonobject(item_or_items):
-                items = [item_or_items]
-            elif isinstance(item_or_items, list):
-                items = item_or_items
-            for item in items:
-                item_field = field.foreign_field
-                item_value = getattr(item, item_field.name)
-                if item_value is result.outdated:
-                    setattr(item, item_field.name, result.kept)
-                elif isinstance(item_value, list):
-                    index = item_value.index(result.outdated)
-                    item_value[index] = result.kept
-            if result.outdated._unlinked_objects.get(field.name) is not None:
-                outdated_items = result.outdated._unlinked_objects. \
-                    get(field.name)
-                for item in outdated_items:
-                    result.kept._add_unlinked_object(field.name, item)
-                del result.outdated._unlinked_objects[field.name]
-        result.outdated._is_outdated = True
