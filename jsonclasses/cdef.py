@@ -45,7 +45,6 @@ class Cdef:
         self._dict_fields: dict[str, JField] = {}
         self._primary_field: Optional[JField] = None
         self._updated_at_field: Optional[JField] = None
-        self._deleted_at_field: Optional[JField] = None
         self._deny_fields: list[JField] = []
         self._nullify_fields: list[JField] = []
         self._cascade_fields: list[JField] = []
@@ -75,8 +74,6 @@ class Cdef:
                 self._primary_field = jfield
             elif types.fdef._usage == 'updated_at':
                 self._updated_at_field = jfield
-            elif types.fdef._usage == 'deleted_at':
-                self._deleted_at_field = jfield
             if types.fdef._delete_rule == DeleteRule.DENY:
                 self._deny_fields.append(jfield)
             elif types.fdef._delete_rule == DeleteRule.NULLIFY:
@@ -169,15 +166,6 @@ class Cdef:
         record's updated at timestamp.
         """
         return self._updated_at_field
-
-    @property
-    def deleted_at_field(self: Cdef) -> Optional[JField]:
-        """The class definition's field which represents the deleted at field.
-
-        This is used by the framework to locate the correct field to find the
-        record's deleted at timestamp.
-        """
-        return self._deleted_at_field
 
     @property
     def deny_fields(self: Cdef) -> list[JField]:

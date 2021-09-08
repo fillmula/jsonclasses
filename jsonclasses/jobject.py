@@ -105,6 +105,3 @@ class JObject(Protocol):
 
     @property
     def _updated_at(self: JObject) -> Optional[datetime]: ...
-
-    @property
-    def _deleted_at(self: JObject) -> Optional[datetime]: ...
