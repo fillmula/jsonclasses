@@ -1,4 +1,4 @@
-"""This modules contains the JSON Class types marker."""
+"""This modules contains the JSONClasses types modifier."""
 from __future__ import annotations
 from typing import Callable, Any, Optional, Union
 from datetime import datetime
@@ -45,9 +45,9 @@ Float = float
 
 
 class Types:
-    """The class of types marks object. Types marks provide necessary information
-    about an json object's shape, transformation, validation, serialization and
-    sanitization.
+    """The class of types marks object. Types marks provide necessary 
+    information about an json object's shape, transformation, validation, 
+    serialization and sanitization.
     """
 
     def __init__(  # pylint: disable=keyword-arg-before-vararg
@@ -149,7 +149,7 @@ class Types:
     @property
     def index(self) -> Types:
         """Fields marked with index are picked up by ORM integrations to setup
-        database column index for you. This marker doesn't have any effect
+        database column index for you. This modifier doesn't have any effect
         around transforming and validating.
         """
         return Types(self, IndexModifier())
@@ -157,7 +157,7 @@ class Types:
     @property
     def unique(self) -> Types:
         """Fields marked with unique are picked up by ORM integrations to setup
-        database column unique index for you. This marker doesn't have any
+        database column unique index for you. This modifier doesn't have any
         effect around transforming and validating. When database engine raises
         an exception, jsonclasses's web framework integration will catch it and
         return 400 automatically.
@@ -237,7 +237,7 @@ class Types:
 
     @property
     def str(self) -> Types:
-        """Fields marked with str should be str type. This is a type marker.
+        """Fields marked with str should be str type. This is a type modifier.
         """
         return Types(self, StrModifier())
 
@@ -261,7 +261,7 @@ class Types:
           length (int): The minimum length required for the value.
 
         Returns:
-          Types: A new types chained with this marker.
+          Types: A new types chained with this modifier.
         """
         return Types(self, MinlengthModifier(length))
 
@@ -273,7 +273,7 @@ class Types:
           length (int): The minimum length required for the value.
 
         Returns:
-          Types: A new types chained with this marker.
+          Types: A new types chained with this modifier.
         """
         return Types(self, MaxlengthModifier(length))
 
@@ -287,62 +287,56 @@ class Types:
           maxlength (Optional[int]): The maximum length required for the value.
 
         Returns:
-          Types: A new types chained with this marker.
+          Types: A new types chained with this modifier.
         """
         return Types(self, LengthModifier(minlength, maxlength))
 
     @property
     def url(self) -> Types:
-        """Fields marked with url should be valid url string. This is a
-        modifier marker.
+        """Fields marked with url should be valid url string. 
         """
         return Types(self, UrlModifier())
 
     @property
     def digit(self) -> Types:
-        """Values of fields marked with digit should be valid digit string. This is a
-        modifier marker.
+        """Values of fields marked with digit should be valid digit string.
         """
         return Types(self, DigitModifier())
 
     @property
     def alpha(self) -> Types:
-        """Values of fields marked with alpha should be valid alpha string. This is a
-        modifier marker.
+        """Values of fields marked with alpha should be valid alpha string.
         """
         return Types(self, AlphaModifier())
 
     @property
     def numeric(self) -> Types:
-        """Values of fields marked with numeric should be valid numeric string. This is a
-        modifier marker.
+        """Values of fields marked with numeric should be valid numeric string.
         """
         return Types(self, NumericModifier())
 
     @property
     def email(self) -> Types:
-        """Values of fields marked with email should be valid email format. This is a
-        modifier marker.
+        """Values of fields marked with email should be valid email format.
         """
         return Types(self, EmailModifier())
 
     @property
     def alnum(self) -> Types:
-        """Values fields marked with alnum should be valid alnum strings. This is a
-        modifier marker.
+        """Values fields marked with alnum should be valid alnum strings.
         """
         return Types(self, AlnumModifier())
 
     @property
     def int(self) -> Types:
-        """Fields marked with int should be int type. This is a type marker.
+        """Fields marked with int should be int type. This is a type modifier.
         """
         return Types(self, IntModifier())
 
     @property
     def float(self) -> Types:
         """Fields marked with float should be float type. This is a type
-        marker.
+        modifier.
         """
         return Types(self, FloatModifier())
 
@@ -378,26 +372,26 @@ class Types:
 
     @property
     def bool(self) -> Types:
-        """Fields marked with bool should be bool type. This is a type marker.
+        """Fields marked with bool should be bool type. This is a type modifier.
         """
         return Types(self, BoolModifier())
 
     @property
     def date(self) -> Types:
-        """Fields marked with date should be date type. This is a type marker.
+        """Fields marked with date should be date type. This is a type modifier.
         """
         return Types(self, DateModifier())
 
     @property
     def datetime(self) -> Types:
         """Fields marked with datetime should be datetime type. This is a type
-        marker.
+        modifier.
         """
         return Types(self, DatetimeModifier())
 
     def enum(self, enum_class: Union[type, str]) -> Types:
         """Fields marked with enum should be enum value of provided enum type.
-        This is a type marker.
+        This is a type modifier.
         """
         return Types(self, EnumModifier(enum_class))
 
@@ -450,19 +444,19 @@ class Types:
 
     def listof(self, item_types: Any) -> Types:
         """Fields marked with listof should be a list of the given type. This
-        is a type marker.
+        is a type modifier.
         """
         return Types(self, ListOfModifier(item_types))
 
     def dictof(self, item_types: Any) -> Types:
         """Fields marked with listof should be a str keyed dict of the given
-        type. This is a type marker.
+        type. This is a type modifier.
         """
         return Types(self, DictOfModifier(item_types))
 
     def shape(self, item_types_map: dict[Str, Any]) -> Types:
         """Fields marked with shape are objects shaped with given shape. This
-        is a type marker.
+        is a type modifier.
         """
         return Types(self, ShapeModifier(item_types_map))
 
@@ -498,19 +492,19 @@ class Types:
         """Fields marked with required are invalid when value is None.
 
         Returns:
-          Types: A new types chained with this marker.
+          Types: A new types chained with this modifier.
         """
         return Types(self, RequiredModifier())
 
     @property
     def nullable(self) -> Types:
         """Fields marked with nullable can be None. This is the default
-        behavior even without this marker. It's the opposite to required
-        marker. Values inside lists have implicitly required marker. Use this
-        to allow null or None values inside lists.
+        behavior even without this modifier. It's the opposite to required
+        modifier. Values inside lists have implicitly required modifier. Use 
+        this to allow null or None values inside lists.
 
         Returns:
-          Types: A new types chained with this marker.
+          Types: A new types chained with this modifier.
         """
         return Types(self, NullableModifier())
 
@@ -549,7 +543,7 @@ class Types:
             means validation failed.
 
         Returns:
-            Types: A new types chained with this marker.
+            Types: A new types chained with this modifier.
         """
         return Types(self, ValidateModifier(validate_callable))
 
@@ -560,13 +554,14 @@ class Types:
 
         Args:
             op_callable (Callable): The op callable takes 1 to 4 arguments. The
-            first is the operator object, the second is the object being operated,
-            the third is the value of the field, the fourth is the validating context.
-            Returning None or True means the value is valid, while returning a str
-            message or False means validation failed.
+            first is the operator object, the second is the object being 
+            operated, the third is the value of the field, the fourth is the 
+            validating context. Returning None or True means the value is 
+            valid, while returning a str message or False means validation 
+            failed.
 
         Returns:
-            Types: A new types chained with this marker.
+            Types: A new types chained with this modifier.
         """
         return Types(self, OpModifier(op_callable))
 
@@ -582,7 +577,7 @@ class Types:
             valid, while returning a str message means validation failed.
 
         Returns:
-            Types: A new types chained with this marker.
+            Types: A new types chained with this modifier.
         """
         return Types(self,
                      ResetModifier(),
@@ -599,7 +594,7 @@ class Types:
           callable, it's return value is used.
 
         Returns:
-          Types: A new types chained with this marker.
+          Types: A new types chained with this modifier.
         """
         return Types(self, DefaultModifier(value))
 
@@ -611,53 +606,53 @@ class Types:
           max_length (int): The allowed max length of the field value.
 
         Returns:
-          Types: A new types chained with this marker.
+          Types: A new types chained with this modifier.
         """
         return Types(self, EagerModifier(), TruncateModifier(max_length))
 
     @property
     def trim(self) -> Types:
-        """This marker will trim string value. Remove leading and trailing
+        """This modifier will trim string value. Remove leading and trailing
         whitespaces.
 
         Returns:
-            Types: A new types chained with this marker.
+            Types: A new types chained with this modifier.
         """
         return Types(self, EagerModifier(), TrimModifier())
 
     @property
     def totitle(self) -> Types:
-        """This marker titlizes strings.
+        """This modifier titlizes string.
 
         Returns:
-            Types: A new types chained with this marker.
+            Types: A new types chained with this modifier.
         """
         return Types(self, EagerModifier(), ToTitleModifier())
 
     @property
     def tocap(self) -> Types:
-        """This marker capitalizes strings.
+        """This modifier capitalizes string.
 
         Returns:
-            Types: A new types chained with this marker.
+            Types: A new types chained with this modifier.
         """
         return Types(self, EagerModifier(), ToCapModifier())
 
     @property
     def tolower(self) -> Types:
-        """This marker lowercasefies strings.
+        """This modifier lowercasefies string.
 
         Returns:
-            Types: A new types chained with this marker.
+            Types: A new types chained with this modifier.
         """
         return Types(self, EagerModifier(), ToLowerModifier())
 
     @property
     def toupper(self) -> Types:
-        """This marker uppercasefies strings.
+        """This modifier uppercasefies string.
 
         Returns:
-            Types: A new types chained with this marker.
+            Types: A new types chained with this modifier.
         """
         return Types(self, EagerModifier(), ToUpperModifier())
 
@@ -671,7 +666,7 @@ class Types:
           which is the current value of the field.
 
         Returns:
-          Types: A new types chained with this marker.
+          Types: A new types chained with this modifier.
         """
         return Types(self, EagerModifier(), TransformModifier(transformer))
 
@@ -685,12 +680,12 @@ class Types:
           which is the current value of the field.
 
         Returns:
-          Types: A new types chained with this marker.
+          Types: A new types chained with this modifier.
         """
         return Types(self, EagerModifier(), TransformModifier(uploader))
 
     def asop(self, asop_transformer: Callable) -> Types:
-        """Asop marker assigns transformed operator value to this field. When
+        """Asop modifier assigns transformed operator value to this field. When
         the operator is not present, a ValidationException is raised.
 
         Args:
@@ -699,31 +694,32 @@ class Types:
             value of the field, the third is the transforming context.
 
         Returns:
-            Types: A new types chained with this marker.
+            Types: A new types chained with this modifier.
         """
         return Types(self, AsopModifier(asop_transformer))
 
     @property
     def asopd(self) -> Types:
-        """Asopd marker assigns operator value directly to this field without
+        """Asopd modifier assigns operator value directly to this field without
         any transforming. When the operator  is not present, a
         ValidationException is raised.
 
         Returns:
-            Types: A new types chained with this marker.
+            Types: A new types chained with this modifier.
         """
         return Types(self, AsopdModifier())
 
     def setonsave(self, setter: Callable) -> Types:
-        """Setonsave marker marks a field to be updated just before serializing
-        into the database if this field is modified and to be serialized.
+        """Setonsave modifier marks a field to be updated just before 
+        serializing into the database if this field is modified and to be 
+        serialized.
 
         Args:
           setter (Callable): This setter function takes zero or one argument
           which is the current value of the field.
 
         Returns:
-          Types: A new types chained with this marker.
+          Types: A new types chained with this modifier.
         """
         return Types(self, PreserializeModifier(), SetOnSaveModifier(setter))
 
@@ -736,7 +732,7 @@ class Types:
             which is the current value of the field.
 
         Returns:
-            Types: A new types chained with this marker.
+            Types: A new types chained with this modifier.
         """
         return Types(self, OnSaveModifier(callback))
 
@@ -748,7 +744,7 @@ class Types:
             callback (Callable): A callable which takes arguments.
 
         Returns:
-            Types: A new types chained with this marker.
+            Types: A new types chained with this modifier.
         """
         return Types(self, ResetModifier(), OnUpdateModifier(callback))
 
@@ -760,20 +756,20 @@ class Types:
             callback (Callable): A callable which takes arguments.
 
         Returns:
-            Types: A new types chained with this marker.
+            Types: A new types chained with this modifier.
         """
         return Types(self, OnWriteModifier(callback))
 
     @property
     def nonnull(self) -> Types:
-        """This marker is a instructional transformer designated for shape, dictof
-        and listof. This is not a modifier. To mark a field is required and should
-        not be null, use `required` instead. This transformer should be used right
-        before shape, dictof and listof, to given an instruction of not leaving
-        null for the field.
+        """This modifier is a instructional transformer designated for shape, 
+        dictof and listof. This is not a modifier. To mark a field is required 
+        and should not be null, use `required` instead. This transformer should 
+        be used right before shape, dictof and listof, to given an instruction 
+        of not leaving null for the field.
 
         Returns:
-          Types: A new types chained with this marker.
+          Types: A new types chained with this modifier.
         """
         return Types(self, NonnullModifier())
 
@@ -802,14 +798,14 @@ class Types:
     # internal
 
     def _unresolved(self: Types, arg: str) -> Types:
-        """This marker marks unresolved status. This is used internally. Do not
-        use this.
+        """This modifier marks unresolved status. This is used internally. Do 
+        not use this.
         """
         return Types(self, UnresolvedModifier(arg))
 
 
 types = Types()
-"""The root of the types marker. To mark an field with type annotation,
+"""The root of the types modifier. To mark an field with type annotation,
 accessor annotation, modifier annotation and transformer annotation, use types
 like this:
 
