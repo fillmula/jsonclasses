@@ -27,7 +27,8 @@ class JConf:
 
     def __init__(self: JConf,
                  cgraph: Optional[str],
-                 camelize_json_keys: Optional[bool],
+                 key_encoding_strategy: Optional[Callable[[str], str]],
+                 key_decoding_strategy: Optional[Callable[[str], str]],
                  strict_input: Optional[bool],
                  key_transformer: Optional[Callable[[JField], str]],
                  validate_all_fields: Optional[bool],
@@ -46,8 +47,10 @@ class JConf:
         Args:
             cgraph (Optional[str]): The name of the class graph on which \
                 the JSON class is defined.
-            camelize_json_keys (Optional[bool]): Whether camelize keys when \
-                outputing JSON.
+            key_encoding_strategy (Optional[Callable[[str], str]]): How \
+                object keys are encoded. The default is camelize.
+            key_decoding_strategy (Optional[Callable[[str], str]]): How \
+                object keys are decoded. The default is underscore.
             strict_input (Optional[bool]): Whether raise errors on receiving \
                 invalid input keys.
             key_transformer (Optional[Callable[[JField], str]]): The \
@@ -75,7 +78,8 @@ class JConf:
         """
         self._cls: Optional[type[JObject]] = None
         self._cgraph = cgraph or 'default'
-        self._camelize_json_keys = camelize_json_keys
+        self._key_encoding_strategy = key_encoding_strategy
+        self._key_decoding_strategy = key_decoding_strategy
         self._strict_input = strict_input
         self._key_transformer = key_transformer
         self._validate_all_fields = validate_all_fields
@@ -130,7 +134,9 @@ class JConf:
         other_config = cast(JConf, other)
         if self.cgraph != other_config.cgraph:
             return False
-        if self.camelize_json_keys != other_config.camelize_json_keys:
+        if self.key_encoding_strategy != other_config.key_encoding_strategy:
+            return False
+        if self.key_decoding_strategy != other_config.key_decoding_strategy:
             return False
         if self.strict_input != other_config.strict_input:
             return False
@@ -172,12 +178,20 @@ class JConf:
         return CGraph(self._cgraph)
 
     @property
-    def camelize_json_keys(self: JConf) -> bool:
-        """Whether camelize keys when outputing JSON.
+    def key_encoding_strategy(self: JConf) -> Callable[[str], str]:
+        """The object key encoding strategy.
         """
-        if self._camelize_json_keys is None:
-            return self.cgraph.default_config.camelize_json_keys
-        return self._camelize_json_keys
+        if self._key_encoding_strategy is None:
+            return self.cgraph.default_config.key_encoding_strategy
+        return self._key_encoding_strategy
+
+    @property
+    def key_decoding_strategy(self: JConf) -> Callable[[str], str]:
+        """The object key decoding strategy.
+        """
+        if self._key_decoding_strategy is None:
+            return self.cgraph.default_config.key_decoding_strategy
+        return self._key_decoding_strategy
 
     @property
     def strict_input(self: JConf) -> bool:

@@ -3,7 +3,6 @@ from __future__ import annotations
 from jsonclasses.keypath import concat_keypath
 from jsonclasses.vmsgcollector import VMsgCollector
 from typing import Any, Sequence, Union, TYPE_CHECKING
-from inflection import underscore, camelize
 from ..fdef import Fdef, FieldType, Nullability, Strictness
 from ..excs import ValidationException
 from ..jconf import JConf
@@ -55,9 +54,7 @@ class ShapeModifier(TypeModifier):
                          keys: Sequence[str],
                          jconf: JConf) -> bool:
         field_name = field_key
-        json_field_name = field_name
-        if jconf.camelize_json_keys:
-            json_field_name = camelize(field_name, False)
+        json_field_name = jconf.key_encoding_strategy(field_name)
         return json_field_name in keys or field_name in keys
 
     def _get_field_value(self,
@@ -65,14 +62,13 @@ class ShapeModifier(TypeModifier):
                          value: dict[str, Any],
                          jconf: JConf) -> Any:
         field_value = value.get(field_key)
-        if field_value is None and jconf.camelize_json_keys:
-            field_value = value.get(camelize(field_key, False))
+        if field_value is None:
+            field_value = value.get(jconf.key_encoding_strategy(field_key))
         return field_value
 
     def _strictness_check(self, value: dict[str, Any], ctx: Ctx):
         value_keys = list(value.keys())
-        if ctx.jconfowner.camelize_json_keys:
-            value_keys = [underscore(k) for k in value_keys]
+        value_keys = [ctx.jconfowner.key_decoding_strategy(k) for k in value_keys]
         keys = ctx.fdef.shape_types.keys()
         for k in value_keys:
             if k not in keys:
@@ -106,7 +102,7 @@ class ShapeModifier(TypeModifier):
             return ctx.val
         retval = {}
         for k, types in ctx.fdef.shape_types.items():
-            key = camelize(k, False) if ctx.jconfowner.camelize_json_keys else k
+            key = ctx.jconfowner.key_encoding_strategy(k)
             value_at_key = ctx.val.get(k)
             if types:
                 retval[key] = types.modifier.tojson(ctx.nval(value_at_key))

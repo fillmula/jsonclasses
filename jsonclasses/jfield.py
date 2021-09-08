@@ -2,8 +2,6 @@
 records the detailed information of a JSON class field.
 """
 from __future__ import annotations
-
-from inflection import camelize
 from jsonclasses.jobject import JObject
 from jsonclasses.fdef import FieldType
 from typing import Any, Optional, TYPE_CHECKING
@@ -50,9 +48,7 @@ class JField:
     def json_name(self: JField) -> str:
         """The name of the field when converted into JSON dict.
         """
-        if self.cdef.jconf.camelize_json_keys:
-            return camelize(self._name, False)
-        return self._name
+        return self.cdef.jconf.key_encoding_strategy(self._name)
 
     @property
     def default(self: JField) -> Any:

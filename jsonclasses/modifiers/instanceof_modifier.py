@@ -3,7 +3,6 @@ from __future__ import annotations
 from jsonclasses.vmsgcollector import VMsgCollector
 from jsonclasses.jfield import JField
 from typing import Any, Sequence, Union, cast, TYPE_CHECKING
-from inflection import camelize
 from ..fdef import (
     Fdef, FieldStorage, FieldType, Nullability, WriteRule, ReadRule, Strictness
 )
@@ -87,7 +86,7 @@ class InstanceOfModifier(Modifier):
 
     def _get_field_value(self, field: JField, ctx: Ctx) -> Any:
         field_value = ctx.val.get(field.json_name)
-        if field_value is None and ctx.cdefowner.jconf.camelize_json_keys:
+        if field_value is None:
             field_value = ctx.val.get(field.name)
         return field_value
 
@@ -149,7 +148,7 @@ class InstanceOfModifier(Modifier):
                         refname = tsfm(field)
                         if ctx.val.get(refname) is not None:
                             setattr(dest, refname, ctx.val.get(refname))
-                        crefname = camelize(refname, False)
+                        crefname = dest.__class__.cdef.jconf.key_encoding_strategy(refname)
                         if ctx.val.get(crefname) is not None:
                             setattr(dest, refname, ctx.val.get(crefname))
                     pass

@@ -3,7 +3,9 @@ from unittest import TestCase
 from jsonclasses import jsonclass
 from jsonclasses.isjsonclass import isjsonclass
 from jsonclasses.jconf import JConf
-from jsonclasses.keypath import reference_key
+from jsonclasses.keypath import (
+    camelize_key, identical_key, reference_key, underscore_key
+)
 from jsonclasses.cgraph import CGraph
 from jsonclasses.excs import JSONClassRedefinitionException
 from tests.classes.simple_account import SimpleAccount
@@ -23,7 +25,8 @@ class TestJsonClass(TestCase):
     def test_jsonclass_install_default_config_without_arguments(self):
         class_config = SimpleAccount.cdef.jconf
         default_config = JConf(cgraph='default',
-                                camelize_json_keys=True,
+                                key_encoding_strategy=camelize_key,
+                                key_decoding_strategy=underscore_key,
                                 strict_input=True,
                                 key_transformer=reference_key,
                                 validate_all_fields=False,
@@ -43,9 +46,13 @@ class TestJsonClass(TestCase):
         company_graph = CGraph('simplecompany')
         self.assertEqual(cgraph, company_graph)
 
-    def test_jsonclass_camelize_json_keys_changes_config(self):
+    def test_jsonclass_key_encoding_strategy_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.cdef.jconf.camelize_json_keys, False)
+            SimpleEmployee.cdef.jconf.key_encoding_strategy, identical_key)
+
+    def test_jsonclass_key_decoding_strategy_changes_config(self):
+        self.assertEqual(
+            SimpleEmployee.cdef.jconf.key_decoding_strategy, identical_key)
 
     def test_jsonclass_strict_input_changes_config(self):
         self.assertEqual(

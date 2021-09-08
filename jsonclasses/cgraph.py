@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Union, final, TYPE_CHECKING
 from enum import Enum
 from .jconf import JConf
-from .keypath import reference_key
+from .keypath import camelize_key, reference_key, underscore_key
 from .excs import (JSONClassRedefinitionException,
                          JSONClassTypedDictRedefinitionException,
                          JSONClassNotFoundException,
@@ -48,19 +48,20 @@ class CGraph:
         self._dict_map: dict[str, type[dict]] = {}
         self._enum_map: dict[str, type] = {}
         self._default_config = JConf(cgraph=self.name,
-                                      camelize_json_keys=True,
-                                      strict_input=True,
-                                      key_transformer=reference_key,
-                                      validate_all_fields=False,
-                                      abstract=False,
-                                      reset_all_fields=False,
-                                      on_create=[],
-                                      on_update=[],
-                                      on_delete=[],
-                                      can_create=[],
-                                      can_update=[],
-                                      can_delete=[],
-                                      can_read=[])
+                                     key_encoding_strategy=camelize_key,
+                                     key_decoding_strategy=underscore_key,
+                                     strict_input=True,
+                                     key_transformer=reference_key,
+                                     validate_all_fields=False,
+                                     abstract=False,
+                                     reset_all_fields=False,
+                                     on_create=[],
+                                     on_update=[],
+                                     on_delete=[],
+                                     can_create=[],
+                                     can_update=[],
+                                     can_delete=[],
+                                     can_read=[])
         self.__class__._initialized_map[name] = True
         return None
 

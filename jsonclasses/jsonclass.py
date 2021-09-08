@@ -19,7 +19,8 @@ def jsonclass(cls: type) -> type[JObject]: ...
 def jsonclass(
     cls: None,
     class_graph: Optional[str] = 'default',
-    camelize_json_keys: Optional[bool] = None,
+    key_encoding_strategy: Optional[Callable[[str], str]] = None,
+    key_decoding_strategy: Optional[Callable[[str], str]] = None,
     strict_input: Optional[bool] = None,
     key_transformer: Optional[Callable[[JField], str]] = None,
     validate_all_fields: Optional[bool] = None,
@@ -39,7 +40,8 @@ def jsonclass(
 def jsonclass(
     cls: type,
     class_graph: Optional[str] = 'default',
-    camelize_json_keys: Optional[bool] = None,
+    key_encoding_strategy: Optional[Callable[[str], str]] = None,
+    key_decoding_strategy: Optional[Callable[[str], str]] = None,
     strict_input: Optional[bool] = None,
     key_transformer: Optional[Callable[[JField], str]] = None,
     validate_all_fields: Optional[bool] = None,
@@ -58,7 +60,8 @@ def jsonclass(
 def jsonclass(
     cls: Optional[type] = None,
     class_graph: Optional[str] = 'default',
-    camelize_json_keys: Optional[bool] = None,
+    key_encoding_strategy: Optional[Callable[[str], str]] = None,
+    key_decoding_strategy: Optional[Callable[[str], str]] = None,
     strict_input: Optional[bool] = None,
     key_transformer: Optional[Callable[[JField], str]] = None,
     validate_all_fields: Optional[bool] = None,
@@ -85,7 +88,8 @@ def jsonclass(
             raise ValueError('@jsonclass should be used to decorate a class.')
         jconf = JConf(
             cgraph=cast(str, class_graph),
-            camelize_json_keys=camelize_json_keys,
+            key_encoding_strategy=key_encoding_strategy,
+            key_decoding_strategy=key_decoding_strategy,
             strict_input=strict_input,
             key_transformer=key_transformer,
             validate_all_fields=validate_all_fields,
@@ -109,7 +113,8 @@ def jsonclass(
             return jsonclass(
                 cls,
                 class_graph=class_graph,
-                camelize_json_keys=camelize_json_keys,
+                key_encoding_strategy=key_encoding_strategy,
+                key_decoding_strategy=key_decoding_strategy,
                 strict_input=strict_input,
                 key_transformer=key_transformer,
                 validate_all_fields=validate_all_fields,

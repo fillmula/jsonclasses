@@ -1,7 +1,6 @@
 """module for dictof modifier."""
 from __future__ import annotations
 from typing import Any, Iterable, Collection
-from inflection import underscore, camelize
 from ..fdef import FieldType
 from ..jconf import JConf
 from .collection_type_modifier import CollectionTypeModifier
@@ -25,7 +24,8 @@ class DictOfModifier(CollectionTypeModifier):
         col[i] = v
 
     def to_object_key(self, key: str, conf: JConf) -> str:
-        return underscore(key) if conf.camelize_json_keys else key
+        return conf.key_decoding_strategy(key)
 
     def to_json_key(self, key: str, conf: JConf) -> str:
-        return camelize(key, False) if conf.camelize_json_keys else key
+        return conf.key_encoding_strategy(key)
+

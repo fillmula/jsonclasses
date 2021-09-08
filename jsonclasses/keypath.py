@@ -7,6 +7,32 @@ if TYPE_CHECKING:
     from .jfield import JField
 
 
+def raise_kindly():
+    raise ModuleNotFoundError('please whether install inflection for the '
+                              'default key encoding/decoding strategy '
+                              'behavior or provide your own strategy')
+
+
+def camelize_key(key: str) -> str:
+    try:
+        from inflection import camelize
+    except ModuleNotFoundError as e:
+        raise_kindly()
+    return camelize(key, False)
+
+
+def underscore_key(key: str) -> str:
+    try:
+        from inflection import underscore
+    except ModuleNotFoundError as e:
+        raise_kindly()
+    return underscore(key)
+
+
+def identical_key(key: str) -> str:
+    return key
+
+
 def reference_key(field: JField) -> str:
     """
     Figure out the correct reference key name from the field definition.

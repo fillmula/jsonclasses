@@ -8,7 +8,6 @@ from __future__ import annotations
 from jsonclasses.jobject import JObject
 from typing import Optional, final, TYPE_CHECKING
 from dataclasses import fields as dataclass_fields
-from inflection import camelize
 from .jfield import JField
 from .fdef import FieldStorage, DeleteRule
 from .rtypes import rtypes, rnamedtypes
@@ -112,9 +111,8 @@ class Cdef:
             if jfield.types.fdef._field_storage == FieldStorage.LOCAL_KEY:
                 key_transformer = self.jconf.key_transformer
                 self._reference_names.append(key_transformer(jfield))
-                if self.jconf.camelize_json_keys:
-                    self._camelized_reference_names.append(
-                        camelize(key_transformer(jfield), False))
+                self._camelized_reference_names.append(
+                    self.jconf.key_encoding_strategy(key_transformer(jfield)))
         self._available_names: set[str] = set(self._field_names
                                               + self._camelized_field_names
                                               + self._reference_names
