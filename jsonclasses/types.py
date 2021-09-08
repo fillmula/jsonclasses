@@ -1,4 +1,4 @@
-"""This modules contains the JSON Class types modifier."""
+"""This modules contains the JSONClasses types modifier."""
 from __future__ import annotations
 from typing import Callable, Any, Optional, Union
 from datetime import datetime
@@ -45,9 +45,9 @@ Float = float
 
 
 class Types:
-    """The class of types marks object. Types marks provide necessary information
-    about an json object's shape, transformation, validation, serialization and
-    sanitization.
+    """The class of types marks object. Types marks provide necessary 
+    information about an json object's shape, transformation, validation, 
+    serialization and sanitization.
     """
 
     def __init__(  # pylint: disable=keyword-arg-before-vararg
@@ -293,43 +293,37 @@ class Types:
 
     @property
     def url(self) -> Types:
-        """Fields marked with url should be valid url string. This is a
-        modifier modifier.
+        """Fields marked with url should be valid url string. 
         """
         return Types(self, UrlModifier())
 
     @property
     def digit(self) -> Types:
-        """Values of fields marked with digit should be valid digit string. This is a
-        modifier modifier.
+        """Values of fields marked with digit should be valid digit string.
         """
         return Types(self, DigitModifier())
 
     @property
     def alpha(self) -> Types:
-        """Values of fields marked with alpha should be valid alpha string. This is a
-        modifier modifier.
+        """Values of fields marked with alpha should be valid alpha string.
         """
         return Types(self, AlphaModifier())
 
     @property
     def numeric(self) -> Types:
-        """Values of fields marked with numeric should be valid numeric string. This is a
-        modifier modifier.
+        """Values of fields marked with numeric should be valid numeric string.
         """
         return Types(self, NumericModifier())
 
     @property
     def email(self) -> Types:
-        """Values of fields marked with email should be valid email format. This is a
-        modifier modifier.
+        """Values of fields marked with email should be valid email format.
         """
         return Types(self, EmailModifier())
 
     @property
     def alnum(self) -> Types:
-        """Values fields marked with alnum should be valid alnum strings. This is a
-        modifier modifier.
+        """Values fields marked with alnum should be valid alnum strings.
         """
         return Types(self, AlnumModifier())
 
@@ -506,8 +500,8 @@ class Types:
     def nullable(self) -> Types:
         """Fields marked with nullable can be None. This is the default
         behavior even without this modifier. It's the opposite to required
-        modifier. Values inside lists have implicitly required modifier. Use this
-        to allow null or None values inside lists.
+        modifier. Values inside lists have implicitly required modifier. Use 
+        this to allow null or None values inside lists.
 
         Returns:
           Types: A new types chained with this modifier.
@@ -560,10 +554,11 @@ class Types:
 
         Args:
             op_callable (Callable): The op callable takes 1 to 4 arguments. The
-            first is the operator object, the second is the object being operated,
-            the third is the value of the field, the fourth is the validating context.
-            Returning None or True means the value is valid, while returning a str
-            message or False means validation failed.
+            first is the operator object, the second is the object being 
+            operated, the third is the value of the field, the fourth is the 
+            validating context. Returning None or True means the value is 
+            valid, while returning a str message or False means validation 
+            failed.
 
         Returns:
             Types: A new types chained with this modifier.
@@ -627,7 +622,7 @@ class Types:
 
     @property
     def totitle(self) -> Types:
-        """This modifier titlizes strings.
+        """This modifier titlizes string.
 
         Returns:
             Types: A new types chained with this modifier.
@@ -636,7 +631,7 @@ class Types:
 
     @property
     def tocap(self) -> Types:
-        """This modifier capitalizes strings.
+        """This modifier capitalizes string.
 
         Returns:
             Types: A new types chained with this modifier.
@@ -645,7 +640,7 @@ class Types:
 
     @property
     def tolower(self) -> Types:
-        """This modifier lowercasefies strings.
+        """This modifier lowercasefies string.
 
         Returns:
             Types: A new types chained with this modifier.
@@ -654,7 +649,7 @@ class Types:
 
     @property
     def toupper(self) -> Types:
-        """This modifier uppercasefies strings.
+        """This modifier uppercasefies string.
 
         Returns:
             Types: A new types chained with this modifier.
@@ -715,8 +710,9 @@ class Types:
         return Types(self, AsopdModifier())
 
     def setonsave(self, setter: Callable) -> Types:
-        """Setonsave modifier marks a field to be updated just before serializing
-        into the database if this field is modified and to be serialized.
+        """Setonsave modifier marks a field to be updated just before 
+        serializing into the database if this field is modified and to be 
+        serialized.
 
         Args:
           setter (Callable): This setter function takes zero or one argument
@@ -766,11 +762,11 @@ class Types:
 
     @property
     def nonnull(self) -> Types:
-        """This modifier is a instructional transformer designated for shape, dictof
-        and listof. This is not a modifier. To mark a field is required and should
-        not be null, use `required` instead. This transformer should be used right
-        before shape, dictof and listof, to given an instruction of not leaving
-        null for the field.
+        """This modifier is a instructional transformer designated for shape, 
+        dictof and listof. This is not a modifier. To mark a field is required 
+        and should not be null, use `required` instead. This transformer should 
+        be used right before shape, dictof and listof, to given an instruction 
+        of not leaving null for the field.
 
         Returns:
           Types: A new types chained with this modifier.
@@ -802,8 +798,8 @@ class Types:
     # internal
 
     def _unresolved(self: Types, arg: str) -> Types:
-        """This modifier marks unresolved status. This is used internally. Do not
-        use this.
+        """This modifier marks unresolved status. This is used internally. Do 
+        not use this.
         """
         return Types(self, UnresolvedModifier(arg))
 
