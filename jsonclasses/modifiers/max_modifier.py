@@ -16,14 +16,3 @@ class MaxModifier(Modifier):
         is_number = type(ctx.val) is int or type(ctx.val) is float
         if is_number and ctx.val > self.max_value:
             ctx.raise_vexc(f'value is not less than or equal {self.max_value}')
-
-class LteModifier(Modifier):
-    """Lte modifier validates value aganinst max value."""
-
-    def __init__(self, lte_value: Union[int, float]) -> None:
-        self.lte_value = lte_value
-    
-    def validate(self, ctx: Ctx) -> None:
-        is_number = type(ctx.val) is int or type(ctx.val) is float
-        if is_number and ctx.val >= self.lte_value:
-            ctx.raise_vexc(f'value is not less than or equal {self.lte_value}')

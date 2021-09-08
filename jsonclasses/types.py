@@ -16,10 +16,10 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         LinkedByModifier, LinkedInModifier,
                         LinkedThruModifier, LinkToModifier, ListOfModifier,
                         MatchModifier, MaxModifier, MaxlengthModifier,
-                        MinModifier, MinlengthModifier, NegativeModifier,
-                        NonnullModifier, NullableModifier, OneOfModifier,
-                        UnionModifier, OnWriteModifier, OnSaveModifier,
-                        OnUpdateModifier, OutputLnameModifier,
+                        LtModifier, MinModifier, MinlengthModifier, GtModifier,
+                        NegativeModifier, NonnullModifier, NullableModifier, 
+                        OneOfModifier, UnionModifier, OnWriteModifier, 
+                        OnSaveModifier, OnUpdateModifier, OutputLnameModifier,
                         OutputNameModifier, OutputValueModifier,
                         PositiveModifier, PresentModifier,
                         PresentWithModifier, PresentWithoutModifier,
@@ -363,6 +363,19 @@ class Types:
         the argument value are considered invalid.
         """
         return Types(self, MinModifier(value))
+
+    def lt(self, value: Float) -> Types:
+        """Fields marked with lt are tested again this value. Values greater
+        or equal than the argument value are considered invalid.
+        """
+        return Types(self, LtModifier(value))
+
+    def gt(self, value: Float) -> Types:
+        """Fields marked with gt are tested again this value. Values less than
+        or equal than the argument value are considered invalid.
+        """
+        return Types(self, GtModifier(value))
+
 
     def range(self, min_value: Float, max_value: Float) -> Types:
         """Fields marked with range are tested again argument values. Only
