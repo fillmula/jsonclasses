@@ -22,6 +22,7 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         OnSaveModifier, OnUpdateModifier, OutputLnameModifier,
                         OutputNameModifier, OutputValueModifier,
                         PositiveModifier, PresentModifier,
+                        NonnegativeModifier, NonpositiveModifier,
                         PresentWithModifier, PresentWithoutModifier,
                         PreserializeModifier, PrimaryModifier,
                         RangeModifier, ReadonlyModifier, ReadwriteModifier,
@@ -394,6 +395,20 @@ class Types:
         """Fields marked with negative should have a value greater than zero.
         """
         return Types(self, PositiveModifier())
+
+    @property
+    def nonnegative(self) -> Types:
+        """Fields marked with nonnegative should have a value greater than or
+        equal to zero.
+        """
+        return Types(self, NonnegativeModifier())
+
+    @property
+    def nonpositive(self) -> Types:
+        """Fields marked with nonnegative should have a value less than or
+        equal to zero.
+        """
+        return Types(self, NonpositiveModifier())
 
     @property
     def bool(self) -> Types:

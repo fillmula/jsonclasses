@@ -63,6 +63,8 @@ from .min_modifier import MinModifier
 from .max_modifier import MaxModifier
 from .lt_modifier import LtModifier
 from .gt_modifier import GtModifier
+from .nonnegative_modifier import NonnegativeModifier
+from .nonpositive_modifier import NonpositiveModifier
 from .range_modifier import RangeModifier
 from .positive_modifier import PositiveModifier
 from .negative_modifier import NegativeModifier

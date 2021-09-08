@@ -1,7 +1,6 @@
 """module for negative modifier."""
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from ..excs import ValidationException
 from .modifier import Modifier
 if TYPE_CHECKING:
     from ..ctx import Ctx
