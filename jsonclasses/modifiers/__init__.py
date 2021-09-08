@@ -4,7 +4,6 @@ from .modifier import Modifier
 from .invalid_modifier import InvalidModifier
 
 from .primary_modifier import PrimaryModifier
-from .usefor_modifier import UseForModifier
 
 # access markers
 from .writeonly_modifier import WriteonlyModifier

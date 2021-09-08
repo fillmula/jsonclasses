@@ -11,9 +11,7 @@ class User:
     posts: list[Post] = types.nonnull.listof('Post').linkedby('user').required
     comments: list[Comment] = types.listof('Comment').linkedby('commenter') \
                                    .required
-    updated_at: datetime = types.datetime.timestamp('updated') \
-                                .default(datetime.now) \
-                                .setonsave(datetime.now).required
+    updated_at: datetime = types.datetime.tsupdated.required
 
 
 @jsonclass(class_graph='blog')
@@ -22,9 +20,7 @@ class Post:
     name: str
     user: User = types.linkto.instanceof('User').required
     comments: list[Comment] = types.listof('Comment').linkedby('post').required
-    updated_at: datetime = types.datetime.timestamp('updated') \
-                                .default(datetime.now) \
-                                .setonsave(datetime.now).required
+    updated_at: datetime = types.datetime.tsupdated.required
 
 
 
@@ -37,6 +33,4 @@ class Comment:
     children: list[Comment] = types.listof('Comment').linkedby('parent') \
                                    .required
     commenter: User = types.linkto.instanceof('User').required
-    updated_at: datetime = types.datetime.timestamp('updated') \
-                                .default(datetime.now) \
-                                .setonsave(datetime.now).required
+    updated_at: datetime = types.datetime.tsupdated.required

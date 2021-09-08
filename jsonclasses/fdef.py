@@ -112,7 +112,6 @@ class Fdef:
         self._field_type: Optional[FieldType] = None
         self._field_storage: FieldStorage = FieldStorage.EMBEDDED
         self._primary: bool = False
-        self._usage: Optional[str] = None
         self._index: bool = False
         self._unique: bool = False
         self._required: bool = False
@@ -177,13 +176,6 @@ class Fdef:
         """
         self._resolve_if_needed()
         return self._primary
-
-    @property
-    def usage(self: Fdef) -> Optional[str]:
-        """The usage of this field.
-        """
-        self._resolve_if_needed()
-        return self._usage
 
     # database modifiers
 

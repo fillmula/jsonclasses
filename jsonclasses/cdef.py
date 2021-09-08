@@ -72,8 +72,6 @@ class Cdef:
             self._dict_fields[name] = jfield
             if types.fdef._primary:
                 self._primary_field = jfield
-            elif types.fdef._usage == 'updated_at':
-                self._updated_at_field = jfield
             if types.fdef._delete_rule == DeleteRule.DENY:
                 self._deny_fields.append(jfield)
             elif types.fdef._delete_rule == DeleteRule.NULLIFY:

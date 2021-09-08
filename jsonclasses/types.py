@@ -1,10 +1,11 @@
 """This modules contains the JSON Class types marker."""
 from __future__ import annotations
-from typing import Callable, Any, Optional, Union, Literal
+from typing import Callable, Any, Optional, Union
+from datetime import datetime
 from copy import deepcopy
 from .fdef import Fdef
 from .keypath import new_mongoid
-from .modifiers import (UseForModifier, BoolModifier, ChainedModifier,
+from .modifiers import (BoolModifier, ChainedModifier,
                         CompareModifier, DateModifier, DatetimeModifier,
                         DefaultModifier, DictOfModifier, EagerModifier,
                         EmbeddedModifier, EnumModifier,
@@ -77,21 +78,6 @@ class Types:
         """Field marked with primary become the object's primary key.
         """
         return Types(self, PrimaryModifier())
-
-    def usefor(self, usage: str) -> Types:
-        """Field marked with usefor are queried by JSON Class and it's ORM
-        implementations to get user designated fields to perform special
-        actions.
-        """
-        return Types(self, UseForModifier(usage))
-
-    def timestamp(self,
-                  usage: Literal['created', 'updated', 'deleted']) -> Types:
-        """Field marked with timestamp are special timestamp marks. JSON Class
-        and it's ORM implementations use this information to perform special
-        actions on timestamp fields.
-        """
-        return Types(self, UseForModifier(f'{usage}_at'))
 
     @property
     def readonly(self) -> Types:
@@ -794,10 +780,24 @@ class Types:
     # compound
 
     @property
-    def mongoid(self) -> Types:
+    def mongoid(self: Types) -> Types:
         """This modifier assigns a default bson object id to the field.
         """
         return Types(self, DefaultModifier(lambda: new_mongoid()))
+
+    @property
+    def tscreated(self: Types) -> Types:
+        """This modifier adds a default current time to the field.
+        """
+        return Types(self, DefaultModifier(datetime.now))
+
+    @property
+    def tsupdated(self: Types) -> Types:
+        """This modifier adds a default current time and a set on save.
+        """
+        return Types(self,
+                     DefaultModifier(datetime.now),
+                     SetOnSaveModifier(lambda: datetime.now()))
 
     # internal
 
