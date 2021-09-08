@@ -18,27 +18,27 @@ ERROR_MULTIPLE_DEFAULT_VALUES = ErrorCode('jsonclass-field',
                                           'JSON Class')
 
 
-# def is_json_class_types_expr(expr: Any) -> bool:
-#     if isinstance(expr, NameExpr):
-#         return expr.fullname == 'jsonclasses.types.types'
-#     if isinstance(expr, MemberExpr):
-#         return is_json_class_types_expr(expr.expr)
-#     if isinstance(expr, CallExpr):
-#         return is_json_class_types_expr(expr.callee)
-#     return False
+def is_json_class_types_expr(expr: Any) -> bool:
+    if isinstance(expr, NameExpr):
+        return expr.fullname == 'jsonclasses.types.types'
+    if isinstance(expr, MemberExpr):
+        return is_json_class_types_expr(expr.expr)
+    if isinstance(expr, CallExpr):
+        return is_json_class_types_expr(expr.callee)
+    return False
 
 
-# def json_class_types_default_arg_expr(expr: Any) -> Any:
-#     if isinstance(expr, NameExpr):
-#         return None
-#     if isinstance(expr, MemberExpr):
-#         return json_class_types_default_arg_expr(expr.expr)
-#     if isinstance(expr, CallExpr):
-#         if isinstance(expr.callee, MemberExpr) and expr.callee.name == 'default':
-#             return expr.args
-#         else:
-#             return json_class_types_default_arg_expr(expr.callee)
-#     return None
+def json_class_types_default_arg_expr(expr: Any) -> Any:
+    if isinstance(expr, NameExpr):
+        return None
+    if isinstance(expr, MemberExpr):
+        return json_class_types_default_arg_expr(expr.expr)
+    if isinstance(expr, CallExpr):
+        if isinstance(expr.callee, MemberExpr) and expr.callee.name == 'default':
+            return expr.args
+        else:
+            return json_class_types_default_arg_expr(expr.callee)
+    return None
 
 
 def collect_attrs(ctx: ClassDefContext):
@@ -46,11 +46,6 @@ def collect_attrs(ctx: ClassDefContext):
 
 
 def transform_jsonclass_class(ctx: ClassDefContext) -> None:
-    #ctx.
-    pass
-
-
-def transform_json_object_subclass(ctx: ClassDefContext) -> None:
     cls = ctx.cls
     for stmt in cls.defs.body:
         if not isinstance(stmt, AssignmentStmt):

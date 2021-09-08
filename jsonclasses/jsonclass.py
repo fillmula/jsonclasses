@@ -18,7 +18,7 @@ def jsonclass(cls: type) -> type[JObject]: ...
 
 @overload
 def jsonclass(
-    cls: None,
+    cls: None = None,
     class_graph: Optional[str] = 'default',
     key_encoding_strategy: Optional[Callable[[str], str]] = None,
     key_decoding_strategy: Optional[Callable[[str], str]] = None,
