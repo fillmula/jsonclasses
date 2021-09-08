@@ -13,7 +13,7 @@ class TestNonnegative(TestCase):
         n = ZeroNumber(fnonnegative=0)
         n.validate()
 
-    def test_nonnegative_raises_if_float_value_is_less_than_arg(self):
+    def test_nonnegative_raises_if_float_value_is_less_than_zero(self):
         n = ZeroNumber(fnonnegative=-5.5)
         with self.assertRaises(ValidationException) as context:
             n.validate()
@@ -29,7 +29,7 @@ class TestNonnegative(TestCase):
         n = ZeroNumber(inonnegative=0)
         n.validate()
 
-    def test_nonnegative_raises_if_int_value_is_less_than_arg(self):
+    def test_nonnegative_raises_if_int_value_is_less_than_zero(self):
         n = ZeroNumber(inonnegative=-5)
         with self.assertRaises(ValidationException) as context:
             n.validate()

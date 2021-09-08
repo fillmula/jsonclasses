@@ -13,7 +13,7 @@ class TestNonpositive(TestCase):
         n = ZeroNumber(fnonpositive=0)
         n.validate()
 
-    def test_nonpositive_raises_if_float_value_is_greater_than_arg(self):
+    def test_nonpositive_raises_if_float_value_is_greater_than_zero(self):
         n = ZeroNumber(fnonpositive=5.5)
         with self.assertRaises(ValidationException) as context:
             n.validate()
@@ -29,7 +29,7 @@ class TestNonpositive(TestCase):
         n = ZeroNumber(inonpositive=0)
         n.validate()
 
-    def test_nonpositive_raises_if_int_value_is_greater_than_arg(self):
+    def test_nonpositive_raises_if_int_value_is_greater_than_zero(self):
         n = ZeroNumber(inonpositive=5)
         with self.assertRaises(ValidationException) as context:
             n.validate()
