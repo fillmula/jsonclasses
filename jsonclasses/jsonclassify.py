@@ -566,14 +566,6 @@ def _id(self: JObject) -> Union[str, int, None]:
 
 
 @property
-def _created_at(self: JObject) -> Optional[datetime]:
-    field = self.__class__.cdef.created_at_field
-    if not field:
-        return None
-    return getattr(self, field.name)
-
-
-@property
 def _updated_at(self: JObject) -> Optional[datetime]:
     field = self.__class__.cdef.updated_at_field
     if not field:
@@ -893,7 +885,6 @@ def jsonclassify(class_: type) -> type[JObject]:
     class_._run_on_update_callbacks = _run_on_update_callbacks
     class_._run_on_delete_callbacks = _run_on_delete_callbacks
     class_._id = _id
-    class_._created_at = _created_at
     class_._updated_at = _updated_at
     class_._deleted_at = _deleted_at
     # private methods

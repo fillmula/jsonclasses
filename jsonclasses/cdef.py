@@ -44,7 +44,6 @@ class Cdef:
         self._list_fields: list[JField] = []
         self._dict_fields: dict[str, JField] = {}
         self._primary_field: Optional[JField] = None
-        self._created_at_field: Optional[JField] = None
         self._updated_at_field: Optional[JField] = None
         self._deleted_at_field: Optional[JField] = None
         self._deny_fields: list[JField] = []
@@ -74,8 +73,6 @@ class Cdef:
             self._dict_fields[name] = jfield
             if types.fdef._primary:
                 self._primary_field = jfield
-            if types.fdef._usage == 'created_at':
-                self._created_at_field = jfield
             elif types.fdef._usage == 'updated_at':
                 self._updated_at_field = jfield
             elif types.fdef._usage == 'deleted_at':
@@ -163,16 +160,6 @@ class Cdef:
         for looping and iterating.
         """
         return self._tuple_fields
-
-    @property
-    def created_at_field(self: Cdef) -> Optional[JField]:
-        """
-        The class definition's field which represents the created at field.
-
-        This is used by the framework to locate the correct field to find the
-        record's created at timestamp.
-        """
-        return self._created_at_field
 
     @property
     def updated_at_field(self: Cdef) -> Optional[JField]:

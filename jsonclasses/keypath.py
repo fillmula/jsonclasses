@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from .jfield import JField
 
 
-def raise_kindly():
+def raise_inflection_kindly():
     raise ModuleNotFoundError('please whether install inflection for the '
                               'default key encoding/decoding strategy '
                               'behavior or provide your own strategy')
@@ -17,7 +17,7 @@ def camelize_key(key: str) -> str:
     try:
         from inflection import camelize
     except ModuleNotFoundError as e:
-        raise_kindly()
+        raise_inflection_kindly()
     return camelize(key, False)
 
 
@@ -25,7 +25,7 @@ def underscore_key(key: str) -> str:
     try:
         from inflection import underscore
     except ModuleNotFoundError as e:
-        raise_kindly()
+        raise_inflection_kindly()
     return underscore(key)
 
 
@@ -58,6 +58,11 @@ def reference_key(field: JField) -> str:
     else:
         raise ValueError(f"field type {field.fdef.field_type} is not a "
                          "supported reference field type")
+
+
+def new_mongoid() -> str:
+    from bson.objectid import ObjectId
+    return str(ObjectId())
 
 
 def concat_keypath(*args: Union[str, int]) -> str:

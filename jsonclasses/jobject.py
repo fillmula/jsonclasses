@@ -104,9 +104,6 @@ class JObject(Protocol):
     def _id(self: JObject) -> Union[str, int, None]: ...
 
     @property
-    def _created_at(self: JObject) -> Optional[datetime]: ...
-
-    @property
     def _updated_at(self: JObject) -> Optional[datetime]: ...
 
     @property

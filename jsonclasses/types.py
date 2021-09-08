@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Callable, Any, Optional, Union, Literal
 from copy import deepcopy
 from .fdef import Fdef
+from .keypath import new_mongoid
 from .modifiers import (UseForModifier, BoolModifier, ChainedModifier,
                         CompareModifier, DateModifier, DatetimeModifier,
                         DefaultModifier, DictOfModifier, EagerModifier,
@@ -789,6 +790,16 @@ class Types:
           Types: A new types chained with this marker.
         """
         return Types(self, NonnullModifier())
+
+    # compound
+
+    @property
+    def mongoid(self) -> Types:
+        """This modifier assigns a default bson object id to the field.
+        """
+        return Types(self, DefaultModifier(lambda: new_mongoid()))
+
+    # internal
 
     def _unresolved(self: Types, arg: str) -> Types:
         """This marker marks unresolved status. This is used internally. Do not
