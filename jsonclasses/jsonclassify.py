@@ -324,7 +324,7 @@ def save(self: JObject,
     if self.is_new:
         self._run_on_create_callbacks()
     else:
-        self._run_on_save_callbacks()
+        self._run_on_update_callbacks()
     if not skip_validation:
         self.validate(all_fields=validate_all_fields)
     self._set_on_save()
@@ -539,8 +539,8 @@ def _run_on_create_callbacks(self: JObject) -> None:
             callback(self, getattr(self, '_operator'))
 
 
-def _run_on_save_callbacks(self: JObject) -> None:
-    for callback in self.__class__.cdef.jconf.on_save:
+def _run_on_update_callbacks(self: JObject) -> None:
+    for callback in self.__class__.cdef.jconf.on_update:
         params_len = len(signature(callback).parameters)
         if params_len == 1:
             callback(self)
@@ -890,7 +890,7 @@ def jsonclassify(class_: type) -> type[JObject]:
     class_._can_delete_check = _can_delete_check
     class_._can_read_check = _can_read_check
     class_._run_on_create_callbacks = _run_on_create_callbacks
-    class_._run_on_save_callbacks = _run_on_save_callbacks
+    class_._run_on_update_callbacks = _run_on_update_callbacks
     class_._run_on_delete_callbacks = _run_on_delete_callbacks
     class_._id = _id
     class_._created_at = _created_at

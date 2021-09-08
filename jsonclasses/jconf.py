@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 OnCreate = Callable[[JObject, Any], None]
-OnSave = Callable[[JObject, Any], None]
+OnUpdate = Callable[[JObject, Any], None]
 OnDelete = Callable[[JObject, Any], None]
 CanCreate = Callable[[JObject, Any], Union[bool, None, str]]
 CanUpdate = Callable[[JObject, Any], Union[bool, None, str]]
@@ -34,7 +34,7 @@ class JConf:
                  abstract: Optional[bool],
                  reset_all_fields: Optional[bool],
                  on_create: Optional[Union[OnCreate, list[OnCreate]]],
-                 on_save: Optional[Union[OnSave, list[OnSave]]],
+                 on_update: Optional[Union[OnUpdate, list[OnUpdate]]],
                  on_delete: Optional[Union[OnDelete, list[OnDelete]]],
                  can_create: Optional[Union[CanCreate, list[CanCreate]]],
                  can_update: Optional[Union[CanUpdate, list[CanUpdate]]],
@@ -60,8 +60,8 @@ class JConf:
                 values of an object and enable reset functionality.
             on_create (Optional[Union[OnCreate, list[OnCreate]]]): The callback
                 on first time save.
-            on_save (Optional[Union[OnSave, list[OnSave]]]): The callback on
-                existing object save.
+            on_update (Optional[Union[OnUpdate, list[OnUpdate]]]): The callback
+                on existing object save.
             on_delete (Optional[Union[OnDelete, list[OnDelete]]]): The callback
                 on existing object deletion.
             can_create (Optional[Union[CanCreate, list[CanCreate]]]): The
@@ -87,12 +87,12 @@ class JConf:
             self._on_create = on_create
         else:
             self._on_create = []
-        if callable(on_save):
-            self._on_save = [on_save]
-        elif isinstance(on_save, list):
-            self._on_save = on_save
+        if callable(on_update):
+            self._on_update = [on_update]
+        elif isinstance(on_update, list):
+            self._on_update = on_update
         else:
-            self._on_save = []
+            self._on_update = []
         if callable(on_delete):
             self._on_delete = [on_delete]
         elif isinstance(on_delete, list):
@@ -144,7 +144,7 @@ class JConf:
             return False
         if self.on_create != other_config.on_create:
             return False
-        if self.on_save != other_config.on_save:
+        if self.on_update != other_config.on_update:
             return False
         if self.on_delete != other_config._on_delete:
             return False
@@ -228,10 +228,10 @@ class JConf:
         return self._on_create
 
     @property
-    def on_save(self: JConf) -> list[OnSave]:
+    def on_update(self: JConf) -> list[OnUpdate]:
         """The object saving callback.
         """
-        return self._on_save
+        return self._on_update
 
     @property
     def on_delete(self: JConf) -> list[OnDelete]:

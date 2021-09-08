@@ -3,8 +3,8 @@ This module contains `jsonclass`, the decorator for JSON Classes.
 """
 from typing import Optional, Union, Callable, overload, cast
 from dataclasses import dataclass
-from .jconf import (JConf, OnCreate, OnSave, CanCreate, OnDelete, CanUpdate,
-                     CanDelete, CanRead)
+from .jconf import (JConf, OnCreate, CanCreate, OnDelete, CanUpdate,
+                     CanDelete, CanRead, OnUpdate)
 from .jfield import JField
 from .cdef import Cdef
 from .jsonclassify import jsonclassify
@@ -26,7 +26,7 @@ def jsonclass(
     abstract: Optional[bool] = None,
     reset_all_fields: Optional[bool] = None,
     on_create: Optional[Union[OnCreate, list[OnCreate]]] = None,
-    on_save: Optional[Union[OnSave, list[OnSave]]] = None,
+    on_update: Optional[Union[OnUpdate, list[OnUpdate]]] = None,
     on_delete: Optional[Union[OnDelete, list[OnDelete]]] = None,
     can_create: Optional[Union[CanCreate, list[CanCreate]]] = None,
     can_update: Optional[Union[CanUpdate, list[CanUpdate]]] = None,
@@ -46,7 +46,7 @@ def jsonclass(
     abstract: Optional[bool] = None,
     reset_all_fields: Optional[bool] = None,
     on_create: Optional[Union[OnCreate, list[OnCreate]]] = None,
-    on_save: Optional[Union[OnSave, list[OnSave]]] = None,
+    on_update: Optional[Union[OnUpdate, list[OnUpdate]]] = None,
     on_delete: Optional[Union[OnDelete, list[OnDelete]]] = None,
     can_create: Optional[Union[CanCreate, list[CanCreate]]] = None,
     can_update: Optional[Union[CanUpdate, list[CanUpdate]]] = None,
@@ -65,7 +65,7 @@ def jsonclass(
     abstract: Optional[bool] = None,
     reset_all_fields: Optional[bool] = None,
     on_create: Optional[Union[OnCreate, list[OnCreate]]] = None,
-    on_save: Optional[Union[OnSave, list[OnSave]]] = None,
+    on_update: Optional[Union[OnUpdate, list[OnUpdate]]] = None,
     on_delete: Optional[Union[OnDelete, list[OnDelete]]] = None,
     can_create: Optional[Union[CanCreate, list[CanCreate]]] = None,
     can_update: Optional[Union[CanUpdate, list[CanUpdate]]] = None,
@@ -92,7 +92,7 @@ def jsonclass(
             abstract=abstract,
             reset_all_fields=reset_all_fields,
             on_create=on_create,
-            on_save=on_save,
+            on_update=on_update,
             on_delete=on_delete,
             can_create=can_create,
             can_update=can_update,
@@ -116,7 +116,7 @@ def jsonclass(
                 abstract=abstract,
                 reset_all_fields=reset_all_fields,
                 on_create=on_create,
-                on_save=on_save,
+                on_update=on_update,
                 on_delete=on_delete,
                 can_create=can_create,
                 can_update=can_update,

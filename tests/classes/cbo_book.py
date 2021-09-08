@@ -6,7 +6,7 @@ def increase_updated_count(book: CBOBook, operator: int) -> None:
     book.updated_count += operator
 
 
-@jsonclass(on_save=increase_updated_count)
+@jsonclass(on_update=increase_updated_count)
 class CBOBook:
     name: str
     content: str
