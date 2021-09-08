@@ -30,7 +30,7 @@ class JConf:
                  key_encoding_strategy: Optional[Callable[[str], str]],
                  key_decoding_strategy: Optional[Callable[[str], str]],
                  strict_input: Optional[bool],
-                 key_transformer: Optional[Callable[[JField], str]],
+                 ref_key_encoding_strategy: Optional[Callable[[JField], str]],
                  validate_all_fields: Optional[bool],
                  abstract: Optional[bool],
                  reset_all_fields: Optional[bool],
@@ -53,7 +53,7 @@ class JConf:
                 object keys are decoded. The default is underscore.
             strict_input (Optional[bool]): Whether raise errors on receiving \
                 invalid input keys.
-            key_transformer (Optional[Callable[[JField], str]]): The \
+            ref_key_encoding_strategy (Optional[Callable[[JField], str]]): The \
                 reference field local key conversion function.
             validate_all_fields (Optional[bool]): The default field \
                 validating method when performing saving and validating.
@@ -81,7 +81,7 @@ class JConf:
         self._key_encoding_strategy = key_encoding_strategy
         self._key_decoding_strategy = key_decoding_strategy
         self._strict_input = strict_input
-        self._key_transformer = key_transformer
+        self._ref_key_encoding_strategy = ref_key_encoding_strategy
         self._validate_all_fields = validate_all_fields
         self._abstract = abstract
         self._reset_all_fields = reset_all_fields
@@ -140,7 +140,7 @@ class JConf:
             return False
         if self.strict_input != other_config.strict_input:
             return False
-        if self.key_transformer != other_config.key_transformer:
+        if self.ref_key_encoding_strategy != other_config.ref_key_encoding_strategy:
             return False
         if self.validate_all_fields != other_config.validate_all_fields:
             return False
@@ -202,12 +202,12 @@ class JConf:
         return self._strict_input
 
     @property
-    def key_transformer(self: JConf) -> Callable[[JField], str]:
+    def ref_key_encoding_strategy(self: JConf) -> Callable[[JField], str]:
         """The reference field local key conversion function.
         """
-        if self._key_transformer is None:
-            return self.cgraph.default_config.key_transformer
-        return self._key_transformer
+        if self._ref_key_encoding_strategy is None:
+            return self.cgraph.default_config.ref_key_encoding_strategy
+        return self._ref_key_encoding_strategy
 
     @property
     def validate_all_fields(self: JConf) -> bool:

@@ -51,7 +51,7 @@ class CGraph:
                                      key_encoding_strategy=camelize_key,
                                      key_decoding_strategy=underscore_key,
                                      strict_input=True,
-                                     key_transformer=reference_key,
+                                     ref_key_encoding_strategy=reference_key,
                                      validate_all_fields=False,
                                      abstract=False,
                                      reset_all_fields=False,

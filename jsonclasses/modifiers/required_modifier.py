@@ -27,7 +27,7 @@ class RequiredModifier(Modifier):
                 jconf: JConf = ctx.holder.__class__.cdef.jconf
                 ko = str(ctx.keypathh[0])
                 field = ctx.holder.__class__.cdef.field_named(ko)
-                local_key = jconf.key_transformer(field)
+                local_key = jconf.ref_key_encoding_strategy(field)
                 if isinstance(ctx.holder, dict):
                     if ctx.holder.get(local_key) is None:
                         ctx.raise_vexc('value required')

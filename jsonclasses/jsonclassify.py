@@ -39,7 +39,7 @@ def __init__(self: JObject, **kwargs: dict[str, Any]) -> None:
     for field in self.__class__.cdef.fields:
         setattr(self, field.name, None)
         if field.fdef.field_storage == FieldStorage.LOCAL_KEY:
-            transformer = self.__class__.cdef.jconf.key_transformer
+            transformer = self.__class__.cdef.jconf.ref_key_encoding_strategy
             local_key = transformer(field)
             setattr(self, local_key, None)
             self._local_keys.add(local_key)
@@ -654,10 +654,10 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
         self.__original_setattr__(name, value)
         if field.fdef.field_storage == FieldStorage.LOCAL_KEY:
             if value is None:
-                transformer = self.__class__.cdef.jconf.key_transformer
+                transformer = self.__class__.cdef.jconf.ref_key_encoding_strategy
                 self.__original_setattr__(transformer(field), None)
             if isjsonobject(value):
-                transformer = self.__class__.cdef.jconf.key_transformer
+                transformer = self.__class__.cdef.jconf.ref_key_encoding_strategy
                 self.__original_setattr__(transformer(field), value._id)
         self.__link_field__(field, value)
     else:
@@ -779,7 +779,7 @@ def __unlink_field__(self: JObject, field: JField, value: Any) -> None:
                 item.__original_setattr__(other_field.name, None)
                 of = other_field
                 if of.fdef.field_storage == FieldStorage.LOCAL_KEY:
-                    tsfm = item.__class__.cdef.jconf.key_transformer
+                    tsfm = item.__class__.cdef.jconf.ref_key_encoding_strategy
                     item.__original_setattr__(tsfm(other_field), None)
                     item._modified_fields.add(other_field.name)
                 item._add_unlinked_object(other_field.name, self)

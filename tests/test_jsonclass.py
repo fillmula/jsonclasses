@@ -28,7 +28,7 @@ class TestJsonClass(TestCase):
                                 key_encoding_strategy=camelize_key,
                                 key_decoding_strategy=underscore_key,
                                 strict_input=True,
-                                key_transformer=reference_key,
+                                ref_key_encoding_strategy=reference_key,
                                 validate_all_fields=False,
                                 abstract=False,
                                 reset_all_fields=False,
@@ -60,7 +60,7 @@ class TestJsonClass(TestCase):
 
     def test_jsonclass_key_transformer_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.cdef.jconf.key_transformer,
+            SimpleEmployee.cdef.jconf.ref_key_encoding_strategy,
             yet_another_key_transformer)
 
     def test_jsonclass_validate_all_fields_changes_config(self):

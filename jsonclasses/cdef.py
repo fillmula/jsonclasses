@@ -109,10 +109,10 @@ class Cdef:
     def _resolve_ref_names(self: Cdef) -> None:
         for jfield in self._tuple_fields:
             if jfield.types.fdef._field_storage == FieldStorage.LOCAL_KEY:
-                key_transformer = self.jconf.key_transformer
-                self._reference_names.append(key_transformer(jfield))
+                ref_key_encoding_strategy = self.jconf.ref_key_encoding_strategy
+                self._reference_names.append(ref_key_encoding_strategy(jfield))
                 self._camelized_reference_names.append(
-                    self.jconf.key_encoding_strategy(key_transformer(jfield)))
+                    self.jconf.key_encoding_strategy(ref_key_encoding_strategy(jfield)))
         self._available_names: set[str] = set(self._field_names
                                               + self._camelized_field_names
                                               + self._reference_names
