@@ -5,6 +5,7 @@ from tests.classes.simple_list import SimpleList
 from tests.classes.typed_list import TypedList
 from tests.classes.list_quiz import ListQuiz
 from tests.classes.nullable_list import NullableList
+from tests.classes.list_dict import ListDict
 
 
 class TestListOf(TestCase):
@@ -52,3 +53,10 @@ class TestListOf(TestCase):
         self.assertEqual(len(context.exception.keypath_messages), 1)
         self.assertEqual(context.exception.keypath_messages['numbers.1'],
                          "value is not greater than or equal 100")
+
+    def test_listof_accepts_dict_value(self):
+        val = ListDict(numbers=[{'ab': 1, 'cd': 2}, {'ef': 3}])
+        val.validate()
+        val = ListDict(numbers=[{'ab': 1, 'cd': 2}, {'ef': True}])
+        with self.assertRaises(ValidationException):
+            val.validate()
