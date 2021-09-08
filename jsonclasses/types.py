@@ -352,6 +352,18 @@ class Types:
         """
         return Types(self, MaxModifier(value))
 
+    def lte(self, value: Float) -> Types:
+        """Fields marked with lte are tested again this value. Values greater
+        than the argument value are considered invalid.
+        """
+        return Types(self, MaxModifier(value))
+
+    def gte(self, value: Float) -> Types:
+        """Fields marked with gte are tested again this value. Values less than
+        the argument value are considered invalid.
+        """
+        return Types(self, MinModifier(value))
+
     def range(self, min_value: Float, max_value: Float) -> Types:
         """Fields marked with range are tested again argument values. Only
         values between the arguments range are considered valid.
