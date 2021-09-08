@@ -1,7 +1,7 @@
 """module for listof modifier."""
 from __future__ import annotations
 from typing import Any, Collection, Iterable
-from ..fdef import FieldType
+from ..fdef import FType
 from .collection_type_modifier import CollectionTypeModifier
 
 
@@ -11,7 +11,7 @@ class ListOfModifier(CollectionTypeModifier):
     def __init__(self, raw_item_types: Any) -> None:
         super().__init__(raw_item_types)
         self.cls = list
-        self.field_type = FieldType.LIST
+        self.field_type = FType.LIST
 
     def enumerator(self, value: list) -> Iterable:
         return enumerate(value)

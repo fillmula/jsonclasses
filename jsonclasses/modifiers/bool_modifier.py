@@ -1,5 +1,5 @@
 """module for bool modifier."""
-from ..fdef import FieldType
+from ..fdef import FType
 from .type_modifier import TypeModifier
 
 
@@ -9,5 +9,5 @@ class BoolModifier(TypeModifier):
     def __init__(self):
         super().__init__()
         self.cls = bool
-        self.field_type = FieldType.BOOL
+        self.field_type = FType.BOOL
         self.exact_type = True

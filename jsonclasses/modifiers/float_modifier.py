@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 from .type_modifier import TypeModifier
-from ..fdef import FieldType
+from ..fdef import FType
 if TYPE_CHECKING:
     from ..ctx import Ctx
 
@@ -13,7 +13,7 @@ class FloatModifier(TypeModifier):
     def __init__(self):
         super().__init__()
         self.cls = float
-        self.field_type = FieldType.FLOAT
+        self.field_type = FType.FLOAT
 
     def transform(self, ctx: Ctx) -> Any:
         if ctx.val is None:

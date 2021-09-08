@@ -1,7 +1,7 @@
 """module for dictof modifier."""
 from __future__ import annotations
 from typing import Any, Iterable, Collection
-from ..fdef import FieldType
+from ..fdef import FType
 from ..jconf import JConf
 from .collection_type_modifier import CollectionTypeModifier
 
@@ -12,7 +12,7 @@ class DictOfModifier(CollectionTypeModifier):
     def __init__(self, raw_item_types: Any) -> None:
         super().__init__(raw_item_types)
         self.cls = dict
-        self.field_type = FieldType.DICT
+        self.field_type = FType.DICT
 
     def enumerator(self, value: dict[str, Any]) -> Iterable:
         return value.items()

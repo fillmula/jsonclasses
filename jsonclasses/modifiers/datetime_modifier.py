@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 from datetime import date, datetime
-from ..fdef import FieldType
+from ..fdef import FType
 from ..excs import ValidationException
 from .type_modifier import TypeModifier
 if TYPE_CHECKING:
@@ -15,7 +15,7 @@ class DatetimeModifier(TypeModifier):
     def __init__(self):
         super().__init__()
         self.cls = datetime
-        self.field_type = FieldType.DATETIME
+        self.field_type = FType.DATETIME
 
     def transform(self, ctx: Ctx) -> Any:
         if ctx.val is None:

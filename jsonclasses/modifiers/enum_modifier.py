@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any, Union, TYPE_CHECKING
 from enum import Enum
-from ..fdef import (FieldType, Fdef, EnumInput,
+from ..fdef import (FType, Fdef, EnumInput,
                                 EnumOutput)
 from .modifier import Modifier
 if TYPE_CHECKING:
@@ -17,7 +17,7 @@ class EnumModifier(Modifier):
         self.enum_or_name = enum_or_name
 
     def define(self, fdef: Fdef) -> None:
-        fdef._field_type = FieldType.ENUM
+        fdef._field_type = FType.ENUM
         fdef._raw_enum_class = self.enum_or_name
         if fdef._enum_input is None:
             fdef._enum_input = EnumInput.NAME

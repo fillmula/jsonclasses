@@ -1,7 +1,7 @@
 """module for modifier modifier."""
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from ..fdef import Fdef, FieldType
+from ..fdef import Fdef, FType
 from .modifier import Modifier
 if TYPE_CHECKING:
     from ..ctx import Ctx
@@ -12,7 +12,7 @@ class TypeModifier(Modifier):
 
     def __init__(self) -> None:
         self.cls: type = object
-        self.field_type: FieldType = FieldType.ANY
+        self.field_type: FType = FType.ANY
         self.exact_type: bool = False
 
     def define(self, fdef: Fdef) -> None:

@@ -4,7 +4,7 @@ from jsonclasses.vmsgcollector import VMsgCollector
 from jsonclasses.jfield import JField
 from typing import Any, Sequence, Union, cast, TYPE_CHECKING
 from ..fdef import (
-    Fdef, FieldStorage, FieldType, Nullability, WriteRule, ReadRule, Strictness
+    Fdef, FStore, FType, Nullability, WriteRule, ReadRule, Strictness
 )
 from ..excs import ValidationException
 from .modifier import Modifier
@@ -21,7 +21,7 @@ class InstanceOfModifier(Modifier):
         self.raw_type = raw_type
 
     def define(self, fdef: Fdef) -> None:
-        fdef._field_type = FieldType.INSTANCE
+        fdef._field_type = FType.INSTANCE
         fdef._raw_inst_types = self.raw_type
 
     def validate(self, ctx: Ctx) -> None:
@@ -49,11 +49,11 @@ class InstanceOfModifier(Modifier):
             fname = field.name
             ffdef = field.fdef
             fval = getattr(ctx.val, fname)
-            if field.fdef.field_storage == FieldStorage.EMBEDDED:
+            if field.fdef.field_storage == FStore.EMBEDDED:
                 if only_validate_modified and fname not in modified_fields:
                     continue
             try:
-                if field.fdef.field_type == FieldType.INSTANCE:
+                if field.fdef.field_type == FType.INSTANCE:
                     fval_ctx = ctx.nexto(fval, fname, ffdef)
                 else:
                     fval_ctx = ctx.nextvo(fval, fname, ffdef, ctx.original or val)
@@ -140,10 +140,10 @@ class InstanceOfModifier(Modifier):
             if not self._has_field_value(field, dict_keys):
                 if field.fdef.is_ref:
                     fdef = field.fdef
-                    if fdef.field_type == FieldType.LIST:
+                    if fdef.field_type == FType.LIST:
                         if fdef.collection_nullability == Nullability.NONNULL:
                             nonnull_ref_lists.append(field.name)
-                    elif fdef.field_storage == FieldStorage.LOCAL_KEY:
+                    elif fdef.field_storage == FStore.LOCAL_KEY:
                         tsfm = dest.__class__.cdef.jconf.ref_key_encoding_strategy
                         refname = tsfm(field)
                         if ctx.val.get(refname) is not None:
@@ -192,15 +192,15 @@ class InstanceOfModifier(Modifier):
             fd = field.types.fdef
             jf_name = field.json_name
             ignore_writeonly = ctx.ctxcfg.ignore_writeonly
-            if fd.field_storage == FieldStorage.LOCAL_KEY and no_key_refs:
+            if fd.field_storage == FStore.LOCAL_KEY and no_key_refs:
                 continue
-            if fd.field_storage == FieldStorage.FOREIGN_KEY and no_key_refs:
+            if fd.field_storage == FStore.FOREIGN_KEY and no_key_refs:
                 continue
             if fd.read_rule == ReadRule.NO_READ and not ignore_writeonly:
                 continue
             if fd.is_temp_field:
                 continue
-            if field.fdef.field_type == FieldType.INSTANCE:
+            if field.fdef.field_type == FType.INSTANCE:
                 ictx = ctx.nextoc(fval, field.name, field.fdef, cls_name)
             else:
                 ictx = ctx.nextvc(fval, field.name, field.fdef, cls_name)
@@ -221,7 +221,7 @@ class InstanceOfModifier(Modifier):
             should_update = True
         for field in value.__class__.cdef.fields:
             if field.fdef.is_ref or field.fdef.is_inst or should_update:
-                if field.fdef.field_storage == FieldStorage.LOCAL_KEY:
+                if field.fdef.field_storage == FStore.LOCAL_KEY:
                     if getattr(value, field.name) is None:
                         tsf = value.__class__.cdef.jconf.ref_key_encoding_strategy
                         if getattr(value, tsf(field)) is not None:

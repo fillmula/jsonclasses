@@ -3,7 +3,7 @@ from __future__ import annotations
 from jsonclasses.keypath import concat_keypath
 from jsonclasses.vmsgcollector import VMsgCollector
 from typing import Any, Sequence, Union, TYPE_CHECKING
-from ..fdef import Fdef, FieldType, Nullability, Strictness
+from ..fdef import Fdef, FType, Nullability, Strictness
 from ..excs import ValidationException
 from ..jconf import JConf
 from .type_modifier import TypeModifier
@@ -17,7 +17,7 @@ class ShapeModifier(TypeModifier):
     def __init__(self, raw_shape_types: Union[dict[str, Any], str]) -> None:
         super().__init__()
         self.cls = dict
-        self.field_type = FieldType.SHAPE
+        self.field_type = FType.SHAPE
         self.raw_types = raw_shape_types
         self.exact_type = False
 

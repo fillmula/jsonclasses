@@ -1,5 +1,5 @@
 """module for str modifier."""
-from ..fdef import FieldType
+from ..fdef import FType
 from .type_modifier import TypeModifier
 
 
@@ -9,4 +9,4 @@ class StrModifier(TypeModifier):
     def __init__(self):
         super().__init__()
         self.cls = str
-        self.field_type = FieldType.STR
+        self.field_type = FType.STR

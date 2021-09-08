@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from ..fdef import Fdef
 from .modifier import Modifier
-from ..fdef import FieldStorage
+from ..fdef import FStore
 from ..jconf import JConf
 from ..isjsonclass import isjsonobject
 if TYPE_CHECKING:
@@ -17,12 +17,12 @@ class RequiredModifier(Modifier):
         fdef._required = True
 
     def validate(self, ctx: Ctx) -> None:
-        storage = FieldStorage.EMBEDDED
+        storage = FStore.EMBEDDED
         if ctx.fdef is not None:
             storage = ctx.fdef.field_storage
-        if storage == FieldStorage.FOREIGN_KEY:  # we don't check foreign key
+        if storage == FStore.FOREIGN_KEY:  # we don't check foreign key
             return
-        if storage == FieldStorage.LOCAL_KEY:
+        if storage == FStore.LOCAL_KEY:
             if ctx.val is None:  # check key presence
                 jconf: JConf = ctx.holder.__class__.cdef.jconf
                 ko = str(ctx.keypathh[0])

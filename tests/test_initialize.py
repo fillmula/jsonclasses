@@ -1,5 +1,5 @@
 from __future__ import annotations
-from jsonclasses.fdef import FieldType
+from jsonclasses.fdef import FType
 from unittest import TestCase
 from datetime import date
 from jsonclasses.excs import ValidationException

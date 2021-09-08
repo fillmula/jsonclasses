@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from .cdef import Cdef
 
 
-class FieldType(Enum):
+class FType(Enum):
     """Defined field types of jsonclass fields.
     """
 
@@ -29,7 +29,7 @@ class FieldType(Enum):
     UNION = 'union'
 
 
-class FieldStorage(Enum):
+class FStore(Enum):
     """Defined field storage types of jsonclass fields.
     """
 
@@ -109,8 +109,8 @@ class Fdef:
         self._cdef: Optional[Cdef] = None
         self._unresolved: bool = False
         self._unresolved_name: Optional[str] = None
-        self._field_type: Optional[FieldType] = None
-        self._field_storage: FieldStorage = FieldStorage.EMBEDDED
+        self._field_type: Optional[FType] = None
+        self._field_storage: FStore = FStore.EMBEDDED
         self._primary: bool = False
         self._index: bool = False
         self._unique: bool = False
@@ -154,14 +154,14 @@ class Fdef:
         return cast(Cdef, self._cdef)
 
     @property
-    def field_type(self: Fdef) -> FieldType:
+    def field_type(self: Fdef) -> FType:
         """The field's type.
         """
         self._resolve_if_needed()
-        return cast(FieldType, self._field_type)
+        return cast(FType, self._field_type)
 
     @property
-    def field_storage(self: Fdef) -> FieldStorage:
+    def field_storage(self: Fdef) -> FStore:
         """The field's storage.
         """
         self._resolve_if_needed()
@@ -302,7 +302,7 @@ class Fdef:
             t.fdef._cdef = self.cdef
             cgraph = self.cdef.jconf.cgraph
             resolved = rnamedtypes(t, cgraph, self.cdef.name)
-            if resolved.fdef.field_type == FieldType.SHAPE:
+            if resolved.fdef.field_type == FType.SHAPE:
                 resolved.fdef.shape_types # this has resolve side-effect
             rnamedshapetypes[k] = resolved
         self._resolved_shape_types = rnamedshapetypes
@@ -469,28 +469,28 @@ class Fdef:
     def is_ref(self: Fdef) -> bool:
         self._resolve_if_needed()
         if self.field_storage in \
-                [FieldStorage.LOCAL_KEY, FieldStorage.FOREIGN_KEY]:
+                [FStore.LOCAL_KEY, FStore.FOREIGN_KEY]:
             return True
         return False
 
     @property
     def is_inst(self: Fdef) -> bool:
         self._resolve_if_needed()
-        if self.field_type == FieldType.INSTANCE:
+        if self.field_type == FType.INSTANCE:
             return True
-        if self.field_type == FieldType.LIST:
-            if self.item_types.fdef.field_type == FieldType.INSTANCE:
+        if self.field_type == FType.LIST:
+            if self.item_types.fdef.field_type == FType.INSTANCE:
                 return True
         return False
 
     @property
     def has_linked(self: Fdef) -> bool:
         self._resolve_if_needed()
-        if self.field_storage == FieldStorage.LOCAL_KEY:
+        if self.field_storage == FStore.LOCAL_KEY:
             return True
-        if self.field_storage == FieldStorage.FOREIGN_KEY:
+        if self.field_storage == FStore.FOREIGN_KEY:
             return True
-        if self.field_type == FieldType.LIST:
+        if self.field_type == FType.LIST:
             return self.item_types.fdef.has_linked
         return False
 

@@ -1,5 +1,5 @@
 """module for int modifier."""
-from ..fdef import FieldType
+from ..fdef import FType
 from .type_modifier import TypeModifier
 
 
@@ -9,5 +9,5 @@ class IntModifier(TypeModifier):
     def __init__(self):
         super().__init__()
         self.cls = int
-        self.field_type = FieldType.INT
+        self.field_type = FType.INT
         self.exact_type = True

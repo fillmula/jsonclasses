@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any
 from ..excs import ValidationException
 from .modifier import Modifier
 from ..rtypes import rtypes
-from ..fdef import Fdef, FieldType
+from ..fdef import Fdef, FType
 if TYPE_CHECKING:
     from ..ctx import Ctx
 
@@ -17,7 +17,7 @@ class UnionModifier(Modifier):
         self.type_list = type_list
 
     def define(self, fdef: Fdef) -> None:
-        fdef._field_type = FieldType.UNION
+        fdef._field_type = FType.UNION
         fdef._raw_union_types = [rtypes(t) for t in self.type_list]
 
     def validate(self, ctx: Ctx) -> None:

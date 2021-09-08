@@ -26,14 +26,14 @@ def apply_link_specifier(types: Types, specifier: str) -> Types:
     Returns:
         Types: The types with link specifier applied.
     """
-    from .fdef import FieldType
+    from .fdef import FType
     if match("^linkto", specifier):
         return types.linkto
     elif match("^linkedby\\('", specifier):
         match_data = match("^linkedby\\('(.+)'\\)", specifier)
         assert match_data is not None
         fk = match_data.group(1)
-        if types.fdef._field_type == FieldType.LIST:
+        if types.fdef._field_type == FType.LIST:
             return types.nonnull.linkedby(fk)
         else:
             return types.linkedby(fk)

@@ -3,7 +3,7 @@ records the detailed information of a JSON class field.
 """
 from __future__ import annotations
 from jsonclasses.jobject import JObject
-from jsonclasses.fdef import FieldType
+from jsonclasses.fdef import FType
 from typing import Any, Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from .types import Types
@@ -104,9 +104,9 @@ class JField:
         self.cdef._resolve_ref_types_if_needed()
         if self._resolved_foreign_class:
             return self._foreign_class
-        if self.fdef.field_type == FieldType.INSTANCE:
+        if self.fdef.field_type == FType.INSTANCE:
             self._foreign_class = self.fdef.inst_cls
-        elif self.fdef.field_type == FieldType.LIST:
+        elif self.fdef.field_type == FType.LIST:
             self._foreign_class = self.fdef.item_types.fdef.inst_cls
         self._resolved_foreign_class = True
         return self._foreign_class
@@ -116,15 +116,15 @@ class JField:
         self._resolved_foreign = True
 
     def _do_resolve_foreign(self: JField) -> None:
-        from .fdef import FieldStorage
-        if self.fdef.field_storage not in [FieldStorage.LOCAL_KEY, FieldStorage.FOREIGN_KEY]:
+        from .fdef import FStore
+        if self.fdef.field_storage not in [FStore.LOCAL_KEY, FStore.FOREIGN_KEY]:
             return None
         scls = self.fdef.cdef.cls
-        slocal = self.fdef.field_storage == FieldStorage.LOCAL_KEY
-        if self.fdef.field_type == FieldType.INSTANCE:
+        slocal = self.fdef.field_storage == FStore.LOCAL_KEY
+        if self.fdef.field_type == FType.INSTANCE:
             fcls = self.foreign_class
             stype = 'inst'
-        elif self.fdef.field_type == FieldType.LIST:
+        elif self.fdef.field_type == FType.LIST:
             fcls = self.foreign_class
             stype = 'list'
         if not fcls:

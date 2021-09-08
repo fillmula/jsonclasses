@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any, Union, TYPE_CHECKING
 from re import split,search
-from .fdef import FieldStorage, FieldType
+from .fdef import FStore, FType
 if TYPE_CHECKING:
     from .jfield import JField
 
@@ -49,11 +49,11 @@ def reference_key(field: JField) -> str:
             supported reference field.
     """
     if field.fdef.field_storage not in \
-            [FieldStorage.FOREIGN_KEY, FieldStorage.LOCAL_KEY]:
+            [FStore.FOREIGN_KEY, FStore.LOCAL_KEY]:
         raise ValueError(f"field named {field.name} is not a reference field")
-    if field.fdef.field_type == FieldType.LIST:
+    if field.fdef.field_type == FType.LIST:
         return field.name + '_ids'
-    elif field.fdef.field_type == FieldType.INSTANCE:
+    elif field.fdef.field_type == FType.INSTANCE:
         return field.name + '_id'
     else:
         raise ValueError(f"field type {field.fdef.field_type} is not a "

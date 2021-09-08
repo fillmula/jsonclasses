@@ -9,7 +9,7 @@ from jsonclasses.jobject import JObject
 from typing import Optional, final, TYPE_CHECKING
 from dataclasses import fields as dataclass_fields
 from .jfield import JField
-from .fdef import FieldStorage, DeleteRule
+from .fdef import FStore, DeleteRule
 from .rtypes import rtypes, rnamedtypes
 from .excs import LinkedFieldUnmatchException
 if TYPE_CHECKING:
@@ -99,7 +99,7 @@ class Cdef:
 
     def _resolve_ref_names(self: Cdef) -> None:
         for jfield in self._tuple_fields:
-            if jfield.types.fdef._field_storage == FieldStorage.LOCAL_KEY:
+            if jfield.types.fdef._field_storage == FStore.LOCAL_KEY:
                 ref_key_encoding_strategy = self.jconf.ref_key_encoding_strategy
                 self._reference_names.append(ref_key_encoding_strategy(jfield))
                 self._camelized_reference_names.append(
@@ -211,24 +211,24 @@ class Cdef:
         self._resolve_ref_names_if_needed()
         return self._update_names
 
-        # accepted: list[tuple[FieldStorage, bool]] = []
-        # if fdef.field_storage == FieldStorage.LOCAL_KEY:
-        #     foreign_storage = FieldStorage.FOREIGN_KEY
+        # accepted: list[tuple[FStore, bool]] = []
+        # if fdef.field_storage == FStore.LOCAL_KEY:
+        #     foreign_storage = FStore.FOREIGN_KEY
         #     use_join_table = False
         #     accepted.append((foreign_storage, use_join_table))
-        # elif fdef.field_storage == FieldStorage.FOREIGN_KEY:
-        #     foreign_storage = FieldStorage.LOCAL_KEY
+        # elif fdef.field_storage == FStore.FOREIGN_KEY:
+        #     foreign_storage = FStore.LOCAL_KEY
         #     use_join_table = False
         #     accepted.append((foreign_storage, use_join_table))
-        #     if fdef.field_type == FieldType.LIST:
-        #         foreign_storage = FieldStorage.FOREIGN_KEY
+        #     if fdef.field_type == FType.LIST:
+        #         foreign_storage = FStore.FOREIGN_KEY
         #         use_join_table = True
         #         accepted.append((foreign_storage, use_join_table))
-        #     elif fdef.field_type == FieldType.INSTANCE:
+        #     elif fdef.field_type == FType.INSTANCE:
         #         pass
         # for field in foreign_cdef.fields:
         #     for (storage, use_join) in accepted:
-        #         if storage == FieldStorage.LOCAL_KEY:
+        #         if storage == FStore.LOCAL_KEY:
         #             if fdef.foreign_key == field.name:
         #                 local_matches = self._def_clsmatch(
         #                     local_field.fdef, foreign_class)
@@ -245,7 +245,7 @@ class Cdef:
         #                     raise LinkedFieldUnmatchException(
         #                         self.cls.__name__, local_field.name,
         #                         foreign_class.__name__, field.name)
-        #         elif storage == FieldStorage.FOREIGN_KEY:
+        #         elif storage == FStore.FOREIGN_KEY:
         #             if local_field.name == field.fdef.foreign_key:
         #                 if use_join == field.fdef.use_join_table:
         #                     local_matches = self._def_class_match(
