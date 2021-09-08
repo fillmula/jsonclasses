@@ -1,6 +1,7 @@
 """
 This module contains `jsonclass`, the decorator for JSON Classes.
 """
+from jsonclasses.keypath import identical_key
 from typing import Optional, Union, Callable, overload, cast
 from dataclasses import dataclass
 from .jconf import (JConf, OnCreate, CanCreate, OnDelete, CanUpdate,
@@ -21,6 +22,7 @@ def jsonclass(
     class_graph: Optional[str] = 'default',
     key_encoding_strategy: Optional[Callable[[str], str]] = None,
     key_decoding_strategy: Optional[Callable[[str], str]] = None,
+    camelize_json_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
     key_transformer: Optional[Callable[[JField], str]] = None,
     validate_all_fields: Optional[bool] = None,
@@ -42,6 +44,7 @@ def jsonclass(
     class_graph: Optional[str] = 'default',
     key_encoding_strategy: Optional[Callable[[str], str]] = None,
     key_decoding_strategy: Optional[Callable[[str], str]] = None,
+    camelize_json_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
     key_transformer: Optional[Callable[[JField], str]] = None,
     validate_all_fields: Optional[bool] = None,
@@ -62,6 +65,7 @@ def jsonclass(
     class_graph: Optional[str] = 'default',
     key_encoding_strategy: Optional[Callable[[str], str]] = None,
     key_decoding_strategy: Optional[Callable[[str], str]] = None,
+    camelize_json_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
     key_transformer: Optional[Callable[[JField], str]] = None,
     validate_all_fields: Optional[bool] = None,
@@ -86,6 +90,9 @@ def jsonclass(
     if cls is not None:
         if not isinstance(cls, type):
             raise ValueError('@jsonclass should be used to decorate a class.')
+        if camelize_json_keys is False:
+            key_encoding_strategy = identical_key
+            key_decoding_strategy = identical_key
         jconf = JConf(
             cgraph=cast(str, class_graph),
             key_encoding_strategy=key_encoding_strategy,
@@ -115,6 +122,7 @@ def jsonclass(
                 class_graph=class_graph,
                 key_encoding_strategy=key_encoding_strategy,
                 key_decoding_strategy=key_decoding_strategy,
+                camelize_json_keys=camelize_json_keys,
                 strict_input=strict_input,
                 key_transformer=key_transformer,
                 validate_all_fields=validate_all_fields,
