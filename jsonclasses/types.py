@@ -17,8 +17,8 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         LinkedThruModifier, LinkToModifier, ListOfModifier,
                         MatchModifier, MaxModifier, MaxlengthModifier,
                         LtModifier, MinModifier, MinlengthModifier, GtModifier,
-                        NegativeModifier, NonnullModifier, NullableModifier, 
-                        OneOfModifier, UnionModifier, OnWriteModifier, 
+                        NegativeModifier, NonnullModifier, NullableModifier,
+                        OneOfModifier, UnionModifier, OnWriteModifier,
                         OnSaveModifier, OnUpdateModifier, OutputLnameModifier,
                         OutputNameModifier, OutputValueModifier,
                         PositiveModifier, PresentModifier,
@@ -45,8 +45,8 @@ Float = float
 
 
 class Types:
-    """The class of types marks object. Types marks provide necessary 
-    information about an json object's shape, transformation, validation, 
+    """The class of types marks object. Types marks provide necessary
+    information about an json object's shape, transformation, validation,
     serialization and sanitization.
     """
 
@@ -293,7 +293,7 @@ class Types:
 
     @property
     def url(self) -> Types:
-        """Fields marked with url should be valid url string. 
+        """Fields marked with url should be valid url string.
         """
         return Types(self, UrlModifier())
 
@@ -525,7 +525,7 @@ class Types:
     def nullable(self) -> Types:
         """Fields marked with nullable can be None. This is the default
         behavior even without this modifier. It's the opposite to required
-        modifier. Values inside lists have implicitly required modifier. Use 
+        modifier. Values inside lists have implicitly required modifier. Use
         this to allow null or None values inside lists.
 
         Returns:
@@ -579,10 +579,10 @@ class Types:
 
         Args:
             op_callable (Callable): The op callable takes 1 to 4 arguments. The
-            first is the operator object, the second is the object being 
-            operated, the third is the value of the field, the fourth is the 
-            validating context. Returning None or True means the value is 
-            valid, while returning a str message or False means validation 
+            first is the operator object, the second is the object being
+            operated, the third is the value of the field, the fourth is the
+            validating context. Returning None or True means the value is
+            valid, while returning a str message or False means validation
             failed.
 
         Returns:
@@ -735,8 +735,8 @@ class Types:
         return Types(self, AsopdModifier())
 
     def setonsave(self, setter: Callable) -> Types:
-        """Setonsave modifier marks a field to be updated just before 
-        serializing into the database if this field is modified and to be 
+        """Setonsave modifier marks a field to be updated just before
+        serializing into the database if this field is modified and to be
         serialized.
 
         Args:
@@ -787,10 +787,10 @@ class Types:
 
     @property
     def nonnull(self) -> Types:
-        """This modifier is a instructional transformer designated for shape, 
-        dictof and listof. This is not a modifier. To mark a field is required 
-        and should not be null, use `required` instead. This transformer should 
-        be used right before shape, dictof and listof, to given an instruction 
+        """This modifier is a instructional transformer designated for shape,
+        dictof and listof. This is not a modifier. To mark a field is required
+        and should not be null, use `required` instead. This transformer should
+        be used right before shape, dictof and listof, to given an instruction
         of not leaving null for the field.
 
         Returns:
@@ -823,7 +823,7 @@ class Types:
     # internal
 
     def _unresolved(self: Types, arg: str) -> Types:
-        """This modifier marks unresolved status. This is used internally. Do 
+        """This modifier marks unresolved status. This is used internally. Do
         not use this.
         """
         return Types(self, UnresolvedModifier(arg))
