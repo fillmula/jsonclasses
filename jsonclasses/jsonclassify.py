@@ -801,9 +801,6 @@ def jsonclassify(class_: type) -> type[JObject]:
     # public methods
     class_.__init__ = __init__
     class_.set = jsonobject_set
-    class_._set = _set
-    class_._keypath_set = _keypath_set
-    class_._set_to_container = _set_to_container
     class_.update = update
     class_.tojson = tojson
     class_.validate = validate
@@ -811,6 +808,7 @@ def jsonclassify(class_: type) -> type[JObject]:
     class_.opby = opby
     class_.is_new = is_new
     class_.is_modified = is_modified
+    class_.is_partial = is_partial
     class_.is_deleted = is_deleted
     class_.modified_fields = modified_fields
     class_.persisted_modified_fields = persisted_modified_fields
@@ -822,6 +820,9 @@ def jsonclassify(class_: type) -> type[JObject]:
     class_.restore = restore
     class_.complete = complete
     # protected methods
+    class_._set = _set
+    class_._keypath_set = _keypath_set
+    class_._set_to_container = _set_to_container
     class_._orm_complete = _orm_complete
     class_._data_dict = _data_dict
     class_._mark_new = _mark_new
