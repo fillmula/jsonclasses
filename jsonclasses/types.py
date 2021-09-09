@@ -37,7 +37,7 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         AsopdModifier, UrlModifier, EmailModifier,
                         DigitModifier,AlphaModifier,NumericModifier,
                         AlnumModifier,ToTitleModifier,ToCapModifier,
-                        ToLowerModifier,ToUpperModifier,
+                        ToLowerModifier,ToUpperModifier,RoundModifier,
                         UnresolvedModifier, AnyModifier)
 
 Str = str
@@ -695,6 +695,15 @@ class Types:
             Types: A new types chained with this modifier.
         """
         return Types(self, EagerModifier(), ToUpperModifier())
+
+    @property
+    def round(self) -> Types:
+        """This modifier rounds number value.
+
+        Returns:
+            Types: A new types chained with this modifier.
+        """
+        return Types(self, EagerModifier(), RoundModifier())
 
     def transform(self, transformer: Callable) -> Types:
         """This mark applies transfromer on the value. When value is None, the

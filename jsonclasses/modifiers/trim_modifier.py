@@ -11,4 +11,3 @@ class TrimModifier(Modifier):
 
     def transform(self, ctx: Ctx) -> Any:
         return ctx.val.strip() if isinstance(ctx.val, str) else ctx.val
-

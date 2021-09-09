@@ -68,6 +68,7 @@ from .nonpositive_modifier import NonpositiveModifier
 from .range_modifier import RangeModifier
 from .positive_modifier import PositiveModifier
 from .negative_modifier import NegativeModifier
+from .round_modifier import RoundModifier
 
 # bool modifiers
 from .bool_modifier import BoolModifier
