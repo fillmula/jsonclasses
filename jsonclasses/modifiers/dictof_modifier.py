@@ -24,8 +24,7 @@ class DictOfModifier(CollectionTypeModifier):
         col[i] = v
 
     def to_object_key(self, key: str, conf: JConf) -> str:
-        return conf.key_decoding_strategy(key)
+        return key
 
     def to_json_key(self, key: str, conf: JConf) -> str:
-        return conf.key_encoding_strategy(key)
-
+        return key

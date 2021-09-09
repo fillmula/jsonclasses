@@ -46,23 +46,14 @@ class TestDictOf(TestCase):
         record1 = NullableRecord(dict_record={'a': '1', 'b': None})
         record1.validate()
 
-    def test_dictof_underscores_keys_on_init(self):
+    def test_dictof_keep_keys_on_init(self):
         weather = CamelizedWeather(data={'lastDay': '2', 'nextDay': '4'})
-        self.assertEqual(weather.data, {'last_day': '2', 'next_day': '4'})
-
-    def test_dictof_does_not_underscore_keys_on_init_if_option_specified(self):
-        weather = UncamelizedWeather(data={'lastDay': '2', 'nextDay': '4'})
         self.assertEqual(weather.data, {'lastDay': '2', 'nextDay': '4'})
 
-    def test_dictof_camelizes_keys_tojson(self):
+    def test_dictof_keep_keys_on_tojson(self):
         weather = CamelizedWeather(data={'lastDay': '2', 'nextDay': '4'})
         self.assertEqual(weather.tojson()['data'],
                          {'lastDay': '2', 'nextDay': '4'})
-
-    def test_dictof_does_not_camelize_keys_tojson_if_option_specified(self):
-        weather = UncamelizedWeather(data={'last_day': '2', 'next_day': '4'})
-        self.assertEqual(weather.tojson()['data'],
-                         {'last_day': '2', 'next_day': '4'})
 
     def test_dictof_validate_raises_for_one_item(self):
         quiz = SimpleQuiz(numbers={'a': 200,

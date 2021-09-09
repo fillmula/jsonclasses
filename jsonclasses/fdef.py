@@ -257,12 +257,12 @@ class Fdef:
         return self._raw_item_types
 
     @property
-    def item_types(self: Fdef) -> Optional[Types]:
+    def item_types(self: Fdef) -> Types:
         """The item types of this collection field.
         """
         self._resolve_if_needed()
         if self._raw_item_types is None:
-            return None
+            return cast(Types, None)
         if self._resolved_item_types is not None:
             return self._resolved_item_types
         self._resolved_item_types = rtypes(self.raw_item_types)
