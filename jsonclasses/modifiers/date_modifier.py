@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 from datetime import date, datetime
 from ..fdef import FType
-from ..excs import ValidationException
 from .type_modifier import TypeModifier
 if TYPE_CHECKING:
     from ..ctx import Ctx

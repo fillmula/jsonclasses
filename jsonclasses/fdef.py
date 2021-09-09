@@ -100,6 +100,11 @@ class EnumOutput(Enum):
     LOWERCASE_NAME = 'lowercase_name'
 
 
+class Queryability(Enum):
+    QUERYABLE = 'queryable'
+    UNQUERYABLE = 'unqueryable'
+
+
 class Fdef:
     """The description of a JSONClass field. Some type markers annotate on
     this definition.
@@ -145,6 +150,7 @@ class Fdef:
         self._has_preserialize_modifier: bool = False
         self._requires_operator_assign: bool = False
         self._operator_assign_transformer: Optional[Callable] = None
+        self._queryability: Optional[Queryability] = None
 
     @property
     def cdef(self: Fdef) -> Cdef:
@@ -213,7 +219,7 @@ class Fdef:
         return self._raw_enum_class
 
     @property
-    def enum_class(self: Fdef) -> Optional[Union[type[Enum], str]]:
+    def enum_class(self: Fdef) -> type[Enum]:
         """The class of the enum.
         """
         self._resolve_if_needed()
@@ -224,7 +230,7 @@ class Fdef:
             self._enum_class = ecls
         else:
             self._enum_class = self._raw_enum_class
-        return self._enum_class
+        return cast(type[Enum], self._enum_class)
 
     @property
     def enum_input(self: Fdef) -> Optional[EnumInput]:
@@ -462,6 +468,13 @@ class Fdef:
         """
         self._resolve_if_needed()
         return self._operator_assign_transformer
+
+    @property
+    def queryability(self: Fdef) -> Queryability:
+        """The queryability of this field.
+        """
+        self._resolve_if_needed()
+        return self._queryability or Queryability.QUERYABLE
 
     # old reference properties
 
