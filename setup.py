@@ -10,7 +10,7 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name='jsonclasses',
-    version='2.7.5',
+    version='2.7.6',
     description=('The modern declarative data flow pipeline and data graph '
                  'framework for the AI empowered generation.'),
     long_description=README,

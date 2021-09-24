@@ -2,14 +2,15 @@
 confirm to.
 """
 from __future__ import annotations
-from .fdef import Fdef
-from .owned_dict import OwnedDict
-from .owned_list import OwnedList
-from .jfield import JField
+
 from typing import (Any, TypeVar, Optional, ClassVar, Protocol, Union,
                     Set, TYPE_CHECKING)
 if TYPE_CHECKING:
     from .cdef import Cdef
+    from .fdef import Fdef
+    from .owned_dict import OwnedDict
+    from .owned_list import OwnedList
+    from .jfield import JField
 T = TypeVar('T', bound='JObject')
 
 
