@@ -17,7 +17,7 @@ class UnionModifier(Modifier):
         self.type_list = type_list
 
     def define(self, fdef: Fdef) -> None:
-        fdef._field_type = FType.UNION
+        fdef._ftype = FType.UNION
         fdef._raw_union_types = [rtypes(t) for t in self.type_list]
 
     def validate(self, ctx: Ctx) -> None:

@@ -99,7 +99,7 @@ class Cdef:
 
     def _resolve_ref_names(self: Cdef) -> None:
         for jfield in self._tuple_fields:
-            if jfield.types.fdef._field_storage == FStore.LOCAL_KEY:
+            if jfield.types.fdef._fstore == FStore.LOCAL_KEY:
                 ref_key_encoding_strategy = self.jconf.ref_key_encoding_strategy
                 self._reference_names.append(ref_key_encoding_strategy(jfield))
                 self._camelized_reference_names.append(
@@ -211,20 +211,30 @@ class Cdef:
         self._resolve_ref_names_if_needed()
         return self._update_names
 
+    @property
+    def reference_names(self: Cdef) -> set[str]:
+        self._resolve_ref_names_if_needed()
+        return set(self._reference_names)
+
+    @property
+    def camelized_reference_names(self: Cdef) -> set[str]:
+        self._resolve_ref_names_if_needed()
+        return set(self._camelized_reference_names)
+
         # accepted: list[tuple[FStore, bool]] = []
-        # if fdef.field_storage == FStore.LOCAL_KEY:
+        # if fdef.fstore == FStore.LOCAL_KEY:
         #     foreign_storage = FStore.FOREIGN_KEY
         #     use_join_table = False
         #     accepted.append((foreign_storage, use_join_table))
-        # elif fdef.field_storage == FStore.FOREIGN_KEY:
+        # elif fdef.fstore == FStore.FOREIGN_KEY:
         #     foreign_storage = FStore.LOCAL_KEY
         #     use_join_table = False
         #     accepted.append((foreign_storage, use_join_table))
-        #     if fdef.field_type == FType.LIST:
+        #     if fdef.ftype == FType.LIST:
         #         foreign_storage = FStore.FOREIGN_KEY
         #         use_join_table = True
         #         accepted.append((foreign_storage, use_join_table))
-        #     elif fdef.field_type == FType.INSTANCE:
+        #     elif fdef.ftype == FType.INSTANCE:
         #         pass
         # for field in foreign_cdef.fields:
         #     for (storage, use_join) in accepted:

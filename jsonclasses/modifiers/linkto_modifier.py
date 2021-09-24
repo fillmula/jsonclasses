@@ -7,6 +7,6 @@ class LinkToModifier(Modifier):
     """Link to modifier marks a field which is a local key."""
 
     def define(self, fdef: Fdef) -> None:
-        fdef._field_storage = FStore.LOCAL_KEY
+        fdef._fstore = FStore.LOCAL_KEY
         if fdef._delete_rule is None:
             fdef._delete_rule = DeleteRule.NULLIFY

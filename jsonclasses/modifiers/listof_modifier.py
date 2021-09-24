@@ -11,7 +11,7 @@ class ListOfModifier(CollectionTypeModifier):
     def __init__(self, raw_item_types: Any) -> None:
         super().__init__(raw_item_types)
         self.cls = list
-        self.field_type = FType.LIST
+        self.ftype = FType.LIST
 
     def enumerator(self, value: list) -> Iterable:
         return enumerate(value)

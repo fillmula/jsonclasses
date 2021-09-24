@@ -374,8 +374,8 @@ class TestAutoTypes(TestCase):
             val: 'Union[dict[str, int], int]'
         cfield = TestUnionDictType.cdef.field_named('val')
         utypes = cfield.fdef.raw_union_types
-        self.assertEqual(utypes[0].fdef.field_type, FType.DICT)
-        self.assertEqual(utypes[1].fdef.field_type, FType.INT)
+        self.assertEqual(utypes[0].fdef.ftype, FType.DICT)
+        self.assertEqual(utypes[1].fdef.ftype, FType.INT)
 
     def test_auto_generates_optional_union_with_dict_with_str_type(self):
         @jsonclass(class_graph='test_marker_auto_gen')
@@ -400,34 +400,34 @@ class TestAutoTypes(TestCase):
 
     def test_auto_generates_1_to_1_links(self):
         profile_field = LinkedUser.cdef.field_named('profile')
-        self.assertEqual(profile_field.fdef.field_type,
+        self.assertEqual(profile_field.fdef.ftype,
                          FType.INSTANCE)
-        self.assertEqual(profile_field.fdef.field_storage,
+        self.assertEqual(profile_field.fdef.fstore,
                          FStore.FOREIGN_KEY)
         self.assertEqual(profile_field.fdef.foreign_key, 'user')
         self.assertEqual(profile_field.fdef.use_join_table, False)
 
         user_field = LinkedProfile.cdef.field_named('user')
-        self.assertEqual(user_field.fdef.field_type,
+        self.assertEqual(user_field.fdef.ftype,
                          FType.INSTANCE)
-        self.assertEqual(user_field.fdef.field_storage,
+        self.assertEqual(user_field.fdef.fstore,
                          FStore.LOCAL_KEY)
         self.assertEqual(user_field.fdef.foreign_key, None)
         self.assertEqual(user_field.fdef.use_join_table, None)
 
     def test_auto_generates_1_to_many_links(self):
         articles_field = LinkedAuthor.cdef.field_named('articles')
-        self.assertEqual(articles_field.fdef.field_type,
+        self.assertEqual(articles_field.fdef.ftype,
                          FType.LIST)
-        self.assertEqual(articles_field.fdef.field_storage,
+        self.assertEqual(articles_field.fdef.fstore,
                          FStore.FOREIGN_KEY)
         self.assertEqual(articles_field.fdef.foreign_key, 'author')
         self.assertEqual(articles_field.fdef.use_join_table, False)
 
         author_field = LinkedArticle.cdef.field_named('author')
-        self.assertEqual(author_field.fdef.field_type,
+        self.assertEqual(author_field.fdef.ftype,
                          FType.INSTANCE)
-        self.assertEqual(author_field.fdef.field_storage,
+        self.assertEqual(author_field.fdef.fstore,
                          FStore.LOCAL_KEY)
         self.assertEqual(author_field.fdef.foreign_key, None)
         self.assertEqual(author_field.fdef.use_join_table, None)

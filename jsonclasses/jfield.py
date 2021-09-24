@@ -104,9 +104,9 @@ class JField:
         self.cdef._resolve_ref_types_if_needed()
         if self._resolved_foreign_class:
             return self._foreign_class
-        if self.fdef.field_type == FType.INSTANCE:
+        if self.fdef.ftype == FType.INSTANCE:
             self._foreign_class = self.fdef.inst_cls
-        elif self.fdef.field_type == FType.LIST:
+        elif self.fdef.ftype == FType.LIST:
             self._foreign_class = self.fdef.item_types.fdef.inst_cls
         self._resolved_foreign_class = True
         return self._foreign_class
@@ -117,14 +117,14 @@ class JField:
 
     def _do_resolve_foreign(self: JField) -> None:
         from .fdef import FStore
-        if self.fdef.field_storage not in [FStore.LOCAL_KEY, FStore.FOREIGN_KEY]:
+        if self.fdef.fstore not in [FStore.LOCAL_KEY, FStore.FOREIGN_KEY]:
             return None
         scls = self.fdef.cdef.cls
-        slocal = self.fdef.field_storage == FStore.LOCAL_KEY
-        if self.fdef.field_type == FType.INSTANCE:
+        slocal = self.fdef.fstore == FStore.LOCAL_KEY
+        if self.fdef.ftype == FType.INSTANCE:
             fcls = self.foreign_class
             stype = 'inst'
-        elif self.fdef.field_type == FType.LIST:
+        elif self.fdef.ftype == FType.LIST:
             fcls = self.foreign_class
             stype = 'list'
         if not fcls:

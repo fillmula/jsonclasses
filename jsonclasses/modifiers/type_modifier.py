@@ -12,11 +12,11 @@ class TypeModifier(Modifier):
 
     def __init__(self) -> None:
         self.cls: type = object
-        self.field_type: FType = FType.ANY
+        self.ftype: FType = FType.ANY
         self.exact_type: bool = False
 
     def define(self, fdef: Fdef) -> None:
-        fdef._field_type = self.field_type
+        fdef._ftype = self.ftype
 
     def validate(self, ctx: Ctx) -> None:
         if ctx.val is None:

@@ -114,8 +114,8 @@ class Fdef:
         self._cdef: Optional[Cdef] = None
         self._unresolved: bool = False
         self._unresolved_name: Optional[str] = None
-        self._field_type: Optional[FType] = None
-        self._field_storage: FStore = FStore.EMBEDDED
+        self._ftype: Optional[FType] = None
+        self._fstore: FStore = FStore.EMBEDDED
         self._primary: bool = False
         self._index: bool = False
         self._unique: bool = False
@@ -160,18 +160,18 @@ class Fdef:
         return cast(Cdef, self._cdef)
 
     @property
-    def field_type(self: Fdef) -> FType:
+    def ftype(self: Fdef) -> FType:
         """The field's type.
         """
         self._resolve_if_needed()
-        return cast(FType, self._field_type)
+        return cast(FType, self._ftype)
 
     @property
-    def field_storage(self: Fdef) -> FStore:
+    def fstore(self: Fdef) -> FStore:
         """The field's storage.
         """
         self._resolve_if_needed()
-        return self._field_storage
+        return self._fstore
 
     # primary key
 
@@ -308,7 +308,7 @@ class Fdef:
             t.fdef._cdef = self.cdef
             cgraph = self.cdef.jconf.cgraph
             resolved = rnamedtypes(t, cgraph, self.cdef.name)
-            if resolved.fdef.field_type == FType.SHAPE:
+            if resolved.fdef.ftype == FType.SHAPE:
                 resolved.fdef.shape_types # this has resolve side-effect
             rnamedshapetypes[k] = resolved
         self._resolved_shape_types = rnamedshapetypes
@@ -481,7 +481,7 @@ class Fdef:
     @property
     def is_ref(self: Fdef) -> bool:
         self._resolve_if_needed()
-        if self.field_storage in \
+        if self.fstore in \
                 [FStore.LOCAL_KEY, FStore.FOREIGN_KEY]:
             return True
         return False
@@ -489,21 +489,21 @@ class Fdef:
     @property
     def is_inst(self: Fdef) -> bool:
         self._resolve_if_needed()
-        if self.field_type == FType.INSTANCE:
+        if self.ftype == FType.INSTANCE:
             return True
-        if self.field_type == FType.LIST:
-            if self.item_types.fdef.field_type == FType.INSTANCE:
+        if self.ftype == FType.LIST:
+            if self.item_types.fdef.ftype == FType.INSTANCE:
                 return True
         return False
 
     @property
     def has_linked(self: Fdef) -> bool:
         self._resolve_if_needed()
-        if self.field_storage == FStore.LOCAL_KEY:
+        if self.fstore == FStore.LOCAL_KEY:
             return True
-        if self.field_storage == FStore.FOREIGN_KEY:
+        if self.fstore == FStore.FOREIGN_KEY:
             return True
-        if self.field_type == FType.LIST:
+        if self.ftype == FType.LIST:
             return self.item_types.fdef.has_linked
         return False
 

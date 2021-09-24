@@ -9,5 +9,5 @@ class IntModifier(TypeModifier):
     def __init__(self):
         super().__init__()
         self.cls = int
-        self.field_type = FType.INT
+        self.ftype = FType.INT
         self.exact_type = True

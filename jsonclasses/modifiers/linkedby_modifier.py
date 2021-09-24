@@ -10,7 +10,7 @@ class LinkedByModifier(Modifier):
         self.foreign_key = foreign_key
 
     def define(self, fdef: Fdef) -> None:
-        fdef._field_storage = FStore.FOREIGN_KEY
+        fdef._fstore = FStore.FOREIGN_KEY
         fdef._foreign_key = self.foreign_key
         fdef._use_join_table = False
         if fdef._delete_rule is None:

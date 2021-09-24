@@ -17,7 +17,7 @@ class ShapeModifier(TypeModifier):
     def __init__(self, raw_shape_types: Union[dict[str, Any], str]) -> None:
         super().__init__()
         self.cls = dict
-        self.field_type = FType.SHAPE
+        self.ftype = FType.SHAPE
         self.raw_types = raw_shape_types
         self.exact_type = False
 

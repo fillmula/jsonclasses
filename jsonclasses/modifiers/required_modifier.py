@@ -19,7 +19,7 @@ class RequiredModifier(Modifier):
     def validate(self, ctx: Ctx) -> None:
         storage = FStore.EMBEDDED
         if ctx.fdef is not None:
-            storage = ctx.fdef.field_storage
+            storage = ctx.fdef.fstore
         if storage == FStore.FOREIGN_KEY:  # we don't check foreign key
             return
         if storage == FStore.LOCAL_KEY:

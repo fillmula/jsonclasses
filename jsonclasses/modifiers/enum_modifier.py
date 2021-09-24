@@ -17,7 +17,7 @@ class EnumModifier(Modifier):
         self.enum_or_name = enum_or_name
 
     def define(self, fdef: Fdef) -> None:
-        fdef._field_type = FType.ENUM
+        fdef._ftype = FType.ENUM
         fdef._raw_enum_class = self.enum_or_name
         if fdef._enum_input is None:
             fdef._enum_input = EnumInput.NAME

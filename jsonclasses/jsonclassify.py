@@ -38,7 +38,7 @@ def __init__(self: JObject, **kwargs: dict[str, Any]) -> None:
     self._set_initial_status()
     for field in self.__class__.cdef.fields:
         setattr(self, field.name, None)
-        if field.fdef.field_storage == FStore.LOCAL_KEY:
+        if field.fdef.fstore == FStore.LOCAL_KEY:
             transformer = self.__class__.cdef.jconf.ref_key_encoding_strategy
             local_key = transformer(field)
             setattr(self, local_key, None)
@@ -88,14 +88,14 @@ def _set_to_container(self: JObject,
                       value: Any,
                       fdef: Fdef,
                       used_items: list[str]) -> None:
-    if fdef.field_type == FType.INSTANCE:
+    if fdef.ftype == FType.INSTANCE:
         if dest is None:
             raise ValueError(f"value in {'.'.join(used_items)} is None")
         if len(items) == 1:
             dest._set({items[0]: value}, fill_blanks=False)
         else:
             dest._keypath_set({'.'.join(items): value})
-    elif fdef.field_type == FType.SHAPE:
+    elif fdef.ftype == FType.SHAPE:
         if dest is None:
             raise ValueError(f"value in {'.'.join(used_items)} is None")
         if len(items) == 1:
@@ -103,7 +103,7 @@ def _set_to_container(self: JObject,
         else:
             fdef = fdef.shape_types[items[0]].fdef
             self._set_to_container(dest[items[0]], items[1:], value, fdef, used_items + [items[0]])
-    elif fdef.field_type == FType.LIST:
+    elif fdef.ftype == FType.LIST:
         if dest is None:
             raise ValueError(f"value in {'.'.join(used_items)} is None")
         if len(items) == 1:
@@ -111,7 +111,7 @@ def _set_to_container(self: JObject,
         else:
             fdef = fdef.item_types.fdef
             self._set_to_container(dest[int(items[0])], items[1:], value, fdef, used_items + [items[0]])
-    elif fdef.field_type == FType.DICT:
+    elif fdef.ftype == FType.DICT:
         if dest is None:
             raise ValueError(f"value in {'.'.join(used_items)} is None")
         if len(items) == 1:
@@ -575,7 +575,7 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
         return
     # this is a JSON class field attribute
     if hasattr(self, name) and value == getattr(self, name):
-        lk = field.fdef.field_storage is FStore.LOCAL_KEY
+        lk = field.fdef.fstore is FStore.LOCAL_KEY
         value_none = value is None
         if lk and value_none:
             if getattr(self, reference_key(field), None) is not None:
@@ -596,7 +596,7 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
     if isinstance(value, list):
         value = to_owned_list(self, value, name)
     if isinstance(value, dict):
-        if field.fdef.field_type == FType.SHAPE:
+        if field.fdef.ftype == FType.SHAPE:
             value = to_shape_dict(self, value, name)
         else:
             value = to_owned_dict(self, value, name)
@@ -604,7 +604,7 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
         if hasattr(self, name):
             self.__unlink_field__(field, getattr(self, name))
         self.__original_setattr__(name, value)
-        if field.fdef.field_storage == FStore.LOCAL_KEY:
+        if field.fdef.fstore == FStore.LOCAL_KEY:
             if value is None:
                 transformer = self.__class__.cdef.jconf.ref_key_encoding_strategy
                 self.__original_setattr__(transformer(field), None)
@@ -625,10 +625,10 @@ def __odict_will_change__(self: JObject, odict: OwnedDict) -> None:
         if field.fdef.has_linked:
             return
         if name not in self.previous_values:
-            if field.fdef.field_type == FType.DICT:
+            if field.fdef.ftype == FType.DICT:
                 self.previous_values[name] = unowned_copy_dict(
                     getattr(self, name))
-            if field.fdef.field_type == FType.LIST:
+            if field.fdef.ftype == FType.LIST:
                 self.previous_values[name] = unowned_copy_list(
                     getattr(self, name))
 
@@ -662,10 +662,10 @@ def __olist_will_change__(self, olist: OwnedList) -> None:
         if field.fdef.has_linked:
             return
         if name not in self.previous_values:
-            if field.fdef.field_type == FType.DICT:
+            if field.fdef.ftype == FType.DICT:
                 self.previous_values[name] = unowned_copy_dict(
                     getattr(self, name))
-            if field.fdef.field_type == FType.LIST:
+            if field.fdef.ftype == FType.LIST:
                 self.previous_values[name] = unowned_copy_list(
                     getattr(self, name))
 
@@ -713,11 +713,11 @@ def __olist_sor__(self, olist: OwnedList) -> None:
 
 def __unlink_field__(self: JObject, field: JField, value: Any) -> None:
     items: list[JObject] = []
-    if field.fdef.field_type == FType.INSTANCE:
+    if field.fdef.ftype == FType.INSTANCE:
         if not isjsonobject(value):
             return
         items = [value]
-    if field.fdef.field_type == FType.LIST:
+    if field.fdef.ftype == FType.LIST:
         if not isinstance(value, list):
             return
         items = list(value)
@@ -726,16 +726,16 @@ def __unlink_field__(self: JObject, field: JField, value: Any) -> None:
         other_field = field.foreign_field
         if other_field is None:
             return
-        if other_field.fdef.field_type == FType.INSTANCE:
+        if other_field.fdef.ftype == FType.INSTANCE:
             if getattr(item, other_field.name) is self:
                 item.__original_setattr__(other_field.name, None)
                 of = other_field
-                if of.fdef.field_storage == FStore.LOCAL_KEY:
+                if of.fdef.fstore == FStore.LOCAL_KEY:
                     tsfm = item.__class__.cdef.jconf.ref_key_encoding_strategy
                     item.__original_setattr__(tsfm(other_field), None)
                     item._modified_fields.add(other_field.name)
                 item._add_unlinked_object(other_field.name, self)
-        elif other_field.fdef.field_type == FType.LIST:
+        elif other_field.fdef.ftype == FType.LIST:
             other_list = getattr(item, other_field.name)
             if isinstance(other_list, list):
                 if self in other_list:
@@ -745,11 +745,11 @@ def __unlink_field__(self: JObject, field: JField, value: Any) -> None:
 
 def __link_field__(self: JObject, field: JField, value: Any) -> None:
     items: list[JObject] = []
-    if field.fdef.field_type == FType.INSTANCE:
+    if field.fdef.ftype == FType.INSTANCE:
         if not isjsonobject(value):
             return
         items = [value]
-    if field.fdef.field_type == FType.LIST:
+    if field.fdef.ftype == FType.LIST:
         if not isinstance(value, list):
             return
         items = value
@@ -758,11 +758,11 @@ def __link_field__(self: JObject, field: JField, value: Any) -> None:
         other_field = field.foreign_field
         if other_field is None:
             return
-        if other_field.fdef.field_type == FType.INSTANCE:
+        if other_field.fdef.ftype == FType.INSTANCE:
             if getattr(item, other_field.name) != self:
                 setattr(item, other_field.name, self)
                 item._del_unlinked_object(other_field.name, self)
-        elif other_field.fdef.field_type == FType.LIST:
+        elif other_field.fdef.ftype == FType.LIST:
             if not isinstance(getattr(item, other_field.name), list):
                 setattr(item, other_field.name, [self])
                 item._del_unlinked_object(other_field.name, self)

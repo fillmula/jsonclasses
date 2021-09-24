@@ -14,7 +14,7 @@ class DateModifier(TypeModifier):
     def __init__(self):
         super().__init__()
         self.cls = date
-        self.field_type = FType.DATE
+        self.ftype = FType.DATE
 
     def transform(self, ctx: Ctx) -> Any:
         if ctx.val is None:

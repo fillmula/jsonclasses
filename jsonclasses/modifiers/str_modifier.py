@@ -9,4 +9,4 @@ class StrModifier(TypeModifier):
     def __init__(self):
         super().__init__()
         self.cls = str
-        self.field_type = FType.STR
+        self.ftype = FType.STR

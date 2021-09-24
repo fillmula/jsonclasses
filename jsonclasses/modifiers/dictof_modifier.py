@@ -12,7 +12,7 @@ class DictOfModifier(CollectionTypeModifier):
     def __init__(self, raw_item_types: Any) -> None:
         super().__init__(raw_item_types)
         self.cls = dict
-        self.field_type = FType.DICT
+        self.ftype = FType.DICT
 
     def enumerator(self, value: dict[str, Any]) -> Iterable:
         return value.items()

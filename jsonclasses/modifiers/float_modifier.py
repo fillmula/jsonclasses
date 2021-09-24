@@ -13,7 +13,7 @@ class FloatModifier(TypeModifier):
     def __init__(self):
         super().__init__()
         self.cls = float
-        self.field_type = FType.FLOAT
+        self.ftype = FType.FLOAT
 
     def transform(self, ctx: Ctx) -> Any:
         if ctx.val is None:

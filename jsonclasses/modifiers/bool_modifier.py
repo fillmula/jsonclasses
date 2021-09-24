@@ -9,5 +9,5 @@ class BoolModifier(TypeModifier):
     def __init__(self):
         super().__init__()
         self.cls = bool
-        self.field_type = FType.BOOL
+        self.ftype = FType.BOOL
         self.exact_type = True
