@@ -88,8 +88,8 @@ class JObject(Protocol):
     def reset(self: T) -> T: ...
 
     def save(self: T,
-             validate_all_fields: Optional[bool],
-             skip_validation: Optional[bool]) -> T:
+             validate_all_fields: Optional[bool] = None,
+             skip_validation: Optional[bool] = None) -> T:
         """The save method saves the JSON class object into the persistent
         storage. Without a database decorator, this method raises.
         """
