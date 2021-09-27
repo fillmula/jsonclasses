@@ -16,10 +16,10 @@ class BeforeModifier(Modifier):
         if ctx.val is None:
             return
         if type(ctx.val) is date and type(self.point) is date:
-            if ctx.val >= self.point :
+            if ctx.val >= self.point:
                 ctx.raise_vexc('value is too late')
         if type(ctx.val) is datetime and type(self.point) is datetime:
-            if ctx.val >= self.point :
+            if ctx.val >= self.point:
                 ctx.raise_vexc('value is too late')
         else:
             value = ctx.val
@@ -30,8 +30,3 @@ class BeforeModifier(Modifier):
                 point = datetime.combine(self.point, datetime.min.time())
             if value >= point:
                 ctx.raise_vexc('value is too late')
-
-
-
-
-

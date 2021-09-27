@@ -14,5 +14,6 @@ class TestRound(TestCase):
         sr = SuperRound(round_value=19.4)
         self.assertEqual(sr.round_value, 19)
 
-
-
+    def test_round_keeps_int_value_unchanged(self):
+        sr = SuperRound(round_value=40)
+        self.assertEqual(sr.round_value, 40)
