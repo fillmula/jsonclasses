@@ -1,7 +1,7 @@
 """This modules contains the JSONClasses types modifier."""
 from __future__ import annotations
 from typing import Callable, Any, Optional, Union
-from datetime import datetime
+from datetime import date, datetime
 from copy import deepcopy
 from .fdef import Fdef
 from .keypath import new_mongoid
@@ -38,12 +38,14 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         DigitModifier,AlphaModifier,NumericModifier,
                         AlnumModifier,ToTitleModifier,ToCapModifier,
                         ToLowerModifier,ToUpperModifier,RoundModifier,
-                        UnresolvedModifier, AnyModifier)
+                        UnresolvedModifier, AnyModifier,CeilModifier,FloorModifier,
+                        BeforeModifier, AfterModifier)
 
 Str = str
 Int = int
 Float = float
-
+Date = date
+Datetime = datetime
 
 class Types:
     """The class of types marks object. Types marks provide necessary
@@ -429,6 +431,16 @@ class Types:
         """
         return Types(self, DatetimeModifier())
 
+    def before(self, point: Union[Date, Datetime]) -> Types:
+        """InputDate should be before the date. This is a date modifier
+        """
+        return Types(self, BeforeModifier(point))
+
+    def after(self, point: Union[Date, Datetime]) -> Types:
+        """InputDate should be after the date. This is a date modifier
+        """
+        return Types(self, AfterModifier(point))
+
     def enum(self, enum_class: Union[type, str]) -> Types:
         """Fields marked with enum should be enum value of provided enum type.
         This is a type modifier.
@@ -704,6 +716,24 @@ class Types:
             Types: A new types chained with this modifier.
         """
         return Types(self, EagerModifier(), RoundModifier())
+
+    @property
+    def ceil(self) -> Types:
+        """This modifier ceil number value.
+
+        Returns:
+            Types: A new types chained with this modifier.
+        """
+        return Types(self, EagerModifier(), CeilModifier())
+
+    @property
+    def floor(self) -> Types:
+        """This modifier floor number value.
+
+        Returns:
+            Types: A new types chained with this modifier.
+        """
+        return Types(self, EagerModifier(), FloorModifier())
 
     def transform(self, transformer: Callable) -> Types:
         """This mark applies transfromer on the value. When value is None, the
