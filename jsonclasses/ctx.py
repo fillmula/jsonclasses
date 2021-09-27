@@ -4,7 +4,6 @@ from typing import Any, NamedTuple, Union, Optional, TYPE_CHECKING
 from .jconf import JConf
 from .types import types
 from .mgraph import MGraph
-from .vmsgcollector import VMsgCollector
 from .excs import ValidationException
 if TYPE_CHECKING:
     from .cdef import Cdef
