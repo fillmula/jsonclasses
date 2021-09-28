@@ -55,6 +55,8 @@ from .totitle_modifier import ToTitleModifier
 from .tocap_modifier import ToCapModifier
 from .tolower_modifier import ToLowerModifier
 from .toupper_modifier import ToUpperModifier
+from .replace_modifier import ReplaceModifier
+from .sub_modifier import SubModifier
 
 # number modifiers
 from .int_modifier import IntModifier
@@ -71,6 +73,9 @@ from .negative_modifier import NegativeModifier
 from .round_modifier import RoundModifier
 from .ceil_modifier import CeilModifier
 from .floor_modifier import FloorModifier
+from .odd_modifier import OddModifier
+from .even_modifier import EvenModifier
+from .abs_modifier import AbsModifier
 
 # bool modifiers
 from .bool_modifier import BoolModifier
@@ -90,6 +95,9 @@ from .inputall_modifier import InputAllModifier
 from .outputvalue_modifier import OutputValueModifier
 from .outputname_modifier import OutputNameModifier
 from .outputlname_modifier import OutputLnameModifier
+
+# iterable modifiers
+from .reverse_modifier import ReverseModifier
 
 # collection modifiers
 from .listof_modifier import ListOfModifier

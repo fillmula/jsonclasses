@@ -1,6 +1,6 @@
 """This modules contains the JSONClasses types modifier."""
 from __future__ import annotations
-from typing import Callable, Any, Optional, Union
+from typing import Callable, Any, Optional, Type, Union
 from datetime import date, datetime
 from copy import deepcopy
 from .fdef import Fdef
@@ -39,7 +39,8 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         AlnumModifier,ToTitleModifier,ToCapModifier,
                         ToLowerModifier,ToUpperModifier,RoundModifier,
                         UnresolvedModifier, AnyModifier,CeilModifier,FloorModifier,
-                        BeforeModifier, AfterModifier)
+                        BeforeModifier, AfterModifier, ReverseModifier, ReplaceModifier,
+                        SubModifier, OddModifier, EvenModifier, AbsModifier)
 
 Str = str
 Int = int
@@ -335,6 +336,18 @@ class Types:
         """Fields marked with int should be int type. This is a type modifier.
         """
         return Types(self, IntModifier())
+
+    @property
+    def odd(self) -> Types:
+        """Fields marked with int should be odd. This is a int type modifier.
+        """
+        return Types(self, OddModifier())
+
+    @property
+    def even(self) -> Types:
+        """Fields marked with int should be even. This is a int type modifier.
+        """
+        return Types(self, EvenModifier())
 
     @property
     def float(self) -> Types:
@@ -708,6 +721,16 @@ class Types:
         """
         return Types(self, EagerModifier(), ToUpperModifier())
 
+    def replace(self, old: str, new: str) -> Types:
+        """Replace makes old value into new value
+        """
+        return Types(self, EagerModifier(), ReplaceModifier(old, new))
+
+    def sub(self, reg: str, rep: str) -> Types:
+        """Replace makes old value into new value
+        """
+        return Types(self, EagerModifier(), SubModifier(reg, rep))
+
     @property
     def round(self) -> Types:
         """This modifier rounds number value.
@@ -735,6 +758,15 @@ class Types:
         """
         return Types(self, EagerModifier(), FloorModifier())
 
+    @property
+    def abs(self) -> Types:
+        """This modifier abs number value.
+
+        Returns:
+            Types: A new types chained with this modifier.
+        """
+        return Types(self, EagerModifier(), AbsModifier())
+
     def transform(self, transformer: Callable) -> Types:
         """This mark applies transfromer on the value. When value is None, the
         transformer is not called. This class barely means to transform. Use
@@ -748,6 +780,14 @@ class Types:
           Types: A new types chained with this modifier.
         """
         return Types(self, EagerModifier(), TransformModifier(transformer))
+
+    def reverse(self) -> Types:
+        """This modifier reverse iterable value
+
+        Returns:
+            Types: A new types chained with this modifier.
+        """
+        return Types(self, EagerModifier(), ReverseModifier())
 
     def uploader(self, uploader: Callable) -> Types:
         """Uploader is barely a syntax alias for transformer. Uploaded files
