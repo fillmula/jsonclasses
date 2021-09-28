@@ -55,48 +55,24 @@ Let's transform the requirements into code.
 
 ```python
 from jsonclasses import jsonclass, types
+from jsonclasses_pymongo import pymongo
+from jsonclasses_server import api
 
+
+@api
+@pymongo
 @jsonclass
 class User:
-  phone_no: str = types.str.unique.index.match(local_phone_no_regex).required #1
-  email: str = types.str.match(email_regex)
-  password: str = types.str.writeonly.length(8, 16).match(secure_password_regex).transform(salt).required #2
-  nickname: str = types.str.required
-  gender: str = types.str.writeonce.oneof(['male', 'female']) #3
-  age: int = types.int.min(18).max(100) #4
-  intro: str = types.str.truncate(500) #5
-```
-
-Look how brief it is to describe our business requirements. JSON Classes has
-official support for some databases to store data permanently. If you are
-building a RESTful API, you can integrate JSON Classes with flask or any
-other web frameworks.
-
-```python
-from flask import Blueprint, request, jsonify
-from models.article import Article
-
-bp = Blueprint('articles', __name__, url_prefix='/articles')
-
-@bp.get('/')
-async def articles(request: Request):
-  return jsonify(await User.find())
-
-@bp.get('/<id:string>')
-async def user(request, id):
-  return jsonify(await User.id(id))
-
-@bp.post('/')
-async def create_user(request):
-  return jsonify(User(**request.json).save())
-
-@bp.patch('/<id:string>')
-async def update_user(request, id):
-  return jsonify((await User.id(id)).set(**request.json).save())
-
-@bp.delete('/<id:string>')
-async def delete_user(request, id):
-  return jsonify((await User.id(id)).delete())
+    id: str = types.readonly.str.primary.mongoid.required
+    phone_no: str = types.str.unique.index.match(local_phone_no_regex).required #1
+    email: str = types.str.match(email_regex)
+    password: str = types.str.writeonly.length(8, 16).match(secure_password_regex).transform(salt).required #2
+    nickname: str = types.str.required
+    gender: str = types.str.writeonce.oneof(['male', 'female']) #3
+    age: int = types.int.min(18).max(100) #4
+    intro: str = types.str.truncate(500) #5
+    created_at: datetime = types.readonly.datetime.tscreated.required
+    updated_at: datetime = types.readonly.datetime.tsupdated.required
 ```
 
 ## Documentation
@@ -108,12 +84,16 @@ async def delete_user(request, id):
 * [JSON Classes Pymongo](https://github.com/fillmula/jsonclasses-pymongo)
 The mongodb integration through pymongo driver.
 
-* [JSON Classes Sanic](https://github.com/fillmula/jsonclasses-sanic)
-The sanic async web framework integration.
+* [JSON Classes Server](https://github.com/fillmula/jsonclasses-server)
+The server integration.
 
 ## Supported Python Versions
 
 `jsonclasses` supports `Python >= 3.9.0`.
+
+## Author
+
+JSONClasses is authored by Victor Teo.
 
 ## License
 
