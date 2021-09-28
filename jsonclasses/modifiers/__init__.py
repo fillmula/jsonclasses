@@ -75,6 +75,7 @@ from .ceil_modifier import CeilModifier
 from .floor_modifier import FloorModifier
 from .odd_modifier import OddModifier
 from .even_modifier import EvenModifier
+from .abs_modifier import AbsModifier
 
 # bool modifiers
 from .bool_modifier import BoolModifier

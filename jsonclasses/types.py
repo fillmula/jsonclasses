@@ -40,7 +40,7 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         ToLowerModifier,ToUpperModifier,RoundModifier,
                         UnresolvedModifier, AnyModifier,CeilModifier,FloorModifier,
                         BeforeModifier, AfterModifier, ReverseModifier, ReplaceModifier,
-                        SubModifier, OddModifier, EvenModifier)
+                        SubModifier, OddModifier, EvenModifier, AbsModifier)
 
 Str = str
 Int = int
@@ -757,6 +757,15 @@ class Types:
             Types: A new types chained with this modifier.
         """
         return Types(self, EagerModifier(), FloorModifier())
+
+    @property
+    def abs(self) -> Types:
+        """This modifier abs number value.
+
+        Returns:
+            Types: A new types chained with this modifier.
+        """
+        return Types(self, EagerModifier(), AbsModifier())
 
     def transform(self, transformer: Callable) -> Types:
         """This mark applies transfromer on the value. When value is None, the
