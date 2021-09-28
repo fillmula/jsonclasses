@@ -40,7 +40,7 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         ToLowerModifier,ToUpperModifier,RoundModifier,
                         UnresolvedModifier, AnyModifier,CeilModifier,FloorModifier,
                         BeforeModifier, AfterModifier, ReverseModifier, ReplaceModifier,
-                        SubModifier)
+                        SubModifier, OddModifier, EvenModifier)
 
 Str = str
 Int = int
@@ -336,6 +336,18 @@ class Types:
         """Fields marked with int should be int type. This is a type modifier.
         """
         return Types(self, IntModifier())
+
+    @property
+    def odd(self) -> Types:
+        """Fields marked with int should be odd. This is a int type modifier.
+        """
+        return Types(self, OddModifier())
+
+    @property
+    def even(self) -> Types:
+        """Fields marked with int should be even. This is a int type modifier.
+        """
+        return Types(self, EvenModifier())
 
     @property
     def float(self) -> Types:

@@ -73,6 +73,8 @@ from .negative_modifier import NegativeModifier
 from .round_modifier import RoundModifier
 from .ceil_modifier import CeilModifier
 from .floor_modifier import FloorModifier
+from .odd_modifier import OddModifier
+from .even_modifier import EvenModifier
 
 # bool modifiers
 from .bool_modifier import BoolModifier
