@@ -39,7 +39,8 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         AlnumModifier,ToTitleModifier,ToCapModifier,
                         ToLowerModifier,ToUpperModifier,RoundModifier,
                         UnresolvedModifier, AnyModifier,CeilModifier,FloorModifier,
-                        BeforeModifier, AfterModifier, ReverseModifier, ReplaceModifier)
+                        BeforeModifier, AfterModifier, ReverseModifier, ReplaceModifier,
+                        SubModifier)
 
 Str = str
 Int = int
@@ -712,6 +713,11 @@ class Types:
         """Replace makes old value into new value
         """
         return Types(self, EagerModifier(), ReplaceModifier(old, new))
+
+    def sub(self, reg: str, rep: str) -> Types:
+        """Replace makes old value into new value
+        """
+        return Types(self, EagerModifier(), SubModifier(reg, rep))
 
     @property
     def round(self) -> Types:

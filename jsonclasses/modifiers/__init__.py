@@ -56,6 +56,7 @@ from .tocap_modifier import ToCapModifier
 from .tolower_modifier import ToLowerModifier
 from .toupper_modifier import ToUpperModifier
 from .replace_modifier import ReplaceModifier
+from .sub_modifier import SubModifier
 
 # number modifiers
 from .int_modifier import IntModifier
