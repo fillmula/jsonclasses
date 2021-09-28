@@ -40,7 +40,7 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         ToLowerModifier,ToUpperModifier,RoundModifier,
                         UnresolvedModifier, AnyModifier,CeilModifier,FloorModifier,
                         BeforeModifier, AfterModifier, ReverseModifier, ReplaceModifier,
-                        SubModifier, OddModifier, EvenModifier, AbsModifier)
+                        SubModifier, OddModifier, EvenModifier, AbsModifier, SplitModifier)
 
 Str = str
 Int = int
@@ -730,6 +730,11 @@ class Types:
         """Replace makes old value into new value
         """
         return Types(self, EagerModifier(), SubModifier(reg, rep))
+
+    def split(self, sep: str) -> Types:
+        """Replace makes old value into new value
+        """
+        return Types(self, EagerModifier(), SplitModifier(sep))
 
     @property
     def round(self) -> Types:

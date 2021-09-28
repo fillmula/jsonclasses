@@ -57,6 +57,7 @@ from .tolower_modifier import ToLowerModifier
 from .toupper_modifier import ToUpperModifier
 from .replace_modifier import ReplaceModifier
 from .sub_modifier import SubModifier
+from .split_modifier import SplitModifier
 
 # number modifiers
 from .int_modifier import IntModifier

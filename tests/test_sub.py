@@ -3,7 +3,6 @@ from tests.classes.super_iterable import SuperIterable
 from unittest import TestCase
 
 
-
 class TestSub(TestCase):
 
     def test_sub_keeps_str_value_if_no_replacement_is_found(self):
