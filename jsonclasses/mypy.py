@@ -9,8 +9,7 @@ from mypy.nodes import (CallExpr, LambdaExpr, MemberExpr, TempNode, TypeInfo,
 from mypy.errorcodes import ErrorCode
 
 JSONCLASS_DECORATOR_FULLNAME = 'jsonclasses.jsonclass.jsonclass'
-TYPES_FULLNAME = 'jsonclasses.types.Types'
-JSONCLASS_FULLNAME = 'jsonclasses.jsonclass.jsonclass'
+JSONCLASS_TYPES_FULLNAME = 'jsonclasses.types.types'
 
 ERROR_UNTYPED = ErrorCode('jsonclass-field', 'Untyped field disallowed', 'JSON Class')
 ERROR_MULTIPLE_DEFAULT_VALUES = ErrorCode('jsonclass-field',
@@ -20,7 +19,7 @@ ERROR_MULTIPLE_DEFAULT_VALUES = ErrorCode('jsonclass-field',
 
 def is_json_class_types_expr(expr: Any) -> bool:
     if isinstance(expr, NameExpr):
-        return expr.fullname == 'jsonclasses.types.types'
+        return expr.fullname == JSONCLASS_TYPES_FULLNAME
     if isinstance(expr, MemberExpr):
         return is_json_class_types_expr(expr.expr)
     if isinstance(expr, CallExpr):
