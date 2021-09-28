@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from ..ctx import Ctx
 
 class AbsModifier(Modifier):
-    """Abs modifier abs number value."""
+    """Abs modifier transforms number value to its absolute value."""
 
     def transform(self, ctx: Ctx) -> Any:
         is_number = type(ctx.val) is int or type(ctx.val) is float
