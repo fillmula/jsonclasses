@@ -15,4 +15,3 @@ class ReplaceModifier(Modifier):
     def transform(self, ctx: Ctx) -> Any:
         is_str = type(ctx.val) is str
         return ctx.val.replace(self.old, self.new) if is_str else ctx.val
-
