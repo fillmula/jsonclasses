@@ -40,7 +40,8 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         ToLowerModifier,ToUpperModifier,RoundModifier,
                         UnresolvedModifier, AnyModifier,CeilModifier,FloorModifier,
                         BeforeModifier, AfterModifier, ReverseModifier, ReplaceModifier,
-                        SubModifier, OddModifier, EvenModifier, AbsModifier, SplitModifier)
+                        SubModifier, OddModifier, EvenModifier, AbsModifier, SplitModifier,
+                        JoinModifier)
 
 Str = str
 Int = int
@@ -727,14 +728,19 @@ class Types:
         return Types(self, EagerModifier(), ReplaceModifier(old, new))
 
     def sub(self, reg: str, rep: str) -> Types:
-        """Replace makes old value into new value
+        """Sub makes old value into new value
         """
         return Types(self, EagerModifier(), SubModifier(reg, rep))
 
     def split(self, sep: str) -> Types:
-        """Replace makes old value into new value
+        """Split makes old value into new value
         """
         return Types(self, EagerModifier(), SplitModifier(sep))
+
+    def join(self, sep: str) -> Types:
+        """Join makes old value into new value
+        """
+        return Types(self, EagerModifier(), JoinModifier(sep))
 
     @property
     def round(self) -> Types:
