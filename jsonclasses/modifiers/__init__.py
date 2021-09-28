@@ -55,6 +55,7 @@ from .totitle_modifier import ToTitleModifier
 from .tocap_modifier import ToCapModifier
 from .tolower_modifier import ToLowerModifier
 from .toupper_modifier import ToUpperModifier
+from .replace_modifier import ReplaceModifier
 
 # number modifiers
 from .int_modifier import IntModifier
@@ -90,6 +91,9 @@ from .inputall_modifier import InputAllModifier
 from .outputvalue_modifier import OutputValueModifier
 from .outputname_modifier import OutputNameModifier
 from .outputlname_modifier import OutputLnameModifier
+
+# iterable modifiers
+from .reverse_modifier import ReverseModifier
 
 # collection modifiers
 from .listof_modifier import ListOfModifier

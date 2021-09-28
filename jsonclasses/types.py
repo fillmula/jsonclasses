@@ -1,6 +1,6 @@
 """This modules contains the JSONClasses types modifier."""
 from __future__ import annotations
-from typing import Callable, Any, Optional, Union
+from typing import Callable, Any, Optional, Type, Union
 from datetime import date, datetime
 from copy import deepcopy
 from .fdef import Fdef
@@ -39,7 +39,7 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         AlnumModifier,ToTitleModifier,ToCapModifier,
                         ToLowerModifier,ToUpperModifier,RoundModifier,
                         UnresolvedModifier, AnyModifier,CeilModifier,FloorModifier,
-                        BeforeModifier, AfterModifier)
+                        BeforeModifier, AfterModifier, ReverseModifier, ReplaceModifier)
 
 Str = str
 Int = int
@@ -708,6 +708,11 @@ class Types:
         """
         return Types(self, EagerModifier(), ToUpperModifier())
 
+    def replace(self, old: str, new: str) -> Types:
+        """Replace makes old value into new value
+        """
+        return Types(self, EagerModifier(), ReplaceModifier(old, new))
+
     @property
     def round(self) -> Types:
         """This modifier rounds number value.
@@ -748,6 +753,14 @@ class Types:
           Types: A new types chained with this modifier.
         """
         return Types(self, EagerModifier(), TransformModifier(transformer))
+
+    def reverse(self) -> Types:
+        """This modifier reverse iterable value
+
+        Returns:
+            Types: A new types chained with this modifier.
+        """
+        return Types(self, EagerModifier(), ReverseModifier())
 
     def uploader(self, uploader: Callable) -> Types:
         """Uploader is barely a syntax alias for transformer. Uploaded files
