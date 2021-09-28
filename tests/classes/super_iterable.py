@@ -9,3 +9,6 @@ class SuperIterable:
     itsr: Optional[str] = types.str.reverse()
     itl: Optional[list[Any]] = types.listof(types.any).reverse()
     itssub: Optional[str] = types.str.sub("[0-9]", "ABC")
+    itssp: Optional[list[str]] = types.split(".").listof(types.str)
+    itsj: Optional[str] = types.join('-').str
+
