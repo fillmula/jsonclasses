@@ -8,7 +8,7 @@ from mypy.nodes import (CallExpr, LambdaExpr, MemberExpr, TempNode, TypeInfo,
                         AssignmentStmt, NameExpr, PlaceholderNode, Var)
 from mypy.errorcodes import ErrorCode
 
-JSONCLASS_DECORATOR_FULLNAME = 'jsonclasses.jsonclass'
+JSONCLASS_DECORATOR_FULLNAME = 'jsonclasses.jsonclass.jsonclass'
 TYPES_FULLNAME = 'jsonclasses.types.Types'
 JSONCLASS_FULLNAME = 'jsonclasses.jsonclass.jsonclass'
 
