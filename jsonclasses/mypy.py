@@ -69,21 +69,22 @@ def transform_jsonclass_class(ctx: ClassDefContext) -> None:
             continue
         # node_type = get_proper_type(node.type)
         if is_json_class_types_expr(stmt.rvalue):
-            default_expr = json_class_types_default_arg_expr(stmt.rvalue)
-            if default_expr:
-                if len(default_expr) > 1:
-                    ctx.api.fail('Multiple default values defined.',
-                                 default_expr[1], code=ERROR_MULTIPLE_DEFAULT_VALUES)
-                    stmt.rvalue = TempNode(AnyType(TypeOfAny.explicit), False)
-                    continue
-                expr = default_expr[0]
-                if not (isinstance(expr, LambdaExpr) or isinstance(expr, MemberExpr)):
-                    # TODO: check callable return type
-                    stmt.rvalue = expr
-                else:
-                    stmt.rvalue = TempNode(AnyType(TypeOfAny.explicit), False)
-            else:
-                stmt.rvalue = TempNode(AnyType(TypeOfAny.explicit), False)
+            stmt.rvalue = TempNode(AnyType(TypeOfAny.explicit), False)
+            # default_expr = json_class_types_default_arg_expr(stmt.rvalue)
+            # if default_expr:
+            #     if len(default_expr) > 1:
+            #         ctx.api.fail('Multiple default values defined.',
+            #                      default_expr[1], code=ERROR_MULTIPLE_DEFAULT_VALUES)
+            #         stmt.rvalue = TempNode(AnyType(TypeOfAny.explicit), False)
+            #         continue
+            #     expr = default_expr[0]
+            #     if not (isinstance(expr, LambdaExpr) or isinstance(expr, MemberExpr)):
+            #         # TODO: check callable return type
+            #         stmt.rvalue = expr
+            #     else:
+            #         stmt.rvalue = TempNode(AnyType(TypeOfAny.explicit), False)
+            # else:
+            #     stmt.rvalue = TempNode(AnyType(TypeOfAny.explicit), False)
 
 
 class JSONClassesPlugin(Plugin):
