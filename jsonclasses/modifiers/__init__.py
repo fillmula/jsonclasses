@@ -60,6 +60,7 @@ from .sub_modifier import SubModifier
 from .split_modifier import SplitModifier
 from .join_modifier import JoinModifier
 from .salt_modifier import SaltModifier
+from .tostr_modifier import ToStrModifier
 
 # number modifiers
 from .int_modifier import IntModifier
@@ -79,9 +80,12 @@ from .floor_modifier import FloorModifier
 from .odd_modifier import OddModifier
 from .even_modifier import EvenModifier
 from .abs_modifier import AbsModifier
+from .tofloat_modifier import ToFloatModifier
+from .toint_modifier import ToIntModifier
 
 # bool modifiers
 from .bool_modifier import BoolModifier
+from .tobool_modifier import ToBoolModifier
 
 # datetime modifiers
 from .date_modifier import DateModifier
@@ -104,6 +108,7 @@ from .reverse_modifier import ReverseModifier
 
 # collection modifiers
 from .listof_modifier import ListOfModifier
+from .tolist_modifier import ToListModifier
 from .dictof_modifier import DictOfModifier
 
 # object modifiers
@@ -114,11 +119,6 @@ from .instanceof_modifier import InstanceOfModifier
 # mixed type modifier
 from .union_modifier import UnionModifier
 from .any_modifier import AnyModifier
-from .tolist_modifier import ToListModifier
-from .tobool_modifier import ToBoolModifier
-from .tofloat_modifier import ToFloatModifier
-from .toint_modifier import ToIntModifier
-from .tostr_modifier import ToStrModifier
 
 # nullability modifiers
 from .required_modifier import RequiredModifier
