@@ -45,7 +45,9 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         SubModifier, OddModifier, EvenModifier, AbsModifier,
                         SplitModifier,
                         JoinModifier, AuthIdentityModifier, SaltModifier,
-                        AuthByModifier, PassinModifier, CheckpwModifier)
+                        AuthByModifier, PassinModifier, CheckpwModifier,
+                        ToListModifier, ToBoolModifier, ToFloatModifier,
+                        ToIntModifier, ToStrModifier)
 
 Str = str
 Int = int
@@ -725,6 +727,51 @@ class Types:
             Types: A new types chained with this modifier.
         """
         return Types(self, EagerModifier(), ToUpperModifier())
+
+    @property
+    def tolist(self) -> Types:
+        """This modifier transforms value into list.
+
+        Returns:
+            Types: A new types chained with this modifier.
+        """
+        return Types(self, EagerModifier(), ToListModifier())
+
+    @property
+    def tobool(self) -> Types:
+        """This modifier transforms value into bool.
+
+        Returns:
+            Types: A new types chained with this modifier.
+        """
+        return Types(self, EagerModifier(), ToBoolModifier())
+
+    @property
+    def tofloat(self) -> Types:
+        """This modifier transforms value into float.
+
+        Returns:
+            Types: A new types chained with this modifier.
+        """
+        return Types(self, EagerModifier(), ToFloatModifier())
+
+    @property
+    def toint(self) -> Types:
+        """This modifier transforms value into int.
+
+        Returns:
+            Types: A new types chained with this modifier.
+        """
+        return Types(self, EagerModifier(), ToIntModifier())
+
+    @property
+    def tostr(self) -> Types:
+        """This modifier transforms value into str.
+
+        Returns:
+            Types: A new types chained with this modifier.
+        """
+        return Types(self, EagerModifier(), ToStrModifier())
 
     def replace(self, old: Str, new: Str) -> Types:
         """Replace modifier replaces occurance with substitutions.
