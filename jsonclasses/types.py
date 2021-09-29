@@ -1,6 +1,6 @@
 """This modules contains the JSONClasses types modifier."""
 from __future__ import annotations
-from typing import Callable, Any, Optional, Type, Union
+from typing import Callable, Any, Optional, Union
 from datetime import date, datetime
 from copy import deepcopy
 from .fdef import Fdef
@@ -38,10 +38,14 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         DigitModifier,AlphaModifier,NumericModifier,
                         AlnumModifier,ToTitleModifier,ToCapModifier,
                         ToLowerModifier,ToUpperModifier,RoundModifier,
-                        UnresolvedModifier, AnyModifier,CeilModifier,FloorModifier,
-                        BeforeModifier, AfterModifier, ReverseModifier, ReplaceModifier,
-                        SubModifier, OddModifier, EvenModifier, AbsModifier, SplitModifier,
-                        JoinModifier, AuthIdentityModifier, SaltModifier)
+                        UnresolvedModifier, AnyModifier, CeilModifier,
+                        FloorModifier,
+                        BeforeModifier, AfterModifier, ReverseModifier,
+                        ReplaceModifier,
+                        SubModifier, OddModifier, EvenModifier, AbsModifier,
+                        SplitModifier,
+                        JoinModifier, AuthIdentityModifier, SaltModifier,
+                        AuthByModifier)
 
 Str = str
 Int = int
@@ -938,6 +942,11 @@ class Types:
         """Fields marked with authidentity are used for authorization.
         """
         return Types(self, AuthIdentityModifier())
+
+    def authby(self: Types, checker: Types) -> Types:
+        """Fields marked with authby are used for authorization.
+        """
+        return Types(self, AuthByModifier(checker))
 
     # internal
 

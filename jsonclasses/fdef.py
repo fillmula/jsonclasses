@@ -152,6 +152,8 @@ class Fdef:
         self._operator_assign_transformer: Optional[Callable] = None
         self._queryability: Optional[Queryability] = None
         self._auth_identity: bool = False
+        self._auth_by: bool = False
+        self._auth_by_checker: Optional[Types] = None
 
     @property
     def cdef(self: Fdef) -> Cdef:
@@ -483,6 +485,20 @@ class Fdef:
         """
         self._resolve_if_needed()
         return self._auth_identity
+
+    @property
+    def auth_by(self: Fdef) -> bool:
+        """Whether this field is authorization checker.
+        """
+        self._resolve_if_needed()
+        return self._auth_by
+
+    @property
+    def auth_by_checker(self: Fdef) -> Types:
+        """The auth by checker of this field.
+        """
+        self._resolve_if_needed()
+        return cast(Types, self._auth_by_checker)
 
     # old reference properties
 
