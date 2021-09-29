@@ -114,6 +114,11 @@ from .instanceof_modifier import InstanceOfModifier
 # mixed type modifier
 from .union_modifier import UnionModifier
 from .any_modifier import AnyModifier
+from .tolist_modifier import ToListModifier
+from .tobool_modifier import ToBoolModifier
+from .tofloat_modifier import ToFloatModifier
+from .toint_modifier import ToIntModifier
+from .tostr_modifier import ToStrModifier
 
 # nullability modifiers
 from .required_modifier import RequiredModifier
