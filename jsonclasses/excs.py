@@ -1,7 +1,9 @@
 """This module defines all excs that JSON classes uses."""
 from __future__ import annotations
-from typing import Any
+from typing import Any, TYPE_CHECKING
 from inspect import getmodule, getsourcelines
+if TYPE_CHECKING:
+    from .jobject import JObject
 
 
 class UnresolvedTypeNameException(Exception):
@@ -42,7 +44,7 @@ class JSONClassRedefinitionException(Exception):
     exists before in the same graph.
     """
 
-    def __init__(self, new_class: type, exist_class: type) -> None:
+    def __init__(self, new_class: type, exist_class: type[JObject]) -> None:
         """Create an exception that notifies the user that a class with
         duplicated name is defined twice.
 
@@ -72,7 +74,7 @@ class JSONClassTypedDictRedefinitionException(Exception):
     exists before in the same graph.
     """
 
-    def __init__(self, new_class: type, exist_class: type) -> None:
+    def __init__(self, new_class: type, exist_class: type[JObject]) -> None:
         """Create an exception that notifies the user that a typed dict class
         with duplicated name is defined twice.
 
