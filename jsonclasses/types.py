@@ -41,7 +41,7 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         UnresolvedModifier, AnyModifier,CeilModifier,FloorModifier,
                         BeforeModifier, AfterModifier, ReverseModifier, ReplaceModifier,
                         SubModifier, OddModifier, EvenModifier, AbsModifier, SplitModifier,
-                        JoinModifier)
+                        JoinModifier, AuthIdentityModifier)
 
 Str = str
 Int = int
@@ -925,9 +925,16 @@ class Types:
                      DefaultModifier(datetime.now),
                      SetOnSaveModifier(lambda: datetime.now()))
 
+    # authorization
+
+    def authidentity(self: Types) -> Types:
+        """Fields marked with authidentity are used for authorization.
+        """
+        return Types(self, AuthIdentityModifier())
+
     # internal
 
-    def _unresolved(self: Types, arg: str) -> Types:
+    def _unresolved(self: Types, arg: Str) -> Types:
         """This modifier marks unresolved status. This is used internally. Do
         not use this.
         """

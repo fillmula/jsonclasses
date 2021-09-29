@@ -6,15 +6,13 @@ and class field settings.
 """
 from __future__ import annotations
 from jsonclasses.jobject import JObject
-from typing import Optional, final, TYPE_CHECKING
+from typing import Optional, Any, final, cast, TYPE_CHECKING
 from dataclasses import fields as dataclass_fields
 from .jfield import JField
 from .fdef import FStore, DeleteRule
 from .rtypes import rtypes, rnamedtypes
-from .excs import LinkedFieldUnmatchException
 if TYPE_CHECKING:
     from .jconf import JConf
-    from .types import Types
 
 
 @final
@@ -52,13 +50,14 @@ class Cdef:
         self._reference_names: list[str] = []
         self._camelized_reference_names: list[str] = []
         self._assign_operator_fields: list[JField] = []
+        self._auth_identity_fields: list[JField] = []
         for field in dataclass_fields(cls):
             name = field.name
             self._field_names.append(name)
             if isinstance(field.default, Types):
                 types = field.default
                 default = None
-            elif field.default == field.default_factory:
+            elif field.default == cast(Any, field).default_factory:
                 types = rtypes(field.type)
                 default = None
             else:
@@ -79,7 +78,9 @@ class Cdef:
                 self._cascade_fields.append(jfield)
             if types.fdef._requires_operator_assign:
                 self._assign_operator_fields.append(jfield)
-        self._tuple_fields: tuple[JField] = tuple(self._list_fields)
+            if types.fdef._auth_identity:
+                self._auth_identity_fields.append(jfield)
+        self._tuple_fields: tuple[JField, ...] = tuple(self._list_fields)
 
     def _resolve_ref_types_if_needed(self: Cdef) -> None:
         if self._ref_types_resolved is False:
@@ -149,7 +150,7 @@ class Cdef:
         return self._dict_fields[name]
 
     @property
-    def fields(self: Cdef) -> tuple[JField]:
+    def fields(self: Cdef) -> tuple[JField, ...]:
         """Get the fields of this class definition as a tuple. This is useful
         for looping and iterating.
         """

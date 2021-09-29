@@ -155,3 +155,6 @@ from .onwrite_modifier import OnWriteModifier
 
 # jsonclasses internal
 from .unresolved_modifier import UnresolvedModifier
+
+# authorization
+from .authidentity_modifier import AuthIdentityModifier

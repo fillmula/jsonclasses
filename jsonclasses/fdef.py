@@ -151,6 +151,7 @@ class Fdef:
         self._requires_operator_assign: bool = False
         self._operator_assign_transformer: Optional[Callable] = None
         self._queryability: Optional[Queryability] = None
+        self._auth_identity: bool = False
 
     @property
     def cdef(self: Fdef) -> Cdef:
@@ -475,6 +476,13 @@ class Fdef:
         """
         self._resolve_if_needed()
         return self._queryability or Queryability.QUERYABLE
+
+    @property
+    def auth_identity(self: Fdef) -> bool:
+        """Whether this field is authorization identity.
+        """
+        self._resolve_if_needed()
+        return self._auth_identity
 
     # old reference properties
 
