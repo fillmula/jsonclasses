@@ -949,6 +949,12 @@ class Types:
         """
         return Types(self, AuthByModifier(checker))
 
+    @property
+    def authbycheckpw(self: Types) -> Types:
+        """This is a shortcut to `authby(types.checkpw(types.passin))`.
+        """
+        return Types(self, AuthByModifier(types.checkpw(types.passin)))
+
     # calc pipeline
 
     @property
