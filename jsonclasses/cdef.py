@@ -51,6 +51,7 @@ class Cdef:
         self._camelized_reference_names: list[str] = []
         self._assign_operator_fields: list[JField] = []
         self._auth_identity_fields: list[JField] = []
+        self._auth_by_fields: list[JField] = []
         for field in dataclass_fields(cls):
             name = field.name
             self._field_names.append(name)
@@ -80,6 +81,8 @@ class Cdef:
                 self._assign_operator_fields.append(jfield)
             if types.fdef._auth_identity:
                 self._auth_identity_fields.append(jfield)
+            if types.fdef._auth_by:
+                self._auth_by_fields.append(jfield)
         self._tuple_fields: tuple[JField, ...] = tuple(self._list_fields)
 
     def _resolve_ref_types_if_needed(self: Cdef) -> None:
@@ -187,6 +190,18 @@ class Cdef:
         object creation.
         """
         return self._assign_operator_fields
+
+    @property
+    def auth_identity_fields(self: Cdef) -> list[JField]:
+        """Auth identity fields.
+        """
+        return self._auth_identity_fields
+
+    @property
+    def auth_by_fields(self: Cdef) -> list[JField]:
+        """Auth by fields.
+        """
+        return self._auth_by_fields
 
     def rfield(
             self: Cdef, fcls: type[JObject], fname: Optional[str],

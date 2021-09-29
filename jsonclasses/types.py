@@ -1010,7 +1010,6 @@ class Types:
         """
         return Types(self, EagerModifier(), PassinModifier())
 
-    @property
     def checkpw(self: Types, against: Types) -> Types:
         """Checkpw modifier uses bcrypt's checkpw function to validate str
         value.

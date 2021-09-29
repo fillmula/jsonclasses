@@ -99,6 +99,16 @@ class Ctx(NamedTuple):
                    keypathp=[], keypathh=[], fdef=fdef,
                    operator=root._operator, mgraph=MGraph(), idchain=[])
 
+    @classmethod
+    def rootctxp(cls: type[Ctx], root: JObject, key: str, val: Any, passin: Any) -> Ctx:
+        fdef = types.objof(root.__class__).fdef
+        fdef._cdef = root.__class__.cdef
+        return Ctx(root=root, owner=root, parent=root, holder=None, val=val,
+                   original=root, ctxcfg=CtxCfg(), keypatho=[key], keypathr=[key],
+                   keypathp=[key], keypathh=[key], fdef=fdef,
+                   operator=root._operator, mgraph=MGraph(), idchain=[],
+                   passin=passin)
+
     def nval(self: Ctx, newval: Any) -> Ctx:
         return Ctx(root=self.root, owner=self.owner, parent=self.parent,
                    holder=self.holder, val=newval, original=self.original,
@@ -106,7 +116,7 @@ class Ctx(NamedTuple):
                    keypathr=self.keypathr, keypathp=self.keypathp,
                    keypathh=self.keypathh, fdef=self.fdef,
                    operator=self.operator, mgraph=self.mgraph,
-                   idchain=self.idchain)
+                   idchain=self.idchain, passin=self.passin)
 
     def nextv(self: Ctx, val: Any, key: str | int, fdef: Fdef) -> Ctx:
         return Ctx(root=self.root, owner=self.owner, parent=self.parent,
@@ -116,14 +126,14 @@ class Ctx(NamedTuple):
                    keypathp=[*self.keypathp, key],
                    keypathh=[*self.keypathh, key], fdef=fdef,
                    operator=self.operator, mgraph=self.mgraph,
-                   idchain=self.idchain)
+                   idchain=self.idchain, passin=self.passin)
 
     def nexto(self: Ctx, val: Any, key: str | int, fdef: Fdef) -> Ctx:
         return Ctx(root=self.root, owner=val, parent=val, holder=self.owner,
                    val=val, original=None, ctxcfg=self.ctxcfg, keypatho=[],
                    keypathr=[*self.keypathr, key], keypathp=[],
                    keypathh=[key], fdef=fdef, operator=self.operator,
-                   mgraph=self.mgraph, idchain=self.idchain)
+                   mgraph=self.mgraph, idchain=self.idchain, passin=self.passin)
 
     def nextvc(self: Ctx, val: Any, key: str | int, fdef: Fdef, c: str) -> Ctx:
         return Ctx(root=self.root, owner=self.owner, parent=self.parent,
@@ -133,7 +143,7 @@ class Ctx(NamedTuple):
                    keypathp=[*self.keypathp, key],
                    keypathh=[*self.keypathh, key], fdef=fdef,
                    operator=self.operator, mgraph=self.mgraph,
-                   idchain=[*self.idchain, c])
+                   idchain=[*self.idchain, c], passin=self.passin)
 
     def nextoc(self: Ctx, val: Any, key: str | int, fdef: Fdef, c: str) -> Ctx:
         return Ctx(root=self.root, owner=val, parent=val, holder=self.owner,
@@ -141,7 +151,7 @@ class Ctx(NamedTuple):
                    keypatho=[], keypathr=[*self.keypathr, key],
                    keypathp=[], keypathh=[key], fdef=fdef,
                    operator=self.operator, mgraph=self.mgraph,
-                   idchain=[*self.idchain, c])
+                   idchain=[*self.idchain, c], passin=self.passin)
 
     def nextvo(self: Ctx, val: Any, key: str | int, fdef: Fdef, o: JObject) -> Ctx:
         return Ctx(root=self.root, owner=o, parent=self.parent,
@@ -151,7 +161,7 @@ class Ctx(NamedTuple):
                    keypathp=[*self.keypathp, key],
                    keypathh=[*self.keypathh, key], fdef=fdef,
                    operator=self.operator, mgraph=self.mgraph,
-                   idchain=self.idchain)
+                   idchain=self.idchain, passin=self.passin)
 
     def colval(self: Ctx, val: Any, key: str | int, fdef: Fdef, p: Any) -> Ctx:
         return Ctx(root=self.root, owner=self.owner, parent=p,
@@ -161,7 +171,7 @@ class Ctx(NamedTuple):
                    keypathr=[*self.keypathr, key],
                    keypathp=[key], keypathh=[*self.keypathh, key], fdef=fdef,
                    operator=self.operator, mgraph=self.mgraph,
-                   idchain=self.idchain)
+                   idchain=self.idchain, passin=self.passin)
 
     def default(self: Ctx, owner: JObject, key: str | int, fdef: Fdef) -> Ctx:
         return Ctx(root=self.root, owner=owner, parent=owner,
@@ -172,7 +182,7 @@ class Ctx(NamedTuple):
                    keypathp=[*self.keypathp, key],
                    keypathh=[*self.keypathh, key], fdef=fdef,
                    operator=self.operator, mgraph=self.mgraph,
-                   idchain=self.idchain)
+                   idchain=self.idchain, passin=self.passin)
 
     def raise_vexc(self: Ctx, msg: str) -> None:
         """Raise validation error with message.

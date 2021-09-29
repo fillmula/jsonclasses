@@ -269,6 +269,7 @@ class Fdef:
     def item_types(self: Fdef) -> Types:
         """The item types of this collection field.
         """
+        from .types import Types
         self._resolve_if_needed()
         if self._raw_item_types is None:
             return cast(Types, None)
@@ -497,6 +498,7 @@ class Fdef:
     def auth_by_checker(self: Fdef) -> Types:
         """The auth by checker of this field.
         """
+        from .types import Types
         self._resolve_if_needed()
         return cast(Types, self._auth_by_checker)
 
