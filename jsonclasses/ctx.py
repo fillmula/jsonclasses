@@ -1,6 +1,6 @@
 """This module defines JSON Class context objects."""
 from __future__ import annotations
-from typing import Any, NamedTuple, Union, Optional, TYPE_CHECKING
+from typing import Any, NamedTuple, Union, Optional, cast, TYPE_CHECKING
 from .jconf import JConf
 from .types import types
 from .mgraph import MGraph
@@ -25,6 +25,7 @@ class CtxCfg(NamedTuple):
     """On setting, whether fill default fields with None value.
     """
 
+
 class Ctx(NamedTuple):
     root: JObject
     owner: JObject
@@ -41,6 +42,7 @@ class Ctx(NamedTuple):
     operator: Any
     mgraph: MGraph = MGraph()
     idchain: list[str] = []
+    passin: Optional[Any] = None
 
     @property
     def cdefroot(self: Ctx) -> Cdef:
@@ -52,7 +54,7 @@ class Ctx(NamedTuple):
 
     @property
     def cdefholder(self: Ctx) -> Cdef:
-        return self.holder.__class__.cdef
+        return cast(JObject, self.holder).__class__.cdef
 
     @property
     def jconfroot(self: Ctx) -> JConf:
