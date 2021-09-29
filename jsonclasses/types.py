@@ -45,7 +45,7 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         SubModifier, OddModifier, EvenModifier, AbsModifier,
                         SplitModifier,
                         JoinModifier, AuthIdentityModifier, SaltModifier,
-                        AuthByModifier, PassinModifier)
+                        AuthByModifier, PassinModifier, CheckpwModifier)
 
 Str = str
 Int = int
@@ -956,6 +956,13 @@ class Types:
         """Pass in modifier users passin value as the result.
         """
         return Types(self, EagerModifier(), PassinModifier())
+
+    @property
+    def checkpw(self: Types, against: Types) -> Types:
+        """Checkpw modifier uses bcrypt's checkpw function to validate str
+        value.
+        """
+        return Types(self, CheckpwModifier(against))
 
     # internal
 

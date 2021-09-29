@@ -163,3 +163,4 @@ from .authby_modifier import AuthByModifier
 
 # calc pipeline
 from .passin_modifier import PassinModifier
+from .checkpw_modifier import CheckpwModifier
