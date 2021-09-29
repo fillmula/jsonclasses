@@ -160,3 +160,6 @@ from .unresolved_modifier import UnresolvedModifier
 # authorization
 from .authidentity_modifier import AuthIdentityModifier
 from .authby_modifier import AuthByModifier
+
+# calc pipeline
+from .passin_modifier import PassinModifier

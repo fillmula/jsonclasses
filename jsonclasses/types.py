@@ -45,7 +45,7 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         SubModifier, OddModifier, EvenModifier, AbsModifier,
                         SplitModifier,
                         JoinModifier, AuthIdentityModifier, SaltModifier,
-                        AuthByModifier)
+                        AuthByModifier, PassinModifier)
 
 Str = str
 Int = int
@@ -938,6 +938,7 @@ class Types:
 
     # authorization
 
+    @property
     def authidentity(self: Types) -> Types:
         """Fields marked with authidentity are used for authorization.
         """
@@ -947,6 +948,14 @@ class Types:
         """Fields marked with authby are used for authorization.
         """
         return Types(self, AuthByModifier(checker))
+
+    # calc pipeline
+
+    @property
+    def passin(self: Types) -> Types:
+        """Pass in modifier users passin value as the result.
+        """
+        return Types(self, EagerModifier(), PassinModifier())
 
     # internal
 
