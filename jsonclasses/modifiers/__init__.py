@@ -59,6 +59,7 @@ from .replace_modifier import ReplaceModifier
 from .sub_modifier import SubModifier
 from .split_modifier import SplitModifier
 from .join_modifier import JoinModifier
+from .salt_modifier import SaltModifier
 
 # number modifiers
 from .int_modifier import IntModifier

@@ -41,7 +41,7 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         UnresolvedModifier, AnyModifier,CeilModifier,FloorModifier,
                         BeforeModifier, AfterModifier, ReverseModifier, ReplaceModifier,
                         SubModifier, OddModifier, EvenModifier, AbsModifier, SplitModifier,
-                        JoinModifier, AuthIdentityModifier)
+                        JoinModifier, AuthIdentityModifier, SaltModifier)
 
 Str = str
 Int = int
@@ -455,7 +455,7 @@ class Types:
         """
         return Types(self, AfterModifier(point))
 
-    def enum(self, enum_class: Union[type, str]) -> Types:
+    def enum(self, enum_class: Union[type, Str]) -> Types:
         """Fields marked with enum should be enum value of provided enum type.
         This is a type modifier.
         """
@@ -722,25 +722,32 @@ class Types:
         """
         return Types(self, EagerModifier(), ToUpperModifier())
 
-    def replace(self, old: str, new: str) -> Types:
-        """Replace makes old value into new value
+    def replace(self, old: Str, new: Str) -> Types:
+        """Replace modifier replaces occurance with substitutions.
         """
         return Types(self, EagerModifier(), ReplaceModifier(old, new))
 
-    def sub(self, reg: str, rep: str) -> Types:
-        """Sub makes old value into new value
+    def sub(self, reg: Str, rep: Str) -> Types:
+        """Sub modifier replaces occurance matches regular expression with
+        replacement string.
         """
         return Types(self, EagerModifier(), SubModifier(reg, rep))
 
-    def split(self, sep: str) -> Types:
-        """Split makes old value into new value
+    def split(self, sep: Str) -> Types:
+        """Split modifier splits string into a list of strings.
         """
         return Types(self, EagerModifier(), SplitModifier(sep))
 
-    def join(self, sep: str) -> Types:
-        """Join makes old value into new value
+    def join(self, sep: Str) -> Types:
+        """Join modifier concatenates a list of strings into a single string.
         """
         return Types(self, EagerModifier(), JoinModifier(sep))
+
+    @property
+    def salt(self) -> Types:
+        """Salt modifier add salt to a string.
+        """
+        return Types(self, EagerModifier(), SaltModifier())
 
     @property
     def round(self) -> Types:
