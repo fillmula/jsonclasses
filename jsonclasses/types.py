@@ -1033,7 +1033,6 @@ like this:
 
   @jsonclass
   class MyObject:
-    my_field_one: bool = types.bool.readonly.required
-    my_field_two: password = types.bool.writeonly.length(8, 16).transform(salt\
-).required
+    enabled: bool = types.bool.readonly.required
+    password: str = types.str.writeonly.length(8, 16).salt.required
 """
