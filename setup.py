@@ -23,4 +23,4 @@ setup(
     zip_safe=False,
     url='https://github.com/fillmula/jsonclasses',
     include_package_data=True,
-    python_requires='>=3.9')
+    python_requires='>=3.10')
