@@ -1,12 +1,9 @@
 """setup.py"""
-import pathlib
+from pathlib import Path
 from setuptools import setup, find_packages
 
-# The directory containing this file
-HERE = pathlib.Path(__file__).parent
-
 # The text of the README file
-README = (HERE / "README.md").read_text()
+README = (Path(__file__).parent / "README.md").read_text()
 
 setup(
     name='jsonclasses',
