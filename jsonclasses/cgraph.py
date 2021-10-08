@@ -1,6 +1,6 @@
 """This module defineds the JSON class mapping graph."""
 from __future__ import annotations
-from typing import Union, final, TYPE_CHECKING
+from typing import final, TYPE_CHECKING
 from enum import Enum
 from .jconf import JConf
 from .keypath import camelize_key, reference_key, underscore_key
@@ -94,8 +94,7 @@ class CGraph:
                                                  exist_definition.cls)
         self._map[cdef.name] = cdef
 
-    def fetch(self: CGraph,
-              name_or_class: Union[str, type]) -> Cdef:
+    def fetch(self: CGraph, name_or_class: str | type) -> Cdef:
         """Fetch a class by it's name from this class graph.
 
         Args:
@@ -115,8 +114,7 @@ class CGraph:
         except KeyError:
             raise JSONClassNotFoundException(name, self.name)
 
-    def has(self: CGraph,
-            name_or_class: Union[str, type]) -> bool:
+    def has(self: CGraph, name_or_class: str | type) -> bool:
         """Test if class with name is registered in the graph.
 
         Args:
@@ -149,8 +147,7 @@ class CGraph:
                                                           exist_def.cls)
         self._dict_map[dict_class.__name__] = dict_class
 
-    def fetch_dict(self: CGraph,
-                   dc_or_name: Union[type[dict], str]) -> type[dict]:
+    def fetch_dict(self: CGraph, dc_or_name: type[dict] | str) -> type[dict]:
         """Fetch a typed dict class by it's name from this class graph.
 
         Args:
@@ -170,8 +167,7 @@ class CGraph:
         except KeyError:
             raise JSONClassTypedDictNotFoundException(name, self.name)
 
-    def has_dict(self: CGraph,
-                 dc_or_name: Union[type[dict], str]) -> bool:
+    def has_dict(self: CGraph, dc_or_name: type[dict] | str) -> bool:
         """Test if a typed dict class with name is registered in the graph.
 
         Args:
@@ -205,8 +201,7 @@ class CGraph:
                                                           exist_def.cls)
         self._enum_map[enum_class.__name__] = enum_class
 
-    def fetch_enum(self: CGraph,
-                   ec_or_name: Union[type[dict], str]) -> type[Enum]:
+    def fetch_enum(self: CGraph, ec_or_name: type[dict] | str) -> type[Enum]:
         """Fetch a enum class by it's name from this class graph.
 
         Args:
@@ -226,8 +221,7 @@ class CGraph:
         except KeyError:
             raise JSONClassTypedDictNotFoundException(name, self.name)
 
-    def has_enum(self: CGraph,
-                 ec_or_name: Union[type[Enum], str]) -> bool:
+    def has_enum(self: CGraph, ec_or_name: type[Enum] | str) -> bool:
         """Test if a enum class with name is registered in the graph.
 
         Args:

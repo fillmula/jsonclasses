@@ -2,7 +2,7 @@
 configuration object tweaks the behavior of JSON classes.
 """
 from __future__ import annotations
-from typing import Optional, Callable, Any, Union, cast, final, TYPE_CHECKING
+from typing import Optional, Callable, Any, cast, final, TYPE_CHECKING
 from .jobject import JObject
 if TYPE_CHECKING:
     from .jfield import JField
@@ -12,10 +12,10 @@ if TYPE_CHECKING:
 OnCreate = Callable[[JObject, Any], None]
 OnUpdate = Callable[[JObject, Any], None]
 OnDelete = Callable[[JObject, Any], None]
-CanCreate = Callable[[JObject, Any], Union[bool, None, str]]
-CanUpdate = Callable[[JObject, Any], Union[bool, None, str]]
-CanDelete = Callable[[JObject, Any], Union[bool, None, str]]
-CanRead = Callable[[JObject, Any], Union[bool, None, str]]
+CanCreate = Callable[[JObject, Any], bool | None | str]
+CanUpdate = Callable[[JObject, Any], bool | None | str]
+CanDelete = Callable[[JObject, Any], bool | None | str]
+CanRead = Callable[[JObject, Any], bool | None | str]
 
 
 @final

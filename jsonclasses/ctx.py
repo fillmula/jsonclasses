@@ -29,15 +29,15 @@ class CtxCfg(NamedTuple):
 class Ctx(NamedTuple):
     root: JObject
     owner: JObject
-    parent: Union[list, dict, JObject]
+    parent: list | dict | JObject
     holder: Optional[JObject]
     val: Any
     original: Any
     ctxcfg: CtxCfg
-    keypathr: list[Union[str, int]]
-    keypatho: list[Union[str, int]]
-    keypathp: list[Union[str, int]]
-    keypathh: list[Union[str, int]]
+    keypathr: list[str | int]
+    keypatho: list[str | int]
+    keypathp: list[str | int]
+    keypathh: list[str | int]
     fdef: Fdef
     operator: Any
     mgraph: MGraph = MGraph()

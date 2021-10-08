@@ -1,6 +1,6 @@
 """This is an internal module."""
 from __future__ import annotations
-from typing import cast, Any, Callable, Optional, Union, TYPE_CHECKING
+from typing import cast, Any, Callable, Optional, TYPE_CHECKING
 from enum import Enum, Flag
 from .rtypes import rnamedtypes, rtypes
 from .isjsonclass import isjsonclass
@@ -120,15 +120,15 @@ class Fdef:
         self._index: bool = False
         self._unique: bool = False
         self._required: bool = False
-        self._raw_enum_class: Optional[Union[type[Enum], str]] = None
+        self._raw_enum_class: Optional[type[Enum] | str] = None
         self._enum_class: Optional[type[Enum]] = None
         self._enum_input: Optional[EnumInput] = None
         self._enum_output: Optional[EnumOutput] = None
         self._raw_union_types: Optional[list[Types]] = None
         self._raw_item_types: Optional[Any] = None
-        self._raw_shape_types: Optional[Union[dict[str, Any], str]] = None
+        self._raw_shape_types: Optional[dict[str, Any] | str] = None
         self._shape_parent: Optional[Fdef] = None
-        self._raw_inst_types: Optional[Union[str, type[JObject]]] = None
+        self._raw_inst_types: Optional[str | type[JObject]] = None
         self._resolved_union_types: Optional[list[Types]] = None
         self._resolved_item_types: Optional[Types] = None
         self._resolved_shape_types: Optional[dict[str, Types]] = None
@@ -215,7 +215,7 @@ class Fdef:
     # enum marks
 
     @property
-    def raw_enum_class(self: Fdef) -> Optional[Union[type[Enum], str]]:
+    def raw_enum_class(self: Fdef) -> Optional[type[Enum] | str]:
         """The raw enum class.
         """
         self._resolve_if_needed()
@@ -322,7 +322,7 @@ class Fdef:
         pass
 
     @property
-    def raw_inst_types(self: Fdef) -> Optional[Union[str, type[JObject]]]:
+    def raw_inst_types(self: Fdef) -> Optional[str | type[JObject]]:
         """The raw instance types of this instance field.
         """
         self._resolve_if_needed()

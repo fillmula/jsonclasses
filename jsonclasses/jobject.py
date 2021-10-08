@@ -3,8 +3,9 @@ confirm to.
 """
 from __future__ import annotations
 
-from typing import (Any, TypeVar, Optional, ClassVar, Protocol, Union,
-                    Set, TYPE_CHECKING)
+from typing import (
+    Any, TypeVar, Optional, ClassVar, Protocol, Set, TYPE_CHECKING
+)
 if TYPE_CHECKING:
     from .cdef import Cdef
     from .fdef import Fdef
@@ -160,7 +161,7 @@ class JObject(Protocol):
     def _run_on_delete_callbacks(self: T) -> None: ...
 
     @property
-    def _id(self: T) -> Union[str, int, None]: ...
+    def _id(self: T) -> str | int | None: ...
 
     @property
     def _operator(self: T) -> Optional[JObject]: ...
