@@ -49,6 +49,7 @@ class Cdef:
         self._camelized_field_names: list[str] = []
         self._reference_names: list[str] = []
         self._camelized_reference_names: list[str] = []
+        self._unique_fields: list[JField] = []
         self._assign_operator_fields: list[JField] = []
         self._auth_identity_fields: list[JField] = []
         self._auth_by_fields: list[JField] = []
@@ -77,6 +78,8 @@ class Cdef:
                 self._nullify_fields.append(jfield)
             elif types.fdef._delete_rule == DeleteRule.CASCADE:
                 self._cascade_fields.append(jfield)
+            if types.fdef._unique:
+                self._unique_fields.append(jfield)
             if types.fdef._requires_operator_assign:
                 self._assign_operator_fields.append(jfield)
             if types.fdef._auth_identity:
@@ -183,6 +186,12 @@ class Cdef:
         defined by user.
         """
         return self._primary_field
+
+    @property
+    def unique_fields(self: Cdef) -> list[JField]:
+        """The unique fields of this class definition.
+        """
+        return self._unique_fields
 
     @property
     def assign_operator_fields(self: Cdef) -> list[JField]:
