@@ -133,6 +133,7 @@ class Fdef:
         self._resolved_item_types: Optional[Types] = None
         self._resolved_shape_types: Optional[dict[str, Types]] = None
         self._inst_cls: Optional[type[JObject]] = None
+        self._force_set_on_save: bool = False
         self._foreign_key: Optional[str] = None
         self._use_join_table: Optional[bool] = None
         self._join_table_cls: Optional[Any] = None
@@ -343,6 +344,12 @@ class Fdef:
         inst_cls = cgraph.fetch(self._raw_inst_types).cls
         self._inst_cls = inst_cls
         return self._inst_cls
+
+    @property
+    def force_set_on_save(self: Fdef) -> bool:
+        """Whether force set on save."""
+        self._resolve_if_needed()
+        return self._force_set_on_save
 
     # relationship
 

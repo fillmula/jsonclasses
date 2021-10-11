@@ -155,6 +155,7 @@ from .chained_modifier import ChainedModifier
 
 # setonsave setter, onsave callback
 from .setonsave_modifier import SetOnSaveModifier
+from .fsetonsave_modifier import FSetOnSaveModifier
 from .onsave_modifier import OnSaveModifier
 from .onupdate_modifier import OnUpdateModifier
 from .onwrite_modifier import OnWriteModifier

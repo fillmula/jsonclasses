@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
 
 class SetOnSaveModifier(Modifier):
-    """Setonsave modifier updates or sets value on save."""
+    """Set on save modifier updates or sets value on save."""
 
     def __init__(self, setter: Callable) -> None:
         if not callable(setter):

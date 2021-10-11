@@ -28,6 +28,7 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         RangeModifier, ReadonlyModifier, ReadwriteModifier,
                         RefereeModifier, ReferrerModifier,
                         RequiredModifier, ResetModifier, SetOnSaveModifier,
+                        FSetOnSaveModifier,
                         ShapeModifier, StrModifier, StrictModifier,
                         TempModifier, TransformModifier, TrimModifier,
                         TruncateModifier, UniqueModifier, ValidateModifier,
@@ -910,6 +911,19 @@ class Types:
           Types: A new types chained with this modifier.
         """
         return Types(self, PreserializeModifier(), SetOnSaveModifier(setter))
+
+    def fsetonsave(self, setter: Callable) -> Types:
+        """Fsetonsave modifier marks a field to be updated just before
+        serializing into the database regardless of this field is modified.
+
+        Args:
+          setter (Callable): This setter function takes zero or one argument
+          which is the current value of the field.
+
+        Returns:
+          Types: A new types chained with this modifier.
+        """
+        return Types(self, PreserializeModifier(), FSetOnSaveModifier(setter))
 
     def onsave(self, callback: Callable) -> Types:
         """Onsave inserts a callback into the modifier chain. If save action

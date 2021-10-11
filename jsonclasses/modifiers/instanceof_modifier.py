@@ -220,7 +220,7 @@ class InstanceOfModifier(Modifier):
         if value.is_modified or value.is_new:
             should_update = True
         for field in value.__class__.cdef.fields:
-            if field.fdef.is_ref or field.fdef.is_inst or should_update:
+            if field.fdef.is_ref or field.fdef.is_inst or should_update or field.fdef.force_set_on_save:
                 if field.fdef.fstore == FStore.LOCAL_KEY:
                     if getattr(value, field.name) is None:
                         tsf = value.__class__.cdef.jconf.ref_key_encoding_strategy
