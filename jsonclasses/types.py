@@ -40,15 +40,15 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         AlnumModifier,ToTitleModifier,ToCapModifier,
                         ToLowerModifier,ToUpperModifier,RoundModifier,
                         UnresolvedModifier, AnyModifier, CeilModifier,
-                        FloorModifier,
-                        BeforeModifier, AfterModifier, ReverseModifier,
-                        ReplaceModifier,
-                        SubModifier, OddModifier, EvenModifier, AbsModifier,
-                        SplitModifier,
+                        FloorModifier, BeforeModifier, AfterModifier,
+                        ReverseModifier, ReplaceModifier, ReplacerModifier,
+                        OddModifier, EvenModifier, AbsModifier,SplitModifier,
                         JoinModifier, AuthIdentityModifier, SaltModifier,
                         AuthByModifier, PassinModifier, CheckpwModifier,
                         ToListModifier, ToBoolModifier, ToFloatModifier,
-                        ToIntModifier, ToStrModifier, RandomDigitsModifier)
+                        ToIntModifier, ToStrModifier, RandomDigitsModifier,
+                        ToBoSecModifier, ToBoMinModifier, ToBoHourModifier,
+                        ToNextSecModifier, ToNextMinModifier, ToNextHourModifier,)
 
 Str = str
 Int = int
@@ -462,6 +462,42 @@ class Types:
         """
         return Types(self, AfterModifier(point))
 
+    @property
+    def tobosec(self) -> Types:
+        """This modifier empty the microsecond in datetime.
+        """
+        return Types(self, EagerModifier(), ToBoSecModifier())
+
+    @property
+    def tobomin(self) -> Types:
+        """This modifier empty the microsecond and second in datetime
+        """
+        return Types(self, EagerModifier(), ToBoMinModifier())
+
+    @property
+    def tobohour(self) -> Types:
+        """This modifier empty microsecond, second and minute in datetime
+        """
+        return Types(self, EagerModifier(), ToBoHourModifier())
+
+    @property
+    def tonextsec(self) -> Types:
+        """This modifier Go to the next second in datetime
+        """
+        return Types(self, EagerModifier(), ToNextSecModifier())
+
+    @property
+    def tonextmin(self) -> Types:
+        """This modifier Go to the next minute in datetime
+        """
+        return Types(self, EagerModifier(), ToNextMinModifier())
+
+    @property
+    def tonexthour(self) -> Types:
+        """This modifier Go to the next hour in datetime
+        """
+        return Types(self, EagerModifier(), ToNextHourModifier())
+
     def enum(self, enum_class: Union[type, Str]) -> Types:
         """Fields marked with enum should be enum value of provided enum type.
         This is a type modifier.
@@ -779,11 +815,11 @@ class Types:
         """
         return Types(self, EagerModifier(), ReplaceModifier(old, new))
 
-    def sub(self, reg: Str, rep: Str) -> Types:
-        """Sub modifier replaces occurance matches regular expression with
+    def replacer(self, reg: Str, rep: Str) -> Types:
+        """Replacer modifier replaces occurance matches regular expression with
         replacement string.
         """
-        return Types(self, EagerModifier(), SubModifier(reg, rep))
+        return Types(self, EagerModifier(), ReplacerModifier(reg, rep))
 
     def split(self, sep: Str) -> Types:
         """Split modifier splits string into a list of strings.
