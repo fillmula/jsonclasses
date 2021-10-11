@@ -7,6 +7,7 @@ from ..excs import ValidationException
 from .modifier import Modifier
 from .eager_modifier import EagerModifier
 from .preserialize_modifier import PreserializeModifier
+from ..isjsonclass import isjsonobject
 if TYPE_CHECKING:
     from ..ctx import Ctx
 
@@ -76,7 +77,8 @@ class ChainedModifier(Modifier):
         """Serialize as validate."""
         val = v.serialize(ctx)
         v.validate(ctx.nval(val))
-        setattr(ctx.parent, cast(str, ctx.keypathp[0]), val)
+        if isjsonobject(ctx.parent):
+            setattr(ctx.parent, cast(str, ctx.keypathp[0]), val)
         return val
 
     def validate(self, ctx: Ctx) -> None:
