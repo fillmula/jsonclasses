@@ -230,4 +230,6 @@ class InstanceOfModifier(Modifier):
                 fctx = ctx.nextv(field_value, field.name, field.fdef)
                 tsfmd = field.types.modifier.serialize(fctx)
                 setattr(value, field.name, tsfmd)
+                if value.is_modified or value.is_new:
+                    should_update = True
         return value

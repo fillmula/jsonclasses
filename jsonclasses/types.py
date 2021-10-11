@@ -995,6 +995,7 @@ class Types:
         """
         return Types(self,
                      DefaultModifier(datetime.now),
+                     PreserializeModifier(),
                      SetOnSaveModifier(lambda: datetime.now()))
 
     # authorization

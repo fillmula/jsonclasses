@@ -2,7 +2,6 @@
 from __future__ import annotations
 from typing import Callable, cast, TYPE_CHECKING
 from inspect import signature
-from ..excs import ValidationException
 from .modifier import Modifier
 if TYPE_CHECKING:
     from ..ctx import Ctx
@@ -26,7 +25,7 @@ class CompareModifier(Modifier):
         parent = cast(JObject, ctx.parent)
         if name not in parent.previous_values:
             return
-        prev_value = parent.previous_values[name]
+        prev_value = parent.previous_values[cast(str, name)]
         params_len = len(signature(self.compare_callable).parameters)
         if params_len == 2:
             result = self.compare_callable(prev_value, ctx.val)

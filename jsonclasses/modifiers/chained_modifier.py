@@ -1,7 +1,7 @@
 """module for chained modifier."""
 from __future__ import annotations
 from jsonclasses.vmsgcollector import VMsgCollector
-from typing import Any, Optional, TYPE_CHECKING
+from typing import Any, Optional, cast, TYPE_CHECKING
 from functools import reduce
 from ..excs import ValidationException
 from .modifier import Modifier
@@ -76,6 +76,7 @@ class ChainedModifier(Modifier):
         """Serialize as validate."""
         val = v.serialize(ctx)
         v.validate(ctx.nval(val))
+        setattr(ctx.parent, cast(str, ctx.keypathp[0]), val)
         return val
 
     def validate(self, ctx: Ctx) -> None:
