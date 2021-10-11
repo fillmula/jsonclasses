@@ -1,7 +1,7 @@
 """This modules contains the JSONClasses types modifier."""
 from __future__ import annotations
 from typing import Callable, Any, Optional, Union
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from copy import deepcopy
 from .fdef import Fdef
 from .keypath import new_mongoid
@@ -997,6 +997,17 @@ class Types:
                      DefaultModifier(datetime.now),
                      PreserializeModifier(),
                      SetOnSaveModifier(lambda: datetime.now()))
+
+    def umininterval(self: Types, interval: timedelta) -> Types:
+        """This modifier compares old and new value against the time interval.
+        """
+        def compare_callable(old: datetime, new: datetime):
+            if new >= old + interval:
+                return None
+            return 'time interval too short'
+        return Types(self,
+                     ResetModifier(),
+                     CompareModifier(compare_callable))
 
     # authorization
 
