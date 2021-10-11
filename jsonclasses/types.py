@@ -48,7 +48,7 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         JoinModifier, AuthIdentityModifier, SaltModifier,
                         AuthByModifier, PassinModifier, CheckpwModifier,
                         ToListModifier, ToBoolModifier, ToFloatModifier,
-                        ToIntModifier, ToStrModifier)
+                        ToIntModifier, ToStrModifier, RandomDigitsModifier)
 
 Str = str
 Int = int
@@ -597,7 +597,7 @@ class Types:
         """
         return Types(self, PresentWithModifier(referring_key))
 
-    def presentwithout(self, referring_keys: Union[str, list[str]]) -> Types:
+    def presentwithout(self, referring_keys: Union[Str, list[Str]]) -> Types:
         """Fields marked with presentwithout modifier are forced presented if
         referring field is not present. If referring field has None value, this
         field's value should be present. If referring field has non None value,
@@ -1029,6 +1029,11 @@ class Types:
         value.
         """
         return Types(self, CheckpwModifier(against))
+
+    def randomdigits(self: Types, length: Int) -> Types:
+        """Random digits modifier generates a random digits string of length.
+        """
+        return Types(self, RandomDigitsModifier(length))
 
     # internal
 
