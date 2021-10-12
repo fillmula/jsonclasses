@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import Any, Optional
 from jsonclasses import jsonclass, types
 
@@ -21,3 +21,27 @@ class SuperDateTime:
 
     dtnh: Optional[datetime] = types.datetime.tonexthour
     stnh: Optional[Any] = types.any.tonexthour
+
+    dby: Optional[date] = types.date.toboyear
+    dtby: Optional[datetime] = types.datetime.toboyear
+    sby: Optional[Any] = types.any.toboyear
+
+    dbmth: Optional[date] = types.date.tobomonth
+    dtbmth: Optional[datetime] = types.datetime.tobomonth
+    sbmth: Optional[Any] = types.any.tobomonth
+
+    dbd: Optional[date] = types.date.toboday
+    dtbd: Optional[datetime] = types.datetime.toboday
+    sbd: Optional[Any] = types.any.toboday
+
+    dny: Optional[date] = types.date.tonextyear
+    dtny: Optional[datetime] = types.datetime.tonextyear
+    sny: Optional[Any] = types.any.tonextyear
+
+    dnmth: Optional[date] = types.date.tonextmonth
+    dtnmth: Optional[datetime] = types.datetime.tonextmonth
+    snmth: Optional[Any] = types.any.tonextmonth
+
+    dnd: Optional[date] = types.date.tonextday
+    dtnd: Optional[datetime] = types.datetime.tonextday
+    snd: Optional[Any] = types.any.tonextday

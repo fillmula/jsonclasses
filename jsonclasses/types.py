@@ -50,7 +50,10 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         ToIntModifier, ToStrModifier, RandomDigitsModifier,
                         ToBoSecModifier, ToBoMinModifier, ToBoHourModifier,
                         ToNextSecModifier, ToNextMinModifier,
-                        ToNextHourModifier, CrossFetchModifier)
+                        ToNextHourModifier, CrossFetchModifier,
+                        ToNextMonthModifier, ToNextYearModifier,
+                        ToNextDayModifier, ToBoYearModifier, ToBoMonthModifier,
+                        ToBoDayModifier)
 
 Str = str
 Int = int
@@ -525,6 +528,45 @@ class Types:
         """This modifier Go to the next hour in datetime
         """
         return Types(self, EagerModifier(), ToNextHourModifier())
+
+    @property
+    def tonextyear(self) -> Types:
+        """This modifier Go to the next year in datetime or in date
+        """
+        return Types(self, EagerModifier(), ToNextYearModifier())
+
+    @property
+    def tonextmonth(self) -> Types:
+        """This modifier Go to the next month in datetime or in date
+        """
+        return Types(self, EagerModifier(), ToNextMonthModifier())
+
+    @property
+    def tonextday(self) -> Types:
+        """This modifier Go to the next day in datetime or in date
+        """
+        return Types(self, EagerModifier(), ToNextDayModifier())
+
+    @property
+    def toboyear(self) -> Types:
+        """This modifier empty microsecond, second, minute, hour, day and month
+        in datetime or empty day, month in date
+        """
+        return Types(self, EagerModifier(), ToBoYearModifier())
+
+    @property
+    def tobomonth(self) -> Types:
+        """This modifier empty microsecond, second, minute, hour and day in
+        datetime or empty day in date
+        """
+        return Types(self, EagerModifier(), ToBoMonthModifier())
+
+    @property
+    def toboday(self) -> Types:
+        """This modifier empty microsecond, second, minute and hour in
+        datetime or return date directly
+        """
+        return Types(self, EagerModifier(), ToBoDayModifier())
 
     def enum(self, enum_class: Union[type, Str]) -> Types:
         """Fields marked with enum should be enum value of provided enum type.
