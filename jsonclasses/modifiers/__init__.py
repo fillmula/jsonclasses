@@ -56,7 +56,7 @@ from .tocap_modifier import ToCapModifier
 from .tolower_modifier import ToLowerModifier
 from .toupper_modifier import ToUpperModifier
 from .replace_modifier import ReplaceModifier
-from .sub_modifier import SubModifier
+from .replacer_modifier import ReplacerModifier
 from .split_modifier import SplitModifier
 from .join_modifier import JoinModifier
 from .salt_modifier import SaltModifier
@@ -92,6 +92,12 @@ from .date_modifier import DateModifier
 from .datetime_modifier import DatetimeModifier
 from .before_modifier import BeforeModifier
 from .after_modifier import AfterModifier
+from .tobosec_modifier import ToBoSecModifier
+from .tobomin_modifier import ToBoMinModifier
+from .tobohour_modifier import ToBoHourModifier
+from .tonextsec_modifier import ToNextSecModifier
+from .tonextmin_modifier import ToNextMinModifier
+from .tonexthour_modifier import ToNextHourModifier
 
 # enum modifiers
 from .enum_modifier import EnumModifier

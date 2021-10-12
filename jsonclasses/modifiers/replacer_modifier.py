@@ -1,4 +1,4 @@
-"""module for replace modifier."""
+"""module for replacer modifier."""
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 from re import sub
@@ -6,7 +6,7 @@ from .modifier import Modifier
 if TYPE_CHECKING:
     from ..ctx import Ctx
 
-class SubModifier(Modifier):
+class ReplacerModifier(Modifier):
     """Sub modifier substitudes value against a regular expression."""
 
     def __init__(self, reg: str, rep: str) -> None:
