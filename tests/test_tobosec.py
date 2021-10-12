@@ -5,7 +5,7 @@ from tests.classes.super_datetime import SuperDateTime
 
 class TestTobosec(TestCase):
 
-    def test_tobosec_transforms_datetime_into_the_time_of_the_beginning_of_the_second(self):
+    def test_tobosec_transforms_datetime_into_the_time_of_beginning_of_second(self):
         d = SuperDateTime(dtbs=datetime(2021, 10, 11, 17, 37, 27, 446259))
         self.assertEqual(d.dtbs, datetime(2021,10, 11, 17, 37, 27))
 

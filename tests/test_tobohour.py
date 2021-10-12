@@ -7,7 +7,7 @@ from tests.classes.super_datetime import SuperDateTime
 
 class TestTobohour(TestCase):
 
-    def test_tobohour_transforms_datetime_into_the_time_of_the_beginning_of_the_hour(self):
+    def test_tobohour_transforms_datetime_into_the_time_of_beginning_of_hour(self):
         d = SuperDateTime(dtbh=datetime(2021, 10, 11, 17, 37, 27))
         self.assertEqual(d.dtbh, datetime(2021,10, 11, 17, 0))
 
