@@ -49,7 +49,8 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         ToListModifier, ToBoolModifier, ToFloatModifier,
                         ToIntModifier, ToStrModifier, RandomDigitsModifier,
                         ToBoSecModifier, ToBoMinModifier, ToBoHourModifier,
-                        ToNextSecModifier, ToNextMinModifier, ToNextHourModifier,)
+                        ToNextSecModifier, ToNextMinModifier,
+                        ToNextHourModifier, CrossFetchModifier)
 
 Str = str
 Int = int
@@ -1108,6 +1109,11 @@ class Types:
         """Random digits modifier generates a random digits string of length.
         """
         return Types(self, RandomDigitsModifier(length))
+
+    def crossfetch(self, cn: str, sk: str, fk: Optional[str] = None) -> Types:
+        """Fetch a class with value matches this object's value at key.
+        """
+        return Types(self, CrossFetchModifier(cn, sk, fk))
 
     # internal
 
