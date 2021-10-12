@@ -11,7 +11,6 @@ the AI Empowered Generation.
 """
 # flake8: noqa: F401
 from .jsonclass import jsonclass
-from .jsondict import jsondict
 from .jsonenum import jsonenum
 from .types import types
 from .typing import linkto, linkedby, linkedthru
