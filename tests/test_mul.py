@@ -4,6 +4,7 @@ from unittest import TestCase
 
 class TestMul(TestCase):
 
+
     def test_mul_with_int_value_muls_by_original_value(self):
         mul_int = SimpleCalculation(i_mul=8)
         self.assertEqual(mul_int.i_mul, 40)

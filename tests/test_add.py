@@ -4,6 +4,7 @@ from unittest import TestCase
 
 class TestAdd(TestCase):
 
+
     def test_add_adds_int_value_to_original_value(self):
         add_int = SimpleCalculation(i_add=8)
         self.assertEqual(add_int.i_add, 13)

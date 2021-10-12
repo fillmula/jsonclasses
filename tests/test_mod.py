@@ -4,6 +4,7 @@ from unittest import TestCase
 
 class TestMod(TestCase):
 
+
     def test_mod_with_int_value_mods_original_value(self):
         mod_int = SimpleCalculation(i_mod=8)
         self.assertEqual(mod_int.i_mod, 3)

@@ -4,6 +4,7 @@ from unittest import TestCase
 
 class TestDiv(TestCase):
 
+
     def test_div_with_int_value_divs_by_original_value_(self):
         div_int = SimpleCalculation(i_div=10)
         self.assertEqual(div_int.i_div, 2)

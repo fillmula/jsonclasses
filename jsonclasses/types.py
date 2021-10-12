@@ -307,6 +307,7 @@ class Types:
 
     def add(self, a_number: Union[int, float]) -> Types:
         """This modifier adds int or float value to original value
+
         """
         return Types(self, AddModifier(a_number))
 

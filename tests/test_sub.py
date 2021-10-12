@@ -4,6 +4,7 @@ from unittest import TestCase
 
 class TestSub(TestCase):
 
+
     def test_sub_with_int_value_sub_original_value(self):
         sub_int = SimpleCalculation(i_sub=8)
         self.assertEqual(sub_int.i_sub, 3)

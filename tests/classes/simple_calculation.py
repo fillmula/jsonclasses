@@ -5,6 +5,7 @@ from jsonclasses import jsonclass, types
 
 @jsonclass
 class SimpleCalculation:
+
     i_add: Optional[int] = types.int.add(5)
     f_add: Optional[float] = types.float.add(2.5)
 
