@@ -28,7 +28,8 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         RangeModifier, ReadonlyModifier, ReadwriteModifier,
                         RefereeModifier, ReferrerModifier,
                         RequiredModifier, ResetModifier, SetOnSaveModifier,
-                        FSetOnSaveModifier,
+                        FSetOnSaveModifier, AddModifier, SubModifier,
+                        DivModifier, ModModifier, MulModifier,
                         StrModifier, StrictModifier,
                         TempModifier, TransformModifier, TrimModifier,
                         TruncateModifier, UniqueModifier, ValidateModifier,
@@ -303,6 +304,32 @@ class Types:
           Types: A new types chained with this modifier.
         """
         return Types(self, LengthModifier(minlength, maxlength))
+
+    def add(self, a_number: Union[int, float]) -> Types:
+        """This modifier adds int or float value to original value
+
+        """
+        return Types(self, AddModifier(a_number))
+
+    def sub(self, a_number: Union[int, float]) -> Types:
+        """This modifier for Int or float value subs original value
+        """
+        return Types(self, SubModifier(a_number))
+
+    def mul(self, a_number: Union[int, float]) -> Types:
+        """This modifier for Int or float value muls by original value
+        """
+        return Types(self, MulModifier(a_number))
+
+    def div(self, a_number: Union[int, float]) -> Types:
+        """This modifier for Int or float value divs by original value
+        """
+        return Types(self, DivModifier(a_number))
+
+    def mod(self, a_number: Union[int, float]) -> Types:
+        """This modifier for Int or float value mods original value
+        """
+        return Types(self, ModModifier(a_number))
 
     @property
     def url(self) -> Types:
