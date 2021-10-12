@@ -66,7 +66,7 @@ class Nullability(Enum):
 
 
 class Strictness(Enum):
-    """Instance and shape's strictness.
+    """Instance's strictness.
     """
 
     UNDEFINED = 'undefined'
@@ -396,7 +396,7 @@ class Fdef:
 
     @property
     def strictness(self: Fdef) -> Strictness:
-        """The strictness of this shape field.
+        """The strictness of this instance field.
         """
         self._resolve_if_needed()
         return self._strictness
