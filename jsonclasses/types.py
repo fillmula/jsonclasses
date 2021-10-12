@@ -8,7 +8,7 @@ from .keypath import new_mongoid
 from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         CompareModifier, DateModifier, DatetimeModifier,
                         DefaultModifier, DictOfModifier, EagerModifier,
-                        EmbeddedModifier, EnumModifier,
+                        EmbeddedModifier, EnumModifier, EqModifier,
                         FloatModifier, IndexModifier, InputAllModifier,
                         InputNameModifier, InputLnameModifier,
                         InputValueModifier, InstanceOfModifier,
@@ -1119,6 +1119,11 @@ class Types:
         """Get value at field from a JSONClass object.
         """
         return Types(self, FValModifier(field_name))
+
+    def eq(self: Types, val: Any | Types) -> Types:
+        """Eq modifier validates value by equal testing.
+        """
+        return Types(self, EqModifier(val))
 
     # internal
 
