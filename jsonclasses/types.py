@@ -592,7 +592,7 @@ class Types:
 
     @property
     def strict(self) -> Types:
-        """Shape fields marked with strict disallow undefined keys.
+        """Object fields marked with strict disallow undefined keys.
         """
         return Types(self, StrictModifier())
 
