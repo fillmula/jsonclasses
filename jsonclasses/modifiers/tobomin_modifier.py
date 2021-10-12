@@ -7,8 +7,9 @@ if TYPE_CHECKING:
     from ..ctx import Ctx
 
 class ToBoMinModifier(Modifier):
-    """Remove the microsecond and second infromation from datetime and save the
-    minute, hour, etc."""
+    """
+    ToBoMin Modifier transforms datetime into the beginning of the minute
+    """
 
     def transform(self, ctx: Ctx) -> Any:
         return ctx.val.replace(microsecond=0, second=0) if type(ctx.val) is datetime else ctx.val

@@ -7,8 +7,9 @@ if TYPE_CHECKING:
     from ..ctx import Ctx
 
 class ToBoSecModifier(Modifier):
-    """Remove the microsecond infromation from datetime and save the second,
-    minute, hour, etc."""
+    """
+    ToBoSec Modifier transforms datetime into the beginning of the second
+    """
 
     def transform(self, ctx: Ctx) -> Any:
         return ctx.val.replace(microsecond=0) if type(ctx.val) is datetime else ctx.val
