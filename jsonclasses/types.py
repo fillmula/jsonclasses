@@ -54,8 +54,8 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         ToNextMonModifier, ToNextYearModifier,
                         ToNextDayModifier, ToBoYearModifier, ToBoMonModifier,
                         ToBoDayModifier, PadStartModifier, PadEndModifier,
-                        UnqueryableModifier, QueryableModifier,
-                        FormatDatetimeModifier, NoCopyModifier)
+                        UnqueryableModifier, QueryableModifier, PowModifier,
+                        FormatDatetimeModifier, NoCopyModifier, SqrtModifier)
 
 Str = str
 Int = int
@@ -355,6 +355,11 @@ class Types:
         """
         return Types(self, MulModifier(by))
 
+    def pow(self, by: int | float) -> Types:
+        """
+        """
+        return Types(self, PowModifier(by))
+
     def div(self, by: int | float) -> Types:
         """This modifier for Int or float value divs by original value
         """
@@ -364,6 +369,12 @@ class Types:
         """This modifier for Int or float value mods original value
         """
         return Types(self, ModModifier(by))
+
+    @property
+    def sqrt(self) -> Types:
+        """
+        """
+        return Types(self, SqrtModifier())
 
     @property
     def url(self) -> Types:

@@ -94,6 +94,8 @@ from .sub_modifier import SubModifier
 from .mul_modifier import MulModifier
 from .div_modifier import DivModifier
 from .mod_modifier import ModModifier
+from .pow_modifier import PowModifier
+from .sqrt_modifier import SqrtModifier
 
 # bool modifiers
 from .bool_modifier import BoolModifier
