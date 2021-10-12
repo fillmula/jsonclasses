@@ -179,3 +179,4 @@ from .checkpw_modifier import CheckpwModifier
 from .random_digits_modifier import RandomDigitsModifier
 from .cross_fetch_modifier import CrossFetchModifier
 from .fval_modifier import FValModifier
+from .eq_modifier import EqModifier
