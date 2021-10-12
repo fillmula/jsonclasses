@@ -5,7 +5,7 @@ from datetime import date, datetime, timedelta
 from copy import deepcopy
 from .fdef import Fdef
 from .keypath import new_mongoid
-from .modifiers import (BoolModifier, ChainedModifier,
+from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         CompareModifier, DateModifier, DatetimeModifier,
                         DefaultModifier, DictOfModifier, EagerModifier,
                         EmbeddedModifier, EnumModifier,
@@ -1088,6 +1088,11 @@ class Types:
         """Fetch a class with value matches this object's value at key.
         """
         return Types(self, CrossFetchModifier(cn, sk, fk))
+
+    def fval(self: Types, field_name: str) -> Types:
+        """Get value at field from a JSONClass object.
+        """
+        return Types(self, FValModifier(field_name))
 
     # internal
 
