@@ -306,27 +306,27 @@ class Types:
         return Types(self, LengthModifier(minlength, maxlength))
 
     def add(self, a_number: Union[int, float]) -> Types:
-        """
+        """This modifier adds int or float value to original value
         """
         return Types(self, AddModifier(a_number))
 
     def sub(self, a_number: Union[int, float]) -> Types:
-        """
+        """This modifier for Int or float value subs original value
         """
         return Types(self, SubModifier(a_number))
 
     def mul(self, a_number: Union[int, float]) -> Types:
-        """
+        """This modifier for Int or float value muls by original value
         """
         return Types(self, MulModifier(a_number))
 
     def div(self, a_number: Union[int, float]) -> Types:
-        """
+        """This modifier for Int or float value divs by original value
         """
         return Types(self, DivModifier(a_number))
 
     def mod(self, a_number: Union[int, float]) -> Types:
-        """
+        """This modifier for Int or float value mods original value
         """
         return Types(self, ModModifier(a_number))
 

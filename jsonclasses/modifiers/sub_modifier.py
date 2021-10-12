@@ -12,4 +12,4 @@ class SubModifier(Modifier):
         self.a_number = a_number
 
     def transform(self, ctx: Ctx) -> Any:
-        return self.a_number - ctx.val if type(ctx.val) is int or type(ctx.val) is float else ctx.val
+        return ctx.val - self.a_number if type(ctx.val) is int or type(ctx.val) is float else ctx.val

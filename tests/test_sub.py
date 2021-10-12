@@ -4,10 +4,10 @@ from unittest import TestCase
 
 class TestSub(TestCase):
 
-    def test_sub_calculation_in_int(self):
+    def test_sub_with_int_value_sub_original_value(self):
         sub_int = SimpleCalculation(i_sub=8)
-        self.assertEqual(sub_int.i_sub-5, 3)
+        self.assertEqual(sub_int.i_sub, 3)
 
-    def test_sub_calculation_in_float(self):
-        sub_float = SimpleCalculation(i_sub=8.5)
-        self.assertEqual(sub_float.i_sub-5, 3.5)
+    def test_sub_with_float_value_sub_original_value(self):
+        sub_float = SimpleCalculation(f_sub=8.5)
+        self.assertEqual(sub_float.f_sub, 6)
