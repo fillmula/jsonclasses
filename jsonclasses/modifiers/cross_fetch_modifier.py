@@ -24,5 +24,5 @@ class CrossFetchModifier(Modifier):
         that_val = getattr(parent, self.this_key)
         that_obj = that_cls.one(**{self.that_key: that_val}).optional.exec()
         if that_obj is None:
-            raise Exception('cross fetch failed')
+            ctx.raise_vexc('cross fetch failed')
         return that_obj
