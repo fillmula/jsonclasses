@@ -1,6 +1,6 @@
 """module for add modifier."""
 from __future__ import annotations
-from typing import Any, Union, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 from .modifier import Modifier
 if TYPE_CHECKING:
     from ..ctx import Ctx
