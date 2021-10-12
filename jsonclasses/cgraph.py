@@ -45,7 +45,6 @@ class CGraph:
             return
         self._name: str = name
         self._map: dict[str, Cdef] = {}
-        self._dict_map: dict[str, type[dict]] = {}
         self._enum_map: dict[str, type] = {}
         self._default_config = JConf(cgraph=self.name,
                                      key_encoding_strategy=camelize_key,
@@ -130,60 +129,6 @@ class CGraph:
             name = name_or_class
         return self._map.get(name) is not None
 
-    def put_dict(self: CGraph, dict_class: type[dict]) -> None:
-        """Put a typed dict class onto this class graph.
-
-        Args:
-            dict_class (type): The typed dict class which will be put onto this
-            graph.
-
-        Raises:
-            JSONClassRedefinitionException: This exception is raised if a \
-                new typed dict class with existing name is defined.
-        """
-        exist_def = self._dict_map.get(dict_class.__name__)
-        if exist_def:
-            raise JSONClassTypedDictRedefinitionException(dict_class,
-                                                          exist_def.cls)
-        self._dict_map[dict_class.__name__] = dict_class
-
-    def fetch_dict(self: CGraph, dc_or_name: type[dict] | str) -> type[dict]:
-        """Fetch a typed dict class by it's name from this class graph.
-
-        Args:
-            dc_or_name (Union[type[dict], str]): The name of the typed dict
-            class to be fetched or the class itself.
-
-        Raises:
-            JSONClassNotFoundException: This exception is raised if a class \
-                definition with `name` is not found.
-        """
-        if isinstance(dc_or_name, type):
-            name = dc_or_name.__name__
-        else:
-            name = dc_or_name
-        try:
-            return self._dict_map[name]
-        except KeyError:
-            raise JSONClassTypedDictNotFoundException(name, self.name)
-
-    def has_dict(self: CGraph, dc_or_name: type[dict] | str) -> bool:
-        """Test if a typed dict class with name is registered in the graph.
-
-        Args:
-            dc_or_name (Union[type[dict], str]): The name of the typed dict
-            class to be fetched or the class itself.
-
-        Returns:
-            bool: Returns True if this typed dict class is registered in the
-            graph.
-        """
-        if isinstance(dc_or_name, type):
-            name = dc_or_name.__name__
-        else:
-            name = dc_or_name
-        return self._dict_map.get(name) is not None
-
     def put_enum(self: CGraph, enum_class: type[Enum]) -> None:
         """Put a enum class onto this class graph.
 
@@ -201,11 +146,11 @@ class CGraph:
                                                           exist_def.cls)
         self._enum_map[enum_class.__name__] = enum_class
 
-    def fetch_enum(self: CGraph, ec_or_name: type[dict] | str) -> type[Enum]:
+    def fetch_enum(self: CGraph, ec_or_name: type[Enum] | str) -> type[Enum]:
         """Fetch a enum class by it's name from this class graph.
 
         Args:
-            ec_or_name (Union[type[dict], str]): The name of the enum class to
+            ec_or_name (Union[type[Enum], str]): The name of the enum class to
             be fetched or the class itself.
 
         Raises:
