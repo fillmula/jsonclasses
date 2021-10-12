@@ -177,3 +177,4 @@ from .authby_modifier import AuthByModifier
 from .passin_modifier import PassinModifier
 from .checkpw_modifier import CheckpwModifier
 from .random_digits_modifier import RandomDigitsModifier
+from .cross_fetch_modifier import CrossFetchModifier
