@@ -4,7 +4,6 @@ from __future__ import annotations
 from typing import TypeVar, Any
 from .owned_dict import OwnedDict, DictOwner
 from .owned_list import OwnedList, ListOwner
-from .object_dict import ObjectDict
 from .keypath import concat_keypath
 
 KT = TypeVar('KT')
@@ -24,23 +23,6 @@ def to_owned_dict(owner: DictOwner,
         else:
             new_dct[k] = v
     owned_dict = OwnedDict[Any](new_dct)
-    owned_dict.keypath = keypath
-    owned_dict.owner = owner
-    return owned_dict
-
-
-def to_shape_dict(owner: DictOwner,
-                  dct: dict[KT, VT],
-                  keypath: str) -> OwnedDict[KT, VT]:
-    new_dct = {}
-    for k, v in dct.items():
-        if isinstance(v, list):
-            new_dct[k] = to_owned_list(owner, v, concat_keypath(keypath, k))
-        elif isinstance(v, dict):
-            new_dct[k] = to_owned_dict(owner, v, concat_keypath(keypath, k))
-        else:
-            new_dct[k] = v
-    owned_dict = ObjectDict[Any](new_dct)
     owned_dict.keypath = keypath
     owned_dict.owner = owner
     return owned_dict

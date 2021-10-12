@@ -10,8 +10,6 @@ from tests.classes.linked_user import LinkedUser
 from tests.classes.linked_product import LinkedProduct
 from tests.classes.linked_customer import LinkedCustomer
 from tests.classes.linked_profile import LinkedProfile
-from tests.classes.auto_setting import AutoSetting
-from tests.classes.auto_str_setting import AutoStrSetting
 
 
 class TestAutoTypes(TestCase):
@@ -383,20 +381,6 @@ class TestAutoTypes(TestCase):
             val: 'Optional[Union[dict[str, bool], float]]'
         object = TestOptionalUnionDictType()
         object.validate()
-
-    def test_auto_generates_nonnull_shape_with_typed_dict(self):
-        setting = AutoSetting()
-        self.assertRaisesRegex(
-            ValidationException,
-            "'preference\\.ios': value required",
-            setting.validate)
-
-    def test_auto_generates_nonnull_shape_with_typed_dict_str_form(self):
-        setting = AutoStrSetting()
-        self.assertRaisesRegex(
-            ValidationException,
-            "'preference\\.ios': value required",
-            setting.validate)
 
     def test_auto_generates_1_to_1_links(self):
         profile_field = LinkedUser.cdef.field_named('profile')

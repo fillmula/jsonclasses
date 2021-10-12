@@ -2,8 +2,7 @@ from unittest import TestCase
 from jsonclasses.excs import ValidationException
 from tests.classes.ps_user import (PsUserL, PsUserN, PsUserV, PsUserD, PsUserT,
                                    PsUserE, PsUserE2, PsUserE3, PsUserCV,
-                                   PsUserLE, PsUserDI, PsUserDE, PsUserS,
-                                   PsUserSE)
+                                   PsUserLE, PsUserDI, PsUserDE)
 
 
 class TestPreserializeModifier(TestCase):
@@ -83,16 +82,3 @@ class TestPreserializeModifier(TestCase):
             user._set_on_save()
         exception = context.exception
         self.assertEqual(exception.keypath_messages['counts.a'], "value required")
-
-    def test_preserialize_modifier_should_validate_and_setonsave_inside_shape(self):
-        user = PsUserS(counts={'a': 123, 'b': 456})
-        user._set_on_save()
-        self.assertEqual(user.counts['a'], 124)
-        self.assertEqual(user.counts['b'], 457)
-
-    def test_preserialize_modifier_should_validate_and_throw_inside_shape(self):
-        with self.assertRaises(ValidationException) as context:
-            user = PsUserSE(counts={'a': 123, 'b': 456})
-            user._set_on_save()
-        exception = context.exception
-        self.assertEqual(exception.keypath_messages['counts.b'], "value required")

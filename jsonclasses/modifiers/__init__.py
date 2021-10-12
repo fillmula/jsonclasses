@@ -123,9 +123,8 @@ from .tolist_modifier import ToListModifier
 from .dictof_modifier import DictOfModifier
 
 # object modifiers
-from .shape_modifier import ShapeModifier
-from .strict_modifier import StrictModifier
 from .instanceof_modifier import InstanceOfModifier
+from .strict_modifier import StrictModifier
 
 # mixed type modifier
 from .union_modifier import UnionModifier
@@ -158,7 +157,6 @@ from .transform_modifier import TransformModifier
 from .asop_modifier import AsopModifier
 from .asopd_modifier import AsopdModifier
 
-# shape transformer
 from .nonnull_modifier import NonnullModifier
 
 # chained modifier

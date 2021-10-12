@@ -195,13 +195,6 @@ def to_types(anytypes: Any, opt: bool = False) -> Types:
                             f'expect 2, got {len_args}'))
         types = to_types(annotated_args[0], opt)
         return apply_link_specifier(types, annotated_args[1])
-    elif isinstance(anytypes, type) and issubclass(anytypes, dict):
-        anno_dict: dict[str, Any] = anytypes.__annotations__
-        item_types: dict[str, Types] = {}
-        for k, t in anno_dict.items():
-            item_types[k] = to_types(t)
-        raw_shape_types = types.nonnull.shape(item_types)
-        return raw_shape_types if opt else raw_shape_types.required
     elif isinstance(anytypes, type) and issubclass(anytypes, Enum):
         enum_type = types.enum(anytypes)
         return enum_type if opt else enum_type.required
@@ -250,9 +243,6 @@ def rnamedtypes(types: Types, cgraph: CGraph, cname: str) -> Types:
     if cgraph.has(name):
         cdef = cgraph.fetch(name)
         types = types.instanceof(cdef.cls)
-    elif cgraph.has_dict(name):
-        dictcls = cgraph.fetch_dict(name)
-        types = types.nonnull.shape(dictcls)
     elif cgraph.has_enum(name):
         enumcls = cgraph.fetch_enum(name)
         types = types.enum(enumcls)

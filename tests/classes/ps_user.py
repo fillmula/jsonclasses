@@ -84,17 +84,3 @@ class PsUserDI:
 @jsonclass
 class PsUserDE:
     counts: dict[str, int] = types.dictof(types.int.setonsave(lambda s: None))
-
-
-@jsonclass
-class PsUserS:
-    counts: dict[str, int] = types.shape({
-        'a': types.int.setonsave(lambda x: x + 1),
-        'b': types.int.setonsave(lambda x: x + 1)})
-
-
-@jsonclass
-class PsUserSE:
-    counts: dict[str, int] = types.shape({
-        'a': types.int.setonsave(lambda x: x + 1),
-        'b': types.int.setonsave(lambda x: None).required})

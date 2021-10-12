@@ -6,8 +6,6 @@ from tests.classes.simple_deadline import SimpleDeadline
 from tests.classes.simple_article import SimpleArticle
 from tests.classes.article import Article
 from tests.classes.author import Author
-from tests.classes.default_shape import DefaultShape
-from tests.classes.nest_shape_user import NestShapeUser
 from tests.classes.default_dict import DefaultDict
 
 
@@ -82,12 +80,6 @@ class TestSet(TestCase):
         article.set(author=author)
         self.assertEqual(author, article.author)
 
-    def test_set_accepts_nested_keypaths_for_shape(self):
-        shape = DefaultShape()
-        shape.set(**{'settings.ios': False, 'settings.name': 'equal'})
-        self.assertEqual(shape.settings.ios, False)
-        self.assertEqual(shape.settings.name, 'equal')
-
     def test_set_accepts_nested_keypaths_for_instances(self):
         author = Author(name='Kieng')
         article = Article(**{'title': 'E Sai',
@@ -101,15 +93,6 @@ class TestSet(TestCase):
         author = Author(**{'name': 'Kieng', 'articles': [article]})
         author.set(**{'articles.0.title': 'QQQQQ'})
         self.assertEqual(author.articles[0].title, 'QQQQQ')
-
-    def test_set_accepts_nested_keypaths_for_shape_in_shape(self):
-        user = NestShapeUser(**{'name': 'N', 'grouped': {
-            'ios': {'on': True, 'off': False},
-            'android': {'on': False, 'off': True}
-        }})
-        user.set(**{'grouped.ios.on': False, 'grouped.ios.off': True})
-        self.assertEqual(user.grouped.ios['on'], False)
-        self.assertEqual(user.grouped.ios['off'], True) # TODO: use dot notation
 
     def test_set_accepts_nested_keypaths_for_value_in_dicts(self):
         dct = DefaultDict()
@@ -139,13 +122,3 @@ class TestSet(TestCase):
         author = Author(**{'name': 'Kieng', 'articles': [article]})
         author.set(**{'articles[0][title]': 'QQQQQ'})
         self.assertEqual(author.articles[0].title, 'QQQQQ')
-
-
-    def test_set_accepts_nested_keypaths_for_shape_in_shape_with_mix_indexing(self):
-        user = NestShapeUser(**{'name': 'N', 'grouped': {
-            'ios': {'on': True, 'off': False},
-            'android': {'on': False, 'off': True}
-        }})
-        user.set(**{'grouped[ios].on': False, 'grouped.ios[off]': True})
-        self.assertEqual(user.grouped.ios['on'], False)
-        self.assertEqual(user.grouped.ios['off'], True) # TODO: use dot notation

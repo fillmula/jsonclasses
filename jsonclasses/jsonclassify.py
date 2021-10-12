@@ -14,8 +14,7 @@ from .ograph import OGraph
 from .owned_dict import OwnedDict
 from .owned_list import OwnedList
 from .owned_collection_utils import (
-    to_owned_dict, to_shape_dict, to_owned_list, unowned_copy_dict,
-    unowned_copy_list
+    to_owned_dict, to_owned_list, unowned_copy_dict, unowned_copy_list
 )
 from .keypath import (
     concat_keypath, initial_keypath, reference_key, single_key_args,
@@ -95,14 +94,6 @@ def _set_to_container(self: JObject,
             dest._set({items[0]: value}, fill_blanks=False)
         else:
             dest._keypath_set({'.'.join(items): value})
-    elif fdef.ftype == FType.SHAPE:
-        if dest is None:
-            raise ValueError(f"value in {'.'.join(used_items)} is None")
-        if len(items) == 1:
-            dest[items[0]] = value
-        else:
-            fdef = fdef.shape_types[items[0]].fdef
-            self._set_to_container(dest[items[0]], items[1:], value, fdef, used_items + [items[0]])
     elif fdef.ftype == FType.LIST:
         if dest is None:
             raise ValueError(f"value in {'.'.join(used_items)} is None")
@@ -596,10 +587,7 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
     if isinstance(value, list):
         value = to_owned_list(self, value, name)
     if isinstance(value, dict):
-        if field.fdef.ftype == FType.SHAPE:
-            value = to_shape_dict(self, value, name)
-        else:
-            value = to_owned_dict(self, value, name)
+        value = to_owned_dict(self, value, name)
     if field.fdef.is_ref:
         if hasattr(self, name):
             self.__unlink_field__(field, getattr(self, name))

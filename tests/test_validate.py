@@ -5,7 +5,6 @@ from tests.classes.simple_article import SimpleArticle
 from tests.classes.simple_language import SimpleLanguage
 from tests.classes.simple_project import SimpleProject
 from tests.classes.simple_chart import SimpleChart
-from tests.classes.simple_setting import SimpleSetting
 from tests.classes.author import Author
 from tests.classes.linked_profile import LinkedProfile
 from tests.classes.linked_user import LinkedUser
@@ -118,30 +117,6 @@ class TestValidate(TestCase):
                          "value is not less than or equal 1")
         self.assertEqual(exception.keypath_messages['partitions.d'],
                          "value is not less than or equal 1")
-
-    def test_validate_validates_one_field_inside_shape_by_default(self):
-        setting = SimpleSetting(
-            user='A',
-            email={'auto_send': 'A', 'receive_promotion': 'B'})
-        with self.assertRaises(ValidationException) as context:
-            setting.validate()
-        exception = context.exception
-        self.assertEqual(len(exception.keypath_messages), 1)
-        self.assertEqual(exception.keypath_messages['email.auto_send'],
-                         "value is not bool")
-
-    def test_validate_validates_all_fields_inside_shape_if_required(self):
-        setting = SimpleSetting(
-            user='A',
-            email={'auto_send': 'A', 'receive_promotion': 'B'})
-        with self.assertRaises(ValidationException) as context:
-            setting.validate(all_fields=True)
-        exception = context.exception
-        self.assertEqual(len(exception.keypath_messages), 2)
-        self.assertEqual(exception.keypath_messages['email.auto_send'],
-                         "value is not bool")
-        self.assertEqual(exception.keypath_messages['email.receive_promotion'],
-                         "value is not bool")
 
     def test_validate_validates_with_class_config_by_default(self):
         author = Author(name='A', articles=[{}, {}])

@@ -7,7 +7,3 @@ from jsonclasses import jsonclass, types
 class SimpleRecord:
     name: Optional[str]
     dict_record: dict[str, str] = types.nonnull.dictof(str)
-    shape_record: dict[str, str] = types.nonnull.shape({
-        'a': types.str,
-        'b': types.str
-    })
