@@ -8,8 +8,8 @@ if TYPE_CHECKING:
 class SubModifier(Modifier):
     """Sub modifier subs number value."""
 
-    def __init__(self, a_number: Union[int, float]):
-        self.a_number = a_number
+    def __init__(self, by: int | float):
+        self.by = by
 
     def transform(self, ctx: Ctx) -> Any:
-        return ctx.val - self.a_number if type(ctx.val) is int or type(ctx.val) is float else ctx.val
+        return ctx.val - self.by if type(ctx.val) is int or type(ctx.val) is float else ctx.val

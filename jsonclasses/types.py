@@ -305,31 +305,31 @@ class Types:
         """
         return Types(self, LengthModifier(minlength, maxlength))
 
-    def add(self, a_number: Union[int, float]) -> Types:
+    def add(self, by: int | float) -> Types:
         """This modifier adds int or float value to original value
 
         """
-        return Types(self, AddModifier(a_number))
+        return Types(self, AddModifier(by))
 
-    def sub(self, a_number: Union[int, float]) -> Types:
+    def sub(self, by: int | float) -> Types:
         """This modifier for Int or float value subs original value
         """
-        return Types(self, SubModifier(a_number))
+        return Types(self, SubModifier(by))
 
-    def mul(self, a_number: Union[int, float]) -> Types:
+    def mul(self, by: int | float) -> Types:
         """This modifier for Int or float value muls by original value
         """
-        return Types(self, MulModifier(a_number))
+        return Types(self, MulModifier(by))
 
-    def div(self, a_number: Union[int, float]) -> Types:
+    def div(self, by: int | float) -> Types:
         """This modifier for Int or float value divs by original value
         """
-        return Types(self, DivModifier(a_number))
+        return Types(self, DivModifier(by))
 
-    def mod(self, a_number: Union[int, float]) -> Types:
+    def mod(self, by: int | float) -> Types:
         """This modifier for Int or float value mods original value
         """
-        return Types(self, ModModifier(a_number))
+        return Types(self, ModModifier(by))
 
     @property
     def url(self) -> Types:

@@ -8,8 +8,8 @@ if TYPE_CHECKING:
 class AddModifier(Modifier):
     """Add modifier adds number value."""
 
-    def __init__(self, a_number: Union[int, float]):
-        self.a_number = a_number
+    def __init__(self, by: int | float):
+        self.by = by
 
     def transform(self, ctx: Ctx) -> Any:
-        return self.a_number + ctx.val if type(ctx.val) is int or type(ctx.val) is float else ctx.val
+        return self.by + ctx.val if type(ctx.val) is int or type(ctx.val) is float else ctx.val
