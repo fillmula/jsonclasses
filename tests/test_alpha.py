@@ -15,7 +15,7 @@ class TestIsAlpha(TestCase):
         with self.assertRaises(ValidationException) as context:
             analysis.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['product_name'],
+        self.assertEqual(context.exception.keypath_messages['productName'],
                          "value is not alpha str")
 
     def test_alpha_raises_if_value_contains_number(self):
@@ -23,7 +23,7 @@ class TestIsAlpha(TestCase):
         with self.assertRaises(ValidationException) as context:
             analysis.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['product_name'],
+        self.assertEqual(context.exception.keypath_messages['productName'],
                          "value is not alpha str")
 
     def test_alpha_raises_if_value_contains_special_character(self):
@@ -31,5 +31,5 @@ class TestIsAlpha(TestCase):
         with self.assertRaises(ValidationException) as context:
             analysis.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['product_name'],
+        self.assertEqual(context.exception.keypath_messages['productName'],
                          "value is not alpha str")

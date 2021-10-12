@@ -12,7 +12,7 @@ class TestPresentWith(TestCase):
             code.validate()
         exception = context.exception
         self.assertEqual(len(exception.keypath_messages), 1)
-        self.assertEqual(exception.keypath_messages['calling_code'],
+        self.assertEqual(exception.keypath_messages['callingCode'],
                          "value is not present with 'phone_number'")
 
     def test_presentwith_doesnt_raise_if_both_value_not_present(self):
