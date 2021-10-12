@@ -12,4 +12,4 @@ class PowModifier(Modifier):
         self.by = by
 
     def transform(self, ctx: Ctx) -> Any:
-        return pow(ctx.val, self.by) if type(ctx.val) is int or type(ctx.val) is float else ctx.val
+        return pow(self.by, ctx.val) if type(ctx.val) is int or type(ctx.val) is float else ctx.val
