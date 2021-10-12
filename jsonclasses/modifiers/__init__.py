@@ -82,6 +82,11 @@ from .even_modifier import EvenModifier
 from .abs_modifier import AbsModifier
 from .tofloat_modifier import ToFloatModifier
 from .toint_modifier import ToIntModifier
+from .add_modifier import AddModifier
+from .sub_modifier import SubModifier
+from .mul_modifier import MulModifier
+from .div_modifier import DivModifier
+from .mod_modifier import ModModifier
 
 # bool modifiers
 from .bool_modifier import BoolModifier

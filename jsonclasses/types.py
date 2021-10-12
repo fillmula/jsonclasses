@@ -28,7 +28,8 @@ from .modifiers import (BoolModifier, ChainedModifier,
                         RangeModifier, ReadonlyModifier, ReadwriteModifier,
                         RefereeModifier, ReferrerModifier,
                         RequiredModifier, ResetModifier, SetOnSaveModifier,
-                        FSetOnSaveModifier,
+                        FSetOnSaveModifier, AddModifier, SubModifier,
+                        DivModifier, ModModifier, MulModifier,
                         ShapeModifier, StrModifier, StrictModifier,
                         TempModifier, TransformModifier, TrimModifier,
                         TruncateModifier, UniqueModifier, ValidateModifier,
@@ -302,6 +303,31 @@ class Types:
           Types: A new types chained with this modifier.
         """
         return Types(self, LengthModifier(minlength, maxlength))
+
+    def add(self, a_number: Union[int, float]) -> Types:
+        """
+        """
+        return Types(self, AddModifier(a_number))
+
+    def sub(self, a_number: Union[int, float]) -> Types:
+        """
+        """
+        return Types(self, SubModifier(a_number))
+
+    def mul(self, a_number: Union[int, float]) -> Types:
+        """
+        """
+        return Types(self, MulModifier(a_number))
+
+    def div(self, a_number: Union[int, float]) -> Types:
+        """
+        """
+        return Types(self, DivModifier(a_number))
+
+    def mod(self, a_number: Union[int, float]) -> Types:
+        """
+        """
+        return Types(self, ModModifier(a_number))
 
     @property
     def url(self) -> Types:
