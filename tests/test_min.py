@@ -18,7 +18,7 @@ class TestMin(TestCase):
         with self.assertRaises(ValidationException) as context:
             n.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['ff_min'],
+        self.assertEqual(context.exception.keypath_messages['ffMin'],
                          "value is not greater than or equal 5.5")
 
     def test_min_doesnt_raise_if_int_value_is_greater_than_arg(self):
@@ -34,5 +34,5 @@ class TestMin(TestCase):
         with self.assertRaises(ValidationException) as context:
             n.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['if_min'],
+        self.assertEqual(context.exception.keypath_messages['ifMin'],
                          "value is not greater than or equal 5")

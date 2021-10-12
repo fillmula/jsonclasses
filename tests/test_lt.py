@@ -14,7 +14,7 @@ class TestLt(TestCase):
         with self.assertRaises(ValidationException) as context:
             n.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['ff_lt'],
+        self.assertEqual(context.exception.keypath_messages['ffLt'],
                          "value is not less than 5.5")
 
     def test_lt_raises_if_float_value_is_greater_than_arg(self):
@@ -22,7 +22,7 @@ class TestLt(TestCase):
         with self.assertRaises(ValidationException) as context:
             n.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['ff_lt'],
+        self.assertEqual(context.exception.keypath_messages['ffLt'],
                          "value is not less than 5.5")
 
     def test_lt_doesnt_raise_if_int_value_is_less_than_arg(self):
@@ -34,7 +34,7 @@ class TestLt(TestCase):
         with self.assertRaises(ValidationException) as context:
             n.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['if_lt'],
+        self.assertEqual(context.exception.keypath_messages['ifLt'],
                          "value is not less than 5")
 
     def test_lt_raises_if_int_value_is_greater_than_arg(self):
@@ -42,5 +42,5 @@ class TestLt(TestCase):
         with self.assertRaises(ValidationException) as context:
             n.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['if_lt'],
+        self.assertEqual(context.exception.keypath_messages['ifLt'],
                          "value is not less than 5")

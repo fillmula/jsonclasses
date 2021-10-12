@@ -19,7 +19,7 @@ class TestDigit(TestCase):
         with self.assertRaises(ValidationException) as context:
             analysis.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['product_id'],
+        self.assertEqual(context.exception.keypath_messages['productId'],
                          "value is not numeric string")
 
     def test_numeric_raises_if_value_contains_alphabet(self):
@@ -27,7 +27,7 @@ class TestDigit(TestCase):
         with self.assertRaises(ValidationException) as context:
             analysis.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['product_id'],
+        self.assertEqual(context.exception.keypath_messages['productId'],
                          "value is not numeric string")
 
     def test_numeric_raises_if_value_contains_special_characters(self):
@@ -35,5 +35,5 @@ class TestDigit(TestCase):
         with self.assertRaises(ValidationException) as context:
             analysis.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['product_id'],
+        self.assertEqual(context.exception.keypath_messages['productId'],
                          "value is not numeric string")

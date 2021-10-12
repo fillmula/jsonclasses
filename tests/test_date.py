@@ -31,7 +31,7 @@ class TestDate(TestCase):
         with self.assertRaises(ValidationException) as context:
             deadline.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['ended_at'],
+        self.assertEqual(context.exception.keypath_messages['endedAt'],
                          "value is not date")
 
     def test_date_is_datetime_str_when_tojson(self):

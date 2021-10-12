@@ -23,7 +23,7 @@ class TestAlnum(TestCase):
         with self.assertRaises(ValidationException) as context:
             analysis.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['product_code'],
+        self.assertEqual(context.exception.keypath_messages['productCode'],
                          "value is not alnum str")
 
 
@@ -32,5 +32,5 @@ class TestAlnum(TestCase):
         with self.assertRaises(ValidationException) as context:
             analysis.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['product_code'],
+        self.assertEqual(context.exception.keypath_messages['productCode'],
                          "value is not alnum str")

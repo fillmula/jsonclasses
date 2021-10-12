@@ -18,7 +18,7 @@ class TestGte(TestCase):
         with self.assertRaises(ValidationException) as context:
             n.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['ff_gte'],
+        self.assertEqual(context.exception.keypath_messages['ffGte'],
                          "value is not greater than or equal 5.5")
 
     def test_gte_doesnt_raise_if_int_value_is_greater_than_arg(self):
@@ -34,5 +34,5 @@ class TestGte(TestCase):
         with self.assertRaises(ValidationException) as context:
             n.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['if_gte'],
+        self.assertEqual(context.exception.keypath_messages['ifGte'],
                          "value is not greater than or equal 5")

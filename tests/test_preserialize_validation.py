@@ -13,7 +13,7 @@ class TestPreserializeModifier(TestCase):
             user = PsUserN(username='123')
             user._set_on_save()
         exception = context.exception
-        self.assertEqual(exception.keypath_messages['updated_at'], "value required")
+        self.assertEqual(exception.keypath_messages['updatedAt'], "value required")
 
     def test_preserialize_modifier_does_not_validate_on_normal_validate(self):
         user = PsUserN(username='123')
@@ -38,21 +38,21 @@ class TestPreserializeModifier(TestCase):
             user = PsUserE(username='123')
             user._set_on_save()
         exception = context.exception
-        self.assertEqual(exception.keypath_messages['updated_at'], "wrong")
+        self.assertEqual(exception.keypath_messages['updatedAt'], "wrong")
 
     def test_preserialize_modifier_validate_between_chains_2(self):
         with self.assertRaises(ValidationException) as context:
             user = PsUserE2(username='123')
             user._set_on_save()
         exception = context.exception
-        self.assertEqual(exception.keypath_messages['updated_at'], "wrong")
+        self.assertEqual(exception.keypath_messages['updatedAt'], "wrong")
 
     def test_preserialize_modifier_validate_after_chains(self):
         with self.assertRaises(ValidationException) as context:
             user = PsUserE3(username='123')
             user._set_on_save()
         exception = context.exception
-        self.assertEqual(exception.keypath_messages['updated_at'], "wrong")
+        self.assertEqual(exception.keypath_messages['updatedAt'], "wrong")
 
     def test_preserialize_modifier_validate_between_chains_do_not_throw_if_valid(self):
         user = PsUserCV(username='123')

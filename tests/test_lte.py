@@ -18,7 +18,7 @@ class TestLte(TestCase):
         with self.assertRaises(ValidationException) as context:
             n.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['ff_lte'],
+        self.assertEqual(context.exception.keypath_messages['ffLte'],
                          "value is not less than or equal 5.5")
 
     def test_lte_doesnt_raise_if_int_value_is_less_than_arg(self):
@@ -34,5 +34,5 @@ class TestLte(TestCase):
         with self.assertRaises(ValidationException) as context:
             n.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['if_lte'],
+        self.assertEqual(context.exception.keypath_messages['ifLte'],
                          "value is not less than or equal 5")

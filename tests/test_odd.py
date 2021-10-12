@@ -15,5 +15,5 @@ class TestOdd(TestCase):
         with self.assertRaises(ValidationException) as context:
             i.validate()
         self.assertEqual(len(context.exception.keypath_messages), 1)
-        self.assertEqual(context.exception.keypath_messages['i_o'],
+        self.assertEqual(context.exception.keypath_messages['iO'],
                          "value is not odd")
