@@ -21,12 +21,3 @@ class EvUserD:
     passwords: dict[str, str] = types.dictof(
         types.str.minlength(2).maxlength(4)
                  .transform(lambda s: s + '0x0x0x0x'))
-
-
-@jsonclass
-class EvUserS:
-    passwords: dict[str, str] = types.shape({
-        'a': types.str.minlength(2).maxlength(4)
-                      .transform(lambda s: s + '0x0x0x0x'),
-        'b': types.str.minlength(2).maxlength(4)
-                      .transform(lambda s: s + '0x0x0x0x')})

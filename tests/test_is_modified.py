@@ -3,7 +3,6 @@ from unittest import TestCase
 from tests.classes.simple_order import SimpleOrder
 from tests.classes.simple_project import SimpleProject
 from tests.classes.simple_chart import SimpleChart
-from tests.classes.simple_setting import SimpleSetting
 from tests.classes.author import Author
 from tests.classes.nested_object import NestedDict, NestedList
 
@@ -41,15 +40,6 @@ class TestIsModified(TestCase):
         chart.partitions['lanê'] = 0.8
         self.assertEqual(chart.modified_fields, ('partitions',))
         self.assertEqual(chart.is_modified, True)
-
-    def test_jobject_is_modified_if_shape_value_is_mutated(self):
-        setting = SimpleSetting(user='B',
-                                email={'auto_send': False,
-                                       'receive_promotion': False})
-        setting._mark_not_new()
-        setting.email['receive_promotion'] = True
-        self.assertEqual(setting.modified_fields, ('email',))
-        self.assertEqual(setting.is_modified, True)
 
     def test_jobject_is_not_modified_if_nested_is_mutated(self):
         author = Author(name='Kia',

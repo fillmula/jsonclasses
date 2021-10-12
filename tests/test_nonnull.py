@@ -26,9 +26,3 @@ class TestNonnull(TestCase):
         self.assertEqual(record.dict_record, {})
         record1 = SimpleRecord(name='R', dict_record={'a': '1'})
         self.assertEqual(record1.dict_record, {'a': '1'})
-
-    def test_nonnull_shape_has_default_value_empty_dict(self):
-        record = SimpleRecord(name='R')
-        self.assertEqual(record.shape_record, {'a': None, 'b': None})
-        record1 = SimpleRecord(name='R', shape_record={'a': '3'})
-        self.assertEqual(record1.shape_record, {'a': '3', 'b': None})

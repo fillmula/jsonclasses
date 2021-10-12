@@ -1,6 +1,6 @@
 from unittest import TestCase
 from jsonclasses.excs import ValidationException
-from tests.classes.ev_user import EvUser, EvUserL, EvUserD, EvUserS
+from tests.classes.ev_user import EvUser, EvUserL, EvUserD
 
 
 class TestEagerValidation(TestCase):
@@ -63,16 +63,6 @@ class TestEagerValidation(TestCase):
             EvUserD(passwords={'a': '123xxx', 'b': '456xxx', 'c': '789xxx',
                                'd': '012xxx'})
 
-    def test_eager_modifier_should_work_inside_shape(self):
-        try:
-            EvUserS(passwords={'a': '123', 'b': '456'})
-        except ValidationException:
-            self.fail('eager modifier should not throw if value is valid')
-
-    def test_eager_modifier_should_validate_and_throw_inside_shape(self):
-        with self.assertRaises(ValidationException):
-            EvUserS(passwords={'a': '123xxx', 'b': '456xxx'})
-
     def test_eager_modifier_should_lazy_validate_when_validate_inside_list(self):
         user = EvUserL(passwords=['123', '456', '789', '012'])
         try:
@@ -82,13 +72,6 @@ class TestEagerValidation(TestCase):
 
     def test_eager_modifier_should_lazy_validate_when_validate_inside_dict(self):
         user = EvUserD(passwords={'a': '123', 'b': '456', 'c': '789', 'd': '012'})
-        try:
-            user.validate()
-        except ValidationException:
-            self.fail('eager modifier should not throw if not validation task after eager mark')
-
-    def test_eager_modifier_should_lazy_validate_when_validate_inside_shape(self):
-        user = EvUserS(passwords={'a': '123', 'b': '456'})
         try:
             user.validate()
         except ValidationException:

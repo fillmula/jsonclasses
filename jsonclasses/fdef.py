@@ -23,7 +23,6 @@ class FType(Enum):
     ENUM = 'enum'
     LIST = 'list'
     DICT = 'dict'
-    SHAPE = 'shape'
     INSTANCE = 'instance'
     ANY = 'any'
     UNION = 'union'
@@ -126,12 +125,9 @@ class Fdef:
         self._enum_output: Optional[EnumOutput] = None
         self._raw_union_types: Optional[list[Types]] = None
         self._raw_item_types: Optional[Any] = None
-        self._raw_shape_types: Optional[dict[str, Any] | str] = None
-        self._shape_parent: Optional[Fdef] = None
         self._raw_inst_types: Optional[str | type[JObject]] = None
         self._resolved_union_types: Optional[list[Types]] = None
         self._resolved_item_types: Optional[Types] = None
-        self._resolved_shape_types: Optional[dict[str, Types]] = None
         self._inst_cls: Optional[type[JObject]] = None
         self._force_set_on_save: bool = False
         self._foreign_key: Optional[str] = None
@@ -285,42 +281,6 @@ class Fdef:
         if self._resolved_item_types.fdef.item_nullability == Nullability.UNDEFINED:
             self._resolved_item_types = self._resolved_item_types.required
         return self._resolved_item_types
-
-    @property
-    def raw_shape_types(self: Fdef) -> Optional[dict[str, Any]]:
-        """The raw shape types of this shape field.
-        """
-        self._resolve_if_needed()
-        return self._raw_shape_types
-
-    @property
-    def shape_types(self: Fdef) -> Optional[dict[str, Types]]:
-        """The shape types of this collection field.
-        """
-        from .types import Types
-        self._resolve_if_needed()
-        if self._raw_shape_types is None:
-            return None
-        if self._resolved_shape_types is not None:
-            return self._resolved_shape_types
-        if isinstance(self._raw_shape_types, dict):
-            self._resolved_shape_types = \
-                {k: rtypes(t) for k, t in self._raw_shape_types.items()}
-        else:
-            self._resolved_shape_types = rtypes(self._raw_shape_types).fdef.raw_shape_types
-        rnamedshapetypes = {}
-        for k, t in cast(dict[str, Types], self._resolved_shape_types).items():
-            t.fdef._cdef = self.cdef
-            cgraph = self.cdef.jconf.cgraph
-            resolved = rnamedtypes(t, cgraph, self.cdef.name)
-            if resolved.fdef.ftype == FType.SHAPE:
-                resolved.fdef.shape_types # this has resolve side-effect
-            rnamedshapetypes[k] = resolved
-        self._resolved_shape_types = rnamedshapetypes
-        return self._resolved_shape_types
-
-    def _resolved_shape_children_types_if_needed(self: Fdef) -> None:
-        pass
 
     @property
     def raw_inst_types(self: Fdef) -> Optional[str | type[JObject]]:
@@ -548,10 +508,7 @@ class Fdef:
             self._unresolved_name = None
 
     def _resolve(self: Fdef) -> None:
-        if self._shape_parent:
-            self._shape_parent._resolved_shape_children_types_if_needed()
-        else:
-            self.cdef._resolve_ref_types_if_needed()
+        self.cdef._resolve_ref_types_if_needed()
 
     def __str__(self):
         return '<Fdef: ' + str(vars(self)) + '>'

@@ -29,7 +29,7 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         RefereeModifier, ReferrerModifier,
                         RequiredModifier, ResetModifier, SetOnSaveModifier,
                         FSetOnSaveModifier,
-                        ShapeModifier, StrModifier, StrictModifier,
+                        StrModifier, StrictModifier,
                         TempModifier, TransformModifier, TrimModifier,
                         TruncateModifier, UniqueModifier, ValidateModifier,
                         Modifier, WriteNonnullModifier, WriteonceModifier,
@@ -564,12 +564,6 @@ class Types:
         """
         return Types(self, DictOfModifier(item_types))
 
-    def shape(self, item_types_map: dict[Str, Any]) -> Types:
-        """Fields marked with shape are objects shaped with given shape. This
-        is a type modifier.
-        """
-        return Types(self, ShapeModifier(item_types_map))
-
     @property
     def strict(self) -> Types:
         """Shape fields marked with strict disallow undefined keys.
@@ -1001,11 +995,11 @@ class Types:
 
     @property
     def nonnull(self) -> Types:
-        """This modifier is a instructional transformer designated for shape,
-        dictof and listof. This is not a modifier. To mark a field is required
-        and should not be null, use `required` instead. This transformer should
-        be used right before shape, dictof and listof, to given an instruction
-        of not leaving null for the field.
+        """This modifier is a instructional transformer designated for dictof
+        and listof. This is not a modifier. To mark a field is required and
+        should not be null, use `required` instead. This transformer should
+        be used right before dictof and listof, to given an instruction of not
+        leaving null for the field.
 
         Returns:
           Types: A new types chained with this modifier.
