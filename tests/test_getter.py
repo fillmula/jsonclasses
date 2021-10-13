@@ -22,3 +22,11 @@ class TestGetter(TestCase):
                                   'lastName': 'Layber',
                                   'score': 51.08,
                                   'baseScore': 25.54})
+
+    def test_calc_fields_can_be_validated(self):
+        user = CalcUser(name="Peter Layber", base_score=25.54)
+        with self.assertRaises(ValidationException) as context:
+            user.validate()
+        self.assertEqual(len(context.exception.keypath_messages), 1)
+        self.assertEqual(context.exception.keypath_messages['score'],
+                         "value is not negative")
