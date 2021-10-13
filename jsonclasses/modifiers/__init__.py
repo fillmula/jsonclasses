@@ -12,6 +12,7 @@ from .writenonnull_modifier import WriteNonnullModifier
 from .readonly_modifier import ReadonlyModifier
 from .readwrite_modifier import ReadwriteModifier
 from .temp_modifier import TempModifier
+from .getter_modifier import GetterModifier
 
 # database index command markers
 from .index_modifier import IndexModifier
@@ -189,3 +190,5 @@ from .random_digits_modifier import RandomDigitsModifier
 from .cross_fetch_modifier import CrossFetchModifier
 from .fval_modifier import FValModifier
 from .eq_modifier import EqModifier
+from .this_modifier import ThisModifier
+from .at_modifier import AtModifier

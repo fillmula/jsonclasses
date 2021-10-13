@@ -153,7 +153,8 @@ class InstanceOfModifier(Modifier):
                             setattr(dest, refname, ctx.val.get(crefname))
                     pass
                 elif ctx.ctxcfg.fill_dest_blanks and not soft_apply_mode:
-                    self._fill_default_value(field, dest, ctx)
+                    if field.fdef.fstore != FStore.CALCULATED:
+                        self._fill_default_value(field, dest, ctx)
                 continue
             field_value = self._get_field_value(field, ctx)
             allow_write_field = True
@@ -168,11 +169,13 @@ class InstanceOfModifier(Modifier):
                     allow_write_field = False
             if not allow_write_field:
                 if ctx.ctxcfg.fill_dest_blanks:
-                    self._fill_default_value(field, dest, ctx)
+                    if field.fdef.fstore != FStore.CALCULATED:
+                        self._fill_default_value(field, dest, ctx)
                 continue
             fctx = ctx.nextvo(field_value, field.name, field.fdef, dest)
             tsfmd = field.types.modifier.transform(fctx)
-            setattr(dest, field.name, tsfmd)
+            if field.fdef.fstore != FStore.CALCULATED:
+                setattr(dest, field.name, tsfmd)
         for cname in nonnull_ref_lists:
             if getattr(dest, cname) is None:
                 setattr(dest, cname, [])

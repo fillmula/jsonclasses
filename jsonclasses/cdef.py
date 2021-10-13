@@ -42,6 +42,7 @@ class Cdef:
         self._list_fields: list[JField] = []
         self._dict_fields: dict[str, JField] = {}
         self._primary_field: Optional[JField] = None
+        self._calc_fields: list[JField] = []
         self._deny_fields: list[JField] = []
         self._nullify_fields: list[JField] = []
         self._cascade_fields: list[JField] = []
@@ -72,6 +73,8 @@ class Cdef:
             self._dict_fields[name] = jfield
             if types.fdef._primary:
                 self._primary_field = jfield
+            if types.fdef._fstore == FStore.CALCULATED:
+                self._calc_fields.append(jfield)
             if types.fdef._delete_rule == DeleteRule.DENY:
                 self._deny_fields.append(jfield)
             elif types.fdef._delete_rule == DeleteRule.NULLIFY:
@@ -161,6 +164,21 @@ class Cdef:
         for looping and iterating.
         """
         return self._tuple_fields
+
+    @property
+    def calc_fields(self: Cdef) -> list[JField]:
+        """Calculated fields of this class definition.
+        """
+        return self._calc_fields
+
+    @property
+    def calc_field_names(self: Cdef) -> list[str]:
+        """Names of calculated fields.
+        """
+        if hasattr(self, '_calc_field_names'):
+            return self._calc_field_names
+        self._calc_field_names = list(map(lambda f: f.name, self._calc_fields))
+        return self._calc_field_names
 
     @property
     def deny_fields(self: Cdef) -> list[JField]:
