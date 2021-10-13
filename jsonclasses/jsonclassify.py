@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any, Optional, Union
 from datetime import datetime
-from inspect import signature
+from inspect import signature, getmro
 from .jobject import JObject
 from .ctx import Ctx, CtxCfg
 from .fdef import Fdef, FStore, FType
@@ -24,6 +24,7 @@ from .excs import (AbstractJSONClassException, ValidationException,
                          JSONClassResetError, JSONClassResetNotEnabledError,
                          UnlinkableJSONClassException,
                          UnauthorizedActionException)
+from jsonclasses import fdef
 
 
 def __init__(self: JObject, **kwargs: dict[str, Any]) -> None:
@@ -36,7 +37,8 @@ def __init__(self: JObject, **kwargs: dict[str, Any]) -> None:
         raise AbstractJSONClassException(self.__class__)
     self._set_initial_status()
     for field in self.__class__.cdef.fields:
-        setattr(self, field.name, None)
+        if field.fdef.fstore != FStore.CALCULATED:
+            setattr(self, field.name, None)
         if field.fdef.fstore == FStore.LOCAL_KEY:
             transformer = self.__class__.cdef.jconf.ref_key_encoding_strategy
             local_key = transformer(field)
@@ -565,6 +567,8 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
         self.__original_setattr__(name, value)
         return
     # this is a JSON class field attribute
+    if field.fdef.fstore == FStore.CALCULATED:
+        raise Exception('do not set to calculation field')
     if hasattr(self, name) and value == getattr(self, name):
         lk = field.fdef.fstore is FStore.LOCAL_KEY
         value_none = value is None
@@ -602,6 +606,24 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
         self.__link_field__(field, value)
     else:
         self.__original_setattr__(name, value)
+
+
+def __getattribute__(self: JObject, name: str, default: Any = None) -> Any:
+    """This getattr takes calculated fields into account.
+    """
+    if name.startswith('_'):
+        cls = getmro(type(self))[-2]
+        return super(cls, self).__getattribute__(name)
+    cdef = self.__class__.cdef
+    if name in cdef.calc_field_names:
+        getter = cdef.field_named(name).fdef.getter
+        if callable(getter):
+            return getter(self)
+        else:
+            ctx = Ctx.rootctx(self, CtxCfg(), self)
+            return getter.modifier.transform(ctx)
+    cls = getmro(type(self))[-2]
+    return super(cls, self).__getattribute__(name)
 
 
 def __odict_will_change__(self: JObject, odict: OwnedDict) -> None:
@@ -835,6 +857,7 @@ def jsonclassify(class_: type) -> type[JObject]:
     # private methods
     class_.__original_setattr__ = class_.__setattr__
     class_.__setattr__ = __setattr__
+    class_.__getattribute__ = __getattribute__
     class_.__odict_will_change__ = __odict_will_change__
     class_.__odict_add__ = __odict_add__
     class_.__odict_del__ = __odict_del__

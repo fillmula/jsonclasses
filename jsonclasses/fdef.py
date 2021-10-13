@@ -35,6 +35,7 @@ class FStore(Enum):
     EMBEDDED = 'embedded'
     LOCAL_KEY = 'local_key'
     FOREIGN_KEY = 'foreign_key'
+    CALCULATED = 'calculated'
 
 
 class ReadRule(Enum):
@@ -115,6 +116,7 @@ class Fdef:
         self._unresolved_name: Optional[str] = None
         self._ftype: Optional[FType] = None
         self._fstore: FStore = FStore.EMBEDDED
+        self._getter: Types | Callable | None = None
         self._primary: bool = False
         self._index: bool = False
         self._unique: bool = False
@@ -172,6 +174,13 @@ class Fdef:
         """
         self._resolve_if_needed()
         return self._fstore
+
+    @property
+    def getter(self: Fdef) -> Types | Callable | None:
+        """The calculated field's getter.
+        """
+        self._resolve_if_needed()
+        return self._getter
 
     # primary key
 

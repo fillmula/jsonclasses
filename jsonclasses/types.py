@@ -10,10 +10,10 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         DefaultModifier, DictOfModifier, EagerModifier,
                         EmbeddedModifier, EnumModifier, EqModifier,
                         FloatModifier, IndexModifier, InputAllModifier,
-                        InputNameModifier, InputLnameModifier,
-                        InputValueModifier, InstanceOfModifier,
+                        InputNameModifier, InputLnameModifier, AtModifier,
+                        InputValueModifier, InstanceOfModifier, ThisModifier,
                         IntModifier, InvalidModifier, LengthModifier,
-                        LinkedByModifier, LinkedInModifier,
+                        LinkedByModifier, LinkedInModifier, GetterModifier,
                         LinkedThruModifier, LinkToModifier, ListOfModifier,
                         MatchModifier, MaxModifier, MaxlengthModifier,
                         LtModifier, MinModifier, MinlengthModifier, GtModifier,
@@ -191,6 +191,11 @@ class Types:
         hosting document for noSQL databases.
         """
         return Types(self, EmbeddedModifier())
+
+    def getter(self, calc: Callable | Types) -> Types:
+        """Getter modifier marks a field as calculated field. It's not stored.
+        """
+        return Types(self, GetterModifier(calc))
 
     @property
     def linkto(self) -> Types:
@@ -1161,6 +1166,17 @@ class Types:
         """Eq modifier validates value by equal testing.
         """
         return Types(self, EqModifier(val))
+
+    @property
+    def this(self: Types) -> Types:
+        """Get the owner object of this field.
+        """
+        return Types(self, ThisModifier())
+
+    def at(self: Types, index: Any) -> Types:
+        """At modifier returns result with subscription index.
+        """
+        return Types(self, AtModifier(index))
 
     # internal
 
