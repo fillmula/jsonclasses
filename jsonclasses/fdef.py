@@ -117,6 +117,7 @@ class Fdef:
         self._ftype: Optional[FType] = None
         self._fstore: FStore = FStore.EMBEDDED
         self._getter: Types | Callable | None = None
+        self._setter: Types | Callable | None = None
         self._primary: bool = False
         self._index: bool = False
         self._unique: bool = False
@@ -181,6 +182,13 @@ class Fdef:
         """
         self._resolve_if_needed()
         return self._getter
+
+    @property
+    def setter(self: Fdef) -> Types | Callable | None:
+        """The calculated field's setter.
+        """
+        self._resolve_if_needed()
+        return self._setter
 
     # primary key
 
