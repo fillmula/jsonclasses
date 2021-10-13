@@ -21,7 +21,7 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         OneOfModifier, UnionModifier, OnWriteModifier,
                         OnSaveModifier, OnUpdateModifier, OutputLnameModifier,
                         OutputNameModifier, OutputValueModifier,
-                        PositiveModifier, PresentModifier,
+                        PositiveModifier, PresentModifier, SetterModifier,
                         NonnegativeModifier, NonpositiveModifier,
                         PresentWithModifier, PresentWithoutModifier,
                         PreserializeModifier, PrimaryModifier,
@@ -30,7 +30,7 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         RequiredModifier, ResetModifier, SetOnSaveModifier,
                         FSetOnSaveModifier, AddModifier, SubModifier,
                         DivModifier, ModModifier, MulModifier,
-                        StrModifier, StrictModifier,
+                        StrModifier, StrictModifier, AssignModifier,
                         TempModifier, TransformModifier, TrimModifier,
                         TruncateModifier, UniqueModifier, ValidateModifier,
                         Modifier, WriteNonnullModifier, WriteonceModifier,
@@ -196,6 +196,11 @@ class Types:
         """Getter modifier marks a field as calculated field. It's not stored.
         """
         return Types(self, GetterModifier(calc))
+
+    def setter(self, setter: Callable | Types) -> Types:
+        """Setter modifier provides setter to calculated fields.
+        """
+        return Types(self, SetterModifier(setter))
 
     @property
     def linkto(self) -> Types:
@@ -1177,6 +1182,11 @@ class Types:
         """At modifier returns result with subscription index.
         """
         return Types(self, AtModifier(index))
+
+    def assign(self: Types, name: str, value: Any | Types | Callable) -> Types:
+        """Assign value to name of object.
+        """
+        return Types(self, AssignModifier(name, value))
 
     # internal
 

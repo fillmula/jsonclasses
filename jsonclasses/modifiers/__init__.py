@@ -13,6 +13,7 @@ from .readonly_modifier import ReadonlyModifier
 from .readwrite_modifier import ReadwriteModifier
 from .temp_modifier import TempModifier
 from .getter_modifier import GetterModifier
+from .setter_modifier import SetterModifier
 
 # database index command markers
 from .index_modifier import IndexModifier
@@ -192,3 +193,4 @@ from .fval_modifier import FValModifier
 from .eq_modifier import EqModifier
 from .this_modifier import ThisModifier
 from .at_modifier import AtModifier
+from .assign_modifier import AssignModifier

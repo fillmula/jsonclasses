@@ -568,7 +568,15 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
         return
     # this is a JSON class field attribute
     if field.fdef.fstore == FStore.CALCULATED:
-        raise Exception('do not set to calculation field')
+        if field.fdef.setter is None:
+            raise Exception('do not set to readonly calculation field')
+        else:
+            if callable(field.fdef.setter):
+                field.fdef.setter(value, self)
+            else:
+                ctx = Ctx.rootctxp(self, name, None, value)
+                field.fdef.setter.modifier.transform(ctx)
+            return
     if hasattr(self, name) and value == getattr(self, name):
         lk = field.fdef.fstore is FStore.LOCAL_KEY
         value_none = value is None

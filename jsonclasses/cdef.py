@@ -43,6 +43,7 @@ class Cdef:
         self._dict_fields: dict[str, JField] = {}
         self._primary_field: Optional[JField] = None
         self._calc_fields: list[JField] = []
+        self._setter_fields: list[JField] = []
         self._deny_fields: list[JField] = []
         self._nullify_fields: list[JField] = []
         self._cascade_fields: list[JField] = []
@@ -75,6 +76,8 @@ class Cdef:
                 self._primary_field = jfield
             if types.fdef._fstore == FStore.CALCULATED:
                 self._calc_fields.append(jfield)
+            if types.fdef._setter is not None:
+                self._setter_fields.append(jfield)
             if types.fdef._delete_rule == DeleteRule.DENY:
                 self._deny_fields.append(jfield)
             elif types.fdef._delete_rule == DeleteRule.NULLIFY:
@@ -179,6 +182,21 @@ class Cdef:
             return self._calc_field_names
         self._calc_field_names = list(map(lambda f: f.name, self._calc_fields))
         return self._calc_field_names
+
+    @property
+    def setter_fields(self: Cdef) -> list[JField]:
+        """Calculated fields with setter of this class definition.
+        """
+        return self._setter_fields
+
+    @property
+    def setter_field_names(self: Cdef) -> list[str]:
+        """Names of calculated fields with setter.
+        """
+        if hasattr(self, '_setter_field_names'):
+            return self._setter_field_names
+        self._setter_field_names = [f.name for f in self._setter_fields]
+        return self._setter_field_names
 
     @property
     def deny_fields(self: Cdef) -> list[JField]:
