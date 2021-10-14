@@ -47,7 +47,7 @@ class AliOSSUploader(Uploader):
         pass
 
 
-def request_uploader(name: str, engine: str) -> Uploader:
+def request_uploader(name: str) -> Uploader:
     if _uploaders.get(name):
         return _uploaders[name]
     conf = user_conf()
@@ -57,8 +57,8 @@ def request_uploader(name: str, engine: str) -> Uploader:
     uploader_conf = uploaders_dict.get(name)
     if uploader_conf is None:
         raise ValueError(f"uploader '{name}' is undefined")
-    client_name = uploader_conf.get('client')
-    if client_name is None:
+    engine = uploader_conf.get('client')
+    if engine is None:
         raise ValueError(f"undefined client engine for '{name}'")
     config = uploader_conf.get('config')
     if config is None:

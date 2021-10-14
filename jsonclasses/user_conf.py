@@ -11,7 +11,7 @@ _conf_loaded: bool = False
 
 
 def _replace_envs_str(conf: str) -> Optional[str]:
-    mresult = match('^environ\[[\'\"].+[\"\']\]$', conf)
+    mresult = match('^environ\[[\'\"](.+)[\"\']\]$', conf)
     if mresult is not None:
         name = mresult[1]
         retval = environ.get(name)
