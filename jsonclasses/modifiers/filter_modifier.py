@@ -15,7 +15,7 @@ class FilterModifier(Modifier):
 
 
     def transform(self, ctx: Ctx) -> Any:
-        if type(ctx.val) is (list, tuple, set, Container):
-            return filter(self.callback , ctx.val)
+        if isinstance(ctx.val, list) or type(ctx.val) is tuple:
+            return list(filter(self.callback , ctx.val))
         else:
             return ctx.val

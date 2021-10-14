@@ -48,6 +48,8 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         AuthByModifier, PassinModifier, CheckpwModifier,
                         ToListModifier, ToBoolModifier, ToFloatModifier,
                         ToIntModifier, ToStrModifier, RandomDigitsModifier,
+                        RandomAlnumpuncsModifier, RandomAlnumsModifier,
+                        RandomIntModifier, RandomFloatModifier,
                         ToBoSecModifier, ToBoMinModifier, ToBoHourModifier,
                         ToNextSecModifier, ToNextMinModifier, UploaderModifier,
                         ToNextHourModifier, CrossFetchModifier,
@@ -1221,6 +1223,27 @@ class Types:
         """Random digits modifier generates a random digits string of length.
         """
         return Types(self, RandomDigitsModifier(length))
+
+    def randomalnums(self: Types, length: Int) -> Types:
+        """Random alnums modifier generates a random alnums string of length.
+        """
+        return Types(self, RandomAlnumsModifier(length))
+
+    def randomalnumpuncs(self: Types, length: Int) -> Types:
+        """Random alnumpuncs modifier generates a random alnumpuncs string of
+        length.
+        """
+        return Types(self, RandomAlnumpuncsModifier(length))
+
+    def randomint(self: Types, min_value: Union[int, float],
+                    max_value: Union[int, float]) -> Types:
+        """Random int modifier generates a random int value."""
+        return Types(self, RandomIntModifier(min_value, max_value))
+
+    def randomfloat(self: Types, min_value: Union[int, float],
+                    max_value: Union[int, float]) -> Types:
+        """Random float modifier generates a random float value."""
+        return Types(self, RandomFloatModifier(min_value, max_value))
 
     def crossfetch(self, cn: str, sk: str, fk: Optional[str] = None) -> Types:
         """Fetch a class with value matches this object's value at key.

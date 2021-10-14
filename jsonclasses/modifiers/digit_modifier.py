@@ -13,4 +13,3 @@ class DigitModifier(Modifier):
     def validate(self, ctx: Ctx) -> None:
         if isinstance(ctx.val, str) and not ctx.val.isdigit():
             ctx.raise_vexc('value is not digit string')
-
