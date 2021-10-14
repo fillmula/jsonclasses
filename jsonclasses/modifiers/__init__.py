@@ -115,6 +115,7 @@ from .tonextday_modifier import ToNextDayModifier
 from .toboyear_modifier import ToBoYearModifier
 from .tobomonth_modifier import ToBoMonthModifier
 from .toboday_modifier import ToBoDayModifier
+from .fmtd_modifier import FormatDatetimeModifier
 
 # enum modifiers
 from .enum_modifier import EnumModifier

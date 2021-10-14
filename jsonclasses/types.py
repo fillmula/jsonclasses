@@ -54,7 +54,8 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         ToNextMonthModifier, ToNextYearModifier,
                         ToNextDayModifier, ToBoYearModifier, ToBoMonthModifier,
                         ToBoDayModifier, PadStartModifier, PadEndModifier,
-                        UnqueryableModifier, QueryableModifier)
+                        UnqueryableModifier, QueryableModifier,
+                        FormatDatetimeModifier)
 
 Str = str
 Int = int
@@ -591,6 +592,11 @@ class Types:
         datetime or return date directly
         """
         return Types(self, EagerModifier(), ToBoDayModifier())
+
+    def fmtd(self, format: str) -> Types:
+        """This modifier format datetime or date value.
+        """
+        return Types(self, FormatDatetimeModifier(format))
 
     def enum(self, enum_class: Union[type, Str]) -> Types:
         """Fields marked with enum should be enum value of provided enum type.
