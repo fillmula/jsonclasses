@@ -53,7 +53,8 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         ToNextHourModifier, CrossFetchModifier,
                         ToNextMonthModifier, ToNextYearModifier,
                         ToNextDayModifier, ToBoYearModifier, ToBoMonthModifier,
-                        ToBoDayModifier)
+                        ToBoDayModifier, PadStartModifier, PadEndModifier,
+                        UnqueryableModifier, QueryableModifier)
 
 Str = str
 Int = int
@@ -184,6 +185,19 @@ class Types:
         consistency with other jsonclasses integrations.
         """
         return Types(self, UniqueModifier())
+
+    @property
+    def queryable(self) -> Types:
+        """Fields marked with queryable is queryable. This is the default
+        behavior.
+        """
+        return Types(self, QueryableModifier())
+
+    @property
+    def unqueryable(self) -> Types:
+        """Fields marked with unqueryable is not queryable.
+        """
+        return Types(self, UnqueryableModifier())
 
     @property
     def embedded(self) -> Types:
@@ -838,6 +852,22 @@ class Types:
             Types: A new types chained with this modifier.
         """
         return Types(self, EagerModifier(), ToUpperModifier())
+
+    def padstart(self, char: str, length: int) -> Types:
+        """This modifier padstart string.
+
+        Returns:
+            Types: A new types chained with this modifier.
+        """
+        return Types(self, EagerModifier(), PadStartModifier(char, length))
+
+    def padend(self, char: str, length: int) -> Types:
+        """This modifier padstart string.
+
+        Returns:
+            Types: A new types chained with this modifier.
+        """
+        return Types(self, EagerModifier(), PadEndModifier(char, length))
 
     @property
     def tolist(self) -> Types:
