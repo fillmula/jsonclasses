@@ -198,3 +198,4 @@ from .eq_modifier import EqModifier
 from .this_modifier import ThisModifier
 from .at_modifier import AtModifier
 from .assign_modifier import AssignModifier
+from .uploader_modifier import UploaderModifier

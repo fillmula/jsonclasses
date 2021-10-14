@@ -49,7 +49,7 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         ToListModifier, ToBoolModifier, ToFloatModifier,
                         ToIntModifier, ToStrModifier, RandomDigitsModifier,
                         ToBoSecModifier, ToBoMinModifier, ToBoHourModifier,
-                        ToNextSecModifier, ToNextMinModifier,
+                        ToNextSecModifier, ToNextMinModifier, UploaderModifier,
                         ToNextHourModifier, CrossFetchModifier,
                         ToNextMonthModifier, ToNextYearModifier,
                         ToNextDayModifier, ToBoYearModifier, ToBoMonthModifier,
@@ -999,19 +999,19 @@ class Types:
         """
         return Types(self, EagerModifier(), ReverseModifier())
 
-    def uploader(self, uploader: Callable) -> Types:
+    def uploader(self, uploader: Callable | str) -> Types:
         """Uploader is barely a syntax alias for transformer. Uploaded files
         can be processed through a transformer and get url attached to this
         object.
 
         Args:
-          transformer (Callable): This transformer function takes one argument
-          which is the current value of the field.
+            uploader (Callable | str): An uploader name or a transformer
+            callable.
 
         Returns:
-          Types: A new types chained with this modifier.
+            Types: A new types chained with this modifier.
         """
-        return Types(self, EagerModifier(), TransformModifier(uploader))
+        return Types(self, EagerModifier(), UploaderModifier(uploader))
 
     def asop(self, asop_transformer: Callable) -> Types:
         """Asop modifier assigns transformed operator value to this field. When
