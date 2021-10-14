@@ -26,9 +26,9 @@ class SuperDateTime:
     dtby: Optional[datetime] = types.datetime.toboyear
     sby: Optional[Any] = types.any.toboyear
 
-    dbmth: Optional[date] = types.date.tobomonth
-    dtbmth: Optional[datetime] = types.datetime.tobomonth
-    sbmth: Optional[Any] = types.any.tobomonth
+    dbmth: Optional[date] = types.date.tobomon
+    dtbmth: Optional[datetime] = types.datetime.tobomon
+    sbmth: Optional[Any] = types.any.tobomon
 
     dbd: Optional[date] = types.date.toboday
     dtbd: Optional[datetime] = types.datetime.toboday
@@ -38,9 +38,9 @@ class SuperDateTime:
     dtny: Optional[datetime] = types.datetime.tonextyear
     sny: Optional[Any] = types.any.tonextyear
 
-    dnmth: Optional[date] = types.date.tonextmonth
-    dtnmth: Optional[datetime] = types.datetime.tonextmonth
-    snmth: Optional[Any] = types.any.tonextmonth
+    dnmth: Optional[date] = types.date.tonextmon
+    dtnmth: Optional[datetime] = types.datetime.tonextmon
+    snmth: Optional[Any] = types.any.tonextmon
 
     dnd: Optional[date] = types.date.tonextday
     dtnd: Optional[datetime] = types.datetime.tonextday

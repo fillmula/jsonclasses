@@ -111,10 +111,10 @@ from .tonextsec_modifier import ToNextSecModifier
 from .tonextmin_modifier import ToNextMinModifier
 from .tonexthour_modifier import ToNextHourModifier
 from .tonextyear_modifier import ToNextYearModifier
-from .tonextmonth_modifier import ToNextMonthModifier
+from .tonextmon_modifier import ToNextMonModifier
 from .tonextday_modifier import ToNextDayModifier
 from .toboyear_modifier import ToBoYearModifier
-from .tobomonth_modifier import ToBoMonthModifier
+from .tobomon_modifier import ToBoMonModifier
 from .toboday_modifier import ToBoDayModifier
 from .fmtd_modifier import FormatDatetimeModifier
 
