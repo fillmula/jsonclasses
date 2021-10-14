@@ -198,6 +198,10 @@ from .authby_modifier import AuthByModifier
 from .passin_modifier import PassinModifier
 from .checkpw_modifier import CheckpwModifier
 from .random_digits_modifier import RandomDigitsModifier
+from .random_alnums_modifier import RandomAlnumsModifier
+from .random_alnumpuncs_modifier import RandomAlnumpuncsModifier
+from .random_float_modifier import RandomFloatModifier
+from .random_int_modifier import RandomIntModifier
 from .cross_fetch_modifier import CrossFetchModifier
 from .fval_modifier import FValModifier
 from .eq_modifier import EqModifier

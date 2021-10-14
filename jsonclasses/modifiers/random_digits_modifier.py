@@ -14,4 +14,5 @@ class RandomDigitsModifier(Modifier):
         self.length = length
 
     def transform(self, ctx: Ctx) -> Any:
-        return ''.join(sample('0123456789', self.length))
+        digits = '0123456789'
+        return ''.join(sample(digits, self.length))

@@ -16,6 +16,9 @@ class MaxlengthModifier(Modifier):
     def validate(self, ctx: Ctx) -> None:
         if ctx.val is None:
             return
-        if len(ctx.val) > self.maxlength:
-            ctx.raise_vexc('length of value is not less than or equal '
-                           f'{self.maxlength}')
+        if type(ctx.val) is list or type(ctx.val) is str:
+            if len(ctx.val) > self.maxlength:
+                ctx.raise_vexc('length of value is not less than or equal '
+                            f'{self.maxlength}')
+        else:
+            return ctx.val

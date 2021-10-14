@@ -25,14 +25,26 @@ class TestLength(TestCase):
         with self.assertRaises(ValidationException):
             c1.validate()
 
-    def test_length_should_be_match(self):
+    def test_length_should_be_match_in_str(self):
         code = SimpleCode(code='1234')
         code.validate()
 
-    def test_length_raises_if_length_not_match(self):
+    def test_length_should_be_match_in_list(self):
+        l_code = SimpleCode(l_code=[1, 2, 3, 4])
+        l_code.validate()
+
+    def test_length_raises_if_length_not_match_in_str(self):
         code = SimpleCode(code='12345')
         with self.assertRaises(ValidationException):
             code.validate()
         code = SimpleCode(code='1')
         with self.assertRaises(ValidationException):
             code.validate()
+
+    def test_length_raises_if_length_not_match_in_list(self):
+        l_code = SimpleCode(l_code=[1, 2, 3, 4, 5, 0])
+        with self.assertRaises(ValidationException):
+            l_code.validate()
+        l_code = SimpleCode(l_code=[1, 2])
+        with self.assertRaises(ValidationException):
+            l_code.validate()
