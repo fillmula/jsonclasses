@@ -8,7 +8,7 @@ from .keypath import new_mongoid
 from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         CompareModifier, DateModifier, DatetimeModifier,
                         DefaultModifier, DictOfModifier, EagerModifier,
-                        EmbeddedModifier, EnumModifier, EqModifier,
+                        EmbeddedModifier, EnumModifier, EqModifier, NeqModifier,
                         FloatModifier, IndexModifier, InputAllModifier,
                         InputNameModifier, InputLnameModifier, AtModifier,
                         InputValueModifier, InstanceOfModifier, ThisModifier,
@@ -55,7 +55,8 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         ToNextDayModifier, ToBoYearModifier, ToBoMonModifier,
                         ToBoDayModifier, PadStartModifier, PadEndModifier,
                         UnqueryableModifier, QueryableModifier, PowModifier,
-                        FormatDatetimeModifier, NoCopyModifier, SqrtModifier)
+                        FormatDatetimeModifier, NoCopyModifier, SqrtModifier,
+                        MapModifier, FilterModifier)
 
 Str = str
 Int = int
@@ -356,7 +357,8 @@ class Types:
         return Types(self, MulModifier(by))
 
     def pow(self, by: int | float) -> Types:
-        """
+        """This modifer is used to transform the value of the int or float value
+        to the power of the original value
         """
         return Types(self, PowModifier(by))
 
@@ -370,9 +372,19 @@ class Types:
         """
         return Types(self, ModModifier(by))
 
+    def map(self, validate_callable: Callable) -> Types:
+        """This modifier is used to getting a map object of the results
+        """
+        return Types(self, MapModifier(validate_callable))
+
+    def filter(self, validate_callable: Callable) -> Types:
+        """This modifier is used to filter the given sequence
+        """
+        return Types(self, FilterModifier(validate_callable))
+
     @property
     def sqrt(self) -> Types:
-        """
+        """This modifier is used to transform the square root of any number.
         """
         return Types(self, SqrtModifier())
 
@@ -1225,6 +1237,11 @@ class Types:
         """
         return Types(self, EqModifier(val))
 
+    def neq(self: Types, val: Any | Types) -> Types:
+        """Neq modifier validates value by unequal testing.
+        """
+        return Types(self, NeqModifier(val))
+
     @property
     def this(self: Types) -> Types:
         """Get the owner object of this field.
@@ -1240,6 +1257,7 @@ class Types:
         """Assign value to name of object.
         """
         return Types(self, AssignModifier(name, value))
+
 
     # internal
 
