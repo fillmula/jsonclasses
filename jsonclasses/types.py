@@ -55,7 +55,7 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         ToNextDayModifier, ToBoYearModifier, ToBoMonthModifier,
                         ToBoDayModifier, PadStartModifier, PadEndModifier,
                         UnqueryableModifier, QueryableModifier,
-                        FormatDatetimeModifier)
+                        FormatDatetimeModifier, NoCopyModifier)
 
 Str = str
 Int = int
@@ -216,6 +216,12 @@ class Types:
         """Setter modifier provides setter to calculated fields.
         """
         return Types(self, SetterModifier(setter))
+
+    @property
+    def nocopy(self) -> Types:
+        """NoCopy modifier marks fields is nocopy.
+        """
+        return Types(self, NoCopyModifier())
 
     @property
     def linkto(self) -> Types:

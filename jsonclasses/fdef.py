@@ -105,6 +105,11 @@ class Queryability(Enum):
     UNQUERYABLE = 'unqueryable'
 
 
+class CopyBehavior(Enum):
+    COPY = "copy"
+    NOCOPY = "nocopy"
+
+
 class Fdef:
     """The description of a JSONClass field. Some type markers annotate on
     this definition.
@@ -151,6 +156,7 @@ class Fdef:
         self._requires_operator_assign: bool = False
         self._operator_assign_transformer: Optional[Callable] = None
         self._queryability: Optional[Queryability] = None
+        self._copy_behavior: Optional[CopyBehavior] = None
         self._auth_identity: bool = False
         self._auth_by: bool = False
         self._auth_by_checker: Optional[Types] = None
@@ -463,6 +469,13 @@ class Fdef:
         """
         self._resolve_if_needed()
         return self._queryability or Queryability.QUERYABLE
+
+    @property
+    def copy_behavior(self: Fdef) -> CopyBehavior:
+        """The copy behavior of this field.
+        """
+        self._resolve_if_needed()
+        return self._copy_behavior or CopyBehavior.COPY
 
     @property
     def auth_identity(self: Fdef) -> bool:

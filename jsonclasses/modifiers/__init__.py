@@ -14,6 +14,7 @@ from .readwrite_modifier import ReadwriteModifier
 from .temp_modifier import TempModifier
 from .getter_modifier import GetterModifier
 from .setter_modifier import SetterModifier
+from .nocopy_modifier import NoCopyModifier
 
 # database index command markers
 from .index_modifier import IndexModifier
