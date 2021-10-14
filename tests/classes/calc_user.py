@@ -9,7 +9,7 @@ class CalcUser:
     last_name: str = types.str.getter(types.this.fval('name').split(' ').at(1))
     base_score: float
     score: float = types.float.getter(types.this.fval('base_score').mul(2)).negative
-<<<<<<< HEAD
+
 
 
 def assignfn(fn: str, u: SetterUser):
@@ -29,5 +29,3 @@ class SetterUser:
     last_name: str = types.str.getter(types.this.fval('name').split(' ').at(1)).setter(assignln)
     base_score: float
     score: float = types.float.getter(types.this.fval('base_score').mul(2)).setter(types.this.assign('base_score', types.passin.div(2)))
-=======
->>>>>>> e14154b (test calc validation)
