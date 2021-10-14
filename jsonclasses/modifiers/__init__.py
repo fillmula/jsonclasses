@@ -96,6 +96,8 @@ from .div_modifier import DivModifier
 from .mod_modifier import ModModifier
 from .pow_modifier import PowModifier
 from .sqrt_modifier import SqrtModifier
+from .map_modifier import MapModifier
+from .filter_modifier import FilterModifier
 
 # bool modifiers
 from .bool_modifier import BoolModifier
@@ -199,6 +201,7 @@ from .random_digits_modifier import RandomDigitsModifier
 from .cross_fetch_modifier import CrossFetchModifier
 from .fval_modifier import FValModifier
 from .eq_modifier import EqModifier
+from .neq_modifier import NeqModifier
 from .this_modifier import ThisModifier
 from .at_modifier import AtModifier
 from .assign_modifier import AssignModifier
