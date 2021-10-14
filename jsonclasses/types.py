@@ -51,8 +51,8 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         ToBoSecModifier, ToBoMinModifier, ToBoHourModifier,
                         ToNextSecModifier, ToNextMinModifier, UploaderModifier,
                         ToNextHourModifier, CrossFetchModifier,
-                        ToNextMonthModifier, ToNextYearModifier,
-                        ToNextDayModifier, ToBoYearModifier, ToBoMonthModifier,
+                        ToNextMonModifier, ToNextYearModifier,
+                        ToNextDayModifier, ToBoYearModifier, ToBoMonModifier,
                         ToBoDayModifier, PadStartModifier, PadEndModifier,
                         UnqueryableModifier, QueryableModifier,
                         FormatDatetimeModifier, NoCopyModifier)
@@ -567,10 +567,10 @@ class Types:
         return Types(self, EagerModifier(), ToNextYearModifier())
 
     @property
-    def tonextmonth(self) -> Types:
+    def tonextmon(self) -> Types:
         """This modifier Go to the next month in datetime or in date
         """
-        return Types(self, EagerModifier(), ToNextMonthModifier())
+        return Types(self, EagerModifier(), ToNextMonModifier())
 
     @property
     def tonextday(self) -> Types:
@@ -586,11 +586,11 @@ class Types:
         return Types(self, EagerModifier(), ToBoYearModifier())
 
     @property
-    def tobomonth(self) -> Types:
+    def tobomon(self) -> Types:
         """This modifier empty microsecond, second, minute, hour and day in
         datetime or empty day in date
         """
-        return Types(self, EagerModifier(), ToBoMonthModifier())
+        return Types(self, EagerModifier(), ToBoMonModifier())
 
     @property
     def toboday(self) -> Types:

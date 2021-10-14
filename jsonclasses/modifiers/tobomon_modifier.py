@@ -6,7 +6,7 @@ from .modifier import Modifier
 if TYPE_CHECKING:
     from ..ctx import Ctx
 
-class ToBoMonthModifier(Modifier):
+class ToBoMonModifier(Modifier):
     """
     ToBoMonth Modifier transforms date or datetime into the beginning of the
     month

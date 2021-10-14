@@ -7,7 +7,7 @@ from .modifier import Modifier
 if TYPE_CHECKING:
     from ..ctx import Ctx
 
-class ToNextMonthModifier(Modifier):
+class ToNextMonModifier(Modifier):
     """Change the month to the next month"""
 
     def transform(self, ctx: Ctx) -> Any:
