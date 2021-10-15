@@ -60,7 +60,8 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         UnqueryableModifier, QueryableModifier, PowModifier,
                         FormatDatetimeModifier, NoCopyModifier, SqrtModifier,
                         MapModifier, FilterModifier, HasprefixModifier,
-                        HassuffixModifier)
+                        HassuffixModifier, CanCModifier, CanUModifier,
+                        CanRModifier)
 
 Str = str
 Int = int
@@ -793,24 +794,6 @@ class Types:
         """
         return Types(self, ValidateModifier(validate_callable))
 
-    def op(self, op_callable: Callable) -> Types:
-        """Operator modifier validates value against the operator object user
-        passed in. This modifier is special and doesn't bypass None value. If
-        the operator is not present, this modifier fails.
-
-        Args:
-            op_callable (Callable): The op callable takes 1 to 4 arguments. The
-            first is the operator object, the second is the object being
-            operated, the third is the value of the field, the fourth is the
-            validating context. Returning None or True means the value is
-            valid, while returning a str message or False means validation
-            failed.
-
-        Returns:
-            Types: A new types chained with this modifier.
-        """
-        return Types(self, OpModifier(op_callable))
-
     def compare(self, compare_callable: Callable) -> Types:
         """The compare field mark takes a modifier callable as its sole
         argument. If value of compared fields are changed, this modifier is
@@ -1216,6 +1199,44 @@ class Types:
         """This is a shortcut to `authby(types.checkpw(types.passin))`.
         """
         return Types(self, AuthByModifier(types.checkpw(types.passin)))
+
+    def op(self, op_callable: Callable) -> Types:
+        """Operator modifier validates value against the operator object user
+        passed in. This modifier is special and doesn't bypass None value. If
+        the operator is not present, this modifier fails.
+
+        Args:
+            op_callable (Callable): The op callable takes 1 to 4 arguments. The
+            first is the operator object, the second is the object being
+            operated, the third is the value of the field, the fourth is the
+            validating context. Returning None or True means the value is
+            valid, while returning a str message or False means validation
+            failed.
+
+        Returns:
+            Types: A new types chained with this modifier.
+        """
+        return Types(self, OpModifier(op_callable))
+
+    def canc(self, checker: Callable | Types) -> Types:
+        """
+        """
+        return Types(self, CanCModifier(checker))
+
+    def canu(self, checker: Callable | Types) -> Types:
+        """
+        """
+        return Types(self, CanUModifier(checker))
+
+    def canw(self, checker: Callable | Types) -> Types:
+        """
+        """
+        return Types(self, CanCModifier(checker), CanUModifier(checker))
+
+    def canr(self, checker: Callable | Types) -> Types:
+        """
+        """
+        return Types(self, CanRModifier(checker))
 
     # calc pipeline
 

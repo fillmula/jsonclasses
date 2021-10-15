@@ -214,5 +214,8 @@ from .isthis_modifier import IsThisModifier
 from .oneisvalid_modifier import OneIsValidModifier
 from .isobjof_modifier import IsObjOfModifier
 from .getop_modifier import GetOpModifier
+from .canc_modifier import CanCModifier
+from .canu_modifier import CanUModifier
+from .canr_modifier import CanRModifier
 from .hasprefix_modifier import HasprefixModifier
 from .hassuffix_modifier import HassuffixModifier
