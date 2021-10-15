@@ -18,3 +18,11 @@ class GSProductUser:
 class GSProduct:
     name: str
     user: GSProductUser = types.instanceof('GSProductUser').linkto.required
+
+
+can_types = types.getop.fval('name').eq('n')
+
+
+@jsonclass(can_delete=can_types, can_read=can_types)
+class GSTProduct:
+    name: str

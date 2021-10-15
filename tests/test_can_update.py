@@ -1,7 +1,7 @@
 from __future__ import annotations
 from unittest import TestCase
 from jsonclasses.excs import UnauthorizedActionException
-from tests.classes.gs_book import GSBookAuthor, GSBook
+from tests.classes.gs_book import GSBookAuthor, GSBook, GSTBook
 from tests.classes.gm_book import GMBookAuthor, GMBook
 
 
@@ -54,6 +54,19 @@ class TestCanUpdate(TestCase):
         book = GMBook(name='P')
         setattr(book, '_is_new', False)
         paid_author = GMBookAuthor(id='P', name='A', paid_user=True)
+        book.author = paid_author
+        book.opby(paid_author)
+        book.save()
+        free_author = GMBookAuthor(id='F', name='A', paid_user=False)
+        book.author = free_author
+        book.opby(free_author)
+        with self.assertRaises(UnauthorizedActionException):
+            book.save()
+
+    def test_types_guard_is_called_for_existing_object_on_save(self):
+        book = GSTBook(name='P')
+        setattr(book, '_is_new', False)
+        paid_author = GSBookAuthor(id='P', name='A', paid_user=True)
         book.author = paid_author
         book.opby(paid_author)
         book.save()

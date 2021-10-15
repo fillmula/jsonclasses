@@ -18,3 +18,8 @@ class GSBookAuthor:
 class GSBook:
     name: str
     author: GSBookAuthor = types.instanceof('GSBookAuthor').linkto.required
+
+
+@jsonclass(can_update=types.getop.isobjof('GSBookAuthor'))
+class GSTBook:
+    name: str

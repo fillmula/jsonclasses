@@ -20,3 +20,9 @@ class GSArticle:
     name: str
     content: str
     author: GSAuthor
+
+
+@jsonclass(can_create=types.getop.fval('name').eq(types.this.fval('name')))
+class GSTArticle:
+    name: str
+    content: str

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from unittest import TestCase
 from jsonclasses.excs import UnauthorizedActionException
-from tests.classes.gs_article import GSArticle, GSAuthor
+from tests.classes.gs_article import GSArticle, GSAuthor, GSTArticle
 from tests.classes.gm_article import GMArticle, GMAuthor
 
 
@@ -61,3 +61,14 @@ class TestCanCreate(TestCase):
         article.author = free_author
         article.opby(free_author)
         article.save()
+
+    def test_types_guard_is_called_for_new_object_on_save(self):
+        article = GSTArticle(name='P', content='C')
+        paid_author = GSAuthor(id='P', name='P', paid_user=True)
+        article.opby(paid_author)
+        article.save()
+        free_author = GSAuthor(id='F', name='A', paid_user=False)
+        article.author = free_author
+        article.opby(free_author)
+        with self.assertRaises(UnauthorizedActionException):
+            article.save()

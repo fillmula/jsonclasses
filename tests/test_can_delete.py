@@ -1,7 +1,7 @@
 from __future__ import annotations
 from unittest import TestCase
 from jsonclasses.excs import UnauthorizedActionException
-from tests.classes.gs_product import GSProduct, GSProductUser
+from tests.classes.gs_product import GSProduct, GSProductUser, GSTProduct
 from tests.classes.gm_product import GMProduct, GMProductUser
 
 
@@ -34,6 +34,18 @@ class TestCanDelete(TestCase):
         product.opby(paid_user)
         product.delete()
         free_user = GMProductUser(id='F', name='A', paid_user=False)
+        product.user = free_user
+        product.opby(free_user)
+        with self.assertRaises(UnauthorizedActionException):
+            product.delete()
+
+    def test_types_guard_is_called_for_existing_object_on_delete(self):
+        product = GSTProduct(name='P')
+        paid_user = GSProductUser(id='P', name='n', paid_user=True)
+        product.user = paid_user
+        product.opby(paid_user)
+        product.delete()
+        free_user = GSProductUser(id='F', name='A', paid_user=False)
         product.user = free_user
         product.opby(free_user)
         with self.assertRaises(UnauthorizedActionException):
