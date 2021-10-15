@@ -24,7 +24,7 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         OnSaveModifier, OnUpdateModifier, OutputLnameModifier,
                         OutputNameModifier, OutputValueModifier, IsObjOfModifier,
                         PositiveModifier, PresentModifier, SetterModifier,
-                        NonnegativeModifier, NonpositiveModifier,
+                        NonnegativeModifier, NonpositiveModifier, VMsgModifier,
                         PresentWithModifier, PresentWithoutModifier,
                         PreserializeModifier, PrimaryModifier, IsThisModifier,
                         RangeModifier, ReadonlyModifier, ReadwriteModifier,
@@ -780,12 +780,12 @@ class Types:
         """
         return Types(self, PresentWithoutModifier(referring_keys))
 
-    def validate(self, validate_callable: Callable) -> Types:
+    def validate(self, validator: Callable) -> Types:
         """The validate field mark takes a modifier callable as its sole
         argument. Use this to define custom field value validations.
 
         Args:
-            validate_callable (Callable): The validate callable takes up to 2
+            validator (Callable): The validate callable takes up to 2
             arguments, which are value and context. Returning None or True
             means the value is valid, while returning a str message or False
             means validation failed.
@@ -793,7 +793,23 @@ class Types:
         Returns:
             Types: A new types chained with this modifier.
         """
-        return Types(self, ValidateModifier(validate_callable))
+        return Types(self, ValidateModifier(validator))
+
+    def vmsg(self, validator: Callable | Types, message: str) -> Types:
+        """The validate field mark takes a modifier callable as its sole
+        argument. Use this to define custom field value validations.
+
+        Args:
+            validator (Callable | Types): The validate callable takes up to 2
+            arguments, which are value and context. Returning None or True
+            means the value is valid, while returning a str message or False
+            means validation failed.
+            msg (str): The error message to be outputted.
+
+        Returns:
+            Types: A new types chained with this modifier.
+        """
+        return Types(self, VMsgModifier(validator, message))
 
     def compare(self, compare_callable: Callable) -> Types:
         """The compare field mark takes a modifier callable as its sole

@@ -157,6 +157,7 @@ from .presentwithout_modifier import PresentWithoutModifier
 
 # custom modifier
 from .validate_modifier import ValidateModifier
+from .vmsg_modifier import VMsgModifier
 
 # comparing modifier and callback
 from .reset_modifier import ResetModifier
