@@ -1,8 +1,9 @@
 """
 This module contains `jsonclass`, the decorator for JSON Classes.
 """
+from __future__ import annotations
 from jsonclasses.keypath import identical_key
-from typing import Optional, Union, Callable, overload, cast
+from typing import Optional, Union, Callable, overload, cast, TYPE_CHECKING
 from dataclasses import dataclass
 from .jconf import (JConf, OnCreate, CanCreate, OnDelete, CanUpdate,
                      CanDelete, CanRead, OnUpdate)
@@ -10,6 +11,8 @@ from .jfield import JField
 from .cdef import Cdef
 from .jsonclassify import jsonclassify
 from .jobject import JObject
+if TYPE_CHECKING:
+    from .types import Types
 
 
 @overload
@@ -28,13 +31,13 @@ def jsonclass(
     validate_all_fields: Optional[bool] = None,
     abstract: Optional[bool] = None,
     reset_all_fields: Optional[bool] = None,
-    on_create: Optional[Union[OnCreate, list[OnCreate]]] = None,
-    on_update: Optional[Union[OnUpdate, list[OnUpdate]]] = None,
-    on_delete: Optional[Union[OnDelete, list[OnDelete]]] = None,
-    can_create: Optional[Union[CanCreate, list[CanCreate]]] = None,
-    can_update: Optional[Union[CanUpdate, list[CanUpdate]]] = None,
-    can_delete: Optional[Union[CanDelete, list[CanDelete]]] = None,
-    can_read: Optional[Union[CanRead, list[CanRead]]] = None,
+    on_create: OnCreate | list[OnCreate] | Types | None = None,
+    on_update: OnUpdate | list[OnUpdate] | Types | None = None,
+    on_delete: OnDelete | list[OnDelete] | Types | None = None,
+    can_create: CanCreate | list[CanCreate] | Types | None = None,
+    can_update: CanUpdate | list[CanUpdate] | Types | None = None,
+    can_delete: CanDelete | list[CanDelete] | Types | None = None,
+    can_read: CanRead | list[CanRead] | Types | None = None,
 ) -> Callable[[type], type[JObject]]: ...
 
 
@@ -50,13 +53,13 @@ def jsonclass(
     validate_all_fields: Optional[bool] = None,
     abstract: Optional[bool] = None,
     reset_all_fields: Optional[bool] = None,
-    on_create: Optional[Union[OnCreate, list[OnCreate]]] = None,
-    on_update: Optional[Union[OnUpdate, list[OnUpdate]]] = None,
-    on_delete: Optional[Union[OnDelete, list[OnDelete]]] = None,
-    can_create: Optional[Union[CanCreate, list[CanCreate]]] = None,
-    can_update: Optional[Union[CanUpdate, list[CanUpdate]]] = None,
-    can_delete: Optional[Union[CanDelete, list[CanDelete]]] = None,
-    can_read: Optional[Union[CanRead, list[CanRead]]] = None,
+    on_create: OnCreate | list[OnCreate] | Types | None = None,
+    on_update: OnUpdate | list[OnUpdate] | Types | None = None,
+    on_delete: OnDelete | list[OnDelete] | Types | None = None,
+    can_create: CanCreate | list[CanCreate] | Types | None = None,
+    can_update: CanUpdate | list[CanUpdate] | Types | None = None,
+    can_delete: CanDelete | list[CanDelete] | Types | None = None,
+    can_read: CanRead | list[CanRead] | Types | None = None,
 ) -> type[JObject]: ...
 
 
@@ -71,13 +74,13 @@ def jsonclass(
     validate_all_fields: Optional[bool] = None,
     abstract: Optional[bool] = None,
     reset_all_fields: Optional[bool] = None,
-    on_create: Optional[Union[OnCreate, list[OnCreate]]] = None,
-    on_update: Optional[Union[OnUpdate, list[OnUpdate]]] = None,
-    on_delete: Optional[Union[OnDelete, list[OnDelete]]] = None,
-    can_create: Optional[Union[CanCreate, list[CanCreate]]] = None,
-    can_update: Optional[Union[CanUpdate, list[CanUpdate]]] = None,
-    can_delete: Optional[Union[CanDelete, list[CanDelete]]] = None,
-    can_read: Optional[Union[CanRead, list[CanRead]]] = None,
+    on_create: OnCreate | list[OnCreate] | Types | None = None,
+    on_update: OnUpdate | list[OnUpdate] | Types | None = None,
+    on_delete: OnDelete | list[OnDelete] | Types | None = None,
+    can_create: CanCreate | list[CanCreate] | Types | None = None,
+    can_update: CanUpdate | list[CanUpdate] | Types | None = None,
+    can_delete: CanDelete | list[CanDelete] | Types | None = None,
+    can_read: CanRead | list[CanRead] | Types | None = None,
 ) -> Union[Callable[[type], type[JObject]], type[JObject]]:
     """The jsonclass object class decorator. To declare a jsonclass class, use
     this syntax:

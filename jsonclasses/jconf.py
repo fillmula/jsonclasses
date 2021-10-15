@@ -7,6 +7,7 @@ from .jobject import JObject
 if TYPE_CHECKING:
     from .jfield import JField
     from .cgraph import CGraph
+    from .types import Types
 
 
 OnCreate = Callable[[JObject, Any], None]
@@ -34,13 +35,13 @@ class JConf:
                  validate_all_fields: Optional[bool],
                  abstract: Optional[bool],
                  reset_all_fields: Optional[bool],
-                 on_create: Optional[Union[OnCreate, list[OnCreate]]],
-                 on_update: Optional[Union[OnUpdate, list[OnUpdate]]],
-                 on_delete: Optional[Union[OnDelete, list[OnDelete]]],
-                 can_create: Optional[Union[CanCreate, list[CanCreate]]],
-                 can_update: Optional[Union[CanUpdate, list[CanUpdate]]],
-                 can_delete: Optional[Union[CanDelete, list[CanDelete]]],
-                 can_read: Optional[Union[CanRead, list[CanRead]]]) -> None:
+                 on_create: OnCreate | list[OnCreate] | Types | None,
+                 on_update: OnUpdate | list[OnUpdate] | Types | None,
+                 on_delete: OnDelete | list[OnDelete] | Types | None,
+                 can_create: CanCreate | list[CanCreate] | Types | None,
+                 can_update: CanUpdate | list[CanUpdate] | Types | None,
+                 can_delete: CanDelete | list[CanDelete] | Types | None,
+                 can_read: CanRead | list[CanRead] | Types | None) -> None:
         """
         Initialize a new configuration object.
 
@@ -76,6 +77,7 @@ class JConf:
             can_read (Optional[Union[CanRead, list[CanRead]]]): The reading
                 guard.
         """
+        from .types import Types
         self._cls: Optional[type[JObject]] = None
         self._cgraph = cgraph or 'default'
         self._key_encoding_strategy = key_encoding_strategy
@@ -85,43 +87,43 @@ class JConf:
         self._validate_all_fields = validate_all_fields
         self._abstract = abstract
         self._reset_all_fields = reset_all_fields
-        if callable(on_create):
+        if callable(on_create) or isinstance(on_create, Types):
             self._on_create = [on_create]
         elif isinstance(on_create, list):
             self._on_create = on_create
         else:
             self._on_create = []
-        if callable(on_update):
+        if callable(on_update) or isinstance(on_update, Types):
             self._on_update = [on_update]
         elif isinstance(on_update, list):
             self._on_update = on_update
         else:
             self._on_update = []
-        if callable(on_delete):
+        if callable(on_delete) or isinstance(on_delete, Types):
             self._on_delete = [on_delete]
         elif isinstance(on_delete, list):
             self._on_delete = on_delete
         else:
             self._on_delete = []
-        if callable(can_create):
+        if callable(can_create) or isinstance(can_create, Types):
             self._can_create = [can_create]
         elif isinstance(can_create, list):
             self._can_create = can_create
         else:
             self._can_create = []
-        if callable(can_update):
+        if callable(can_update) or isinstance(can_update, Types):
             self._can_update = [can_update]
         elif isinstance(can_update, list):
             self._can_update = can_update
         else:
             self._can_update = []
-        if callable(can_delete):
+        if callable(can_delete) or isinstance(can_delete, Types):
             self._can_delete = [can_delete]
         elif isinstance(can_delete, list):
             self._can_delete = can_delete
         else:
             self._can_delete = []
-        if callable(can_read):
+        if callable(can_read) or isinstance(can_read, Types):
             self._can_read = [can_read]
         elif isinstance(can_read, list):
             self._can_read = can_read
@@ -236,43 +238,43 @@ class JConf:
         return self._reset_all_fields
 
     @property
-    def on_create(self: JConf) -> list[OnCreate]:
+    def on_create(self: JConf) -> list[OnCreate | Types]:
         """The object creation callback.
         """
         return self._on_create
 
     @property
-    def on_update(self: JConf) -> list[OnUpdate]:
+    def on_update(self: JConf) -> list[OnUpdate | Types]:
         """The object saving callback.
         """
         return self._on_update
 
     @property
-    def on_delete(self: JConf) -> list[OnDelete]:
+    def on_delete(self: JConf) -> list[OnDelete | Types]:
         """The object deleting callback.
         """
         return self._on_delete
 
     @property
-    def can_create(self: JConf) -> list[CanCreate]:
+    def can_create(self: JConf) -> list[CanCreate | Types]:
         """The object creation guard.
         """
         return self._can_create
 
     @property
-    def can_update(self: JConf) -> list[CanUpdate]:
+    def can_update(self: JConf) -> list[CanUpdate | Types]:
         """The object updation guard.
         """
         return self._can_update
 
     @property
-    def can_delete(self: JConf) -> list[CanDelete]:
+    def can_delete(self: JConf) -> list[CanDelete | Types]:
         """The object deletion guard.
         """
         return self._can_delete
 
     @property
-    def can_read(self: JConf) -> list[CanRead]:
+    def can_read(self: JConf) -> list[CanRead | Types]:
         """The object reading guard.
         """
         return self._can_read
