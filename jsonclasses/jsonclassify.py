@@ -453,16 +453,27 @@ def _orm_restore(self: JObject) -> None:
 def _can_cu_check_common(self: JObject,
                          callbacks: list[Types | Callable],
                          action: str) -> None:
+    if len(callbacks) == 0:
+        return
+    from .types import Types
+    operator = getattr(self, '_operator')
+    if operator is None:
+        raise UnauthorizedActionException('no operator')
     for callback in callbacks:
-        operator = getattr(self, '_operator')
-        if operator is None:
-            raise UnauthorizedActionException('no operator')
-        result = callback(self, operator)
-        if result is not None and result is not True:
-            if isinstance(result, str):
-                raise UnauthorizedActionException(result)
-            else:
+        if isinstance(callback, Types):
+            ctx = Ctx.rootctx(self, CtxCfg())
+            tval = callback.modifier.transform(ctx)
+            try:
+                callback.modifier.validate(ctx.nval(tval))
+            except ValidationException:
                 raise UnauthorizedActionException(f'cannot {action}')
+        else:
+            result = callback(self, operator)
+            if result is not None and result is not True:
+                if isinstance(result, str):
+                    raise UnauthorizedActionException(result)
+                else:
+                    raise UnauthorizedActionException(f'cannot {action}')
 
 
 def _can_create_or_update_check(self: JObject) -> None:
@@ -475,29 +486,50 @@ def _can_create_or_update_check(self: JObject) -> None:
 
 
 def _can_delete_check(self: JObject) -> None:
+    from .types import Types
+    if len(self.__class__.cdef.jconf.can_delete) == 0:
+        return
+    operator = getattr(self, '_operator')
+    if operator is None:
+        raise UnauthorizedActionException('no operator')
     for callback in self.__class__.cdef.jconf.can_delete:
-        operator = getattr(self, '_operator')
-        if operator is None:
-            raise UnauthorizedActionException('no operator')
-        result = callback(self, operator)
-        if result is not None and result is not True:
-            if isinstance(result, str):
-                raise UnauthorizedActionException(result)
-            else:
-                raise UnauthorizedActionException('cannot delete')
+        if isinstance(callback, Types):
+            ctx = Ctx.rootctx(self, CtxCfg())
+            tval = callback.modifier.transform(ctx)
+            try:
+                callback.modifier.validate(ctx.nval(tval))
+            except ValidationException:
+                raise UnauthorizedActionException(f'cannot delete')
+        else:
+            result = callback(self, operator)
+            if result is not None and result is not True:
+                if isinstance(result, str):
+                    raise UnauthorizedActionException(result)
+                else:
+                    raise UnauthorizedActionException('cannot delete')
 
 
 def _can_read_check(self: JObject) -> None:
+    if len(self.__class__.cdef.jconf.can_read) == 0:
+        return
+    operator = getattr(self, '_operator')
+    if operator is None:
+        raise UnauthorizedActionException('no operator')
     for callback in self.__class__.cdef.jconf.can_read:
-        operator = getattr(self, '_operator')
-        if operator is None:
-            raise UnauthorizedActionException('no operator')
-        result = callback(self, operator)
-        if result is not None and result is not True:
-            if isinstance(result, str):
-                raise UnauthorizedActionException(result)
-            else:
-                raise UnauthorizedActionException('cannot read')
+        if isinstance(callback, Types):
+            ctx = Ctx.rootctx(self, CtxCfg())
+            tval = callback.modifier.transform(ctx)
+            try:
+                callback.modifier.validate(ctx.nval(tval))
+            except ValidationException:
+                raise UnauthorizedActionException(f'cannot read')
+        else:
+            result = callback(self, operator)
+            if result is not None and result is not True:
+                if isinstance(result, str):
+                    raise UnauthorizedActionException(result)
+                else:
+                    raise UnauthorizedActionException('cannot read')
 
 
 def _run_on_create_callbacks(self: JObject) -> None:
