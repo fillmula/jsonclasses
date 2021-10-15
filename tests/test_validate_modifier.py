@@ -1,8 +1,10 @@
 from __future__ import annotations
 from unittest import TestCase
 from jsonclasses.excs import ValidationException
-from tests.classes.valid_password import (ValidPassword, ValidPasswordMessage,
-                                          CValidPassword, OptionalPassword)
+from tests.classes.valid_password import (
+    ValidPassword, ValidPasswordMessage, CValidPassword, OptionalPassword,
+    TValidPassword
+)
 
 
 class TestValidateModifier(TestCase):
@@ -35,3 +37,11 @@ class TestValidateModifier(TestCase):
     def test_validate_can_also_accept_context(self):
         pw = CValidPassword(name='Li Si', password='0000')
         pw.validate()
+
+    def test_validate_doesnt_raise_if_types_validator_is_valid(self):
+        pw = TValidPassword(name='Q', password=45)
+        pw.validate()
+
+    def test_validate_raises_if_types_validator_isnt_valid(self):
+        pw = TValidPassword(name='Q', password=50)
+        self.assertRaisesRegex(ValidationException, 'invalid value', pw.validate)

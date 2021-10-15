@@ -23,6 +23,12 @@ class CValidPassword:
 
 
 @jsonclass
+class TValidPassword:
+    name: Optional[str]
+    password: int = types.int.validate(types.add(5).eq(50)).required
+
+
+@jsonclass
 class OptionalPassword:
     name: Optional[str]
     password: Optional[str] = types.str.validate(lambda p: len(p) % 2 == 0)

@@ -780,7 +780,7 @@ class Types:
         """
         return Types(self, PresentWithoutModifier(referring_keys))
 
-    def validate(self, validator: Callable) -> Types:
+    def validate(self, validator: Callable | Types) -> Types:
         """The validate field mark takes a modifier callable as its sole
         argument. Use this to define custom field value validations.
 
