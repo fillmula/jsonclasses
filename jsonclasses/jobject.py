@@ -2,9 +2,8 @@
 confirm to.
 """
 from __future__ import annotations
-
 from typing import (
-    Any, TypeVar, Optional, ClassVar, Protocol, Set, TYPE_CHECKING
+    Any, Callable, TypeVar, Optional, ClassVar, Protocol, Set, TYPE_CHECKING
 )
 if TYPE_CHECKING:
     from .cdef import Cdef
@@ -12,6 +11,7 @@ if TYPE_CHECKING:
     from .owned_dict import OwnedDict
     from .owned_list import OwnedList
     from .jfield import JField
+    from .types import Types
 T = TypeVar('T', bound='JObject')
 
 
@@ -147,6 +147,10 @@ class JObject(Protocol):
     def _orm_delete(self: T) -> None: ...
 
     def _orm_restore(self: T) -> None: ...
+
+    def _can_cu_check_common(self: T,
+                             callbacks: list[Callable | Types],
+                             action: str) -> None: ...
 
     def _can_create_or_update_check(self: T) -> None: ...
 

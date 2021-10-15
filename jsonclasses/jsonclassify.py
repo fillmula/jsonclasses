@@ -1,11 +1,12 @@
 """This module defines the `jsonclassify` function."""
 from __future__ import annotations
-from typing import Any, Optional, Union
+from typing import Any, Callable, Optional, Union
 from datetime import datetime
 from inspect import signature, getmro
 from .jobject import JObject
 from .ctx import Ctx, CtxCfg
 from .fdef import Fdef, FStore, FType
+from .types import Types
 from .modifiers.instanceof_modifier import InstanceOfModifier
 from .jfield import JField
 from .isjsonclass import isjsonobject
@@ -24,7 +25,7 @@ from .excs import (AbstractJSONClassException, ValidationException,
                          JSONClassResetError, JSONClassResetNotEnabledError,
                          UnlinkableJSONClassException,
                          UnauthorizedActionException)
-from jsonclasses import fdef
+
 
 
 def __init__(self: JObject, **kwargs: dict[str, Any]) -> None:
@@ -449,29 +450,28 @@ def _orm_restore(self: JObject) -> None:
     pass
 
 
+def _can_cu_check_common(self: JObject,
+                         callbacks: list[Types | Callable],
+                         action: str) -> None:
+    for callback in callbacks:
+        operator = getattr(self, '_operator')
+        if operator is None:
+            raise UnauthorizedActionException('no operator')
+        result = callback(self, operator)
+        if result is not None and result is not True:
+            if isinstance(result, str):
+                raise UnauthorizedActionException(result)
+            else:
+                raise UnauthorizedActionException(f'cannot {action}')
+
+
 def _can_create_or_update_check(self: JObject) -> None:
     if self.is_new:
-        for callback in self.__class__.cdef.jconf.can_create:
-            operator = getattr(self, '_operator')
-            if operator is None:
-                raise UnauthorizedActionException('no operator')
-            result = callback(self, operator)
-            if result is not None and result is not True:
-                if isinstance(result, str):
-                    raise UnauthorizedActionException(result)
-                else:
-                    raise UnauthorizedActionException('cannot create')
+        self._can_cu_check_common(
+            self.__class__.cdef.jconf.can_create, 'create')
     else:
-        for callback in self.__class__.cdef.jconf.can_update:
-            operator = getattr(self, '_operator')
-            if operator is None:
-                raise UnauthorizedActionException('no operator')
-            result = callback(self, operator)
-            if result is not None and result is not True:
-                if isinstance(result, str):
-                    raise UnauthorizedActionException(result)
-                else:
-                    raise UnauthorizedActionException('cannot update')
+        self._can_cu_check_common(
+            self.__class__.cdef.jconf.can_update, 'update')
 
 
 def _can_delete_check(self: JObject) -> None:
@@ -855,6 +855,7 @@ def jsonclassify(class_: type) -> type[JObject]:
     class_._database_write = _database_write
     class_._orm_delete = _orm_delete
     class_._orm_restore = _orm_restore
+    class_._can_cu_check_common = _can_cu_check_common
     class_._can_create_or_update_check = _can_create_or_update_check
     class_._can_delete_check = _can_delete_check
     class_._can_read_check = _can_read_check
