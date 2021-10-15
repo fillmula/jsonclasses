@@ -1,7 +1,8 @@
 """This modules contains the JSONClasses types modifier."""
 from __future__ import annotations
-from typing import Callable, Any, Optional, Union
+from typing import Callable, Any, Optional
 from datetime import date, datetime, timedelta
+from enum import Enum
 from copy import deepcopy
 from .jobject import JObject
 from .fdef import Fdef
@@ -36,7 +37,7 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         TruncateModifier, UniqueModifier, ValidateModifier,
                         Modifier, WriteNonnullModifier, WriteonceModifier,
                         WriteonlyModifier, DenyModifier, CascadeModifier,
-                        NullifyModifier, OpModifier, AsopModifier,
+                        NullifyModifier, AsopModifier,
                         AsopdModifier, UrlModifier, EmailModifier,
                         DigitModifier,AlphaModifier,NumericModifier,
                         AlnumModifier,ToTitleModifier,ToCapModifier,
@@ -552,12 +553,12 @@ class Types:
         """
         return Types(self, DatetimeModifier())
 
-    def before(self, point: Union[Date, Datetime]) -> Types:
+    def before(self, point: Date | Datetime) -> Types:
         """InputDate should be before the date. This is a date modifier
         """
         return Types(self, BeforeModifier(point))
 
-    def after(self, point: Union[Date, Datetime]) -> Types:
+    def after(self, point: Date | Datetime) -> Types:
         """InputDate should be after the date. This is a date modifier
         """
         return Types(self, AfterModifier(point))
@@ -642,7 +643,7 @@ class Types:
         """
         return Types(self, FormatDatetimeModifier(format))
 
-    def enum(self, enum_class: Union[type, Str]) -> Types:
+    def enum(self, enum_class: type[Enum] | str) -> Types:
         """Fields marked with enum should be enum value of provided enum type.
         This is a type modifier.
         """
@@ -771,7 +772,7 @@ class Types:
         """
         return Types(self, PresentWithModifier(referring_key))
 
-    def presentwithout(self, referring_keys: Union[Str, list[Str]]) -> Types:
+    def presentwithout(self, referring_keys: Str | list[Str]) -> Types:
         """Fields marked with presentwithout modifier are forced presented if
         referring field is not present. If referring field has None value, this
         field's value should be present. If referring field has non None value,
@@ -1200,13 +1201,14 @@ class Types:
         """
         return Types(self, AuthByModifier(types.checkpw(types.passin)))
 
-    def op(self, op_callable: Callable) -> Types:
-        """Operator modifier validates value against the operator object user
+
+    def canc(self, checker: Callable | Types) -> Types:
+        """CanC modifier validates value against the operator object user
         passed in. This modifier is special and doesn't bypass None value. If
         the operator is not present, this modifier fails.
 
         Args:
-            op_callable (Callable): The op callable takes 1 to 4 arguments. The
+            checker (Callable | Types): The checker takes 1 to 4 arguments. The
             first is the operator object, the second is the object being
             operated, the third is the value of the field, the fourth is the
             validating context. Returning None or True means the value is
@@ -1216,25 +1218,59 @@ class Types:
         Returns:
             Types: A new types chained with this modifier.
         """
-        return Types(self, OpModifier(op_callable))
-
-    def canc(self, checker: Callable | Types) -> Types:
-        """
-        """
         return Types(self, CanCModifier(checker))
 
     def canu(self, checker: Callable | Types) -> Types:
-        """
+        """CanU modifier validates value against the operator object user
+        passed in. This modifier is special and doesn't bypass None value. If
+        the operator is not present, this modifier fails.
+
+        Args:
+            checker (Callable | Types): The checker takes 1 to 4 arguments. The
+            first is the operator object, the second is the object being
+            operated, the third is the value of the field, the fourth is the
+            validating context. Returning None or True means the value is
+            valid, while returning a str message or False means validation
+            failed.
+
+        Returns:
+            Types: A new types chained with this modifier.
         """
         return Types(self, CanUModifier(checker))
 
     def canw(self, checker: Callable | Types) -> Types:
-        """
+        """CanW modifier validates value against the operator object user
+        passed in. This modifier is special and doesn't bypass None value. If
+        the operator is not present, this modifier fails.
+
+        Args:
+            checker (Callable | Types): The checker takes 1 to 4 arguments. The
+            first is the operator object, the second is the object being
+            operated, the third is the value of the field, the fourth is the
+            validating context. Returning None or True means the value is
+            valid, while returning a str message or False means validation
+            failed.
+
+        Returns:
+            Types: A new types chained with this modifier.
         """
         return Types(self, CanCModifier(checker), CanUModifier(checker))
 
     def canr(self, checker: Callable | Types) -> Types:
-        """
+        """CanR modifier validates value against the operator object user
+        passed in. This modifier is special and doesn't bypass None value. If
+        the operator is not present, this modifier fails.
+
+        Args:
+            checker (Callable | Types): The checker takes 1 to 4 arguments. The
+            first is the operator object, the second is the object being
+            operated, the third is the value of the field, the fourth is the
+            validating context. Returning None or True means the value is
+            valid, while returning a str message or False means validation
+            failed.
+
+        Returns:
+            Types: A new types chained with this modifier.
         """
         return Types(self, CanRModifier(checker))
 
@@ -1268,13 +1304,13 @@ class Types:
         """
         return Types(self, RandomAlnumpuncsModifier(length))
 
-    def randomint(self: Types, min_value: Union[int, float],
-                    max_value: Union[int, float]) -> Types:
+    def randomint(self: Types, min_value: int | float,
+                    max_value: int | float) -> Types:
         """Random int modifier generates a random int value."""
         return Types(self, RandomIntModifier(min_value, max_value))
 
-    def randomfloat(self: Types, min_value: Union[int, float],
-                    max_value: Union[int, float]) -> Types:
+    def randomfloat(self: Types, min_value: int | float,
+                    max_value: int | float) -> Types:
         """Random float modifier generates a random float value."""
         return Types(self, RandomFloatModifier(min_value, max_value))
 

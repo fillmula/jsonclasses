@@ -3,19 +3,6 @@ from jsonclasses import jsonclass, types
 
 
 @jsonclass
-class OpUser:
-    name: str = types.str.required
-    owned_teams: list[OpTeam] = types.nonnull.listof('OpTeam') \
-                                     .linkedby('owner')
-
-
-@jsonclass
-class OpTeam:
-    name: str = types.str.op(lambda o, t: o == t.owner).required
-    owner: OpUser = types.instanceof('OpUser').linkto.required
-
-
-@jsonclass
 class AsopUser:
     name: str = types.str.required
     owned_teams: list[AsopTeam] = types.nonnull.listof('AsopTeam') \

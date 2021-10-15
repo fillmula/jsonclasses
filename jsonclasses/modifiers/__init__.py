@@ -158,9 +158,6 @@ from .presentwithout_modifier import PresentWithoutModifier
 # custom modifier
 from .validate_modifier import ValidateModifier
 
-# operator modifier
-from .op_modifier import OpModifier
-
 # comparing modifier and callback
 from .reset_modifier import ResetModifier
 from .compare_modifier import CompareModifier
@@ -171,9 +168,12 @@ from .default_modifier import DefaultModifier
 # transform
 from .transform_modifier import TransformModifier
 
-# operator transform
+# operator
 from .asop_modifier import AsopModifier
 from .asopd_modifier import AsopdModifier
+from .canc_modifier import CanCModifier
+from .canu_modifier import CanUModifier
+from .canr_modifier import CanRModifier
 
 from .nonnull_modifier import NonnullModifier
 
@@ -215,8 +215,5 @@ from .oneisvalid_modifier import OneIsValidModifier
 from .isobjof_modifier import IsObjOfModifier
 from .isobj_modifier import IsObjModifier
 from .getop_modifier import GetOpModifier
-from .canc_modifier import CanCModifier
-from .canu_modifier import CanUModifier
-from .canr_modifier import CanRModifier
 from .hasprefix_modifier import HasprefixModifier
 from .hassuffix_modifier import HassuffixModifier
