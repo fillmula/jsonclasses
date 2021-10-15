@@ -6,10 +6,10 @@ from tests.classes.simple_code import SimpleCode
 class TestMaxlength(TestCase):
 
     def test_maxlength_does_not_raise_if_length_less_than_or_equal_maxlength_in_str(self):
-        l_max_code = SimpleCode(l_max_code='1234')
-        l_max_code.validate()
-        l_max_code = SimpleCode(l_max_code='12345678')
-        l_max_code.validate()
+        max_code = SimpleCode(max_code='1234')
+        max_code.validate()
+        max_code = SimpleCode(max_code='12345678')
+        max_code.validate()
 
     def test_maxlength_does_not_raise_if_length_less_than_or_equal_maxlength_in_list(self):
         l_max_code = SimpleCode(l_max_code=[1, 2, 3, 4])
@@ -18,14 +18,14 @@ class TestMaxlength(TestCase):
         l_max_code.validate()
 
     def test_maxlength_raises_if_length_greater_than_maxlength_in_str(self):
-        l_max_code = SimpleCode(l_max_code='12345')
+        max_code = SimpleCode(max_code='1234556932598236')
         with self.assertRaises(ValidationException):
-            l_max_code.validate()
-        l_max_code = SimpleCode(l_max_code='1')
+            max_code.validate()
+        max_code = SimpleCode(max_code='147432348')
         with self.assertRaises(ValidationException):
-            l_max_code.validate()
+            max_code.validate()
 
-    def test_maxlength_raises_if_length_greater_than_maxlength_in_str(self):
+    def test_maxlength_raises_if_length_greater_than_maxlength_in_list(self):
         l_max_code = SimpleCode(l_max_code=[1, 2, 3, 4, 5, 6, 7, 8, 9, 0])
         with self.assertRaises(ValidationException):
             l_max_code.validate()
