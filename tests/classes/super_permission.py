@@ -16,5 +16,5 @@ class SuperPermissionArticle:
     code: int = types.int.required
     user: SuperPermissionUser = types.objof('SuperPermissionUser').linkto
     title: str = types.str.canc(types.getop.fval('code').eq(types.this.fval('code'))).required
-    content: str = types.str.required
+    content: str = types.str.canr(types.getop.fval('code').eq(types.this.fval('code'))).required
     content2: Optional[str] = types.str.canu(types.getop.isobj(types.this.fval('user')))
