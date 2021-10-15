@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from ..ctx import Ctx
 
 class ReverseModifier(Modifier):
-    """Reverse modifier Reverse iterable value."""
+    """Reverse modifier reverses iterable values."""
 
     def transform(self, ctx: Ctx) -> Any:
         is_iterable = type(ctx.val) is str or isinstance(ctx.val, list)
