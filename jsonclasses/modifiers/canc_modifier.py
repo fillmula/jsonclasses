@@ -1,15 +1,17 @@
 """module for canc modifier."""
 from __future__ import annotations
 from typing import Callable, TYPE_CHECKING
-from .modifier import Modifier
+from .cancu_modifier import CanCUModifier
 from ..fdef import Fdef
 if TYPE_CHECKING:
+    from ..ctx import Ctx
     from ..types import Types
 
 
-class CanCModifier(Modifier):
+class CanCModifier(CanCUModifier):
     """Whether this operator can create on this field.
     """
 
-    def __init__(self, checker: Callable | Types) -> None:
-        self.checker = checker
+    def validate(self, ctx: Ctx) -> None:
+        if ctx.owner.is_new:
+            super().validate(ctx)

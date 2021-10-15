@@ -54,7 +54,7 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         ToBoSecModifier, ToBoMinModifier, ToBoHourModifier,
                         ToNextSecModifier, ToNextMinModifier, UploaderModifier,
                         ToNextHourModifier, CrossFetchModifier,
-                        ToNextMonModifier, ToNextYearModifier,
+                        ToNextMonModifier, ToNextYearModifier, IsObjModifier,
                         ToNextDayModifier, ToBoYearModifier, ToBoMonModifier,
                         ToBoDayModifier, PadStartModifier, PadEndModifier,
                         UnqueryableModifier, QueryableModifier, PowModifier,
@@ -1324,6 +1324,11 @@ class Types:
         """One is valid is valid if one of subroutines is valid.
         """
         return Types(self, OneIsValidModifier(subroutines))
+
+    def isobj(self: Types, getter: Types) -> Types:
+        """Valid if objects are equal.
+        """
+        return Types(self, IsObjModifier(getter))
 
     def isobjof(self: Types, cls: type[JObject] | str) -> Types:
         """Valid if the value is object of a class.

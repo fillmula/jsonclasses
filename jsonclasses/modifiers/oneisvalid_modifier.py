@@ -27,7 +27,7 @@ class OneIsValidModifier(Modifier):
             if isinstance(item, Types):
                 tresult = item.modifier.transform(ctx)
                 try:
-                    item.modifier.validate(tresult)
+                    item.modifier.validate(ctx.nval(tresult))
                     return
                 except ValidationException:
                     continue
