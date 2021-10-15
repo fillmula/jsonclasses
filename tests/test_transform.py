@@ -1,6 +1,8 @@
 from __future__ import annotations
 from unittest import TestCase
-from tests.classes.transform_name import TransformName, CTransformName
+from tests.classes.transform_name import (
+    TransformName, CTransformName, TTransformName
+)
 
 
 class TestTransform(TestCase):
@@ -16,3 +18,7 @@ class TestTransform(TestCase):
     def test_transform_transforms_takes_optional_context(self):
         name = CTransformName(name='Ua Ai Kai Nang')
         self.assertEqual(name.name, 'Ua Ai Kai NangUa Ai Kai Nang')
+
+    def test_transform_transforms_with_types(self):
+        name = TTransformName(age=3)
+        self.assertEqual(name.age, 40)

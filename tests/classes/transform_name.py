@@ -11,3 +11,8 @@ class TransformName:
 @jsonclass
 class CTransformName:
     name: Optional[str] = types.str.transform(lambda s, c: s + c.val)
+
+
+@jsonclass
+class TTransformName:
+    age: Optional[int] = types.int.transform(types.add(5).mul(5))

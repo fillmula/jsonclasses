@@ -1026,7 +1026,7 @@ class Types:
         """
         return Types(self, EagerModifier(), AbsModifier())
 
-    def transform(self, transformer: Callable) -> Types:
+    def transform(self, transformer: Callable | Types) -> Types:
         """This mark applies transfromer on the value. When value is None, the
         transformer is not called. This class barely means to transform. Use
         default mark with a callable to assign calculated default value.
