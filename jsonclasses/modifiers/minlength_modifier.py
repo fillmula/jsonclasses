@@ -16,7 +16,7 @@ class MinlengthModifier(Modifier):
     def validate(self, ctx: Ctx) -> None:
         if ctx.val is None:
             return
-        if type(ctx.val) is list or type(ctx.val) is str:
+        if isinstance(ctx.val, list) or type(ctx.val) is str:
             if len(ctx.val) < self.minlength:
                 ctx.raise_vexc('length of value is not greater than or equal '
                             f'{self.minlength}')

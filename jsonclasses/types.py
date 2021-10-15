@@ -58,7 +58,8 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         ToBoDayModifier, PadStartModifier, PadEndModifier,
                         UnqueryableModifier, QueryableModifier, PowModifier,
                         FormatDatetimeModifier, NoCopyModifier, SqrtModifier,
-                        MapModifier, FilterModifier)
+                        MapModifier, FilterModifier, HasprefixModifier,
+                        HassuffixModifier)
 
 Str = str
 Int = int
@@ -383,6 +384,16 @@ class Types:
         """This modifier is used to filter the given sequence
         """
         return Types(self, FilterModifier(validate_callable))
+
+    def hasprefix(self, validate_affix: str) -> Types:
+        """Hasprefix modifier validates if a string is prefix of another string
+        """
+        return Types(self, HasprefixModifier(validate_affix))
+
+    def hassuffix(self, validate_affix: str) -> Types:
+        """Hasprefix modifier validates if a string is prefix of another string
+        """
+        return Types(self, HasprefixModifier(validate_affix))
 
     @property
     def sqrt(self) -> Types:
