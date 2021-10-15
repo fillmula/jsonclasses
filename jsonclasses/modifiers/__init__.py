@@ -210,5 +210,8 @@ from .this_modifier import ThisModifier
 from .at_modifier import AtModifier
 from .assign_modifier import AssignModifier
 from .uploader_modifier import UploaderModifier
+from .isthis_modifier import IsThisModifier
+from .oneisvalid_modifier import OneIsValidModifier
+from .isobjof_modifier import IsObjOfModifier
 from .hasprefix_modifier import HasprefixModifier
 from .hassuffix_modifier import HassuffixModifier

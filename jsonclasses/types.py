@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Callable, Any, Optional, Union
 from datetime import date, datetime, timedelta
 from copy import deepcopy
+from .jobject import JObject
 from .fdef import Fdef
 from .keypath import new_mongoid
 from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
@@ -20,13 +21,13 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         NegativeModifier, NonnullModifier, NullableModifier,
                         OneOfModifier, UnionModifier, OnWriteModifier,
                         OnSaveModifier, OnUpdateModifier, OutputLnameModifier,
-                        OutputNameModifier, OutputValueModifier,
+                        OutputNameModifier, OutputValueModifier, IsObjOfModifier,
                         PositiveModifier, PresentModifier, SetterModifier,
                         NonnegativeModifier, NonpositiveModifier,
                         PresentWithModifier, PresentWithoutModifier,
-                        PreserializeModifier, PrimaryModifier,
+                        PreserializeModifier, PrimaryModifier, IsThisModifier,
                         RangeModifier, ReadonlyModifier, ReadwriteModifier,
-                        RefereeModifier, ReferrerModifier,
+                        RefereeModifier, ReferrerModifier, OneIsValidModifier,
                         RequiredModifier, ResetModifier, SetOnSaveModifier,
                         FSetOnSaveModifier, AddModifier, SubModifier,
                         DivModifier, ModModifier, MulModifier,
@@ -1292,6 +1293,23 @@ class Types:
         """
         return Types(self, AssignModifier(name, value))
 
+    @property
+    def isthis(self: Types) -> Types:
+        """Check whether the current value is the owner object.
+        """
+        return Types(self, IsThisModifier())
+
+    @property
+    def oneisvalid(self: Types, subroutines: list[Callable | Types]) -> Types:
+        """One is valid is valid if one of subroutines is valid.
+        """
+        return Types(self, OneIsValidModifier(subroutines))
+
+    @property
+    def isobjof(self: Types, cls: type[JObject] | str) -> Types:
+        """Valid if the value is object of a class.
+        """
+        return Types(self, IsObjOfModifier(cls))
 
     # internal
 
