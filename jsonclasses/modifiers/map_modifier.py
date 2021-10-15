@@ -17,7 +17,5 @@ class MapModifier(Modifier):
     def transform(self, ctx: Ctx) -> Any:
         if isinstance(ctx.val, list):
             return list(map(self.callback, ctx.val))
-        if type(ctx.val) is tuple:
-            return tuple(map(self.callback, ctx.val))
         else:
             return ctx.val

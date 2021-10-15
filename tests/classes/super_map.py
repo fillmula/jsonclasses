@@ -12,4 +12,3 @@ def callback_t(i: int) -> tuple:
 @jsonclass
 class SuperMap:
     l_m: Optional[list[int]] = types.listof(int).map(callback_l)
-    #t_m: Optional[tuple] = types.map(callback_t)

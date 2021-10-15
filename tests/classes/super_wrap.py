@@ -4,5 +4,5 @@ from jsonclasses import jsonclass, types
 
 
 @jsonclass
-class SuperAffix:
-    hp: Optional[str] = types.str.hasprefix('unhappy')
+class SuperWrap:
+    s: list[str] = types.listof(str).wrapintolist
