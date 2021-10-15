@@ -134,6 +134,14 @@ from .outputlname_modifier import OutputLnameModifier
 
 # iterable modifiers
 from .reverse_modifier import ReverseModifier
+from .hasprefix_modifier import HasPrefixModifier
+from .hassuffix_modifier import HasSuffixModifier
+from .isprefixof_modifier import IsPrefixOfModifier
+from .issuffixof_modifier import IsSuffixOfModifier
+from .wrapintolist_modifier import WrapIntoListModifier
+from .insertat_modifier import InsertAtModifier
+from .append_modifier import AppendModifier
+from .prepend_modifier import PrependModifier
 
 # collection modifiers
 from .listof_modifier import ListOfModifier
@@ -215,5 +223,3 @@ from .oneisvalid_modifier import OneIsValidModifier
 from .isobjof_modifier import IsObjOfModifier
 from .isobj_modifier import IsObjModifier
 from .getop_modifier import GetOpModifier
-from .hasprefix_modifier import HasprefixModifier
-from .hassuffix_modifier import HassuffixModifier

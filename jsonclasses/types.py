@@ -60,9 +60,11 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         ToBoDayModifier, PadStartModifier, PadEndModifier,
                         UnqueryableModifier, QueryableModifier, PowModifier,
                         FormatDatetimeModifier, NoCopyModifier, SqrtModifier,
-                        MapModifier, FilterModifier, HasprefixModifier,
-                        HassuffixModifier, CanCModifier, CanUModifier,
-                        CanRModifier)
+                        CanCModifier, CanUModifier, CanRModifier, MapModifier,
+                        FilterModifier, HasPrefixModifier, HasSuffixModifier,
+                        InsertAtModifier, AppendModifier, PrependModifier,
+                        WrapIntoListModifier, IsPrefixOfModifier,
+                        IsSuffixOfModifier)
 
 Str = str
 Int = int
@@ -388,15 +390,50 @@ class Types:
         """
         return Types(self, FilterModifier(validate_callable))
 
-    def hasprefix(self, validate_affix: str) -> Types:
+    def hasprefix(self, validate_prefix: str | list[str | int]) -> Types:
         """Hasprefix modifier validates if a string is prefix of another string
+        or a list is prefix of another list
         """
-        return Types(self, HasprefixModifier(validate_affix))
+        return Types(self, HasPrefixModifier(validate_prefix))
 
-    def hassuffix(self, validate_affix: str) -> Types:
-        """Hasprefix modifier validates if a string is prefix of another string
+    def hassuffix(self, validate_suffix: str | list[str | int]) -> Types:
+        """Hassuffix modifier validates if a string is suffix of another string
+        or a list is suffix of another list
         """
-        return Types(self, HasprefixModifier(validate_affix))
+        return Types(self, HasSuffixModifier(validate_suffix))
+
+    def isprefixof(self, prefix: str | list[str | int]) -> Types:
+        """Hassuffix modifier validates if a string is suffix of another string
+        or a list is suffix of another list
+        """
+        return Types(self, IsPrefixOfModifier(prefix))
+
+    def issuffixof(self, suffix: str | list[str | int]) -> Types:
+        """Hassuffix modifier validates if a string is suffix of another string
+        or a list is suffix of another list
+        """
+        return Types(self, IsSuffixOfModifier(suffix))
+
+    def insertat(self, item: Any, index: int) -> Types:
+        """
+        """
+        return Types(self, InsertAtModifier(item, index))
+
+    def prepend(self, item: str | int | float) -> Types:
+        """
+        """
+        return Types(self, PrependModifier(item))
+
+    def append(self, item: Any) -> Types:
+        """
+        """
+        return Types(self, AppendModifier(item))
+
+    @property
+    def wrapintolist(self) -> Types:
+        """
+        """
+        return Types(self, WrapIntoListModifier())
 
     @property
     def sqrt(self) -> Types:

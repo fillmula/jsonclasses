@@ -16,4 +16,3 @@ def callback_s(i: int) -> set:
 @jsonclass
 class SuperFilter:
     l_fil: Optional[list[int]] = types.listof(int).filter(callback_l)
-    #t_fil: Optional[tuple] = types.filter(callback_t)
