@@ -213,5 +213,6 @@ from .uploader_modifier import UploaderModifier
 from .isthis_modifier import IsThisModifier
 from .oneisvalid_modifier import OneIsValidModifier
 from .isobjof_modifier import IsObjOfModifier
+from .getop_modifier import GetOpModifier
 from .hasprefix_modifier import HasprefixModifier
 from .hassuffix_modifier import HassuffixModifier

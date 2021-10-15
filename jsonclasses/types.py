@@ -30,7 +30,7 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         RefereeModifier, ReferrerModifier, OneIsValidModifier,
                         RequiredModifier, ResetModifier, SetOnSaveModifier,
                         FSetOnSaveModifier, AddModifier, SubModifier,
-                        DivModifier, ModModifier, MulModifier,
+                        DivModifier, ModModifier, MulModifier, GetOpModifier,
                         StrModifier, StrictModifier, AssignModifier,
                         TempModifier, TransformModifier, TrimModifier,
                         TruncateModifier, UniqueModifier, ValidateModifier,
@@ -1299,17 +1299,21 @@ class Types:
         """
         return Types(self, IsThisModifier())
 
-    @property
     def oneisvalid(self: Types, subroutines: list[Callable | Types]) -> Types:
         """One is valid is valid if one of subroutines is valid.
         """
         return Types(self, OneIsValidModifier(subroutines))
 
-    @property
     def isobjof(self: Types, cls: type[JObject] | str) -> Types:
         """Valid if the value is object of a class.
         """
         return Types(self, IsObjOfModifier(cls))
+
+    @property
+    def getop(self: Types) -> Types:
+        """Get the operator of this action.
+        """
+        return Types(self, GetOpModifier())
 
     # internal
 
