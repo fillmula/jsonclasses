@@ -24,7 +24,7 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         OnSaveModifier, OnUpdateModifier, OutputLnameModifier,
                         OutputNameModifier, OutputValueModifier, IsObjOfModifier,
                         PositiveModifier, PresentModifier, SetterModifier,
-                        NonnegativeModifier, NonpositiveModifier, VMsgModifier,
+                        NonnegativeModifier, NonpositiveModifier,
                         PresentWithModifier, PresentWithoutModifier,
                         PreserializeModifier, PrimaryModifier, IsThisModifier,
                         RangeModifier, ReadonlyModifier, ReadwriteModifier,
@@ -809,7 +809,7 @@ class Types:
         Returns:
             Types: A new types chained with this modifier.
         """
-        return Types(self, VMsgModifier(validator, message))
+        return Types(self, ValidateModifier(validator, message))
 
     def compare(self, compare_callable: Callable) -> Types:
         """The compare field mark takes a modifier callable as its sole
