@@ -292,6 +292,8 @@ class Fdef:
         from .types import Types
         self._resolve_if_needed()
         if self._raw_item_types is None:
+            print(self)
+            print("HERE WONG NONE")
             return cast(Types, None)
         if self._resolved_item_types is not None:
             return self._resolved_item_types

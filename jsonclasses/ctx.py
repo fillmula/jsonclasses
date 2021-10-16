@@ -135,6 +135,14 @@ class Ctx(NamedTuple):
                    operator=root._operator, mgraph=MGraph(), idchain=[],
                    passin=passin)
 
+    def alterfdef(self: Ctx, fdef: Fdef) -> Ctx:
+        return Ctx(root=self.root, owner=self.owner, parent=self.parent, holder=self.holder,
+                   val=self.val,
+                   original=self.original, ctxcfg=self.ctxcfg, keypatho=self.keypatho, fkeypatho=self.fkeypatho,
+                   keypathr=self.keypathr, fkeypathr=self.fkeypathr, keypathp=self.keypathp, fkeypathp=self.fkeypathp,
+                   keypathh=self.keypathh, fkeypathh=self.fkeypathh, fdef=fdef,
+                   operator=self.operator, mgraph=self.mgraph, idchain=self.idchain)
+
     def nval(self: Ctx, newval: Any) -> Ctx:
         return Ctx(root=self.root, owner=self.owner, parent=self.parent,
                    holder=self.holder, val=newval, original=self.original,

@@ -9,8 +9,6 @@ from ..jconf import JConf
 from ..excs import ValidationException
 from .type_modifier import TypeModifier
 if TYPE_CHECKING:
-    from ..jobject import JObject
-    from ..types import Types
     from ..ctx import Ctx
 
 

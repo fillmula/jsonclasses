@@ -12,3 +12,8 @@ class NewUnion:
 class NewRUnion:
     code: str | int
     items: dict[str, str | int] | list[str]
+
+
+@jsonclass
+class NewOUnion:
+    items: dict[str, str | int] | list[str] | None

@@ -25,7 +25,9 @@ class UnionModifier(Modifier):
             return
         for types in ctx.fdef.raw_union_types:
             try:
-                types.modifier.validate(ctx)
+                if types.fdef._cdef is None:
+                    types.fdef._cdef = ctx.owner.__class__.cdef
+                types.modifier.validate(ctx.alterfdef(types.fdef))
                 return
             except ValidationException:
                 continue

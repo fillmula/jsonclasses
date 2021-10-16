@@ -10,7 +10,7 @@ from tests.classes.linked_user import LinkedUser
 from tests.classes.linked_product import LinkedProduct
 from tests.classes.linked_customer import LinkedCustomer
 from tests.classes.linked_profile import LinkedProfile
-from tests.classes.new_union import NewUnion, NewRUnion
+from tests.classes.new_union import NewUnion, NewRUnion, NewOUnion
 
 
 class TestAutoTypes(TestCase):
@@ -457,3 +457,27 @@ class TestAutoTypes(TestCase):
         obj.validate()
         obj.code = 123.5
         self.assertRaises(ValidationException, obj.validate)
+
+    def test_auto_generates_required_complicated_union_with_new_union_syntax_str(self):
+        obj = NewRUnion(items=['12'], code='12')
+        obj.validate()
+        obj.items = {'a': 1, 'b': '2'}
+        obj.validate()
+        obj.items = [1]
+        self.assertRaises(ValidationException, obj.validate)
+        obj.items = {'a': 5.0}
+        self.assertRaises(ValidationException, obj.validate)
+        obj.items = None
+        self.assertRaises(ValidationException, obj.validate)
+
+    def test_auto_generates_optional_complicated_union_with_new_union_syntax_str(self):
+        obj = NewOUnion(items=['12'])
+        obj.validate()
+        obj.items = {'a': 1, 'b': '2'}
+        obj.validate()
+        obj.items = [1]
+        self.assertRaises(ValidationException, obj.validate)
+        obj.items = {'a': 5.0}
+        self.assertRaises(ValidationException, obj.validate)
+        obj.items = None
+        obj.validate()
