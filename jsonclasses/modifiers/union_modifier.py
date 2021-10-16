@@ -45,6 +45,20 @@ class UnionModifier(Modifier):
                 continue
         ctx.raise_vexc('value is not of any provided type')
 
+    def serialize(self, ctx: Ctx) -> Any:
+        if ctx.val is None:
+            return None
+        for types in ctx.fdef.raw_union_types:
+            if types.fdef._cdef is None:
+                types.fdef._cdef = ctx.owner.__class__.cdef
+            try:
+                newctx = ctx.alterfdef(types.fdef)
+                types.modifier.validate(newctx)
+                return types.modifier.serialize(newctx)
+            except ValidationException:
+                continue
+        return None
+
     def tojson(self, ctx: Ctx) -> Any:
         if ctx.val is None:
             return None
