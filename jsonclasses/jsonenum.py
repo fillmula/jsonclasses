@@ -1,32 +1,35 @@
 """
 This module contains `jsonenum`, the decorator for enums used with jsonclasses.
 """
-from typing import Optional, Union, Callable, overload
+from typing import Optional, Union, Callable, TypeVar, overload
+from enum import Enum
 from .cgraph import CGraph
 
 
+T = TypeVar('T', bound=type[Enum])
+
 @overload
-def jsonenum(cls: type) -> type: ...
+def jsonenum(cls: T) -> T: ...
 
 
 @overload
 def jsonenum(
     cls: None,
     class_graph: Optional[str] = 'default'
-) -> Callable[[type], type[dict]]: ...
+) -> Callable[[T], T]: ...
 
 
 @overload
 def jsonenum(
     cls: type,
     class_graph: Optional[str] = 'default'
-) -> type[dict]: ...
+) -> T: ...
 
 
 def jsonenum(
     cls: Optional[type] = None,
     class_graph: Optional[str] = 'default',
-) -> Union[Callable[[type], type[dict]], type[dict]]:
+) -> Union[Callable[[T], T], T]:
     """The jsonclass enum decorator. To declare a jsonclass enum, use this
     syntax:
 

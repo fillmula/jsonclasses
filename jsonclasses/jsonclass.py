@@ -3,10 +3,14 @@ This module contains `jsonclass`, the decorator for JSON Classes.
 """
 from __future__ import annotations
 from jsonclasses.keypath import identical_key
-from typing import Optional, Union, Callable, overload, cast, TYPE_CHECKING
+from typing import (
+    Optional, Union, Callable, TypeVar, overload, cast, TYPE_CHECKING
+)
 from dataclasses import dataclass
-from .jconf import (JConf, OnCreate, CanCreate, OnDelete, CanUpdate,
-                     CanDelete, CanRead, OnUpdate)
+from .jconf import (
+    JConf, OnCreate, CanCreate, OnDelete, CanUpdate, CanDelete, CanRead,
+    OnUpdate
+)
 from .jfield import JField
 from .cdef import Cdef
 from .jsonclassify import jsonclassify
@@ -15,8 +19,11 @@ if TYPE_CHECKING:
     from .types import Types
 
 
+T = TypeVar('T', bound=type)
+
+
 @overload
-def jsonclass(cls: type) -> type[JObject]: ...
+def jsonclass(cls: T) -> T | type[JObject]: ...
 
 
 @overload
@@ -38,12 +45,12 @@ def jsonclass(
     can_update: CanUpdate | list[CanUpdate] | Types | None = None,
     can_delete: CanDelete | list[CanDelete] | Types | None = None,
     can_read: CanRead | list[CanRead] | Types | None = None,
-) -> Callable[[type], type[JObject]]: ...
+) -> Callable[[T], T | type[JObject]]: ...
 
 
 @overload
 def jsonclass(
-    cls: type,
+    cls: T,
     class_graph: Optional[str] = 'default',
     key_encoding_strategy: Optional[Callable[[str], str]] = None,
     key_decoding_strategy: Optional[Callable[[str], str]] = None,
@@ -60,11 +67,11 @@ def jsonclass(
     can_update: CanUpdate | list[CanUpdate] | Types | None = None,
     can_delete: CanDelete | list[CanDelete] | Types | None = None,
     can_read: CanRead | list[CanRead] | Types | None = None,
-) -> type[JObject]: ...
+) -> T | type[JObject]: ...
 
 
 def jsonclass(
-    cls: Optional[type] = None,
+    cls: Optional[T] = None,
     class_graph: Optional[str] = 'default',
     key_encoding_strategy: Optional[Callable[[str], str]] = None,
     key_decoding_strategy: Optional[Callable[[str], str]] = None,
@@ -81,7 +88,7 @@ def jsonclass(
     can_update: CanUpdate | list[CanUpdate] | Types | None = None,
     can_delete: CanDelete | list[CanDelete] | Types | None = None,
     can_read: CanRead | list[CanRead] | Types | None = None,
-) -> Union[Callable[[type], type[JObject]], type[JObject]]:
+) -> Union[Callable[[T], T | type[JObject]], T | type[JObject]]:
     """The jsonclass object class decorator. To declare a jsonclass class, use
     this syntax:
 
