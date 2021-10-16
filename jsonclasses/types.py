@@ -383,12 +383,12 @@ class Types:
     def map(self, validate_callable: Callable) -> Types:
         """This modifier is used to getting a map object of the results
         """
-        return Types(self, MapModifier(validate_callable))
+        return Types(self, EagerModifier(), MapModifier(validate_callable))
 
     def filter(self, validate_callable: Callable) -> Types:
         """This modifier is used to filter the given sequence
         """
-        return Types(self, FilterModifier(validate_callable))
+        return Types(self, EagerModifier(), FilterModifier(validate_callable))
 
     def hasprefix(self, validate_prefix: str | list[str | int]) -> Types:
         """Hasprefix modifier validates if a string is prefix of another string
@@ -417,17 +417,17 @@ class Types:
     def insertat(self, item: Any, index: int) -> Types:
         """
         """
-        return Types(self, InsertAtModifier(item, index))
+        return Types(self, EagerModifier(), InsertAtModifier(item, index))
 
     def prepend(self, item: str | int | float) -> Types:
         """
         """
-        return Types(self, PrependModifier(item))
+        return Types(self, EagerModifier(), PrependModifier(item))
 
     def append(self, item: Any) -> Types:
         """
         """
-        return Types(self, AppendModifier(item))
+        return Types(self, EagerModifier(), AppendModifier(item))
 
     @property
     def wrapintolist(self) -> Types:

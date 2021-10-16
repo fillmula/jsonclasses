@@ -7,3 +7,11 @@ from jsonclasses import jsonclass, types
 class SimpleMixed:
     name: Optional[str]
     mixed: Optional[Union[int, str]] = types.union([str, int])
+
+
+@jsonclass
+class SimpleMixedT:
+    value: int | str = types.union([
+        types.str.append('123'),
+        types.int.add(123)
+    ])

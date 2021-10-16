@@ -20,13 +20,23 @@ class UnionModifier(Modifier):
         fdef._ftype = FType.UNION
         fdef._raw_union_types = [rtypes(t) for t in self.type_list]
 
+    def transform(self, ctx: Ctx) -> Any:
+        for types in ctx.fdef.raw_union_types:
+            if types.fdef._cdef is None:
+                types.fdef._cdef = ctx.owner.__class__.cdef
+            try:
+                return types.modifier.transform(ctx.alterfdef(types.fdef))
+            except:
+                continue
+        return ctx.val
+
     def validate(self, ctx: Ctx) -> None:
         if ctx.val is None:
             return
         for types in ctx.fdef.raw_union_types:
+            if types.fdef._cdef is None:
+                types.fdef._cdef = ctx.owner.__class__.cdef
             try:
-                if types.fdef._cdef is None:
-                    types.fdef._cdef = ctx.owner.__class__.cdef
                 types.modifier.validate(ctx.alterfdef(types.fdef))
                 return
             except ValidationException:

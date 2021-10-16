@@ -6,4 +6,4 @@ from jsonclasses import jsonclass, types
 @jsonclass
 class SuperPrepend:
     s: Optional[str] = types.str.prepend('3432')
-    l: Optional[str] = types.str.prepend('7788')
+    l: Optional[list[str]] = types.listof(str).prepend('7788')
