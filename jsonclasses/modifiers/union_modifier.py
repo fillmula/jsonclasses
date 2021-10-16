@@ -1,4 +1,4 @@
-"""module for oneoftype modifier."""
+"""module for union modifier."""
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 from ..excs import ValidationException
@@ -21,6 +21,8 @@ class UnionModifier(Modifier):
         fdef._raw_union_types = [rtypes(t) for t in self.type_list]
 
     def transform(self, ctx: Ctx) -> Any:
+        if ctx.val is None:
+            return None
         for types in ctx.fdef.raw_union_types:
             if types.fdef._cdef is None:
                 types.fdef._cdef = ctx.owner.__class__.cdef
@@ -42,3 +44,17 @@ class UnionModifier(Modifier):
             except ValidationException:
                 continue
         ctx.raise_vexc('value is not of any provided type')
+
+    def tojson(self, ctx: Ctx) -> Any:
+        if ctx.val is None:
+            return None
+        for types in ctx.fdef.raw_union_types:
+            if types.fdef._cdef is None:
+                types.fdef._cdef = ctx.owner.__class__.cdef
+            try:
+                newctx = ctx.alterfdef(types.fdef)
+                types.modifier.validate(newctx)
+                return types.modifier.tojson(newctx)
+            except ValidationException:
+                continue
+        return None

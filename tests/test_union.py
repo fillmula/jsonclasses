@@ -1,7 +1,8 @@
 from __future__ import annotations
+from datetime import datetime
 from unittest import TestCase
 from jsonclasses.excs import ValidationException
-from tests.classes.simple_mixed import SimpleMixed, SimpleMixedT
+from tests.classes.simple_mixed import SimpleMixed, SimpleMixedT, SimpleMixedU
 
 
 class TestUnion(TestCase):
@@ -22,3 +23,11 @@ class TestUnion(TestCase):
         self.assertEqual(one.value, 173)
         two = SimpleMixedT(value='50')
         self.assertEqual(two.value, '50123')
+
+    def test_union_tojson_use_matched_displayer(self):
+        one = SimpleMixedU(value='2021-10-16T13:43:28.099Z')
+        self.assertEqual(one.value, datetime(2021, 10, 16, 13, 43, 28, 99000))
+        two = SimpleMixedU(value='123')
+        self.assertEqual(two.value, '123')
+        self.assertEqual(one.tojson()['value'], '2021-10-16T13:43:28.099Z')
+        self.assertEqual(two.tojson()['value'], '123')
