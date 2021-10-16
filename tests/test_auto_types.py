@@ -10,6 +10,7 @@ from tests.classes.linked_user import LinkedUser
 from tests.classes.linked_product import LinkedProduct
 from tests.classes.linked_customer import LinkedCustomer
 from tests.classes.linked_profile import LinkedProfile
+from tests.classes.new_union import NewUnion, NewRUnion
 
 
 class TestAutoTypes(TestCase):
@@ -428,3 +429,31 @@ class TestAutoTypes(TestCase):
         self.assertEqual(product1.customers, [customer1, customer2])
         self.assertEqual(customer2.products, [product1])
         self.assertEqual(product2.customers, [customer1])
+
+    def test_auto_generates_optional_with_new_union_none_syntax_str(self):
+        obj = NewUnion()
+        obj.validate()
+        obj.name = '123'
+        obj.validate()
+        obj.name = 123
+        self.assertRaises(ValidationException, obj.validate)
+
+    def test_auto_generates_optional_union_with_new_union_syntax_str(self):
+        obj = NewUnion()
+        obj.validate()
+        obj.code = '123'
+        obj.validate()
+        obj.code = 123
+        obj.validate()
+        obj.code = 123.5
+        self.assertRaises(ValidationException, obj.validate)
+
+    def test_auto_generates_required_union_with_new_union_syntax_str(self):
+        obj = NewRUnion(items=['12'])
+        self.assertRaises(ValidationException, obj.validate)
+        obj.code = '123'
+        obj.validate()
+        obj.code = 123
+        obj.validate()
+        obj.code = 123.5
+        self.assertRaises(ValidationException, obj.validate)

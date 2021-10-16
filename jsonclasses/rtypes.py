@@ -45,6 +45,26 @@ def apply_link_specifier(types: Types, specifier: str) -> Types:
     else:
         raise TypeError(f"wrong format of link specifier '{specifier}'")
 
+def union_split(arg: str) -> list[str]:
+    result = ['']
+    depth = 0
+    for c in arg:
+        match c:
+            case '[':
+                depth += 1
+                result[-1] += c
+            case ']':
+                depth -= 1
+                result[-1] += c
+            case '|':
+                if depth < 1:
+                    result.append('')
+                else:
+                    result[-1] += c
+            case _:
+                result[-1] += c
+    return [r.strip() for r in result]
+
 def merge_back_dicts(args: list[str]) -> list[str]:
     """This method is used for union arguments parsing. When union contains
     dict, dict is separated wrongly by split method. This function merge
@@ -96,43 +116,58 @@ def str_to_types(anytypes: str, opt: bool = False) -> Types:
         return types.datetime if opt else types.datetime.required
     elif anytypes == 'Any':
         return types.any if opt else types.any.required
-    elif anytypes.startswith('Union['):
-        match_data = match('Union\\[(.*)\\]', anytypes)
-        assert match_data is not None
-        all_item_types = match_data.group(1)
-        types_to_build_union = split(", *", all_item_types)
-        types_to_build_union = merge_back_dicts(types_to_build_union)
-        results = []
-        for t in types_to_build_union:
-            results.append(str_to_types(t, True))
-        union = types.union(results)
-        return union if opt else union.required
-    elif anytypes.startswith('Optional['):
-        match_data = match('Optional\\[(.*)\\]', anytypes)
-        assert match_data is not None
-        item_type = match_data.group(1)
-        return str_to_types(item_type, opt=True)
-    elif match('[Ll]ist\\[', anytypes):
-        match_data = match('[Ll]ist\\[(.*)\\]', anytypes)
-        assert match_data is not None
-        item_type = match_data.group(1)
-        list_type = types.listof(str_to_types(item_type))
-        return list_type if opt else list_type.required
-    elif match('[Dd]ict\\[', anytypes):
-        match_data = match('[Dd]ict\\[.+, *(.*)\\]', anytypes)
-        assert match_data is not None
-        item_type = match_data.group(1)
-        dict_type = types.dictof(str_to_types(item_type))
-        return dict_type if opt else dict_type.required
-    elif anytypes.startswith('Annotated['):
-        match_data = match('(Annotated)\\[(.+), *(.+)\\]', anytypes)
-        assert match_data is not None
-        instance_type = match_data.group(2)
-        link_specifier = match_data.group(3)
-        types = str_to_types(instance_type, opt)
-        return apply_link_specifier(types, link_specifier)
     else:
-        return types._unresolved(anytypes) if opt else types._unresolved(anytypes).required
+        union_args = union_split(anytypes)
+        if len(union_args) == 1:
+            if anytypes.startswith('Union['):
+                match_data = match('^Union\\[(.*)\\]', anytypes)
+                assert match_data is not None
+                all_item_types = match_data.group(1)
+                types_to_build_union = split(", *", all_item_types)
+                types_to_build_union = merge_back_dicts(types_to_build_union)
+                results = []
+                for t in types_to_build_union:
+                    results.append(str_to_types(t, True))
+                union = types.union(results)
+                return union if opt else union.required
+            elif anytypes.startswith('Optional['):
+                match_data = match('^Optional\\[(.*)\\]', anytypes)
+                assert match_data is not None
+                item_type = match_data.group(1)
+                return str_to_types(item_type, opt=True)
+            elif match('^[Ll]ist\\[', anytypes):
+                match_data = match('[Ll]ist\\[(.*)\\]', anytypes)
+                assert match_data is not None
+                item_type = match_data.group(1)
+                list_type = types.listof(str_to_types(item_type))
+                return list_type if opt else list_type.required
+            elif match('^[Dd]ict\\[', anytypes):
+                match_data = match('[Dd]ict\\[.+, *(.*)\\]', anytypes)
+                assert match_data is not None
+                item_type = match_data.group(1)
+                dict_type = types.dictof(str_to_types(item_type))
+                return dict_type if opt else dict_type.required
+            elif anytypes.startswith('Annotated['):
+                match_data = match('^(Annotated)\\[(.+), *(.+)\\]', anytypes)
+                assert match_data is not None
+                instance_type = match_data.group(2)
+                link_specifier = match_data.group(3)
+                types = str_to_types(instance_type, opt)
+                return apply_link_specifier(types, link_specifier)
+            else:
+                return types._unresolved(anytypes) if opt else types._unresolved(anytypes).required
+        else:
+            union_results = [r for r in union_args if r != 'None']
+            if len(union_args) != len(union_results):
+                opt = True
+            if len(union_results) == 1:
+                return str_to_types(union_results[0], opt)
+            else:
+                results = []
+                for t in union_results:
+                    results.append(str_to_types(t, True))
+                union = types.union(results)
+                return union if opt else union.required
 
 
 def to_types(anytypes: Any, opt: bool = False) -> Types:
