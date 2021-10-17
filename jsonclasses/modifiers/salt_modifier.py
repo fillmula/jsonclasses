@@ -8,11 +8,8 @@ if TYPE_CHECKING:
 class SaltModifier(Modifier):
     """Salt modifier add salt to a string. This is mostly used for password."""
 
-    def __init__(self) -> None:
-        try:
-            from bcrypt import hashpw, gensalt
-        except ModuleNotFoundError as e:
-            raise ModuleNotFoundError('please install bcrypt to use salt')
+    def packages(self) -> dict[str, str] | None:
+        return {'bcrypt': '>=3.2.0,<4.0.0'}
 
     def transform(self, ctx: Ctx) -> Any:
         from bcrypt import hashpw, gensalt

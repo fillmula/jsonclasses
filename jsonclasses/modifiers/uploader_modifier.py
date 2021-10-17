@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Callable, Any, TYPE_CHECKING
 from inspect import signature
 from .modifier import Modifier
-from ..uploaders import request_uploader
+from ..uploaders import request_uploader, S3Uploader, AliOSSUploader
 if TYPE_CHECKING:
     from ..ctx import Ctx
 
@@ -17,6 +17,15 @@ class UploaderModifier(Modifier):
             params_len = len(signature(arg).parameters)
             if params_len > 2 or params_len < 1:
                 raise ValueError('not a valid transformer')
+
+    def packages(self) -> dict[str, str] | None:
+        if type(self.arg) is str:
+            uploader = request_uploader(self.arg)
+            if isinstance(uploader, S3Uploader):
+                return {'boto3': '>=1.18.61,<2.0.0'}
+            elif isinstance(uploader, AliOSSUploader):
+                return {'oss2': '>=2.0.0,<3.0.0'}
+        return None
 
     def transform(self, ctx: Ctx) -> Any:
         if ctx.val is None:

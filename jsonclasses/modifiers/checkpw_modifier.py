@@ -10,11 +10,10 @@ class CheckpwModifier(Modifier):
     """Checkpw modifier checks string value with bcrypt's checkpw function."""
 
     def __init__(self, against: Types) -> None:
-        try:
-            from bcrypt import checkpw
-        except ModuleNotFoundError as e:
-            raise ModuleNotFoundError('please install bcrypt to use checkpw')
         self.against = against
+
+    def packages(self) -> dict[str, str] | None:
+        return {'bcrypt': '>=3.2.0,<4.0.0'}
 
     def validate(self, ctx: Ctx) -> None:
         from bcrypt import checkpw
