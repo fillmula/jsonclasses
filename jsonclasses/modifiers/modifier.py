@@ -9,6 +9,9 @@ if TYPE_CHECKING:
 class Modifier:
     """Abstract and base class for modifiers."""
 
+    def packages(self) -> dict[str, str] | None:
+        return None
+
     def define(self, fdef: Fdef) -> None:
         """A hook and chance for modifier to update field description."""
 

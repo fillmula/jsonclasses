@@ -1,7 +1,6 @@
 """module for tonextmonth modifier."""
 from __future__ import annotations
 from datetime import datetime, date
-from dateutil.relativedelta import relativedelta
 from typing import Any, TYPE_CHECKING
 from .modifier import Modifier
 if TYPE_CHECKING:
@@ -12,8 +11,18 @@ class ToNextMonModifier(Modifier):
 
     def transform(self, ctx: Ctx) -> Any:
         if type(ctx.val) is datetime:
-            return (ctx.val+relativedelta(months=1)).replace(microsecond=0, second=0, minute=0, hour=0, day=1)
+            year, month = divmod(ctx.val.month + 1, 12)
+            if month == 0:
+                month = 12
+                year = year -1
+            next_month = datetime(ctx.val.year + year, month, 1)
+            return next_month
         if type(ctx.val) is date:
-            return (ctx.val+relativedelta(months=1)).replace(day=1)
+            year, month = divmod(ctx.val.month + 1, 12)
+            if month == 0:
+                month = 12
+                year = year -1
+            next_month = date(ctx.val.year + year, month, 1)
+            return next_month
         else:
             return ctx.val

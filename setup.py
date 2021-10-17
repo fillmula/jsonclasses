@@ -21,7 +21,5 @@ setup(
     url='https://github.com/fillmula/jsonclasses',
     include_package_data=True,
     python_requires='>=3.10',
-    install_requires=[
-        'python-dateutil>=2.8.0,<3.0.0'
-    ]
+    install_requires=[]
 )
