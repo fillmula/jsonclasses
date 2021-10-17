@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 
 class ToUpperModifier(Modifier):
-    """convert string into upper case"""
+    """Convert string into uppercase."""
 
     def transform(self, ctx: Ctx) -> Any:
         return ctx.val.upper() if isinstance(ctx.val, str) else ctx.val

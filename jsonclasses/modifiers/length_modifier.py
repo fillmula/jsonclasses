@@ -1,16 +1,16 @@
 """module for length modifier."""
 from __future__ import annotations
-from typing import Optional, TYPE_CHECKING
-from ..excs import ValidationException
+from typing import Callable, TYPE_CHECKING
 from .modifier import Modifier
 if TYPE_CHECKING:
     from ..ctx import Ctx
+    from ..types import Types
 
 
 class LengthModifier(Modifier):
     """Length modifier validate value against the provided length."""
 
-    def __init__(self, minlength: int, maxlength: Optional[int]) -> None:
+    def __init__(self, minlength: int | Callable | Types, maxlength: int | Callable | Types | None = None) -> None:
         self.minlength = minlength
         self.maxlength = maxlength if maxlength is not None else minlength
 

@@ -7,8 +7,7 @@ if TYPE_CHECKING:
 
 
 class ToTitleModifier(Modifier):
-    """Convert string to title format."""
+    """Convert string into title format."""
 
     def transform(self, ctx: Ctx) -> Any:
         return ctx.val.title() if isinstance(ctx.val, str) else ctx.val
-
