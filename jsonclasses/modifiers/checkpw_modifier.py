@@ -11,9 +11,10 @@ class CheckpwModifier(Modifier):
 
     def __init__(self, against: Types) -> None:
         self.against = against
+        self.check_packages()
 
-    def packages(self) -> dict[str, str] | None:
-        return {'bcrypt': '>=3.2.0,<4.0.0'}
+    def packages(self) -> dict[str, (str, str)] | None:
+        return {'bcrypt': ('bcrypt', '>=3.2.0,<4.0.0')}
 
     def validate(self, ctx: Ctx) -> None:
         from bcrypt import checkpw

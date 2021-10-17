@@ -8,8 +8,11 @@ if TYPE_CHECKING:
 class SaltModifier(Modifier):
     """Salt modifier add salt to a string. This is mostly used for password."""
 
-    def packages(self) -> dict[str, str] | None:
-        return {'bcrypt': '>=3.2.0,<4.0.0'}
+    def __init__(self) -> None:
+        self.check_packages()
+
+    def packages(self) -> dict[str, (str, str)] | None:
+        return {'bcrypt': ('bcrypt', '>=3.2.0,<4.0.0')}
 
     def transform(self, ctx: Ctx) -> Any:
         from bcrypt import hashpw, gensalt

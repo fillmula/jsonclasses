@@ -17,14 +17,15 @@ class UploaderModifier(Modifier):
             params_len = len(signature(arg).parameters)
             if params_len > 2 or params_len < 1:
                 raise ValueError('not a valid transformer')
+        self.check_packages()
 
-    def packages(self) -> dict[str, str] | None:
+    def packages(self) -> dict[str, (str, str)] | None:
         if type(self.arg) is str:
             uploader = request_uploader(self.arg)
             if isinstance(uploader, S3Uploader):
-                return {'boto3': '>=1.18.61,<2.0.0'}
+                return {'boto3': ('boto3', '>=1.18.61,<2.0.0')}
             elif isinstance(uploader, AliOSSUploader):
-                return {'oss2': '>=2.0.0,<3.0.0'}
+                return {'oss2': ('oss2', '>=2.0.0,<3.0.0')}
         return None
 
     def transform(self, ctx: Ctx) -> Any:

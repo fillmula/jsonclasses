@@ -2,6 +2,7 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 from ..fdef import Fdef
+from ..pkgutils import check_and_install_packages
 if TYPE_CHECKING:
     from ..ctx import Ctx
 
@@ -9,8 +10,11 @@ if TYPE_CHECKING:
 class Modifier:
     """Abstract and base class for modifiers."""
 
-    def packages(self) -> dict[str, str] | None:
+    def packages(self) -> dict[str, (str, str)] | None:
         return None
+
+    def check_packages(self) -> None:
+        check_and_install_packages(self.packages())
 
     def define(self, fdef: Fdef) -> None:
         """A hook and chance for modifier to update field description."""
