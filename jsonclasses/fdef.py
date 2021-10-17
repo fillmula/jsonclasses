@@ -125,6 +125,7 @@ class Fdef:
         self._setter: Types | Callable | None = None
         self._primary: bool = False
         self._index: bool = False
+        self._index_name: str | None = None
         self._unique: bool = False
         self._required: bool = False
         self._raw_enum_class: Optional[type[Enum] | str] = None
@@ -215,6 +216,13 @@ class Fdef:
         """
         self._resolve_if_needed()
         return self._index
+
+    @property
+    def index_name(self: Fdef) -> str | None:
+        """The compound index name for this index field.
+        """
+        self._resolve_if_needed()
+        return self._index_name
 
     @property
     def unique(self: Fdef) -> bool:

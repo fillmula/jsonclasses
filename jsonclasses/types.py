@@ -183,6 +183,13 @@ class Types:
         return Types(self, IndexModifier())
 
     @property
+    def cindex(self, index_name: str) -> Types:
+        """Fields marked with cindex have compound indexes. This modifier
+        doesn't have any effect around transforming and validating.
+        """
+        return Types(self, IndexModifier(index_name))
+
+    @property
     def unique(self) -> Types:
         """Fields marked with unique are picked up by ORM integrations to setup
         database column unique index for you. This modifier doesn't have any
