@@ -16,12 +16,15 @@ class LengthModifier(Modifier):
 
     def validate(self, ctx: Ctx) -> None:
         if isinstance(ctx.val, list) or type(ctx.val) is str:
-            value = ctx.val
-            if len(value) > self.maxlength or len(value) < self.minlength:
-                if self.minlength != self.maxlength:
-                    message = f'length of value should be in between {self.minlength} and {self.maxlength}'
+            minlength = self.resolve_param(self.minlength, ctx)
+            if self.minlength == self.maxlength:
+                maxlength = minlength
+            else:
+                maxlength = self.resolve_param(self.maxlength, ctx)
+            if len(ctx.val) > maxlength or len(ctx.val) < minlength:
+                if minlength != maxlength:
+                    msg = f'length of value is not between {minlength} and {maxlength}'
                 else:
-                    message = f'length of value is not {self.minlength}'
-                ctx.raise_vexc(message)
-        else:
-            return ctx.val
+                    msg = f'length of value is not {minlength}'
+                ctx.raise_vexc(msg)
+        return ctx.val

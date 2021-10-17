@@ -28,3 +28,6 @@ class SimpleCode:
     tl_code: Optional[list[int]] = types.listof(int).length(types.default(4))
     tl_min_code: Optional[list[int]] = types.listof(int).minlength(types.default(4))
     tl_max_code: Optional[list[int]] = types.listof(int).maxlength(types.default(8))
+
+    cd_code: Optional[str] = types.str.length(lambda: 4, lambda: 5)
+    td_code: Optional[str] = types.str.length(types.default(4), types.default(4).add(1))

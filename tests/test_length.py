@@ -48,3 +48,41 @@ class TestLength(TestCase):
         l_code = SimpleCode(l_code=[1, 2])
         with self.assertRaises(ValidationException):
             l_code.validate()
+
+    def test_length_accepts_single_callable_param(self):
+        c_code = SimpleCode(c_code='1234')
+        c_code.validate()
+        c_code = SimpleCode(c_code='12345')
+        with self.assertRaises(ValidationException):
+            c_code.validate()
+
+    def test_length_accepts_double_callable_param(self):
+        cd_code = SimpleCode(cd_code='1234')
+        cd_code.validate()
+        cd_code = SimpleCode(cd_code='12345')
+        cd_code.validate()
+        cd_code = SimpleCode(cd_code='123456')
+        with self.assertRaises(ValidationException):
+            cd_code.validate()
+        cd_code = SimpleCode(cd_code='123')
+        with self.assertRaises(ValidationException):
+            cd_code.validate()
+
+    def test_length_accepts_single_types_param(self):
+        t_code = SimpleCode(t_code='1234')
+        t_code.validate()
+        t_code = SimpleCode(t_code='12345')
+        with self.assertRaises(ValidationException):
+            t_code.validate()
+
+    def test_length_accepts_double_types_param(self):
+        td_code = SimpleCode(td_code='1234')
+        td_code.validate()
+        td_code = SimpleCode(td_code='12345')
+        td_code.validate()
+        td_code = SimpleCode(td_code='123456')
+        with self.assertRaises(ValidationException):
+            td_code.validate()
+        td_code = SimpleCode(td_code='123')
+        with self.assertRaises(ValidationException):
+            td_code.validate()
