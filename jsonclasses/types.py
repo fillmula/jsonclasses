@@ -72,6 +72,7 @@ Float = float
 Date = date
 Datetime = datetime
 
+
 class Types:
     """The class of types marks object. Types marks provide necessary
     information about an json object's shape, transformation, validation,
@@ -316,9 +317,8 @@ class Types:
         """
         return Types(self, OneOfModifier(str_list))
 
-    def minlength(self, length: int) -> Types:
-        """Values at fields marked with minlength should have a length which is
-        not less than length.
+    def minlength(self, length: int | Callable | Types) -> Types:
+        """The value of iterable should be longer than the provided minlength.
 
         Args:
           length (int): The minimum length required for the value.
@@ -328,12 +328,11 @@ class Types:
         """
         return Types(self, MinlengthModifier(length))
 
-    def maxlength(self, length: int) -> Types:
-        """Values at fields marked with maxlength should have a length which is
-        not greater than length.
+    def maxlength(self, length: int | Callable | Types) -> Types:
+        """The value of iterable should be shorter than the provided maxlength.
 
         Args:
-          length (int): The minimum length required for the value.
+          length (int): The maximum length required for the value.
 
         Returns:
           Types: A new types chained with this modifier.

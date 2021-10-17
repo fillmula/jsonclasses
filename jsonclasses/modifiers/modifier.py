@@ -1,6 +1,7 @@
 """module for modifier modifier."""
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
+from inspect import signature
 from ..fdef import Fdef
 from ..pkgutils import check_and_install_packages
 if TYPE_CHECKING:
@@ -15,6 +16,24 @@ class Modifier:
 
     def check_packages(self) -> None:
         check_and_install_packages(self.packages())
+
+    def resolve_param(self, param: Any, ctx: Ctx) -> Any:
+        from ..types import Types
+        if isinstance(param, Types):
+            newctx = ctx.nval(None)
+            return param.modifier.transform(newctx)
+        elif callable(param):
+            params_len = len(signature(param).parameters)
+            if params_len == 0:
+                return param()
+            elif params_len == 1:
+                return param(ctx.owner)
+            elif params_len == 2:
+                return param(ctx.owner, ctx)
+            else:
+                raise ValueError('not a valid parameter')
+        else:
+            return param
 
     def define(self, fdef: Fdef) -> None:
         """A hook and chance for modifier to update field description."""
