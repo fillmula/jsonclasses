@@ -11,4 +11,4 @@ class IndexModifier(Modifier):
 
     def define(self, fdef: Fdef) -> None:
         fdef._index = True
-        fdef._index_name = self.index_name
+        fdef._index_names.append(self.index_name)
