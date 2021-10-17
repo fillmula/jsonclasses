@@ -182,7 +182,6 @@ class Types:
         """
         return Types(self, IndexModifier())
 
-    @property
     def cindex(self, index_name: str) -> Types:
         """Fields marked with cindex have compound indexes. This modifier
         doesn't have any effect around transforming and validating.

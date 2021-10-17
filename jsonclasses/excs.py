@@ -146,11 +146,14 @@ class UniqueConstraintException(Exception):
     object violates the uniqueness rule, this exception should be raised.
     """
 
-    def __init__(self, field: str):
-        self.message = (f'value is not unique')
-        self.keypath_messages = {
-            field: self.message
-        }
+    def __init__(self, field: str | list[str], message: str | None = None):
+        self.message = message or (f'value is not unique')
+        if type(field) is str:
+            self.keypath_messages = {
+                field: self.message
+            }
+        else:
+            self.keypath_messages = {k: self.message for k in field}
         super().__init__(self.message)
 
 
