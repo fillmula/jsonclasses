@@ -10,5 +10,8 @@ class IndexModifier(Modifier):
         self.index_name = index_name
 
     def define(self, fdef: Fdef) -> None:
-        fdef._index = True
-        fdef._index_names.append(self.index_name)
+        if self.index_name:
+            fdef._cindex = True
+            fdef._cindex_names.append(self.index_name)
+        else:
+            fdef._index = True

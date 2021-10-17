@@ -125,7 +125,8 @@ class Fdef:
         self._setter: Types | Callable | None = None
         self._primary: bool = False
         self._index: bool = False
-        self._index_names: list[str] = []
+        self._cindex: bool = False
+        self._cindex_names: list[str] = []
         self._unique: bool = False
         self._required: bool = False
         self._raw_enum_class: Optional[type[Enum] | str] = None
@@ -211,18 +212,26 @@ class Fdef:
 
     @property
     def index(self: Fdef) -> bool:
-        """Whether perform database index on this field. This is marked for
-        ORM implementers.
+        """Whether perform single database index on this field. This is marked
+        for ORM implementers.
         """
         self._resolve_if_needed()
         return self._index
 
     @property
-    def index_names(self: Fdef) -> list[str]:
+    def cindex(self: Fdef) -> bool:
+        """Whether perform compound database index on this field. This is
+        marked for ORM implementers.
+        """
+        self._resolve_if_needed()
+        return self._cindex
+
+    @property
+    def cindex_names(self: Fdef) -> list[str]:
         """The compound index name for this index field.
         """
         self._resolve_if_needed()
-        return self._index_names
+        return self._cindex_names
 
     @property
     def unique(self: Fdef) -> bool:
