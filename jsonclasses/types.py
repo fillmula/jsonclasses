@@ -1351,10 +1351,10 @@ class Types:
         """
         return Types(self, RandomDigitsModifier(length))
 
-    def randomalnums(self: Types, length: Int) -> Types:
+    def randomalnums(self: Types, length: Int | Callable | Types) -> Types:
         """Random alnums modifier generates a random alnums string of length.
         """
-        return Types(self, RandomAlnumsModifier(length))
+        return Types(self, EagerModifier(), RandomAlnumsModifier(length))
 
     def randomalnumpuncs(self: Types, length: Int) -> Types:
         """Random alnumpuncs modifier generates a random alnumpuncs string of
