@@ -5,7 +5,7 @@ from unittest import TestCase
 
 class TestJoin(TestCase):
 
-    def test_Join_keeps_str_value_if_it_is_str(self):
+    def test_join_keeps_str_value_if_it_is_str(self):
         s = SuperIterable(itsj='asdhakjsh')
         self.assertEqual(s.itsj, 'asdhakjsh')
 
