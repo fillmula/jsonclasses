@@ -30,4 +30,5 @@ class TestToJson(TestCase):
         self.assertEqual(user.tojson(),
                          {'name': 'Kia Tsiu Tai',
                           'profile': {'name': 'Tsit Po Po',
-                                      'user': {'name': 'Kia Tsiu Tai'}}})
+                                      'user': {'name': 'Kia Tsiu Tai'},
+                                      'userId': None}})

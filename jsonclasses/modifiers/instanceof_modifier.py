@@ -195,6 +195,10 @@ class InstanceOfModifier(Modifier):
             fd = field.types.fdef
             jf_name = field.json_name
             ignore_writeonly = ctx.ctxcfg.ignore_writeonly
+            if fd.fstore == FStore.LOCAL_KEY:
+                rk = val.__class__.cdef.jconf.ref_key_encoding_strategy(field)
+                jrk = val.__class__.cdef.jconf.key_encoding_strategy(rk)
+                retval[jrk] = getattr(val, rk)
             if fd.fstore == FStore.LOCAL_KEY and no_key_refs:
                 continue
             if fd.fstore == FStore.FOREIGN_KEY and no_key_refs:
