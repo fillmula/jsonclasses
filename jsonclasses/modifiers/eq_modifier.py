@@ -14,18 +14,7 @@ class EqModifier(Modifier):
         self.val = val
 
     def validate(self, ctx: Ctx) -> None:
-        from ..types import Types
-        if isinstance(self.val, Types):
-            against_val = self.val.modifier.transform(ctx)
-            if ctx.val != against_val:
-                ctx.raise_vexc('value is not equal')
-            else:
-                return ctx.val
-        elif ctx.val != self.val:
+        if ctx.val != self.resolve_param(self.val, ctx):
             ctx.raise_vexc('value is not equal')
         else:
             return ctx.val
-        # if ctx.val != self.resolve_param(self.val):
-        #     ctx.raise_vexc('value is not equal')
-        # else:
-        #     return ctx.val
