@@ -6,15 +6,15 @@ from jsonclasses.excs import ValidationException
 
 class TestBefore(TestCase):
 
-    def test_before_dose_not_raise_if_date_value_is_before_date_point(self):
+    def test_before_does_not_raise_if_date_value_is_before_date_point(self):
         dbd = SuperDate(dbd=date(2020, 4, 2))
         dbd.validate()
 
-    def test_before_dose_not_raise_if_date_value_is_before_datetime_piont(self):
+    def test_before_does_not_raise_if_date_value_is_before_datetime_piont(self):
         dbdt = SuperDate(dbdt=date(2020, 4, 2))
         dbdt.validate()
 
-    def test_before_dose_not_raise_if_datetime_value_is_before_date_piont(self):
+    def test_before_does_not_raise_if_datetime_value_is_before_date_piont(self):
         dtbd = SuperDate(dtbd=datetime(2020, 4, 2, 12, 30))
         dtbd.validate()
 
@@ -67,10 +67,10 @@ class TestBefore(TestCase):
         self.assertEqual(context.exception.keypath_messages['dtbd'],
                          "value is too late")
 
-    def test_before_dose_not_raise_if_date_value_is_before_callable_date_point(self):
+    def test_before_does_not_raise_if_date_value_is_before_callable_date_point(self):
         dbcd = SuperDate(dbcd=date(2020, 4, 2))
         dbcd.validate()
 
-    def test_before_dose_not_raise_if_date_value_is_before_types_date_piont(self):
+    def test_before_does_not_raise_if_date_value_is_before_types_date_piont(self):
         dbtd = SuperDate(dbtd=date(2020, 4, 2))
         dbtd.validate()

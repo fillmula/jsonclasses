@@ -19,4 +19,4 @@ class DefaultModifier(Modifier):
         if callable(self.default):
             return self.default()
         else:
-            return self.default
+            return self.resolve_param(self.default, ctx)
