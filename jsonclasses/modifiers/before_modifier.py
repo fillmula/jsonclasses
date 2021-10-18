@@ -22,5 +22,7 @@ class BeforeModifier(Modifier):
             value = datetime.combine(ctx.val, datetime.min.time())
         if type(point) is date:
             point = datetime.combine(self.resolve_param(self.point, ctx), datetime.min.time())
+        if point is None:
+            return
         if value >= point:
             ctx.raise_vexc('value is too late')

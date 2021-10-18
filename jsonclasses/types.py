@@ -873,7 +873,7 @@ class Types:
 
     # transformers
 
-    def default(self, value: Any | Callable | Types) -> Types:
+    def default(self, value: Any) -> Types:
         """During initialization, if values of fields with default are not
         provided. The default value is used instead of leaving blank.
 
@@ -1382,7 +1382,7 @@ class Types:
         """
         return Types(self, FValModifier(field_name))
 
-    def eq(self: Types, val: Any | Types) -> Types:
+    def eq(self: Types, val: Any | Types | Callable) -> Types:
         """Eq modifier validates value by equal testing.
         """
         return Types(self, EqModifier(val))
