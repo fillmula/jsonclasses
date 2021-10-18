@@ -16,3 +16,11 @@ class TestReplacer(TestCase):
     def test_replacer_replaces_multiple_appearances(self):
         s = SuperIterable(itssub="gg ss 2 dd 5 ee 8")
         self.assertEqual(s.itssub, "gg ss ABC dd ABC ee ABC")
+
+    def test_replacer_keeps_callable_value_if_no_replacement_is_found(self):
+        s = SuperIterable(c_itssub="bbbccc")
+        self.assertEqual(s.c_itssub, "bbbccc")
+
+    def test_replacer_keeps_types_value_if_no_replacement_is_found(self):
+        s = SuperIterable(t_itssub="bbbccc")
+        self.assertEqual(s.t_itssub, "bbbccc")

@@ -13,3 +13,6 @@ class SuperStr:
 
     padce: Optional[str] = types.str.padend(lambda: "e", lambda: 10)
     padte: Optional[str] = types.str.padend(types.default("e"), types.default(10))
+
+    c_pads: Optional[str] = types.str.padstart(lambda: "s", lambda: 10)
+    t_pads: Optional[str] = types.str.padstart(types.default("s"), types.default(10))

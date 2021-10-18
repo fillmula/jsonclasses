@@ -20,3 +20,18 @@ class SuperNumber:
 
     fcf_gt: Optional[float] = types.float.gt(lambda: 5.5)
     ftf_gt: Optional[float] = types.float.gt(types.default(5.5))
+
+    c_lt: Optional[int] = types.int.lt(lambda: 5)
+    t_lt: Optional[int] = types.int.lt(types.default(5))
+
+    c_gte: Optional[int] = types.int.gte(lambda: 5)
+    t_gte: Optional[int] = types.int.gte(types.default(5))
+
+    c_lte: Optional[int] = types.int.lte(lambda: 5)
+    t_lte: Optional[int] = types.int.lte(types.default(5))
+
+    c_min: Optional[int] = types.int.min(lambda: 5)
+    t_min: Optional[int] = types.int.min(types.default(5))
+
+    c_max: Optional[int] = types.int.max(lambda: 5)
+    t_max: Optional[int] = types.int.max(types.default(5))

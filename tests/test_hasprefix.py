@@ -39,10 +39,68 @@ class TestHasPrefix(TestCase):
             self.assertEqual(context.exception.keypath_messages['losHp'],
                             "prefix is not found")
 
-    def test_hasprefix_validates_a_callable_str_is_prefix_of_original_str(self):
-        s_hp = SuperPrefix(cs_hp='unsasf')
-        s_hp.validate()
+    def test_hasprefix_validates_callable_param_is_prefix_of_str_val(self):
+        c_hp = SuperPrefix(c_hp='un')
+        c_hp.validate()
 
-    def test_hasprefix_validates_a_types_str_is_prefix_of_original_str(self):
-        s_hp = SuperPrefix(ts_hp='unsasf')
-        s_hp.validate()
+    def test_hasprefix_validates_callable_param_is_prefix_of_list_val_of_int(self):
+        c_loi_hp = SuperPrefix(c_loi_hp=[1, 4, 5])
+        c_loi_hp.validate()
+
+    def test_hasprefix_validates_callable_param_is_prefix_of_list_val_of_str(self):
+        c_los_hp = SuperPrefix(c_los_hp=['a', 'd'])
+        c_los_hp.validate()
+
+    def test_hasprefix_raises_callable_param_is_not_prefix_of_str_val(self):
+        c_hp = SuperPrefix(c_hp='appy')
+        with self.assertRaises(ValidationException) as context:
+            c_hp.validate()
+        self.assertEqual(context.exception.keypath_messages['cHp'],
+                         "prefix is not found")
+
+    def test_hasprefix_raises_callable_param_is_not_prefix_of_list_val_of_int(self):
+        c_loi_hp = SuperPrefix(c_loi_hp=[3, 2, 8])
+        with self.assertRaises(ValidationException) as context:
+            c_loi_hp.validate()
+        self.assertEqual(context.exception.keypath_messages['cLoiHp'],
+                         "prefix is not found")
+
+    def test_hasprefix_raises_callable_param_is_not_prefix_of_list_val_of_str(self):
+        c_los_hp = SuperPrefix(c_los_hp=['f', 'g'])
+        with self.assertRaises(ValidationException) as context:
+            c_los_hp.validate()
+        self.assertEqual(context.exception.keypath_messages['cLosHp'],
+                        "prefix is not found")
+
+    def test_hasprefix_validates_types_param_is_prefix_of_str_val(self):
+        t_hp = SuperPrefix(t_hp='un')
+        t_hp.validate()
+
+    def test_hasprefix_validates_types_param_is_prefix_of_list_val_of_int(self):
+        t_loi_hp = SuperPrefix(t_loi_hp=[1, 4, 5])
+        t_loi_hp.validate()
+
+    def test_hasprefix_validates_types_param_is_prefix_of_list_val_of_str(self):
+        t_los_hp = SuperPrefix(t_los_hp=['a', 'd'])
+        t_los_hp.validate()
+
+    def test_hasprefix_raises_types_param_is_not_prefix_of_str_val(self):
+        t_hp = SuperPrefix(t_hp='appy')
+        with self.assertRaises(ValidationException) as context:
+            t_hp.validate()
+        self.assertEqual(context.exception.keypath_messages['tHp'],
+                         "prefix is not found")
+
+    def test_hasprefix_raises_types_param_is_not_prefix_of_list_val_of_int(self):
+        t_loi_hp = SuperPrefix(t_loi_hp=[3, 2, 8])
+        with self.assertRaises(ValidationException) as context:
+            t_loi_hp.validate()
+        self.assertEqual(context.exception.keypath_messages['tLoiHp'],
+                         "prefix is not found")
+
+    def test_hasprefix_raises_types_param_is_not_prefix_of_list_val_of_str(self):
+        t_los_hp = SuperPrefix(t_los_hp=['f', 'g'])
+        with self.assertRaises(ValidationException) as context:
+            t_los_hp.validate()
+        self.assertEqual(context.exception.keypath_messages['tLosHp'],
+                        "prefix is not found")

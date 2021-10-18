@@ -12,3 +12,7 @@ class SuperRandom:
 
     random_cfloat: Optional[float] = types.float.randomfloat(lambda: 10.0, lambda: 10.0)
     random_tfloat: Optional[float] = types.float.randomfloat(types.default(10.0), types.default(10.0))
+    c_random_int: Optional[int] = types.int.randomint(lambda: 10, lambda: 11)
+    t_random_int: Optional[int] = types.int.randomint(types.default(10), types.default(11))
+    c_random_digits: Optional[int] = types.int.randomdigits(lambda: 1)
+    t_random_digits: Optional[int] = types.int.randomdigits(types.default(1))
