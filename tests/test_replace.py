@@ -17,3 +17,7 @@ class TestReplace(TestCase):
     def test_replace_replaces_multiple_appearances(self):
         s = SuperIterable(itsrp="gg ss abc dd abc ee abc")
         self.assertEqual(s.itsrp, "gg ss ABC dd ABC ee ABC")
+
+    def test_replace_replaces_first_appearance_with_callable(self):
+        s = SuperIterable(itsrpc="dd qq abc rr")
+        self.assertEqual(s.itsrpc, "dd qq ABC rr")
