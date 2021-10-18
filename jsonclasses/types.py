@@ -353,7 +353,7 @@ class Types:
         """
         return Types(self, LengthModifier(minlength, maxlength))
 
-    def add(self, by: int | float) -> Types:
+    def add(self, by: int | float | Callable | Types) -> Types:
         """This modifier adds int or float value to original value
 
         """
@@ -424,7 +424,7 @@ class Types:
         """
         return Types(self, EagerModifier(), InsertAtModifier(item, index))
 
-    def prepend(self, item: str | int | float) -> Types:
+    def prepend(self, item: str | int | float | Callable | Types) -> Types:
         """
         """
         return Types(self, EagerModifier(), PrependModifier(item))
@@ -595,7 +595,7 @@ class Types:
         """
         return Types(self, DatetimeModifier())
 
-    def before(self, point: Date | Datetime) -> Types:
+    def before(self, point: Date | Datetime | Callable | Types) -> Types:
         """InputDate should be before the date. This is a date modifier
         """
         return Types(self, BeforeModifier(point))
