@@ -6,8 +6,8 @@ from unittest import TestCase
 
 class TestHasPrefix(TestCase):
 
-    def test_hasprefix_validates_str_param_is_prefix_of_str_val(self):
-        s_hp = SuperPrefix(s_hp='un')
+    def test_hasprefix_validates_a_str_is_prefix_of_original_str(self):
+        s_hp = SuperPrefix(s_hp='unsasf')
         s_hp.validate()
 
     def test_hasprefix_validates_list_param_is_prefix_of_list_val_of_int(self):
@@ -38,3 +38,11 @@ class TestHasPrefix(TestCase):
                 los_hp.validate()
             self.assertEqual(context.exception.keypath_messages['losHp'],
                             "prefix is not found")
+
+    def test_hasprefix_validates_a_callable_str_is_prefix_of_original_str(self):
+        s_hp = SuperPrefix(cs_hp='unsasf')
+        s_hp.validate()
+
+    def test_hasprefix_validates_a_types_str_is_prefix_of_original_str(self):
+        s_hp = SuperPrefix(ts_hp='unsasf')
+        s_hp.validate()

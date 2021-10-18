@@ -17,3 +17,6 @@ class SuperNumber:
     ff_lte: Optional[float] = types.float.lte(5.5)
     ff_gt: Optional[float] = types.float.gt(5.5)
     ff_lt: Optional[float] = types.float.lt(5.5)
+
+    fcf_gt: Optional[float] = types.float.gt(lambda: 5.5)
+    ftf_gt: Optional[float] = types.float.gt(types.default(5.5))
