@@ -10,3 +10,6 @@ class SuperStr:
     padis: Optional[int] = types.int.padstart("s", 10)
     pade: Optional[str] = types.str.padend("e", 10)
     padie: Optional[int] = types.int.padend("e", 10)
+
+    padce: Optional[str] = types.str.padend(lambda: "e", lambda: 10)
+    padte: Optional[str] = types.str.padend(types.default("e"), types.default(10))

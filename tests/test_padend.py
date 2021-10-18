@@ -17,3 +17,11 @@ class TestPadEnd(TestCase):
     def test_padend_keeps_value_when_target_length_less_value_length(self):
         ps = SuperStr(pade="aaaaaaaaaaa")
         self.assertEqual(ps.pade, "aaaaaaaaaaa")
+
+    def test_padend_adds_callable_str_to_the_end_of_str(self):
+        ps = SuperStr(padce="aaaaa")
+        self.assertEqual(ps.padce, "aaaaaeeeee")
+
+    def test_padend_adds_types_str_to_the_end_of_str(self):
+        ps = SuperStr(padte="aaaaa")
+        self.assertEqual(ps.padte, "aaaaaeeeee")

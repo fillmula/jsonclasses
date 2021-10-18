@@ -952,7 +952,7 @@ class Types:
         """
         return Types(self, EagerModifier(), PadStartModifier(char, length))
 
-    def padend(self, char: str, length: int) -> Types:
+    def padend(self, char: str | Callable | Types, length: int | Callable | Types) -> Types:
         """This modifier padstart string.
 
         Returns:
