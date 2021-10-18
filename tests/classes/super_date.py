@@ -17,3 +17,6 @@ class SuperDate:
 
     dbcd: Optional[date] = types.date.before(lambda: date(2020, 4, 3))
     dbtd: Optional[date] = types.date.before(types.default(date(2020, 4, 3)))
+
+    dacd: Optional[date] = types.date.after(lambda: date(2020, 4, 3))
+    datd: Optional[date] = types.date.after(types.default(date(2020, 4, 3)))

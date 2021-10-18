@@ -359,31 +359,31 @@ class Types:
         """
         return Types(self, EagerModifier(), AddModifier(by))
 
-    def sub(self, by: int | float) -> Types:
+    def sub(self, by: int | float | Callable | Types) -> Types:
         """This modifier for Int or float value subs original value
         """
-        return Types(self, SubModifier(by))
+        return Types(self, EagerModifier(), SubModifier(by))
 
-    def mul(self, by: int | float) -> Types:
+    def mul(self, by: int | float | Callable | Types) -> Types:
         """This modifier for Int or float value muls by original value
         """
-        return Types(self, MulModifier(by))
+        return Types(self, EagerModifier(), MulModifier(by))
 
-    def pow(self, by: int | float) -> Types:
+    def pow(self, by: int | float | Callable | Types) -> Types:
         """This modifer is used to transform the value of the int or float value
         to the power of the original value
         """
-        return Types(self, PowModifier(by))
+        return Types(self, EagerModifier(), PowModifier(by))
 
-    def div(self, by: int | float) -> Types:
+    def div(self, by: int | float | Callable | Types) -> Types:
         """This modifier for Int or float value divs by original value
         """
-        return Types(self, DivModifier(by))
+        return Types(self, EagerModifier(), DivModifier(by))
 
-    def mod(self, by: int | float) -> Types:
+    def mod(self, by: int | float | Callable | Types) -> Types:
         """This modifier for Int or float value mods original value
         """
-        return Types(self, ModModifier(by))
+        return Types(self, EagerModifier(), ModModifier(by))
 
     def map(self, validate_callable: Callable) -> Types:
         """This modifier is used to getting a map object of the results
@@ -401,19 +401,19 @@ class Types:
         """
         return Types(self, HasPrefixModifier(validate_prefix))
 
-    def hassuffix(self, validate_suffix: str | list[str | int]) -> Types:
+    def hassuffix(self, validate_suffix: str | list[str | int] | Callable | Types) -> Types:
         """Hassuffix modifier validates if a string is suffix of another string
         or a list is suffix of another list
         """
         return Types(self, HasSuffixModifier(validate_suffix))
 
-    def isprefixof(self, prefix: str | list[str | int]) -> Types:
+    def isprefixof(self, prefix: str | list[str | int] | Callable | Types) -> Types:
         """Hassuffix modifier validates if a string is suffix of another string
         or a list is suffix of another list
         """
         return Types(self, IsPrefixOfModifier(prefix))
 
-    def issuffixof(self, suffix: str | list[str | int]) -> Types:
+    def issuffixof(self, suffix: str | list[str | int] | Callable | Types) -> Types:
         """Hassuffix modifier validates if a string is suffix of another string
         or a list is suffix of another list
         """
@@ -429,7 +429,7 @@ class Types:
         """
         return Types(self, EagerModifier(), PrependModifier(item))
 
-    def append(self, item: Any) -> Types:
+    def append(self, item: str | int | float | Callable | Types) -> Types:
         """
         """
         return Types(self, EagerModifier(), AppendModifier(item))
@@ -444,7 +444,7 @@ class Types:
     def sqrt(self) -> Types:
         """This modifier is used to transform the square root of any number.
         """
-        return Types(self, SqrtModifier())
+        return Types(self, EagerModifier(), SqrtModifier())
 
     @property
     def url(self) -> Types:
@@ -507,31 +507,31 @@ class Types:
         """
         return Types(self, FloatModifier())
 
-    def min(self, value: Float) -> Types:
+    def min(self, value: Float | Callable | Types) -> Types:
         """Fields marked with min are tested again this value. Values less than
         the argument value are considered invalid.
         """
         return Types(self, MinModifier(value))
 
-    def max(self, value: Float) -> Types:
+    def max(self, value: Float | Callable | Types) -> Types:
         """Fields marked with max are tested again this value. Values greater
         than the argument value are considered invalid.
         """
         return Types(self, MaxModifier(value))
 
-    def lte(self, value: Float) -> Types:
+    def lte(self, value: Float | Callable | Types) -> Types:
         """Fields marked with lte are tested again this value. Values greater
         than the argument value are considered invalid.
         """
         return Types(self, MaxModifier(value))
 
-    def gte(self, value: Float) -> Types:
+    def gte(self, value: Float | Callable | Types) -> Types:
         """Fields marked with gte are tested again this value. Values less than
         the argument value are considered invalid.
         """
         return Types(self, MinModifier(value))
 
-    def lt(self, value: Float) -> Types:
+    def lt(self, value: Float | Callable | Types) -> Types:
         """Fields marked with lt are tested again this value. Values greater
         or equal than the argument value are considered invalid.
         """
@@ -600,7 +600,7 @@ class Types:
         """
         return Types(self, BeforeModifier(point))
 
-    def after(self, point: Date | Datetime) -> Types:
+    def after(self, point: Date | Datetime | Callable | Types) -> Types:
         """InputDate should be after the date. This is a date modifier
         """
         return Types(self, AfterModifier(point))
@@ -886,7 +886,7 @@ class Types:
         """
         return Types(self, DefaultModifier(value))
 
-    def truncate(self, max_length: Int) -> Types:
+    def truncate(self, max_length: Int | Callable | Types) -> Types:
         """During initialization and set, if string value is too long, it's
         truncated to argument max length.
 
@@ -944,7 +944,7 @@ class Types:
         """
         return Types(self, EagerModifier(), ToUpperModifier())
 
-    def padstart(self, char: str, length: int) -> Types:
+    def padstart(self, char: str | Callable | Types, length: int | Callable | Types) -> Types:
         """This modifier padstart string.
 
         Returns:
@@ -1010,18 +1010,18 @@ class Types:
         """
         return Types(self, EagerModifier(), ReplaceModifier(old, new))
 
-    def replacer(self, reg: Str, rep: Str) -> Types:
+    def replacer(self, reg: Str | Callable | Types, rep: Str | Callable | Types) -> Types:
         """Replacer modifier replaces occurance matches regular expression with
         replacement string.
         """
         return Types(self, EagerModifier(), ReplacerModifier(reg, rep))
 
-    def split(self, sep: Str) -> Types:
+    def split(self, sep: Str | Callable | Types) -> Types:
         """Split modifier splits string into a list of strings.
         """
         return Types(self, EagerModifier(), SplitModifier(sep))
 
-    def join(self, sep: Str) -> Types:
+    def join(self, sep: Str | Callable | Types) -> Types:
         """Join modifier concatenates a list of strings into a single string.
         """
         return Types(self, EagerModifier(), JoinModifier(sep))
@@ -1346,7 +1346,7 @@ class Types:
         """
         return Types(self, CheckpwModifier(against))
 
-    def randomdigits(self: Types, length: Int) -> Types:
+    def randomdigits(self: Types, length: int | Callable | Types) -> Types:
         """Random digits modifier generates a random digits string of length.
         """
         return Types(self, RandomDigitsModifier(length))
@@ -1356,14 +1356,14 @@ class Types:
         """
         return Types(self, RandomAlnumsModifier(length))
 
-    def randomalnumpuncs(self: Types, length: Int) -> Types:
+    def randomalnumpuncs(self: Types, length: int | Callable | Types) -> Types:
         """Random alnumpuncs modifier generates a random alnumpuncs string of
         length.
         """
         return Types(self, RandomAlnumpuncsModifier(length))
 
-    def randomint(self: Types, min_value: int | float,
-                    max_value: int | float) -> Types:
+    def randomint(self: Types, min_value: int | float | Callable | Types,
+                    max_value: int | float | Callable | Types) -> Types:
         """Random int modifier generates a random int value."""
         return Types(self, RandomIntModifier(min_value, max_value))
 
@@ -1387,7 +1387,7 @@ class Types:
         """
         return Types(self, EqModifier(val))
 
-    def neq(self: Types, val: Any | Types) -> Types:
+    def neq(self: Types, val: Any | Types | Callable) -> Types:
         """Neq modifier validates value by unequal testing.
         """
         return Types(self, NeqModifier(val))

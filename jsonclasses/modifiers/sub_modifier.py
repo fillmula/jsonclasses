@@ -13,4 +13,4 @@ class SubModifier(Modifier):
         self.by = by
 
     def transform(self, ctx: Ctx) -> Any:
-        return ctx.val - self.by if type(ctx.val) is int or type(ctx.val) is float else ctx.val
+        return ctx.val - self.resolve_param(self.by, ctx) if type(ctx.val) is int or type(ctx.val) is float else ctx.val

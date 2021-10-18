@@ -67,3 +67,10 @@ class TestAfter(TestCase):
         self.assertEqual(context.exception.keypath_messages['dtad'],
                          "value is too early")
 
+    def test_after_does_not_raise_if_date_value_is_after_callable_date_point(self):
+        dacd = SuperDate(dacd=date(2020, 4, 4))
+        dacd.validate()
+
+    def test_after_does_not_raise_if_date_value_is_after_types_date_piont(self):
+        datd = SuperDate(datd=date(2020, 4, 4))
+        datd.validate()
