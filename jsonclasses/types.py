@@ -683,7 +683,7 @@ class Types:
     def fmtd(self, format: str | Callable | Types) -> Types:
         """This modifier format datetime or date value.
         """
-        return Types(self, EagerModifier(), FormatDatetimeModifier(format))
+        return Types(self, FormatDatetimeModifier(format))
 
     def enum(self, enum_class: type[Enum] | str) -> Types:
         """Fields marked with enum should be enum value of provided enum type.
@@ -884,7 +884,7 @@ class Types:
         Returns:
           Types: A new types chained with this modifier.
         """
-        return Types(self,  DefaultModifier(value))
+        return Types(self, DefaultModifier(value))
 
     def truncate(self, max_length: Int) -> Types:
         """During initialization and set, if string value is too long, it's
@@ -1354,7 +1354,7 @@ class Types:
     def randomalnums(self: Types, length: Int | Callable | Types) -> Types:
         """Random alnums modifier generates a random alnums string of length.
         """
-        return Types(self, EagerModifier(), RandomAlnumsModifier(length))
+        return Types(self, RandomAlnumsModifier(length))
 
     def randomalnumpuncs(self: Types, length: Int) -> Types:
         """Random alnumpuncs modifier generates a random alnumpuncs string of
@@ -1380,7 +1380,7 @@ class Types:
     def fval(self: Types, field_name: str | Callable | Types) -> Types:
         """Get value at field from a JSONClass object.
         """
-        return Types(self, EagerModifier(), FValModifier(field_name))
+        return Types(self, FValModifier(field_name))
 
     def eq(self: Types, val: Any | Callable | Types) -> Types:
         """Eq modifier validates value by equal testing.
