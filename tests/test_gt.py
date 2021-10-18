@@ -44,3 +44,11 @@ class TestGt(TestCase):
         self.assertEqual(len(context.exception.keypath_messages), 1)
         self.assertEqual(context.exception.keypath_messages['ifGt'],
                          "value is not greater than 5")
+
+    def test_gt_doesnt_raise_if_float_value_is_greater_than_callable_arg(self):
+        n = SuperNumber(fcf_gt=5.6)
+        n.validate()
+
+    def test_gt_doesnt_raise_if_float_value_is_greater_than_types_arg(self):
+        n = SuperNumber(ftf_gt=5.6)
+        n.validate()

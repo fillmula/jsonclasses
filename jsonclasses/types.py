@@ -305,7 +305,7 @@ class Types:
         """
         return Types(self, StrModifier())
 
-    def match(self, pattern: Str) -> Types:
+    def match(self, pattern: Str | Callable | Types) -> Types:
         """Fields marked with match are tested againest the argument regular
         expression pattern.
         """
@@ -357,7 +357,7 @@ class Types:
         """This modifier adds int or float value to original value
 
         """
-        return Types(self, AddModifier(by))
+        return Types(self, EagerModifier(), AddModifier(by))
 
     def sub(self, by: int | float) -> Types:
         """This modifier for Int or float value subs original value
@@ -395,7 +395,7 @@ class Types:
         """
         return Types(self, EagerModifier(), FilterModifier(validate_callable))
 
-    def hasprefix(self, validate_prefix: str | list[str | int]) -> Types:
+    def hasprefix(self, validate_prefix: str | list[str | int] | Callable | Types) -> Types:
         """Hasprefix modifier validates if a string is prefix of another string
         or a list is prefix of another list
         """
@@ -419,7 +419,7 @@ class Types:
         """
         return Types(self, IsSuffixOfModifier(suffix))
 
-    def insertat(self, item: Any, index: int) -> Types:
+    def insertat(self, item: Any | Callable | Types, index: int | Callable | Types) -> Types:
         """
         """
         return Types(self, EagerModifier(), InsertAtModifier(item, index))
@@ -537,14 +537,14 @@ class Types:
         """
         return Types(self, LtModifier(value))
 
-    def gt(self, value: Float) -> Types:
+    def gt(self, value: Float | Callable | Types) -> Types:
         """Fields marked with gt are tested again this value. Values less than
         or equal than the argument value are considered invalid.
         """
         return Types(self, GtModifier(value))
 
 
-    def range(self, min_value: Float, max_value: Float) -> Types:
+    def range(self, min_value: Float | Callable | Types, max_value: Float | Callable | Types) -> Types:
         """Fields marked with range are tested again argument values. Only
         values between the arguments range are considered valid.
         """
@@ -680,10 +680,10 @@ class Types:
         """
         return Types(self, EagerModifier(), ToBoDayModifier())
 
-    def fmtd(self, format: str) -> Types:
+    def fmtd(self, format: str | Callable | Types) -> Types:
         """This modifier format datetime or date value.
         """
-        return Types(self, FormatDatetimeModifier(format))
+        return Types(self, EagerModifier(), FormatDatetimeModifier(format))
 
     def enum(self, enum_class: type[Enum] | str) -> Types:
         """Fields marked with enum should be enum value of provided enum type.
@@ -884,7 +884,7 @@ class Types:
         Returns:
           Types: A new types chained with this modifier.
         """
-        return Types(self, DefaultModifier(value))
+        return Types(self,  DefaultModifier(value))
 
     def truncate(self, max_length: Int) -> Types:
         """During initialization and set, if string value is too long, it's
@@ -1377,12 +1377,12 @@ class Types:
         """
         return Types(self, CrossFetchModifier(cn, sk, fk))
 
-    def fval(self: Types, field_name: str) -> Types:
+    def fval(self: Types, field_name: str | Callable | Types) -> Types:
         """Get value at field from a JSONClass object.
         """
-        return Types(self, FValModifier(field_name))
+        return Types(self, EagerModifier(), FValModifier(field_name))
 
-    def eq(self: Types, val: Any | Types | Callable) -> Types:
+    def eq(self: Types, val: Any | Callable | Types) -> Types:
         """Eq modifier validates value by equal testing.
         """
         return Types(self, EqModifier(val))

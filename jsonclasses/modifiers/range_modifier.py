@@ -18,5 +18,5 @@ class RangeModifier(Modifier):
     def validate(self, ctx: Ctx) -> None:
         if ctx.val is None:
             return
-        MinModifier(self.min).validate(ctx)
-        MaxModifier(self.max).validate(ctx)
+        MinModifier(self.resolve_param(self.min, ctx)).validate(ctx)
+        MaxModifier(self.resolve_param(self.max, ctx)).validate(ctx)
