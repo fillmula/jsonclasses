@@ -1,6 +1,6 @@
 """This modules contains the JSONClasses types modifier."""
 from __future__ import annotations
-from typing import Callable, Any, Optional
+from typing import Callable, Any, Optional, Type
 from datetime import date, datetime, timedelta
 from enum import Enum
 from copy import deepcopy
@@ -1005,7 +1005,7 @@ class Types:
         """
         return Types(self, EagerModifier(), ToStrModifier())
 
-    def replace(self, old: Str, new: Str) -> Types:
+    def replace(self, old: Str | Callable | Types, new: Str | Callable | Types) -> Types:
         """Replace modifier replaces occurance with substitutions.
         """
         return Types(self, EagerModifier(), ReplaceModifier(old, new))
@@ -1367,10 +1367,10 @@ class Types:
         """Random int modifier generates a random int value."""
         return Types(self, RandomIntModifier(min_value, max_value))
 
-    def randomfloat(self: Types, min_value: int | float,
-                    max_value: int | float) -> Types:
+    def randomfloat(self: Types, min_value: int | float | Callable | Types,
+                    max_value: int | float | Callable | Types) -> Types:
         """Random float modifier generates a random float value."""
-        return Types(self, RandomFloatModifier(min_value, max_value))
+        return Types(self, EagerModifier(), RandomFloatModifier(min_value, max_value))
 
     def crossfetch(self, cn: str, sk: str, fk: Optional[str] = None) -> Types:
         """Fetch a class with value matches this object's value at key.
