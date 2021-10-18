@@ -17,6 +17,6 @@ class IsPrefixOfModifier(Modifier):
         if isinstance(ctx.val, list):
             if not self.resolve_param(self.prefix, ctx)[:len(ctx.val)] == ctx.val:
                 ctx.raise_vexc('prefix is not found')
-        if type(ctx.val) is str:
+        elif type(ctx.val) is str:
             if not self.resolve_param(self.prefix, ctx).startswith(ctx.val):
                 ctx.raise_vexc('prefix is not found')

@@ -17,6 +17,6 @@ class HasSuffixModifier(Modifier):
         if isinstance(ctx.val, list):
             if not ctx.val[-len(self.resolve_param(self.suffix, ctx)):] == self.resolve_param(self.suffix, ctx):
                 ctx.raise_vexc('suffix is not found')
-        if type(ctx.val) is str:
+        elif type(ctx.val) is str:
             if not ctx.val.endswith(self.resolve_param(self.suffix, ctx)):
                 ctx.raise_vexc('suffix is not found')
