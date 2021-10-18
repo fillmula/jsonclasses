@@ -14,4 +14,4 @@ class AtModifier(Modifier):
     def transform(self, ctx: Ctx) -> Any:
         if ctx.val is None:
             return None
-        return ctx.val[self.index]
+        return ctx.val[self.resolve_param(self.index, ctx)]

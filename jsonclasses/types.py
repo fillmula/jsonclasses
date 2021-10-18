@@ -873,7 +873,7 @@ class Types:
 
     # transformers
 
-    def default(self, value: Any) -> Types:
+    def default(self, value: Any | Callable | Types) -> Types:
         """During initialization, if values of fields with default are not
         provided. The default value is used instead of leaving blank.
 
@@ -1398,7 +1398,7 @@ class Types:
         """
         return Types(self, ThisModifier())
 
-    def at(self: Types, index: Any) -> Types:
+    def at(self: Types, index: Any | Callable | Types) -> Types:
         """At modifier returns result with subscription index.
         """
         return Types(self, AtModifier(index))
