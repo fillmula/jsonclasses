@@ -15,8 +15,8 @@ class IsSuffixOfModifier(Modifier):
 
     def validate(self, ctx: Ctx) -> None:
         if isinstance(ctx.val, list):
-            if not self.resolve_param(self.suffix, ctx)[:len(ctx.val)] == ctx.val:
+            if not self.resolve_param(self.suffix, ctx)[len(ctx.val):] == ctx.val:
                 ctx.raise_vexc('suffix is not found')
         elif type(ctx.val) is str:
-            if not self.resolve_param(self.suffix, ctx).startswith(ctx.val):
+            if not self.resolve_param(self.suffix, ctx).endswith(ctx.val):
                 ctx.raise_vexc('suffix is not found')

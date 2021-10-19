@@ -15,7 +15,7 @@ class IsPrefixOfModifier(Modifier):
 
     def validate(self, ctx: Ctx) -> None:
         if isinstance(ctx.val, list):
-            if not self.resolve_param(self.prefix, ctx)[len(ctx.val):] == ctx.val:
+            if not self.resolve_param(self.prefix, ctx)[:len(ctx.val)] == ctx.val:
                 ctx.raise_vexc('prefix is not found')
         elif type(ctx.val) is str:
             if not self.resolve_param(self.prefix, ctx).startswith(ctx.val):
