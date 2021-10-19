@@ -18,7 +18,6 @@ from .nocopy_modifier import NoCopyModifier
 
 # database index command markers
 from .index_modifier import IndexModifier
-from .unique_modifier import UniqueModifier
 from .unqueryable_modifier import UnqueryableModifier
 from .queryable_modifier import QueryableModifier
 

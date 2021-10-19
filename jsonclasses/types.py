@@ -34,7 +34,7 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         DivModifier, ModModifier, MulModifier, GetOpModifier,
                         StrModifier, StrictModifier, AssignModifier,
                         TempModifier, TransformModifier, TrimModifier,
-                        TruncateModifier, UniqueModifier, ValidateModifier,
+                        TruncateModifier, ValidateModifier,
                         Modifier, WriteNonnullModifier, WriteonceModifier,
                         WriteonlyModifier, DenyModifier, CascadeModifier,
                         NullifyModifier, AsopModifier,
@@ -181,13 +181,13 @@ class Types:
         database column index for you. This modifier doesn't have any effect
         around transforming and validating.
         """
-        return Types(self, IndexModifier())
+        return Types(self, IndexModifier(False))
 
     def cindex(self, index_name: str) -> Types:
         """Fields marked with cindex have compound indexes. This modifier
         doesn't have any effect around transforming and validating.
         """
-        return Types(self, IndexModifier(index_name))
+        return Types(self, IndexModifier(False, index_name))
 
     @property
     def unique(self) -> Types:
@@ -201,7 +201,14 @@ class Types:
         UniqueFieldException provided by jsonclasses.excs to keep
         consistency with other jsonclasses integrations.
         """
-        return Types(self, UniqueModifier())
+        return Types(self, IndexModifier(True))
+
+    def cunique(self, index_name: str) -> Types:
+        """Fields marked with cunique have compound indexes. This is a unique
+        index. This modifier doesn't have any effect around transforming and
+        validating.
+        """
+        return Types(self, IndexModifier(True, index_name))
 
     @property
     def queryable(self) -> Types:

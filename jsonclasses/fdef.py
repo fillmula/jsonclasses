@@ -127,6 +127,8 @@ class Fdef:
         self._index: bool = False
         self._cindex: bool = False
         self._cindex_names: list[str] = []
+        self._cunique: bool = False
+        self._cunique_names: list[str] = []
         self._unique: bool = False
         self._required: bool = False
         self._raw_enum_class: Optional[type[Enum] | str] = None
@@ -240,6 +242,21 @@ class Fdef:
         """
         self._resolve_if_needed()
         return self._unique
+
+    @property
+    def cunique(self: Fdef) -> bool:
+        """Whether perform compound database index on this field. This is
+        marked for ORM implementers.
+        """
+        self._resolve_if_needed()
+        return self._cunique
+
+    @property
+    def cunique_names(self: Fdef) -> list[str]:
+        """The compound index name for this index field.
+        """
+        self._resolve_if_needed()
+        return self._cunique_names
 
     @property
     def required(self: Fdef) -> bool:
