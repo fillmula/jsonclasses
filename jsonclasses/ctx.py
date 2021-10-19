@@ -21,8 +21,13 @@ class CtxCfg(NamedTuple):
     """On tojson, whether ignore writeonly.
     """
 
+    reverse_relationship: Optional[bool] = None
+    """On tojson, whether output reverse relationship.
+    """
+
     fill_dest_blanks: Optional[bool] = None
-    """On setting, whether fill default fields with None value.
+    """On set and init, whether fill default fields with None value. This is an
+    internal behavior. Do not set this.
     """
 
 

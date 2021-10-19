@@ -137,18 +137,24 @@ def update(self: JObject, **kwargs: dict[str, Any]) -> JObject:
     return self
 
 
-def tojson(self: JObject, ignore_writeonly: bool = False) -> dict[str, Any]:
+def tojson(self: JObject,
+           ignore_writeonly: bool = False,
+           reverse_relationship: bool = False) -> dict[str, Any]:
     """Convert this JSON Class object to JSON dict.
 
     Args:
-        ignore_writeonly (Optional[bool]): Whether ignore writeonly marks on
+        ignore_writeonly (bool): Whether ignore writeonly marks on
         fields. Be careful when setting it to True.
+
+        reverse_relationship (bool): Whether including reverse relationship in
+        json outputs.
 
     Returns:
         dict[str, Any]: A dict represents this object's JSON object.
     """
     self._can_read_check()
-    ctxcfg = CtxCfg(ignore_writeonly=ignore_writeonly)
+    ctxcfg = CtxCfg(ignore_writeonly=ignore_writeonly,
+                    reverse_relationship=reverse_relationship)
     ctx = Ctx.rootctx(self, ctxcfg)
     return InstanceOfModifier(self.__class__).tojson(ctx)
 

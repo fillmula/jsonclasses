@@ -189,19 +189,24 @@ class InstanceOfModifier(Modifier):
         retval = {}
         clschain = ctx.idchain
         cls_name = val.__class__.cdef.name
+        rr = ctx.ctxcfg.reverse_relationship
         no_key_refs = cls_name in clschain
         for field in val.__class__.cdef.fields:
             fval = getattr(val, field.name)
             fd = field.types.fdef
             jf_name = field.json_name
             ignore_writeonly = ctx.ctxcfg.ignore_writeonly
+            isrr = False
+            if not rr:
+                if field.foreign_field:
+                    isrr = field.foreign_field.fdef == ctx.fdef
             if fd.fstore == FStore.LOCAL_KEY:
                 rk = val.__class__.cdef.jconf.ref_key_encoding_strategy(field)
                 jrk = val.__class__.cdef.jconf.key_encoding_strategy(rk)
                 retval[jrk] = getattr(val, rk)
-            if fd.fstore == FStore.LOCAL_KEY and no_key_refs:
+            if fd.fstore == FStore.LOCAL_KEY and (isrr or no_key_refs):
                 continue
-            if fd.fstore == FStore.FOREIGN_KEY and no_key_refs:
+            if fd.fstore == FStore.FOREIGN_KEY and (isrr or no_key_refs):
                 continue
             if fd.read_rule == ReadRule.NO_READ and not ignore_writeonly:
                 continue

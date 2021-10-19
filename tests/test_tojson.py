@@ -1,3 +1,4 @@
+from __future__ import annotations
 from unittest import TestCase
 from tests.classes.simple_deadline import SimpleDeadline
 from tests.classes.simple_account import SimpleAccount
@@ -28,6 +29,16 @@ class TestToJson(TestCase):
         user = LinkedUser(name='Kia Tsiu Tai')
         user.profile = profile
         self.assertEqual(user.tojson(),
+                         {'name': 'Kia Tsiu Tai',
+                          'profile': {'name': 'Tsit Po Po',
+                                      'userId': None}})
+
+
+    def test_tojson_linked_objects_with_tojsonrr_do_not_go_to_infinite_loop(self):
+        profile = LinkedProfile(name='Tsit Po Po')
+        user = LinkedUser(name='Kia Tsiu Tai')
+        user.profile = profile
+        self.assertEqual(user.tojson(reverse_relationship=True),
                          {'name': 'Kia Tsiu Tai',
                           'profile': {'name': 'Tsit Po Po',
                                       'user': {'name': 'Kia Tsiu Tai'},
