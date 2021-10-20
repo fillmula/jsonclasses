@@ -12,10 +12,5 @@ class InverseModifier(Modifier):
     def transform(self, ctx: Ctx) -> Any:
         if ctx.val is None:
             return None
-        if type(ctx.val) is bool:
-            if(ctx.val is True):
-                return False
-            else:
-                return True
         else:
-            return ctx.val
+            return not ctx.val if type(ctx.val) is bool else ctx.val

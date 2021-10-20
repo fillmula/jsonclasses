@@ -97,8 +97,8 @@ from .pow_modifier import PowModifier
 from .sqrt_modifier import SqrtModifier
 from .map_modifier import MapModifier
 from .filter_modifier import FilterModifier
-from .upperbond_modifier import UpperBondModifier
-from .lowerbond_modifier import LowerBondModifier
+from .upperbond_modifier import UpperbondModifier
+from .lowerbond_modifier import LowerbondModifier
 
 # bool modifiers
 from .bool_modifier import BoolModifier

@@ -6,20 +6,20 @@ if TYPE_CHECKING:
     from ..ctx import Ctx
     from ..types import Types
 
-class LowerBondModifier(Modifier):
-    """Lower bond modifier returns the value of the field to lowerbond if
+class LowerbondModifier(Modifier):
+    """Lowerbond modifier returns the value of the field to lowerbond if
     the value of the field is smaller than lowerbond."""
 
-    def __init__(self, is_number: int | float | Callable | Types) -> None:
-        self.is_number = is_number
+    def __init__(self, min_value: int | float | Callable | Types) -> None:
+        self.min_value = min_value
 
     def transform(self, ctx: Ctx) -> Any:
         if ctx.val is None:
             return None
         if type(ctx.val) is int or type(ctx.val) is float:
-            if self.resolve_param(self.is_number, ctx) < ctx.val:
-                return ctx.val
+            if ctx.val < self.resolve_param(self.min_value, ctx):
+                return self.resolve_param(self.min_value, ctx)
             else:
-                return self.resolve_param(self.is_number, ctx)
+                return ctx.val
         else:
             return ctx.val

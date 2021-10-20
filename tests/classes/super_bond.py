@@ -10,7 +10,7 @@ class SuperBond:
     c_ub: Optional[int] = types.int.upperbond(lambda: 150)
     t_ub: Optional[int] = types.int.upperbond(types.default(150))
 
-    i_lb: Optional[int] = types.int.lowerbond(150)
-    f_lb: Optional[float] = types.float.lowerbond(150.0)
-    c_lb: Optional[int] = types.int.lowerbond(lambda: 150)
-    t_lb: Optional[int] = types.float.lowerbond(types.default(150))
+    i_lb: Optional[int] = types.int.lowerbond(1)
+    f_lb: Optional[float] = types.float.lowerbond(1.0)
+    c_lb: Optional[int] = types.int.lowerbond(lambda: 1)
+    t_lb: Optional[int] = types.float.lowerbond(types.default(1))
