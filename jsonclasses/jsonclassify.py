@@ -347,7 +347,11 @@ def complete(self: JObject) -> JObject:
     """Fetch missing field values from the underlying ORM.
     """
     if self.is_partial:
+        saved_modified_fields = self._modified_fields
+        saved_is_modified = self._is_modified
         self._orm_complete()
+        self._is_modified = saved_is_modified
+        self._modified_fields = saved_modified_fields
 
 
 def _orm_complete(self: JObject) -> JObject:
