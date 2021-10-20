@@ -141,18 +141,3 @@ class JField:
             if ffield:
                 self._foreign_field = ffield
                 self._foreign_fname = ffield.name
-
-        """Get the linked foreign field for local field named `name`.
-
-        Args:
-            name (str): The name of the local field.
-
-        Returns:
-            Optional[tuple[Cdef, str]]: A tuple which is a \
-            combination of foreign class definition and foreign field name or \
-            None if not found.
-
-        Raises:
-            LinkedFieldUnmatchException: A foreign field which is linked by \
-            the field definition is found, however the properties don't match.
-        """
