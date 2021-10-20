@@ -6,20 +6,20 @@ if TYPE_CHECKING:
     from ..ctx import Ctx
     from ..types import Types
 
-class UpperBondModifier(Modifier):
-    """Upper bond modifier returns the value of the field to upperbond if
+class UpperbondModifier(Modifier):
+    """Upperbond modifier returns the value of the field to upperbond if
     the value of the field is larger than upperbond."""
 
-    def __init__(self, is_number: int | float | Callable | Types) -> None:
-        self.is_number = is_number
+    def __init__(self, max_value: int | float | Callable | Types) -> None:
+        self.max_value = max_value
 
     def transform(self, ctx: Ctx) -> Any:
         if ctx.val is None:
             return None
         if type(ctx.val) is int or type(ctx.val) is float:
-            if self.resolve_param(self.is_number, ctx) > ctx.val:
-                return ctx.val
+            if ctx.val > self.resolve_param(self.max_value, ctx):
+                return self.resolve_param(self.max_value, ctx)
             else:
-                return self.resolve_param(self.is_number, ctx)
+                return ctx.val
         else:
             return ctx.val

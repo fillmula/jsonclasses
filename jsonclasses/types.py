@@ -64,8 +64,8 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         FilterModifier, HasPrefixModifier, HasSuffixModifier,
                         InsertAtModifier, AppendModifier, PrependModifier,
                         WrapIntoListModifier, IsPrefixOfModifier,
-                        IsSuffixOfModifier, InverseModifier, UpperBondModifier,
-                        LowerBondModifier)
+                        IsSuffixOfModifier, InverseModifier, UpperbondModifier,
+                        LowerbondModifier)
 
 Str = str
 Int = int
@@ -446,19 +446,19 @@ class Types:
         """Decrease the value of the field to upperbond if the value of the
         field is larger than upperbond.
         """
-        return Types(self, EagerModifier(), UpperBondModifier(by))
+        return Types(self, EagerModifier(), UpperbondModifier(by))
 
     def lowerbond(self, by: int | float | Callable | Types) -> Types:
         """Increase the value of the field to lowerbond if the value of the
         field is smaller than lowerbond.
         """
-        return Types(self, EagerModifier(), LowerBondModifier(by))
+        return Types(self, EagerModifier(), LowerbondModifier(by))
 
     @property
     def inverse(self) -> Types:
         """Change the value to false if value is true, vice versa.
         """
-        return Types(self, InverseModifier())
+        return Types(self, EagerModifier(), InverseModifier())
 
     @property
     def wrapintolist(self) -> Types:
