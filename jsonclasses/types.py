@@ -442,17 +442,17 @@ class Types:
         """
         return Types(self, EagerModifier(), AppendModifier(item))
 
-    def upperbond(self, max_constant_value: int | float | Callable | Types) -> Types:
+    def upperbond(self, max_value: int | float | Callable | Types) -> Types:
         """Decrease the value of the field to upperbond if the value of the
         field is larger than upperbond.
         """
-        return Types(self, EagerModifier(), UpperbondModifier(max_constant_value))
+        return Types(self, EagerModifier(), UpperbondModifier(max_value))
 
-    def lowerbond(self, min_constant_value: int | float | Callable | Types) -> Types:
+    def lowerbond(self, min_value: int | float | Callable | Types) -> Types:
         """Increase the value of the field to lowerbond if the value of the
         field is smaller than lowerbond.
         """
-        return Types(self, EagerModifier(), LowerbondModifier(min_constant_value))
+        return Types(self, EagerModifier(), LowerbondModifier(min_value))
 
     @property
     def inverse(self) -> Types:
