@@ -42,6 +42,12 @@ class CollectionTypeModifier(TypeModifier):
     def to_json_key(self, key: T, conf: JConf) -> T:
         return key
 
+    def should_special_handle(self, key: Any, v: Any, ctx: Ctx) -> bool:
+        return False
+
+    def special_handle(self, key: Any, v: Any, ctx: Ctx) -> None:
+        pass
+
     def validate(self, ctx: Ctx) -> None:
         if ctx.val is None:
             return
@@ -74,10 +80,13 @@ class CollectionTypeModifier(TypeModifier):
         itypes = ctx.fdef.item_types
         retval = self.empty_collection()
         for i, v in self.enumerator(ctx.val):
-            ictx = ctx.colval(v, i, itypes.fdef, ctx.val)
-            tsfmd = itypes.modifier.transform(ictx)
-            self.append_value(
-                self.to_object_key(i, ctx.owner.cdef.jconf), tsfmd, retval)
+            if self.should_special_handle(i, v, ctx):
+                self.special_handle(i, v, ctx)
+            else:
+                ictx = ctx.colval(v, i, itypes.fdef, ctx.val)
+                tsfmd = itypes.modifier.transform(ictx)
+                self.append_value(
+                    self.to_object_key(i, ctx.owner.cdef.jconf), tsfmd, retval)
         return retval
 
     def tojson(self, ctx: Ctx) -> Any:

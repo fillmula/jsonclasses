@@ -1,8 +1,10 @@
 """module for listof modifier."""
 from __future__ import annotations
-from typing import Any, Collection, Iterable
-from ..fdef import FType
+from typing import Any, Collection, Iterable, TYPE_CHECKING
+from ..fdef import FStore, FType
 from .collection_type_modifier import CollectionTypeModifier
+if TYPE_CHECKING:
+    from ..ctx import Ctx
 
 
 class ListOfModifier(CollectionTypeModifier):
@@ -21,3 +23,17 @@ class ListOfModifier(CollectionTypeModifier):
 
     def append_value(self, i: int, v: Any, col: list):
         col.append(v)
+
+    def should_special_handle(self, key: Any, v: Any, ctx: Ctx) -> bool:
+        is_fkey = ctx.fdef.fstore == FStore.FOREIGN_KEY
+        uses_jt = ctx.fdef.use_join_table
+        if not (is_fkey and uses_jt):
+            return False
+        return isinstance(v, dict) and ('_add' in v or '_del' in v)
+
+    def special_handle(self, key: Any, v: Any, ctx: Ctx) -> None:
+        fname = ctx.keypatho[-1]
+        if '_add' in v:
+            ctx.owner._add_link_key(fname, v['_add'])
+        elif '_del' in v:
+            ctx.owner._add_unlink_key(fname, v['_del'])
