@@ -352,6 +352,7 @@ def complete(self: JObject) -> JObject:
         self._orm_complete()
         self._is_modified = saved_is_modified
         self._modified_fields = saved_modified_fields
+    return self
 
 
 def _orm_complete(self: JObject) -> JObject:
@@ -398,6 +399,8 @@ def _set_initial_status(self: JObject) -> None:
     setattr(self, '_local_keys', set())
     setattr(self, '_local_key_map', {})
     setattr(self, '_unlinked_objects', {})
+    setattr(self, '_link_keys', {})
+    setattr(self, '_unlink_keys', {})
     setattr(self, '_graph', OGraph())
     setattr(self, '_operator', None)
 
@@ -405,6 +408,18 @@ def _set_initial_status(self: JObject) -> None:
 def _mark_not_new(self: JObject) -> None:
     """Mark the jsonclass object as not a new object."""
     setattr(self, '_is_new', False)
+
+
+def _add_link_key(self: JObject, fname: str, key: str | int) -> None:
+    if self._link_keys.get(fname) is None:
+        self._link_keys[fname] = []
+    self._link_keys[fname].append(key)
+
+
+def _add_unlink_key(self: JObject, fname: str, key: str | int) -> None:
+    if self._unlink_keys.get(fname) is None:
+        self._unlink_keys[fname] = []
+    self._unlink_keys[fname].append(key)
 
 
 def _add_unlinked_object(self: JObject,
@@ -852,6 +867,8 @@ def jsonclassify(class_: type) -> type[JObject]:
     class_._mark_unmodified = _mark_unmodified
     class_._set_initial_status = _set_initial_status
     class_._mark_not_new = _mark_not_new
+    class_._add_link_key = _add_link_key
+    class_._add_unlink_key = _add_unlink_key
     class_._add_unlinked_object = _add_unlinked_object
     class_._del_unlinked_object = _del_unlinked_object
     class_._clear_unlinked_object = _clear_unlinked_object
