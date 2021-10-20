@@ -14,11 +14,7 @@ class UpperbondModifier(Modifier):
         self.max_value = max_value
 
     def transform(self, ctx: Ctx) -> Any:
-        max_value = self.resolve_param(self.max_value, ctx)
         if type(ctx.val) is int or type(ctx.val) is float:
-            if ctx.val > max_value:
-                return max_value
-            else:
-                return ctx.val
-        else:
-            return ctx.val
+            max_value = self.resolve_param(self.max_value, ctx)
+            return max_value if ctx.val > max_value else ctx.val
+        return ctx.val

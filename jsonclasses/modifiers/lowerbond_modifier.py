@@ -14,11 +14,7 @@ class LowerbondModifier(Modifier):
         self.min_value = min_value
 
     def transform(self, ctx: Ctx) -> Any:
-        min_value = self.resolve_param(self.min_value, ctx)
         if type(ctx.val) is int or type(ctx.val) is float:
-            if ctx.val < min_value:
-                return min_value
-            else:
-                return ctx.val
-        else:
-            return ctx.val
+            min_value = self.resolve_param(self.min_value, ctx)
+            return min_value if ctx.val < min_value else ctx.val
+        return ctx.val
