@@ -97,10 +97,13 @@ from .pow_modifier import PowModifier
 from .sqrt_modifier import SqrtModifier
 from .map_modifier import MapModifier
 from .filter_modifier import FilterModifier
+from .upperbond_modifier import UpperBondModifier
+from .lowerbond_modifier import LowerBondModifier
 
 # bool modifiers
 from .bool_modifier import BoolModifier
 from .tobool_modifier import ToBoolModifier
+from .inverse_modifier import InverseModifier
 
 # datetime modifiers
 from .date_modifier import DateModifier

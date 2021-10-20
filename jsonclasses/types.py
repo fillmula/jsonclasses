@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Callable, Any, Optional, Type
 from datetime import date, datetime, timedelta
-from enum import Enum
+from enum import Enum, Flag
 from copy import deepcopy
 from .jobject import JObject
 from .fdef import Fdef
@@ -64,7 +64,8 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         FilterModifier, HasPrefixModifier, HasSuffixModifier,
                         InsertAtModifier, AppendModifier, PrependModifier,
                         WrapIntoListModifier, IsPrefixOfModifier,
-                        IsSuffixOfModifier)
+                        IsSuffixOfModifier, InverseModifier, UpperBondModifier,
+                        LowerBondModifier)
 
 Str = str
 Int = int
@@ -440,6 +441,24 @@ class Types:
         """
         """
         return Types(self, EagerModifier(), AppendModifier(item))
+
+    def upperbond(self, by: int | float | Callable | Types) -> Types:
+        """Decrease the value of the field to upperbond if the value of the
+        field is larger than upperbond.
+        """
+        return Types(self, EagerModifier(), UpperBondModifier(by))
+
+    def lowerbond(self, by: int | float | Callable | Types) -> Types:
+        """Increase the value of the field to lowerbond if the value of the
+        field is smaller than lowerbond.
+        """
+        return Types(self, EagerModifier(), LowerBondModifier(by))
+
+    @property
+    def inverse(self) -> Types:
+        """Change the value to false if value is true, vice versa.
+        """
+        return Types(self, InverseModifier())
 
     @property
     def wrapintolist(self) -> Types:
