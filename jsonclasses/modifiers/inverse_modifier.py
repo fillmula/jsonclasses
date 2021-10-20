@@ -10,7 +10,4 @@ class InverseModifier(Modifier):
     """Inverse modifier changes the value to false if value is true, vice versa."""
 
     def transform(self, ctx: Ctx) -> Any:
-        if ctx.val is None:
-            return None
-        else:
-            return not ctx.val if type(ctx.val) is bool else ctx.val
+        return not ctx.val if type(ctx.val) is bool else ctx.val
