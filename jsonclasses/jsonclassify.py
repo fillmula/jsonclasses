@@ -267,7 +267,7 @@ def persisted_modified_fields(self: JObject) -> tuple[str]:
     retval: list[str] = []
     cdef = self.__class__.cdef
     for name in self._modified_fields:
-        if not cdef.field_named(name).fdef.is_temp_field:
+        if cdef.field_named(name).fdef.fstore != FStore.TEMP:
             retval.append(name)
     return tuple(retval)
 
@@ -440,7 +440,7 @@ def _set_on_save(self: JObject) -> None:
 
 def _clear_temp_fields(self: JObject) -> None:
     for field in self.__class__.cdef.fields:
-        if field.fdef.is_temp_field:
+        if field.fdef.fstore == FStore.TEMP:
             setattr(self, field.name, None)
 
 

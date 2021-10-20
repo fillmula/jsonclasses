@@ -210,7 +210,7 @@ class InstanceOfModifier(Modifier):
                 continue
             if fd.read_rule == ReadRule.NO_READ and not ignore_writeonly:
                 continue
-            if fd.is_temp_field:
+            if fd.fstore == FStore.TEMP:
                 continue
             if field.fdef.ftype == FType.INSTANCE:
                 ictx = ctx.nextoc(fval, field.name, field.fdef, cls_name)

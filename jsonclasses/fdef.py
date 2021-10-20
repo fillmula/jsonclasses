@@ -36,6 +36,7 @@ class FStore(Enum):
     LOCAL_KEY = 'local_key'
     FOREIGN_KEY = 'foreign_key'
     CALCULATED = 'calculated'
+    TEMP = 'temp'
 
 
 class ReadRule(Enum):
@@ -150,7 +151,6 @@ class Fdef:
         self._delete_rule: Optional[DeleteRule] = None
         self._read_rule: ReadRule = ReadRule.UNLIMITED
         self._write_rule: WriteRule = WriteRule.UNLIMITED
-        self._is_temp_field: bool = False
         self._collection_nullability: Nullability = Nullability.NULLABLE
         self._item_nullability: Nullability = Nullability.UNDEFINED
         self._strictness: Strictness = Strictness.UNDEFINED
@@ -427,13 +427,6 @@ class Fdef:
         """
         self._resolve_if_needed()
         return self._write_rule
-
-    @property
-    def is_temp_field(self: Fdef) -> bool:
-        """Whether this field is a temp field.
-        """
-        self._resolve_if_needed()
-        return self._is_temp_field
 
     # collection and collection items null rules
 
