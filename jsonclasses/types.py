@@ -1,8 +1,8 @@
 """This modules contains the JSONClasses types modifier."""
 from __future__ import annotations
-from typing import Callable, Any, Optional, Type
+from typing import Callable, Any, Optional
 from datetime import date, datetime, timedelta
-from enum import Enum, Flag
+from enum import Enum
 from copy import deepcopy
 from .jobject import JObject
 from .fdef import Fdef
@@ -442,17 +442,17 @@ class Types:
         """
         return Types(self, EagerModifier(), AppendModifier(item))
 
-    def upperbond(self, by: int | float | Callable | Types) -> Types:
+    def upperbond(self, max_constant_value: int | float | Callable | Types) -> Types:
         """Decrease the value of the field to upperbond if the value of the
         field is larger than upperbond.
         """
-        return Types(self, EagerModifier(), UpperbondModifier(by))
+        return Types(self, EagerModifier(), UpperbondModifier(max_constant_value))
 
-    def lowerbond(self, by: int | float | Callable | Types) -> Types:
+    def lowerbond(self, min_constant_value: int | float | Callable | Types) -> Types:
         """Increase the value of the field to lowerbond if the value of the
         field is smaller than lowerbond.
         """
-        return Types(self, EagerModifier(), LowerbondModifier(by))
+        return Types(self, EagerModifier(), LowerbondModifier(min_constant_value))
 
     @property
     def inverse(self) -> Types:
