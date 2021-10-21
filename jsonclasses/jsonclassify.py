@@ -43,7 +43,12 @@ def __init__(self: JObject, **kwargs: dict[str, Any]) -> None:
         if field.fdef.fstore == FStore.LOCAL_KEY:
             transformer = self.__class__.cdef.jconf.ref_key_encoding_strategy
             local_key = transformer(field)
-            setattr(self, local_key, None)
+            if field.fdef.ftype == FType.LIST:
+                lst = OwnedList()
+                lst.owner = self
+                setattr(self, local_key, lst)
+            else:
+                setattr(self, local_key, None)
             self._local_keys.add(local_key)
             self._local_key_map[local_key] = field.name
     self._set(single_key_args(kwargs), fill_blanks=True)

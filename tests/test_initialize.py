@@ -1,7 +1,6 @@
 from __future__ import annotations
-from jsonclasses.fdef import FType
-from unittest import TestCase
 from datetime import date
+from unittest import TestCase
 from jsonclasses.excs import ValidationException
 from tests.classes.simple_article import SimpleArticle
 from tests.classes.simple_order import SimpleOrder
@@ -11,6 +10,7 @@ from tests.classes.simple_deadline import SimpleDeadline
 from tests.classes.author import Author
 from tests.classes.article import Article
 from tests.classes.default_dict import DefaultDict
+from tests.classes.linked_song import LinkedSong, LinkedSinger
 
 
 class TestInitialize(TestCase):
@@ -79,3 +79,8 @@ class TestInitialize(TestCase):
     def test_initialize_accepts_nested_keypaths_for_value_in_dicts(self):
         dct = DefaultDict(**{'value.b': '3', 'value.c': '4'})
         self.assertEqual(dct.value, {'a': '1', 'b': '3', 'c': '4'})
+
+    def test_initialized_object_list_local_keys_can_be_accessed(self):
+        song = LinkedSong()
+        self.assertEqual(song.singers, [])
+        self.assertEqual(song.singer_ids, [])

@@ -9,7 +9,7 @@ from jsonclasses.jobject import JObject
 from typing import Optional, Any, final, cast, TYPE_CHECKING
 from dataclasses import fields as dataclass_fields
 from .jfield import JField
-from .fdef import FStore, DeleteRule
+from .fdef import FStore, DeleteRule, FType
 from .rtypes import rtypes, rnamedtypes
 if TYPE_CHECKING:
     from .jconf import JConf
@@ -51,6 +51,8 @@ class Cdef:
         self._camelized_field_names: list[str] = []
         self._reference_names: list[str] = []
         self._camelized_reference_names: list[str] = []
+        self._list_reference_names: list[str] = []
+        self._camelized_list_reference_names: list[str] = []
         self._virtual_reference_names: list[str] = []
         self._camelized_virtual_reference_names: list[str] = []
         self._virtual_reference_fields: dict[str, JField] = {}
@@ -117,9 +119,14 @@ class Cdef:
         for jfield in self._tuple_fields:
             if jfield.types.fdef._fstore == FStore.LOCAL_KEY:
                 ref_key_encoding_strategy = self.jconf.ref_key_encoding_strategy
-                self._reference_names.append(ref_key_encoding_strategy(jfield))
-                self._camelized_reference_names.append(
-                    self.jconf.key_encoding_strategy(ref_key_encoding_strategy(jfield)))
+                if jfield.fdef.ftype == FType.INSTANCE:
+                    self._reference_names.append(ref_key_encoding_strategy(jfield))
+                    self._camelized_reference_names.append(
+                        self.jconf.key_encoding_strategy(ref_key_encoding_strategy(jfield)))
+                elif jfield.fdef.ftype == FType.LIST:
+                    self._list_reference_names.append(ref_key_encoding_strategy(jfield))
+                    self._camelized_list_reference_names.append(
+                        self.jconf.key_encoding_strategy(ref_key_encoding_strategy(jfield)))
             elif jfield.types.fdef._fstore == FStore.FOREIGN_KEY:
                 if jfield.types.fdef._use_join_table:
                     rkes = self.jconf.ref_key_encoding_strategy
@@ -128,13 +135,15 @@ class Cdef:
                     self._virtual_reference_names.append(rk)
                     self._camelized_virtual_reference_names.append(jkes(rk))
                     self._virtual_reference_fields[rk] = jfield
-
         self._available_names: set[str] = set(self._field_names
                                               + self._camelized_field_names
                                               + self._reference_names
-                                              + self._camelized_reference_names)
+                                              + self._camelized_reference_names
+                                              + self._list_reference_names
+                                              + self._camelized_list_reference_names)
         self._update_names: set[str] = set(self._field_names
-                                           + self._reference_names)
+                                           + self._reference_names
+                                           + self._list_reference_names)
 
     @property
     def cls(self: Cdef) -> type:
@@ -293,6 +302,16 @@ class Cdef:
     def camelized_reference_names(self: Cdef) -> set[str]:
         self._resolve_ref_names_if_needed()
         return set(self._camelized_reference_names)
+
+    @property
+    def list_reference_names(self: Cdef) -> set[str]:
+        self._resolve_ref_names_if_needed()
+        return set(self._list_reference_names)
+
+    @property
+    def camelized_list_reference_names(self: Cdef) -> set[str]:
+        self._resolve_ref_names_if_needed()
+        return set(self._camelized_list_reference_names)
 
     @property
     def virtual_reference_names(self: Cdef) -> str[str]:
