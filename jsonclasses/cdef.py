@@ -51,6 +51,8 @@ class Cdef:
         self._camelized_field_names: list[str] = []
         self._reference_names: list[str] = []
         self._camelized_reference_names: list[str] = []
+        self._virtual_reference_names: list[str] = []
+        self._camelized_virtual_reference_names: list[str] = []
         self._unique_fields: list[JField] = []
         self._assign_operator_fields: list[JField] = []
         self._auth_identity_fields: list[JField] = []
@@ -117,6 +119,14 @@ class Cdef:
                 self._reference_names.append(ref_key_encoding_strategy(jfield))
                 self._camelized_reference_names.append(
                     self.jconf.key_encoding_strategy(ref_key_encoding_strategy(jfield)))
+            elif jfield.types.fdef._fstore == FStore.FOREIGN_KEY:
+                if jfield.types.fdef._use_join_table:
+                    rkes = self.jconf.ref_key_encoding_strategy
+                    jkes = self.jconf.key_encoding_strategy
+                    rk = rkes(jfield)
+                    self._virtual_reference_names.append(rk)
+                    self._camelized_virtual_reference_names.append(jkes(rk))
+
         self._available_names: set[str] = set(self._field_names
                                               + self._camelized_field_names
                                               + self._reference_names
@@ -281,6 +291,16 @@ class Cdef:
     def camelized_reference_names(self: Cdef) -> set[str]:
         self._resolve_ref_names_if_needed()
         return set(self._camelized_reference_names)
+
+    @property
+    def virtual_reference_names(self: Cdef) -> str[str]:
+        self._resolve_ref_names_if_needed()
+        return set(self._virtual_reference_names)
+
+    @property
+    def camelized_virtual_reference_names(self: Cdef) -> str[str]:
+        self._resolve_ref_names_if_needed()
+        return set(self._camelized_virtual_reference_names)
 
         # accepted: list[tuple[FStore, bool]] = []
         # if fdef.fstore == FStore.LOCAL_KEY:
