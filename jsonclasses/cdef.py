@@ -53,6 +53,7 @@ class Cdef:
         self._camelized_reference_names: list[str] = []
         self._virtual_reference_names: list[str] = []
         self._camelized_virtual_reference_names: list[str] = []
+        self._virtual_reference_fields: dict[str, JField] = {}
         self._unique_fields: list[JField] = []
         self._assign_operator_fields: list[JField] = []
         self._auth_identity_fields: list[JField] = []
@@ -126,6 +127,7 @@ class Cdef:
                     rk = rkes(jfield)
                     self._virtual_reference_names.append(rk)
                     self._camelized_virtual_reference_names.append(jkes(rk))
+                    self._virtual_reference_fields[rk] = jfield
 
         self._available_names: set[str] = set(self._field_names
                                               + self._camelized_field_names
@@ -301,6 +303,11 @@ class Cdef:
     def camelized_virtual_reference_names(self: Cdef) -> str[str]:
         self._resolve_ref_names_if_needed()
         return set(self._camelized_virtual_reference_names)
+
+    @property
+    def virtual_reference_fields(self: Cdef) -> dict[str, JField]:
+        self._resolve_ref_names_if_needed()
+        return self._virtual_reference_fields
 
         # accepted: list[tuple[FStore, bool]] = []
         # if fdef.fstore == FStore.LOCAL_KEY:
