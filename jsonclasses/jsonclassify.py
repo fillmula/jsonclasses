@@ -44,9 +44,7 @@ def __init__(self: JObject, **kwargs: dict[str, Any]) -> None:
             transformer = self.__class__.cdef.jconf.ref_key_encoding_strategy
             local_key = transformer(field)
             if field.fdef.ftype == FType.LIST:
-                lst = OwnedList()
-                lst.owner = self
-                setattr(self, local_key, lst)
+                setattr(self, local_key, to_owned_list(self, [], local_key))
             else:
                 setattr(self, local_key, None)
             self._local_keys.add(local_key)
@@ -586,8 +584,7 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
                 self.__original_setattr__(name, value)
                 setattr(self, self._local_key_map[name], None)
         elif field.fdef.ftype == FType.LIST:
-            olist = OwnedList(value or [])
-            olist.owner = self
+            olist = to_owned_list(self, value or [], name)
             self.__original_setattr__(name, olist)
             if (value is None) or (value is []):
                 setattr(self, self._local_key_map[name], [])
@@ -619,15 +616,7 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
                 field.fdef.setter.modifier.transform(ctx)
             return
     if hasattr(self, name) and value == getattr(self, name):
-        lk = field.fdef.fstore is FStore.LOCAL_KEY
-        value_none = value is None
-        if lk and value_none:
-            if getattr(self, reference_key(field), None) is not None:
-                pass
-            else:
-                return
-        else:
-            return
+        return
     # track modified and previous value
     if not self.is_new:
         setattr(self, '_is_modified', True)
@@ -646,12 +635,23 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
             self.__unlink_field__(field, getattr(self, name))
         self.__original_setattr__(name, value)
         if field.fdef.fstore == FStore.LOCAL_KEY:
-            if value is None:
-                transformer = self.__class__.cdef.jconf.ref_key_encoding_strategy
-                self.__original_setattr__(transformer(field), None)
-            if isjsonobject(value):
-                transformer = self.__class__.cdef.jconf.ref_key_encoding_strategy
-                self.__original_setattr__(transformer(field), value._id)
+            rkes = self.__class__.cdef.jconf.ref_key_encoding_strategy
+            rname = rkes(field)
+            if field.fdef.ftype == FType.INSTANCE:
+                if value is None:
+                    self.__original_setattr__(rname, None)
+                if isjsonobject(value):
+                    self.__original_setattr__(rname, value._id)
+            elif field.fdef.ftype == FType.LIST:
+                if value is None:
+                    olist = to_owned_list(self, [], rname)
+                    self.__original_setattr__(rname, olist)
+                else:
+                    keys = []
+                    for item in value:
+                        keys.append(item._id)
+                    olist = to_owned_list(self, [], rname)
+                    self.__original_setattr__(rname, olist)
         self.__link_field__(field, value)
     else:
         self.__original_setattr__(name, value)
@@ -716,6 +716,8 @@ def __olist_will_change__(self, olist: OwnedList) -> None:
     # record previous value
     name = initial_keypath(olist.keypath)
     field = self.__class__.cdef.field_named(name)
+    if not field:
+        return
     if self.__class__.cdef.jconf.reset_all_fields or \
             field.fdef.has_reset_modifier:
         if field.fdef.has_linked:
@@ -731,12 +733,21 @@ def __olist_will_change__(self, olist: OwnedList) -> None:
 
 def __olist_add__(self: JObject, olist: OwnedList, idx: int, val: Any) -> None:
     cdef = self.__class__.cdef
+    if olist.keypath in self._local_keys:
+        fname = self._local_key_map[olist.keypath]
+        if isinstance(getattr(self, fname), list):
+            getattr(self, fname).insert(idx, None)
+        return
     try:
         field = cdef.field_named(olist.keypath)
     except ValueError:
         field = None
     if field is not None and field.fdef.is_ref:
         self.__link_field__(field, [val])
+        if field.fdef.fstore == FStore.LOCAL_KEY:
+            rkes = cdef.jconf.ref_key_encoding_strategy
+            rk = rkes(field)
+            getattr(self, rk).insert(idx, val._id)
     if isinstance(val, dict):
         olist[idx] = to_owned_dict(self, val,
                                    concat_keypath(olist.keypath, idx))
@@ -751,12 +762,27 @@ def __olist_add__(self: JObject, olist: OwnedList, idx: int, val: Any) -> None:
 
 def __olist_del__(self: JObject, olist: OwnedList, val: Any) -> None:
     cdef = self.__class__.cdef
+    if olist.keypath in self._local_keys:
+        fname = self._local_key_map[olist.keypath]
+        flist = getattr(self, fname)
+        if isinstance(flist, list):
+            # TODO: reorder flist here
+            # TODO: replace the underneath implementation
+            match = next((v for v in flist if v._id == val), "PLACEHOLDER")
+            if match != "PLACEHOLDER":
+                flist.remove(match)
+        return
     try:
         field = cdef.field_named(olist.keypath)
     except ValueError:
         field = None
     if field and field.fdef.is_ref:
         self.__unlink_field__(field, [val])
+        if field.fdef.fstore == FStore.LOCAL_KEY:
+            ## TODO: replace the underneath implementation
+            rkes = cdef.jconf.ref_key_encoding_strategy
+            rk = rkes(field)
+            getattr(self, rk).remove(val._id)
     # record modified
     if not self.is_new:
         setattr(self, '_is_modified', True)
