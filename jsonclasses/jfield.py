@@ -121,11 +121,10 @@ class JField:
             return None
         scls = self.fdef.cdef.cls
         slocal = self.fdef.fstore == FStore.LOCAL_KEY
+        fcls = self.foreign_class
         if self.fdef.ftype == FType.INSTANCE:
-            fcls = self.foreign_class
             stype = 'inst'
         elif self.fdef.ftype == FType.LIST:
-            fcls = self.foreign_class
             stype = 'list'
         if not fcls:
             return

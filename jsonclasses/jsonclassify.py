@@ -650,7 +650,7 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
                     keys = []
                     for item in value:
                         keys.append(item._id)
-                    olist = to_owned_list(self, [], rname)
+                    olist = to_owned_list(self, keys, rname)
                     self.__original_setattr__(rname, olist)
         self.__link_field__(field, value)
     else:
@@ -715,7 +715,10 @@ def __odict_del__(self, odict: OwnedDict, val: Any) -> None:
 def __olist_will_change__(self, olist: OwnedList) -> None:
     # record previous value
     name = initial_keypath(olist.keypath)
-    field = self.__class__.cdef.field_named(name)
+    try:
+        field = self.__class__.cdef.field_named(name)
+    except:
+        field = None
     if not field:
         return
     if self.__class__.cdef.jconf.reset_all_fields or \
@@ -790,6 +793,7 @@ def __olist_del__(self: JObject, olist: OwnedList, val: Any) -> None:
 
 
 def __olist_sor__(self, olist: OwnedList) -> None:
+    # TODO: sort local keys here
     # record modified
     if not self.is_new:
         setattr(self, '_is_modified', True)

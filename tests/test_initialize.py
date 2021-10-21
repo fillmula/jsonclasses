@@ -84,3 +84,12 @@ class TestInitialize(TestCase):
         song = LinkedSong()
         self.assertEqual(song.singers, [])
         self.assertEqual(song.singer_ids, [])
+
+    def test_initialized_object_list_add_local_object_syncs_local_key(self):
+        song = LinkedSong(id=1)
+        singer1 = LinkedSinger(id=1)
+        singer2 = LinkedSinger(id=2)
+        song.singers = [singer1]
+        self.assertEqual(song.singer_ids, [1])
+        song.singers.append(singer2)
+        self.assertEqual(song.singer_ids, [1, 2])
