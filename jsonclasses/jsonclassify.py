@@ -572,19 +572,35 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
         return
     # use special method for local keys
     if name in self._local_keys:
-        if str(value) == str(getattr(self, name)):
+        if value == getattr(self, name):
             return
-        if value is None:
-            self.__original_setattr__(name, value)
-            setattr(self, self._local_key_map[name], None)
-        else:
-            # temporarily set to none if key is modified
-            # in the future, may query object from graph
-            self.__original_setattr__(name, value)
-            setattr(self, self._local_key_map[name], None)
+        field_name = self._local_key_map[name]
+        field = self.__class__.cdef.field_named(field_name)
+        if field.fdef.ftype == FType.INSTANCE:
+            if value is None:
+                self.__original_setattr__(name, value)
+                setattr(self, self._local_key_map[name], None)
+            else:
+                # temporarily set to none if key is modified
+                # in the future, may query object from graph
+                self.__original_setattr__(name, value)
+                setattr(self, self._local_key_map[name], None)
+        elif field.fdef.ftype == FType.LIST:
+            olist = OwnedList(value or [])
+            olist.owner = self
+            self.__original_setattr__(name, olist)
+            if (value is None) or (value is []):
+                setattr(self, self._local_key_map[name], [])
+            else:
+                new_list = []
+                curvals = getattr(self, self._local_key_map[name])
+                for item in value:
+                    existitem = next((v for v in curvals if v._id == item), None)
+                    new_list.append(existitem)
+                setattr(self, self._local_key_map[name], new_list)
         if not self.is_new:
             setattr(self, '_is_modified', True)
-            self._modified_fields.add(self._local_key_map[name])
+            self._modified_fields.add(field_name)
     # use original setattr for non JSON class fields
     try:
         field = self.__class__.cdef.field_named(name)
