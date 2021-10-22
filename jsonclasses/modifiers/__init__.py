@@ -164,6 +164,7 @@ from .nullable_modifier import NullableModifier
 from .present_modifier import PresentModifier
 from .presentwith_modifier import PresentWithModifier
 from .presentwithout_modifier import PresentWithoutModifier
+from .nonnull_modifier import NonnullModifier
 
 # custom modifier
 from .validate_modifier import ValidateModifier
@@ -185,7 +186,7 @@ from .canc_modifier import CanCModifier
 from .canu_modifier import CanUModifier
 from .canr_modifier import CanRModifier
 
-from .nonnull_modifier import NonnullModifier
+
 
 # chained modifier
 from .chained_modifier import ChainedModifier
