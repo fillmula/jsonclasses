@@ -594,7 +594,8 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
                     curvals = []
                 for item in value:
                     existitem = next((v for v in curvals if v._id == item), None)
-                    new_list.append(existitem)
+                    if existitem is not None:
+                        new_list.append(existitem)
                 setattr(self, field_name, new_list)
         if not self.is_new:
             setattr(self, '_is_modified', True)
@@ -738,13 +739,6 @@ def __olist_will_change__(self, olist: OwnedList) -> None:
 
 def __olist_add__(self: JObject, olist: OwnedList, idx: int, val: Any) -> None:
     cdef = self.__class__.cdef
-    if olist.keypath in self._local_keys:
-        fname = self._local_key_map[olist.keypath]
-        flist = getattr(self, fname)
-        if isinstance(flist, list):
-            if len(flist) != len(olist):
-                flist.insert(idx, None)
-        return
     try:
         field = cdef.field_named(olist.keypath)
     except ValueError:
@@ -756,6 +750,8 @@ def __olist_add__(self: JObject, olist: OwnedList, idx: int, val: Any) -> None:
             rk = rkes(field)
             rlist = getattr(self, rk)
             if len(rlist) != len(olist):
+                if val._id is None:
+                    raise ValueError('a referenced object must have a valid primary key')
                 rlist.insert(idx, val._id)
     if isinstance(val, dict):
         olist[idx] = to_owned_dict(self, val,
@@ -862,8 +858,6 @@ def __link_field__(self: JObject, field: JField, value: Any) -> None:
                 setattr(item, other_field.name, self)
                 item._del_unlinked_object(other_field.name, self)
         elif other_field.fdef.ftype == FType.LIST:
-            if item is None:
-                return
             if not isinstance(getattr(item, other_field.name), list):
                 setattr(item, other_field.name, [self])
                 item._del_unlinked_object(other_field.name, self)

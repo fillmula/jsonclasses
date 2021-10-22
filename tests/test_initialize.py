@@ -125,7 +125,7 @@ class TestInitialize(TestCase):
         singer2 = LinkedSinger(id=2)
         song.singers = [singer1, singer2]
         song.singer_ids.append(3)
-        self.assertEqual(song.singers, [singer1, singer2, None])
+        self.assertEqual(song.singers, [singer1, singer2])
 
     def test_initialized_object_list_del_local_key_syncs_local_object(self):
         song = LinkedSong(id=1)
@@ -145,6 +145,6 @@ class TestInitialize(TestCase):
         singer4 = LinkedSinger(id=4)
         song.singers = [singer1]
         self.assertEqual(song.singer_ids, [1])
-        song.singer_ids = [7, 8, 9, 10]
-        self.assertEqual(song.singers, [None, None, None, None])
-        self.assertEqual(song.singer_ids, [7, 8, 9, 10])
+        song.singer_ids = [7, 8, 1, 9, 10]
+        self.assertEqual(song.singers, [singer1])
+        self.assertEqual(song.singer_ids, [7, 8, 1, 9, 10])
