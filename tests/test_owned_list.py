@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any, NamedTuple
 from unittest import TestCase
-from jsonclasses.owned_list import OwnedList
+from jsonclasses.olist import OwnedList
 
 
 class AddRecord(NamedTuple):

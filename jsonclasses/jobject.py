@@ -8,8 +8,8 @@ from typing import (
 if TYPE_CHECKING:
     from .cdef import Cdef
     from .fdef import Fdef
-    from .owned_dict import OwnedDict
-    from .owned_list import OwnedList
+    from .odict import OwnedDict
+    from .olist import OwnedList
     from .jfield import JField
     from .types import Types
 T = TypeVar('T', bound='JObject')

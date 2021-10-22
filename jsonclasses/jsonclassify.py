@@ -11,9 +11,9 @@ from .jfield import JField
 from .isjsonclass import isjsonobject
 from .mgraph import MGraph
 from .ograph import OGraph
-from .owned_dict import OwnedDict
-from .owned_list import OwnedList
-from .owned_collection_utils import (
+from .odict import OwnedDict
+from .olist import OwnedList
+from .outils import (
     to_owned_dict, to_owned_list, unowned_copy_dict, unowned_copy_list
 )
 from .keypath import (

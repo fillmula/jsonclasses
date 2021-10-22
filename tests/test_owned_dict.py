@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Generic, NamedTuple, TypeVar
 from unittest import TestCase
-from jsonclasses.owned_dict import OwnedDict
+from jsonclasses.odict import OwnedDict
 
 KT = TypeVar('KT')
 VT = TypeVar('VT')

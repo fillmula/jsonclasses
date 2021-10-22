@@ -2,8 +2,8 @@
 """
 from __future__ import annotations
 from typing import TypeVar, Any
-from .owned_dict import OwnedDict, DictOwner
-from .owned_list import OwnedList, ListOwner
+from .odict import OwnedDict, DictOwner
+from .olist import OwnedList, ListOwner
 from .keypath import concat_keypath
 
 KT = TypeVar('KT')
