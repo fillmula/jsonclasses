@@ -93,3 +93,58 @@ class TestInitialize(TestCase):
         self.assertEqual(song.singer_ids, [1])
         song.singers.append(singer2)
         self.assertEqual(song.singer_ids, [1, 2])
+
+    def test_initialized_object_list_del_local_object_syncs_local_key(self):
+        song = LinkedSong(id=1)
+        singer1 = LinkedSinger(id=1)
+        singer2 = LinkedSinger(id=2)
+        song.singers = [singer1]
+        self.assertEqual(song.singer_ids, [1])
+        song.singers.append(singer2)
+        self.assertEqual(song.singer_ids, [1, 2])
+        song.singers.remove(singer2)
+        self.assertEqual(song.singer_ids, [1])
+
+    def test_initialized_object_list_assign_local_object_syncs_local_key(self):
+        song = LinkedSong(id=1)
+        singer1 = LinkedSinger(id=1)
+        singer2 = LinkedSinger(id=2)
+        singer3 = LinkedSinger(id=3)
+        singer4 = LinkedSinger(id=4)
+        song.singers = [singer1]
+        self.assertEqual(song.singer_ids, [1])
+        song.singers.append(singer2)
+        self.assertEqual(song.singer_ids, [1, 2])
+        song.singers = [singer3, singer4]
+        self.assertEqual(song.singer_ids, [3, 4])
+        self.assertEqual(song.singers, [singer3, singer4])
+
+    def test_initialized_object_list_add_local_key_syncs_local_object(self):
+        song = LinkedSong(id=1)
+        singer1 = LinkedSinger(id=1)
+        singer2 = LinkedSinger(id=2)
+        song.singers = [singer1, singer2]
+        song.singer_ids.append(3)
+        self.assertEqual(song.singers, [singer1, singer2, None])
+
+    def test_initialized_object_list_del_local_key_syncs_local_object(self):
+        song = LinkedSong(id=1)
+        singer1 = LinkedSinger(id=1)
+        singer2 = LinkedSinger(id=2)
+        song.singers = [singer1, singer2]
+        self.assertEqual(singer2.songs, [song])
+        song.singer_ids.remove(2)
+        self.assertEqual(song.singers, [singer1])
+        self.assertEqual(singer2.songs, [])
+
+    def test_initialized_object_list_assign_local_key_syncs_local_object(self):
+        song = LinkedSong(id=1)
+        singer1 = LinkedSinger(id=1)
+        singer2 = LinkedSinger(id=2)
+        singer3 = LinkedSinger(id=3)
+        singer4 = LinkedSinger(id=4)
+        song.singers = [singer1]
+        self.assertEqual(song.singer_ids, [1])
+        song.singer_ids = [7, 8, 9, 10]
+        self.assertEqual(song.singers, [None, None, None, None])
+        self.assertEqual(song.singer_ids, [7, 8, 9, 10])

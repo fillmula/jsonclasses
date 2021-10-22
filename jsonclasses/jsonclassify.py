@@ -1,7 +1,6 @@
 """This module defines the `jsonclassify` function."""
 from __future__ import annotations
 from typing import Any, Callable, Optional, Union
-from datetime import datetime
 from inspect import signature, getmro
 from .jobject import JObject
 from .ctx import Ctx, CtxCfg
@@ -18,8 +17,8 @@ from .owned_collection_utils import (
     to_owned_dict, to_owned_list, unowned_copy_dict, unowned_copy_list
 )
 from .keypath import (
-    concat_keypath, initial_keypath, reference_key, single_key_args,
-    compound_key_args, keypath_split
+    concat_keypath, initial_keypath, single_key_args, compound_key_args,
+    keypath_split
 )
 from .excs import (AbstractJSONClassException, ValidationException,
                          JSONClassResetError, JSONClassResetNotEnabledError,
@@ -577,24 +576,24 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
         if field.fdef.ftype == FType.INSTANCE:
             if value is None:
                 self.__original_setattr__(name, value)
-                setattr(self, self._local_key_map[name], None)
+                setattr(self, field_name, None)
             else:
                 # temporarily set to none if key is modified
                 # in the future, may query object from graph
                 self.__original_setattr__(name, value)
-                setattr(self, self._local_key_map[name], None)
+                setattr(self, field_name, None)
         elif field.fdef.ftype == FType.LIST:
             olist = to_owned_list(self, value or [], name)
             self.__original_setattr__(name, olist)
             if (value is None) or (value is []):
-                setattr(self, self._local_key_map[name], [])
+                setattr(self, field_name, [])
             else:
                 new_list = []
-                curvals = getattr(self, self._local_key_map[name])
+                curvals = getattr(self, field_name)
                 for item in value:
                     existitem = next((v for v in curvals if v._id == item), None)
                     new_list.append(existitem)
-                setattr(self, self._local_key_map[name], new_list)
+                setattr(self, field_name, new_list)
         if not self.is_new:
             setattr(self, '_is_modified', True)
             self._modified_fields.add(field_name)
@@ -649,7 +648,8 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
                 else:
                     keys = []
                     for item in value:
-                        keys.append(item._id)
+                        if item is not None:
+                            keys.append(item._id)
                     olist = to_owned_list(self, keys, rname)
                     self.__original_setattr__(rname, olist)
         self.__link_field__(field, value)
@@ -738,8 +738,10 @@ def __olist_add__(self: JObject, olist: OwnedList, idx: int, val: Any) -> None:
     cdef = self.__class__.cdef
     if olist.keypath in self._local_keys:
         fname = self._local_key_map[olist.keypath]
-        if isinstance(getattr(self, fname), list):
-            getattr(self, fname).insert(idx, None)
+        flist = getattr(self, fname)
+        if isinstance(flist, list):
+            if len(flist) != len(olist):
+                flist.insert(idx, None)
         return
     try:
         field = cdef.field_named(olist.keypath)
@@ -750,7 +752,9 @@ def __olist_add__(self: JObject, olist: OwnedList, idx: int, val: Any) -> None:
         if field.fdef.fstore == FStore.LOCAL_KEY:
             rkes = cdef.jconf.ref_key_encoding_strategy
             rk = rkes(field)
-            getattr(self, rk).insert(idx, val._id)
+            rlist = getattr(self, rk)
+            if len(rlist) != len(olist):
+                rlist.insert(idx, val._id)
     if isinstance(val, dict):
         olist[idx] = to_owned_dict(self, val,
                                    concat_keypath(olist.keypath, idx))
@@ -769,11 +773,12 @@ def __olist_del__(self: JObject, olist: OwnedList, val: Any) -> None:
         fname = self._local_key_map[olist.keypath]
         flist = getattr(self, fname)
         if isinstance(flist, list):
-            # TODO: reorder flist here
-            # TODO: replace the underneath implementation
-            match = next((v for v in flist if v._id == val), "PLACEHOLDER")
-            if match != "PLACEHOLDER":
-                flist.remove(match)
+            if len(flist) != len(olist):
+                # TODO: reorder flist here
+                # TODO: replace the underneath implementation
+                match = next((v for v in flist if v._id == val), "PLACEHOLDER")
+                if match != "PLACEHOLDER":
+                    flist.remove(match)
         return
     try:
         field = cdef.field_named(olist.keypath)
@@ -785,7 +790,10 @@ def __olist_del__(self: JObject, olist: OwnedList, val: Any) -> None:
             ## TODO: replace the underneath implementation
             rkes = cdef.jconf.ref_key_encoding_strategy
             rk = rkes(field)
-            getattr(self, rk).remove(val._id)
+            rlist = getattr(self, rk)
+            if len(rlist) != len(olist):
+                if val is not None and val._id in rlist:
+                    rlist.remove(val._id)
     # record modified
     if not self.is_new:
         setattr(self, '_is_modified', True)
@@ -852,6 +860,8 @@ def __link_field__(self: JObject, field: JField, value: Any) -> None:
                 setattr(item, other_field.name, self)
                 item._del_unlinked_object(other_field.name, self)
         elif other_field.fdef.ftype == FType.LIST:
+            if item is None:
+                return
             if not isinstance(getattr(item, other_field.name), list):
                 setattr(item, other_field.name, [self])
                 item._del_unlinked_object(other_field.name, self)
