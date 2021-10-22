@@ -5,6 +5,7 @@ from tests.classes.simple_project import SimpleProject
 from tests.classes.simple_chart import SimpleChart
 from tests.classes.author import Author
 from tests.classes.nested_object import NestedDict, NestedList
+from tests.classes.linked_song import LinkedSong, LinkedSinger
 
 
 class TestIsModified(TestCase):
@@ -66,3 +67,101 @@ class TestIsModified(TestCase):
         ndct.value[1]['c'] = '2'
         self.assertEqual(ndct.is_modified, True)
         self.assertEqual(ndct.modified_fields, ('value.1',))
+
+    def test_jobject_is_modified_if_local_key_list_is_assigned(self):
+        singer1 = LinkedSinger(id=1)
+        singer2 = LinkedSinger(id=2)
+        song = LinkedSong(id=1, singers=[singer1, singer2])
+        song._mark_not_new()
+        self.assertEqual(song.is_modified, False)
+        song.singer_ids = [3, 4]
+        self.assertEqual(song.is_modified, True)
+        self.assertEqual(song.modified_fields, ('singers',))
+
+    def test_jobject_is_modified_if_local_key_list_is_assigned_nothing_changed_to_object_list(self):
+        singer1 = LinkedSinger(id=1)
+        singer2 = LinkedSinger(id=2)
+        song = LinkedSong(id=1, singers=[singer1, singer2])
+        song._mark_not_new()
+        self.assertEqual(song.is_modified, False)
+        song.singer_ids = [1, 2, 3]
+        self.assertEqual(song.is_modified, True)
+        self.assertEqual(song.modified_fields, ('singers',))
+
+
+    def test_jobject_is_modified_if_local_key_list_is_appended(self):
+        singer1 = LinkedSinger(id=1)
+        singer2 = LinkedSinger(id=2)
+        song = LinkedSong(id=1, singers=[singer1, singer2])
+        song._mark_not_new()
+        self.assertEqual(song.is_modified, False)
+        song.singer_ids.append(3)
+        self.assertEqual(song.is_modified, True)
+        self.assertEqual(song.modified_fields, ('singers',))
+
+    def test_jobject_is_modified_if_local_key_list_is_truncated(self):
+        singer1 = LinkedSinger(id=1)
+        singer2 = LinkedSinger(id=2)
+        song = LinkedSong(id=1, singers=[singer1, singer2])
+        song._mark_not_new()
+        self.assertEqual(song.is_modified, False)
+        song.singer_ids.remove(2)
+        self.assertEqual(song.singers, [singer1])
+        self.assertEqual(song.is_modified, True)
+        self.assertEqual(song.modified_fields, ('singers',))
+
+    def test_jobject_is_modified_if_local_key_list_is_truncated_nothing_changed_to_object_list(self):
+        singer1 = LinkedSinger(id=1)
+        singer2 = LinkedSinger(id=2)
+        song = LinkedSong(id=1, singers=[singer1, singer2])
+        song.singer_ids.append(5)
+        song._mark_not_new()
+        self.assertEqual(song.is_modified, False)
+        song.singer_ids.remove(5)
+        self.assertEqual(song.singers, [singer1, singer2])
+        self.assertEqual(song.is_modified, True)
+        self.assertEqual(song.modified_fields, ('singers',))
+
+
+    def test_jobject_is_modified_if_local_key_field_list_is_assigned(self):
+        singer1 = LinkedSinger(id=1)
+        singer2 = LinkedSinger(id=2)
+        singer3 = LinkedSinger(id=3)
+        song = LinkedSong(id=1, singers=[singer1, singer2])
+        song._mark_not_new()
+        self.assertEqual(song.is_modified, False)
+        song.singers = [singer1, singer2, singer3]
+        self.assertEqual(song.is_modified, True)
+        self.assertEqual(song.modified_fields, ('singers',))
+
+    def test_jobject_is_not_modified_if_local_key_field_list_is_assigned_nothing_changed_at_all(self):
+        singer1 = LinkedSinger(id=1)
+        singer2 = LinkedSinger(id=2)
+        song = LinkedSong(id=1, singers=[singer1, singer2])
+        song._mark_not_new()
+        self.assertEqual(song.is_modified, False)
+        song.singers = [singer1, singer2]
+        self.assertEqual(song.is_modified, False)
+        self.assertEqual(song.modified_fields, ())
+
+    def test_jobject_is_modified_if_local_key_field_list_is_appended(self):
+        singer1 = LinkedSinger(id=1)
+        singer2 = LinkedSinger(id=2)
+        singer3 = LinkedSinger(id=3)
+        song = LinkedSong(id=1, singers=[singer1, singer2])
+        song._mark_not_new()
+        self.assertEqual(song.is_modified, False)
+        song.singers.append(singer3)
+        self.assertEqual(song.is_modified, True)
+        self.assertEqual(song.modified_fields, ('singers',))
+
+    def test_jobject_is_modified_if_local_key_field_list_is_truncated(self):
+        singer1 = LinkedSinger(id=1)
+        singer2 = LinkedSinger(id=2)
+        singer3 = LinkedSinger(id=3)
+        song = LinkedSong(id=1, singers=[singer1, singer2, singer3])
+        song._mark_not_new()
+        self.assertEqual(song.is_modified, False)
+        song.singers.remove(singer3)
+        self.assertEqual(song.is_modified, True)
+        self.assertEqual(song.modified_fields, ('singers',))

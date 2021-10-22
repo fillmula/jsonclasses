@@ -739,6 +739,12 @@ def __olist_will_change__(self, olist: OwnedList) -> None:
 
 def __olist_add__(self: JObject, olist: OwnedList, idx: int, val: Any) -> None:
     cdef = self.__class__.cdef
+    if olist.keypath in self._local_keys:
+        fname = self._local_key_map[olist.keypath]
+        if not self._is_new and fname not in self._modified_fields:
+            self._modified_fields.add(fname)
+            self._is_modified = True
+        return
     try:
         field = cdef.field_named(olist.keypath)
     except ValueError:
@@ -769,6 +775,9 @@ def __olist_del__(self: JObject, olist: OwnedList, val: Any) -> None:
     cdef = self.__class__.cdef
     if olist.keypath in self._local_keys:
         fname = self._local_key_map[olist.keypath]
+        if not self._is_new and fname not in self._modified_fields:
+            self._modified_fields.add(fname)
+            self._is_modified = True
         flist = getattr(self, fname)
         if isinstance(flist, list):
             if len(flist) != len(olist):
@@ -876,7 +885,7 @@ def __link_graph__(self: JObject, other: JObject) -> None:
             self._graph.put(self)
     except UnlinkableJSONClassException:
         pass
-    self._graph.merged_graph(other._graph)
+    self._graph = self._graph.merged_graph(other._graph)
 
 
 def jsonclassify(class_: type) -> type[JObject]:
