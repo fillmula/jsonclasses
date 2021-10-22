@@ -43,12 +43,8 @@ from .preserialize_modifier import PreserializeModifier
 # str modifiers
 from .str_modifier import StrModifier
 from .match_modifier import MatchModifier
-from .oneof_modifier import OneOfModifier
 from .truncate_modifier import TruncateModifier
 from .trim_modifier import TrimModifier
-from .minlength_modifier import MinlengthModifier
-from .maxlength_modifier import MaxlengthModifier
-from .length_modifier import LengthModifier
 from .url_modifier import UrlModifier
 from .email_modifier import EmailModifier
 from .digit_modifier import DigitModifier
@@ -135,6 +131,10 @@ from .outputname_modifier import OutputNameModifier
 from .outputlname_modifier import OutputLnameModifier
 
 # iterable modifiers
+from .oneof_modifier import OneOfModifier
+from .minlength_modifier import MinlengthModifier
+from .maxlength_modifier import MaxlengthModifier
+from .length_modifier import LengthModifier
 from .reverse_modifier import ReverseModifier
 from .hasprefix_modifier import HasPrefixModifier
 from .hassuffix_modifier import HasSuffixModifier
