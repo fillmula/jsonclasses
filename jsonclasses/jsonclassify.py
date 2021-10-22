@@ -590,6 +590,8 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
             else:
                 new_list = []
                 curvals = getattr(self, field_name)
+                if curvals is None:
+                    curvals = []
                 for item in value:
                     existitem = next((v for v in curvals if v._id == item), None)
                     new_list.append(existitem)
