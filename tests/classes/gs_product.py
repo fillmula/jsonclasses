@@ -17,7 +17,7 @@ class GSProductUser:
 @jsonclass(can_delete=check_user, can_read=check_user)
 class GSProduct:
     name: str
-    user: GSProductUser = types.instanceof('GSProductUser').linkto.required
+    user: GSProductUser = types.objof('GSProductUser').linkto.required
 
 
 can_types = types.getop.fval('name').eq('n')

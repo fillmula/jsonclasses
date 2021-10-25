@@ -13,7 +13,7 @@ def force_content(article: CBOArticle, operator: str) -> None:
 @jsonclass
 class CBORevision:
     name: str
-    article: CBOArticle = types.instanceof('CBOArticle').linkto.required
+    article: CBOArticle = types.objof('CBOArticle').linkto.required
 
 
 @jsonclass(on_create=[create_first_revision, force_content])

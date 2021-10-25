@@ -782,11 +782,6 @@ class Types:
         """
         return Types(self, StrictModifier())
 
-    def instanceof(self, json_object_class: Any) -> Types:
-        """Fields marked with instance of are objects of given class.
-        """
-        return Types(self, InstanceOfModifier(json_object_class))
-
     def objof(self, jcls: Any) -> Types:
         """Fields marked with objof are objects of given class.
         """

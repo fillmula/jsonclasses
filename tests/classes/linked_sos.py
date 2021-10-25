@@ -16,7 +16,7 @@ class LinkedBookSOS:
     id: int = types.int.primary.required
     name: str = types.str.required
     value: int = types.int.setonsave(lambda x: x + 1).required
-    user: LinkedUserSOS = types.linkto.instanceof(LinkedUserSOS).required
+    user: LinkedUserSOS = types.linkto.objof(LinkedUserSOS).required
 
 
 @jsonclass

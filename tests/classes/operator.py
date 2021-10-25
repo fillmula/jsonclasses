@@ -12,7 +12,7 @@ class AsopUser:
 @jsonclass
 class AsopTeam:
     name: str = types.str.required
-    owner: AsopUser = types.instanceof('AsopUser').linkto.asop(lambda o: o)
+    owner: AsopUser = types.objof('AsopUser').linkto.asop(lambda o: o)
 
 
 @jsonclass
@@ -25,4 +25,4 @@ class AsopdUser:
 @jsonclass
 class AsopdTeam:
     name: str = types.str.required
-    owner: AsopdUser = types.instanceof('AsopdUser').linkto.asopd
+    owner: AsopdUser = types.objof('AsopdUser').linkto.asopd

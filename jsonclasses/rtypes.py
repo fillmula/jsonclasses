@@ -234,7 +234,7 @@ def to_types(anytypes: Any, opt: bool = False) -> Types:
         enum_type = types.enum(anytypes)
         return enum_type if opt else enum_type.required
     elif hasattr(anytypes, '__is_jsonclass__'):
-        instance_type = types.instanceof(anytypes)
+        instance_type = types.objof(anytypes)
         return instance_type if opt else instance_type.required
     elif isinstance(anytypes, ForwardRef):
         return str_to_types(anytypes.__forward_arg__)
@@ -277,7 +277,7 @@ def rnamedtypes(types: Types, cgraph: CGraph, cname: str) -> Types:
     name = types.fdef._unresolved_name
     if cgraph.has(name):
         cdef = cgraph.fetch(name)
-        types = types.instanceof(cdef.cls)
+        types = types.objof(cdef.cls)
     elif cgraph.has_enum(name):
         enumcls = cgraph.fetch_enum(name)
         types = types.enum(enumcls)

@@ -17,7 +17,7 @@ class User:
 class Post:
     id: int = types.int.primary
     name: str
-    user: User = types.linkto.instanceof('User').required
+    user: User = types.linkto.objof('User').required
     comments: List[Comment] = types.listof('Comment').linkedby('post').required
 
 
@@ -25,10 +25,10 @@ class Post:
 class Comment:
     id: int = types.int.primary
     content: str
-    post: Post = types.linkto.instanceof('Post').required
-    parent: Optional[Comment] = types.linkto.instanceof('Comment')
+    post: Post = types.linkto.objof('Post').required
+    parent: Optional[Comment] = types.linkto.objof('Comment')
     children: List[Comment] = types.listof('Comment').linkedby('parent').required
-    commenter: User = types.linkto.instanceof('User').required
+    commenter: User = types.linkto.objof('User').required
 
 
 input = {
@@ -106,7 +106,7 @@ class TestInstanceOfModifier(TestCase):
         @jsonclass(class_graph='test_instanceof_1')
         class User:
             name: str = types.str
-            address: Address = types.instanceof(Address)
+            address: Address = types.objof(Address)
         user = User(**{'name': 'John', 'address': {'line1': 'London', 'line2': 'Road'}})
         self.assertIsInstance(user.address, Address)
 
@@ -119,7 +119,7 @@ class TestInstanceOfModifier(TestCase):
         @jsonclass(class_graph='test_instanceof_1_0')
         class User:
             name: str = types.str.required
-            address: Address = types.instanceof(Address).required
+            address: Address = types.objof(Address).required
         user = User(**{'name': 'John', 'address': {}})
         self.assertEqual(user.address.line1, 'Line1')
         self.assertEqual(user.address.line2, 'Line2')
@@ -138,7 +138,7 @@ class TestInstanceOfModifier(TestCase):
         @jsonclass(class_graph='test_instanceof_1_2')
         class User:
             name: str = types.str.required
-            address: Address = types.instanceof(Address).required
+            address: Address = types.objof(Address).required
         user = User(name='John')
         user.address = NewAddress(line3='1', line4='2')
         self.assertRaisesRegex(
@@ -155,7 +155,7 @@ class TestInstanceOfModifier(TestCase):
         @jsonclass(class_graph='test_instanceof_2')
         class User:
             name: str = types.str
-            address: Address = types.instanceof(Address)
+            address: Address = types.objof(Address)
         user = User(**{'name': 'John', 'address': {'line2': 'Road'}})
         self.assertRaisesRegex(ValidationException,
             "'address\\.line1': value required",
@@ -170,7 +170,7 @@ class TestInstanceOfModifier(TestCase):
         @jsonclass(class_graph='test_instanceof_3')
         class User:
             name: str = types.str
-            address: Address = types.instanceof(Address)
+            address: Address = types.objof(Address)
         user = User(**{'name': 'John', 'address': {'line2': 'Road', 'line1': 'OK'}})
         result = user.tojson()
         self.assertEqual(result, {'name': 'John', 'address': {'line1': 'OK', 'line2': 'Road'}})
@@ -184,7 +184,7 @@ class TestInstanceOfModifier(TestCase):
         @jsonclass(class_graph='test_instanceof_4')
         class User:
             name: str = types.str
-            addresses: List[Address] = types.listof(types.instanceof(Address))
+            addresses: List[Address] = types.listof(types.objof(Address))
         user = User(**{'name': 'John', 'addresses': [
             {'line1': 'London', 'line2': 'Road'},
             {'line1': 'Paris', 'line2': 'Road'},
@@ -204,7 +204,7 @@ class TestInstanceOfModifier(TestCase):
         @jsonclass(class_graph='test_instanceof_5')
         class User:
             name: str = types.str
-            addresses: List[Address] = types.listof(types.instanceof(Address))
+            addresses: List[Address] = types.listof(types.objof(Address))
         user = User(**{'name': 'John', 'addresses': [
             {'line1': 'London'},
             {'line1': 'Paris'},
@@ -220,7 +220,7 @@ class TestInstanceOfModifier(TestCase):
         @jsonclass(class_graph='test_instanceof_6')
         class User:
             name: str = types.str
-            addresses: List[Address] = types.listof(types.instanceof(Address))
+            addresses: List[Address] = types.listof(types.objof(Address))
         user = User(**{'name': 'John', 'addresses': [
             {'line1': 'London', 'line2': 'Road'},
             {'line1': 'Paris', 'line2': 'Road'},
@@ -234,12 +234,12 @@ class TestInstanceOfModifier(TestCase):
         class Post:
             title: str = types.str
             content: str = types.str
-            author: User = types.instanceof('User')
+            author: User = types.objof('User')
 
         @jsonclass(class_graph='test_instanceof_7')
         class User:
             name: str = types.str
-            posts: List[Post] = types.listof(types.instanceof('Post'))
+            posts: List[Post] = types.listof(types.objof('Post'))
         user = User(**{'name': 'John', 'posts': [
             {'title': 'P1', 'content': 'C1'},
             {'title': 'P2', 'content': 'C2'},
@@ -312,12 +312,12 @@ class TestInstanceOfModifier(TestCase):
         @jsonclass(class_graph='test_instanceof__1')
         class Staff:
             position: str
-            user: User = types.linkto.instanceof('User').required
+            user: User = types.linkto.objof('User').required
 
         @jsonclass(class_graph='test_instanceof__1')
         class User:
             name: str
-            staff: Staff = types.instanceof('Staff').linkedby('user').required
+            staff: Staff = types.objof('Staff').linkedby('user').required
 
         staff = Staff(position='CFO')
         user = User(name='John', staff=staff)
@@ -327,12 +327,12 @@ class TestInstanceOfModifier(TestCase):
         @jsonclass(class_graph='test_instanceof_13')
         class Staff:
             position: str
-            user: User = types.instanceof('User').required
+            user: User = types.objof('User').required
 
         @jsonclass(class_graph='test_instanceof_13')
         class User:
             name: str
-            staff: Staff = types.instanceof('Staff').strict.required
+            staff: Staff = types.objof('Staff').strict.required
         with self.assertRaisesRegex(ValidationException, "key is not allowed"):
             User(**{'name': 'John', 'staff': {'position': 'CEO', 'boom': True}})
 
@@ -340,12 +340,12 @@ class TestInstanceOfModifier(TestCase):
         @jsonclass(class_graph='test_instanceof_14', strict_input=True)
         class Staff:
             position: str
-            user: User = types.instanceof('User').required
+            user: User = types.objof('User').required
 
         @jsonclass(class_graph='test_instanceof_14')
         class User:
             name: str
-            staff: Staff = types.instanceof('Staff').required
+            staff: Staff = types.objof('Staff').required
         with self.assertRaisesRegex(ValidationException, "'staff\\.boom': key is not allowed"):
             User(**{'name': 'John', 'staff': {'position': 'CEO', 'boom': True}})
 
@@ -355,13 +355,13 @@ class TestInstanceOfModifier(TestCase):
         class Staff:
             id: int = types.int.primary
             position: str
-            user: User = types.linkto.instanceof('User').required
+            user: User = types.linkto.objof('User').required
 
         @jsonclass(class_graph='test_instanceof_15')
         class User:
             id: int = types.int.primary
             name: str
-            staff: Staff = types.instanceof('Staff').linkedby('user').required
+            staff: Staff = types.objof('Staff').linkedby('user').required
 
         user = User(**{'id': 1, 'name': 'John', 'staff': {'id': 1, 'position': 'CEO'}})
         self.assertEqual(user.staff.user, user)
@@ -371,12 +371,12 @@ class TestInstanceOfModifier(TestCase):
         @jsonclass(class_graph='test_instanceof_16')
         class Staff:
             position: str
-            user: User = types.instanceof('User').linkedby('staff').required
+            user: User = types.objof('User').linkedby('staff').required
 
         @jsonclass(class_graph='test_instanceof_16')
         class User:
             name: str
-            staff: Staff = types.linkto.instanceof('Staff').required
+            staff: Staff = types.linkto.objof('Staff').required
 
         user = User(**{'name': 'John', 'staff': {'position': 'CEO'}})
         self.assertEqual(user.staff.user, user)
@@ -386,7 +386,7 @@ class TestInstanceOfModifier(TestCase):
         @jsonclass(class_graph='test_instanceof_17')
         class Post:
             title: str
-            user: User = types.linkto.instanceof('User').required
+            user: User = types.linkto.objof('User').required
 
         @jsonclass(class_graph='test_instanceof_17')
         class User:
@@ -402,7 +402,7 @@ class TestInstanceOfModifier(TestCase):
         @jsonclass(class_graph='test_instanceof_18')
         class Post:
             title: str
-            user: User = types.instanceof('User').linkedby('posts').required
+            user: User = types.objof('User').linkedby('posts').required
 
         @jsonclass(class_graph='test_instanceof_18')
         class User:
@@ -418,7 +418,7 @@ class TestInstanceOfModifier(TestCase):
         @jsonclass(class_graph='test_instanceof_19')
         class Post:
             title: str
-            user: User = types.linkto.instanceof('User').required
+            user: User = types.linkto.objof('User').required
 
         @jsonclass(class_graph='test_instanceof_19')
         class User:
@@ -432,7 +432,7 @@ class TestInstanceOfModifier(TestCase):
         @jsonclass(class_graph='test_instanceof_20')
         class Post:
             title: str
-            user: User = types.instanceof('User').linkedby('posts').required
+            user: User = types.objof('User').linkedby('posts').required
 
         @jsonclass(class_graph='test_instanceof_20')
         class User:

@@ -18,7 +18,7 @@ class User:
 class Post:
     id: int = types.int.primary.required
     name: str
-    user: User = types.linkto.instanceof('User').required
+    user: User = types.linkto.objof('User').required
     comments: list[Comment] = types.listof('Comment').linkedby('post').required
     updated_at: datetime = types.datetime.tsupdated.required
 
@@ -28,9 +28,9 @@ class Post:
 class Comment:
     id: int = types.int.primary.required
     content: str
-    post: Post = types.linkto.instanceof('Post').required
-    parent: Optional[Comment] = types.linkto.instanceof('Comment')
+    post: Post = types.linkto.objof('Post').required
+    parent: Optional[Comment] = types.linkto.objof('Comment')
     children: list[Comment] = types.listof('Comment').linkedby('parent') \
                                    .required
-    commenter: User = types.linkto.instanceof('User').required
+    commenter: User = types.linkto.objof('User').required
     updated_at: datetime = types.datetime.tsupdated.required

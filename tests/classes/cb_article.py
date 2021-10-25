@@ -9,7 +9,7 @@ def create_first_revision(article: CBArticle) -> None:
 @jsonclass
 class CBRevision:
     name: str
-    article: CBArticle = types.instanceof('CBArticle').linkto.required
+    article: CBArticle = types.objof('CBArticle').linkto.required
 
 
 @jsonclass(on_create=create_first_revision)

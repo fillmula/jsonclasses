@@ -21,4 +21,4 @@ class GMProductUser:
 @jsonclass(can_delete=[check_owner, check_tier], can_read=[check_owner, check_tier])
 class GMProduct:
     name: str
-    user: GMProductUser = types.instanceof('GMProductUser').linkto.required
+    user: GMProductUser = types.objof('GMProductUser').linkto.required

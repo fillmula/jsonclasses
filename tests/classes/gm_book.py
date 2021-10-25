@@ -21,4 +21,4 @@ class GMBookAuthor:
 @jsonclass(can_update=[check_owner, check_tier])
 class GMBook:
     name: str
-    author: GMBookAuthor = types.instanceof('GMBookAuthor').linkto.required
+    author: GMBookAuthor = types.objof('GMBookAuthor').linkto.required

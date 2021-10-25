@@ -17,7 +17,7 @@ class GSBookAuthor:
 @jsonclass(can_update=check_author)
 class GSBook:
     name: str
-    author: GSBookAuthor = types.instanceof('GSBookAuthor').linkto.required
+    author: GSBookAuthor = types.objof('GSBookAuthor').linkto.required
 
 
 @jsonclass(can_update=types.getop.isobjof('GSBookAuthor'))

@@ -9,4 +9,4 @@ if TYPE_CHECKING:
 class Article:
     title: str
     content: str
-    author: Author = types.instanceof('Author').linkto.required
+    author: Author = types.objof('Author').linkto.required

@@ -8,4 +8,4 @@ if TYPE_CHECKING:
 @jsonclass
 class LinkedStudent:
     name: str
-    school: LinkedSchool = types.linkto.instanceof('LinkedSchool').present
+    school: LinkedSchool = types.linkto.objof('LinkedSchool').present

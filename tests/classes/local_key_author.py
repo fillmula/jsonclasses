@@ -22,4 +22,4 @@ class LKAuthor:
 class LKArticle:
     id: int = types.int.readonly.primary.default(nextid).required
     name: str
-    author: LKAuthor = types.instanceof(LKAuthor).linkto
+    author: LKAuthor = types.objof(LKAuthor).linkto
