@@ -1,5 +1,5 @@
 """module for linkedthru modifier."""
-from ..fdef import DeleteRule, Fdef, FStore
+from ..fdef import DeleteRule, Fdef, FStore, FType, Nullability
 from .modifier import Modifier
 
 
@@ -15,3 +15,6 @@ class LinkedThruModifier(Modifier):
         fdef._use_join_table = True
         if fdef._delete_rule is None:
             fdef._delete_rule = DeleteRule.NULLIFY
+        if fdef._ftype == FType.LIST:
+            if fdef._collection_nullability is Nullability.UNDEFINED:
+                fdef._collection_nullability = Nullability.NONNULL

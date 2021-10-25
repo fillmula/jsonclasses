@@ -1,5 +1,5 @@
 """module for linkto modifier."""
-from ..fdef import DeleteRule, Fdef, FStore
+from ..fdef import DeleteRule, FType, Fdef, FStore, Nullability
 from .modifier import Modifier
 
 
@@ -10,3 +10,6 @@ class LinkToModifier(Modifier):
         fdef._fstore = FStore.LOCAL_KEY
         if fdef._delete_rule is None:
             fdef._delete_rule = DeleteRule.NULLIFY
+        if fdef._ftype == FType.LIST:
+            if fdef._collection_nullability is Nullability.UNDEFINED:
+                fdef._collection_nullability = Nullability.NONNULL
