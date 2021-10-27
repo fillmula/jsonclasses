@@ -65,7 +65,7 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         InsertAtModifier, AppendModifier, PrependModifier,
                         WrapIntoListModifier, IsPrefixOfModifier,
                         IsSuffixOfModifier, InverseModifier, UpperbondModifier,
-                        LowerbondModifier)
+                        LowerbondModifier, LenModifier)
 
 Str = str
 Int = int
@@ -441,6 +441,12 @@ class Types:
         """
         """
         return Types(self, EagerModifier(), AppendModifier(item))
+
+    @property
+    def len(self) -> Types:
+        """Return the length of value.
+        """
+        return Types(self, EagerModifier(), LenModifier())
 
     def upperbond(self, max_value: int | float | Callable | Types) -> Types:
         """Decrease the value of the field to upperbond if the value of the
