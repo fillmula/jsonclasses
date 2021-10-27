@@ -145,6 +145,7 @@ from .tolist_modifier import ToListModifier
 from .insertat_modifier import InsertAtModifier
 from .append_modifier import AppendModifier
 from .prepend_modifier import PrependModifier
+from .len_modifier import LenModifier
 
 # collection modifiers
 from .listof_modifier import ListOfModifier
