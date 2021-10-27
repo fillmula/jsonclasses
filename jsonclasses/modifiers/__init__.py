@@ -141,13 +141,13 @@ from .hassuffix_modifier import HasSuffixModifier
 from .isprefixof_modifier import IsPrefixOfModifier
 from .issuffixof_modifier import IsSuffixOfModifier
 from .wrapintolist_modifier import WrapIntoListModifier
+from .tolist_modifier import ToListModifier
 from .insertat_modifier import InsertAtModifier
 from .append_modifier import AppendModifier
 from .prepend_modifier import PrependModifier
 
 # collection modifiers
 from .listof_modifier import ListOfModifier
-from .tolist_modifier import ToListModifier
 from .dictof_modifier import DictOfModifier
 
 # object modifiers
