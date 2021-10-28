@@ -16,3 +16,5 @@ class SuperStr:
 
     c_pads: Optional[str] = types.str.padstart(lambda: "s", lambda: 10)
     t_pads: Optional[str] = types.str.padstart(types.default("s"), types.default(10))
+
+    securepw: Optional[str] = types.str.securepw

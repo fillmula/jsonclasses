@@ -65,7 +65,7 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
                         InsertAtModifier, AppendModifier, PrependModifier,
                         WrapIntoListModifier, IsPrefixOfModifier,
                         IsSuffixOfModifier, InverseModifier, UpperbondModifier,
-                        LowerbondModifier, LenModifier)
+                        LowerbondModifier, LenModifier, SecurepwModifier)
 
 Str = str
 Int = int
@@ -507,6 +507,13 @@ class Types:
         """Values of fields marked with email should be valid email format.
         """
         return Types(self, EmailModifier())
+
+    @property
+    def securepw(self) -> Types:
+        """Values of fields marked with password should be valid secure password
+        format.
+        """
+        return Types(self, SecurepwModifier())
 
     @property
     def alnum(self) -> Types:
