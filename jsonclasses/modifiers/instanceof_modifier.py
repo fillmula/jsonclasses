@@ -242,10 +242,11 @@ class InstanceOfModifier(Modifier):
                         tsf = value.__class__.cdef.jconf.ref_key_encoding_strategy
                         if getattr(value, tsf(field)) is not None:
                             continue
-                field_value = getattr(value, field.name)
-                fctx = ctx.nextv(field_value, field.name, field.fdef)
-                tsfmd = field.types.modifier.serialize(fctx)
-                setattr(value, field.name, tsfmd)
+                if field.fdef.fstore != FStore.CALCULATED:
+                    field_value = getattr(value, field.name)
+                    fctx = ctx.nextv(field_value, field.name, field.fdef)
+                    tsfmd = field.types.modifier.serialize(fctx)
+                    setattr(value, field.name, tsfmd)
                 if value.is_modified or value.is_new:
                     should_update = True
         return value
