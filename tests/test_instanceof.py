@@ -5,6 +5,7 @@ from jsonclasses import jsonclass, types
 from jsonclasses.excs import ValidationException
 from tests.classes.simple_book import SimpleBook, SimpleBookN
 from tests.classes.linked_profile import LinkedProfileN, LinkedProfile
+from tests.classes.simple_language import SimpleLanguage
 
 
 @jsonclass(class_graph='test_instanceof_22')
@@ -653,3 +654,10 @@ class TestInstanceOfModifier(TestCase):
 
     def test_instanceof_returns_null_for_null_local_key_when_option_is_set(self):
         self.assertEqual(LinkedProfileN().tojson(), {'name': None, 'userId': None, 'user': None})
+
+    def test_partial_returns_empty_for_ignored_fields_even_output_null(self):
+        l = SimpleLanguage()
+        l._is_partial = True
+        l._partial_picks = ['name']
+        l.name = 'A'
+        self.assertEqual(l.tojson(), {'name': 'A'})

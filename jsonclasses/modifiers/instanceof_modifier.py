@@ -221,12 +221,13 @@ class InstanceOfModifier(Modifier):
                 continue
             if fd.fstore == FStore.TEMP:
                 continue
+            if val.is_partial:
+                if field.name not in val._partial_picks:
+                    continue
             if field.fdef.ftype == FType.INSTANCE:
                 ictx = ctx.nextoc(fval, field.name, field.fdef, cls_name)
             else:
                 ictx = ctx.nextvc(fval, field.name, field.fdef, cls_name)
-            if val.is_partial:
-                print(val._partial_fields)
             field_value = field.types.modifier.tojson(ictx)
             if output_null or (field_value is not None):
                 retval[jf_name] = field_value
