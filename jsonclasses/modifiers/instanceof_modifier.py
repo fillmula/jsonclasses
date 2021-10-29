@@ -208,6 +208,9 @@ class InstanceOfModifier(Modifier):
                             key = ctx.keypathr[-2]
                             isrf = field.foreign_field.name == key
             if fd.fstore == FStore.LOCAL_KEY:
+                if val.is_partial:
+                    if field.name not in val._partial_picks:
+                        continue
                 rk = val.__class__.cdef.jconf.ref_key_encoding_strategy(field)
                 jrk = val.__class__.cdef.jconf.key_encoding_strategy(rk)
                 valatk = getattr(val, rk)
