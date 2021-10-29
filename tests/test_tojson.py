@@ -30,8 +30,7 @@ class TestToJson(TestCase):
         user.profile = profile
         self.assertEqual(user.tojson(),
                          {'name': 'Kia Tsiu Tai',
-                          'profile': {'name': 'Tsit Po Po',
-                                      'userId': None}})
+                          'profile': {'name': 'Tsit Po Po'}})
 
     def test_tojson_linked_objects_with_tojsonrr_do_not_go_to_infinite_loop(self):
         profile = LinkedProfile(name='Tsit Po Po')
@@ -40,5 +39,4 @@ class TestToJson(TestCase):
         self.assertEqual(user.tojson(reverse_relationship=True),
                          {'name': 'Kia Tsiu Tai',
                           'profile': {'name': 'Tsit Po Po',
-                                      'user': {'name': 'Kia Tsiu Tai'},
-                                      'userId': None}})
+                                      'user': {'name': 'Kia Tsiu Tai'}}})

@@ -210,7 +210,9 @@ class InstanceOfModifier(Modifier):
             if fd.fstore == FStore.LOCAL_KEY:
                 rk = val.__class__.cdef.jconf.ref_key_encoding_strategy(field)
                 jrk = val.__class__.cdef.jconf.key_encoding_strategy(rk)
-                retval[jrk] = getattr(val, rk)
+                valatk = getattr(val, rk)
+                if output_null or (valatk is not None):
+                    retval[jrk] = valatk
             if fd.fstore == FStore.LOCAL_KEY and (isrf or no_key_refs):
                 continue
             if fd.fstore == FStore.FOREIGN_KEY and (isrf or no_key_refs):
@@ -226,7 +228,7 @@ class InstanceOfModifier(Modifier):
             if val.is_partial:
                 print(val._partial_fields)
             field_value = field.types.modifier.tojson(ictx)
-            if not output_null and field_value is not None:
+            if output_null or (field_value is not None):
                 retval[jf_name] = field_value
         return retval
 

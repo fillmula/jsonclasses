@@ -3,6 +3,8 @@ from unittest import TestCase
 from typing import List, Dict, Optional
 from jsonclasses import jsonclass, types
 from jsonclasses.excs import ValidationException
+from tests.classes.simple_book import SimpleBook, SimpleBookN
+from tests.classes.linked_profile import LinkedProfileN, LinkedProfile
 
 
 @jsonclass(class_graph='test_instanceof_22')
@@ -499,14 +501,13 @@ class TestInstanceOfModifier(TestCase):
     def test_instanceof_circular_refs_tojson_do_not_infinite_loop(self):
         root_user = User(**input)
         json = root_user.tojson(reverse_relationship=False)
-        result = {'comments': [{'children': None,
+        result = {'comments': [{
                'commenterId': 1,
                'content': 'C2',
                'id': 2,
                'parent': {'commenterId': 2,
                           'content': 'C1',
                           'id': 1,
-                          'parentId': None,
                           'postId': 1},
                'parentId': 1,
                'postId': 1}],
@@ -520,43 +521,34 @@ class TestInstanceOfModifier(TestCase):
                           'commenterId': 2,
                           'content': 'C1',
                           'id': 1,
-                          'parent': None,
-                          'parentId': None,
                           'postId': 1},
-                         {'children': None,
+                         {
                           'commenterId': 1,
                           'content': 'C2',
                           'id': 2,
                           'parent': {'commenterId': 2,
                                      'content': 'C1',
                                      'id': 1,
-                                     'parentId': None,
                                      'postId': 1},
                           'parentId': 1,
                           'postId': 1},
-                         {'children': None,
+                         {
                           'commenterId': 2,
                           'content': 'C3',
                           'id': 3,
-                          'parent': None,
-                          'parentId': None,
                           'postId': 1}],
             'id': 1,
             'name': 'P1',
             'userId': 1},
-           {'comments': [{'children': None,
+           {'comments': [{
                           'commenterId': 2,
                           'content': 'C4',
                           'id': 4,
-                          'parent': None,
-                          'parentId': None,
                           'postId': 2},
-                         {'children': None,
+                         {
                           'commenterId': 3,
                           'content': 'C5',
                           'id': 5,
-                          'parent': None,
-                          'parentId': None,
                           'postId': 2}],
             'id': 2,
             'name': 'P2',
@@ -566,7 +558,7 @@ class TestInstanceOfModifier(TestCase):
     def test_instanceof_circular_refs_tojson_with_rr_do_not_infinite_loop(self):
         root_user = User(**input)
         json = root_user.tojson(reverse_relationship=True)
-        result = {'comments': [{'children': None,
+        result = {'comments': [{
                'commenter': {'id': 1, 'name': 'U1'},
                'commenterId': 1,
                'content': 'C2',
@@ -574,13 +566,11 @@ class TestInstanceOfModifier(TestCase):
                'parent': {'commenterId': 2,
                           'content': 'C1',
                           'id': 1,
-                          'parentId': None,
                           'postId': 1},
                'parentId': 1,
                'post': {'comments': [{'commenterId': 2,
                                       'content': 'C1',
                                       'id': 1,
-                                      'parentId': None,
                                       'postId': 1},
                                      {'commenterId': 1,
                                       'content': 'C2',
@@ -590,7 +580,6 @@ class TestInstanceOfModifier(TestCase):
                                      {'commenterId': 2,
                                       'content': 'C3',
                                       'id': 3,
-                                      'parentId': None,
                                       'postId': 1}],
                         'id': 1,
                         'name': 'P1',
@@ -608,11 +597,9 @@ class TestInstanceOfModifier(TestCase):
                           'commenterId': 2,
                           'content': 'C1',
                           'id': 1,
-                          'parent': None,
-                          'parentId': None,
                           'post': {'id': 1, 'name': 'P1', 'userId': 1},
                           'postId': 1},
-                         {'children': None,
+                         {
                           'commenter': {'id': 1, 'name': 'U1'},
                           'commenterId': 1,
                           'content': 'C2',
@@ -620,40 +607,33 @@ class TestInstanceOfModifier(TestCase):
                           'parent': {'commenterId': 2,
                                      'content': 'C1',
                                      'id': 1,
-                                     'parentId': None,
                                      'postId': 1},
                           'parentId': 1,
                           'post': {'id': 1, 'name': 'P1', 'userId': 1},
                           'postId': 1},
-                         {'children': None,
+                         {
                           'commenter': {'id': 2, 'name': 'U2'},
                           'commenterId': 2,
                           'content': 'C3',
                           'id': 3,
-                          'parent': None,
-                          'parentId': None,
                           'post': {'id': 1, 'name': 'P1', 'userId': 1},
                           'postId': 1}],
             'id': 1,
             'name': 'P1',
             'user': {'id': 1, 'name': 'U1'},
             'userId': 1},
-           {'comments': [{'children': None,
+           {'comments': [{
                           'commenter': {'id': 2, 'name': 'U2'},
                           'commenterId': 2,
                           'content': 'C4',
                           'id': 4,
-                          'parent': None,
-                          'parentId': None,
                           'post': {'id': 2, 'name': 'P2', 'userId': 1},
                           'postId': 2},
-                         {'children': None,
+                         {
                           'commenter': {'id': 3, 'name': 'U3'},
                           'commenterId': 3,
                           'content': 'C5',
                           'id': 5,
-                          'parent': None,
-                          'parentId': None,
                           'post': {'id': 2, 'name': 'P2', 'userId': 1},
                           'postId': 2}],
             'id': 2,
@@ -663,7 +643,13 @@ class TestInstanceOfModifier(TestCase):
         self.assertEqual(json, result)
 
     def test_instanceof_returns_empty_for_null_value_by_default(self):
-        pass
+        self.assertEqual(SimpleBook().tojson(), {'published': False})
 
     def test_instanceof_returns_null_for_null_when_option_is_set(self):
-        pass
+        self.assertEqual(SimpleBookN().tojson(), {'published': False, 'name': None})
+
+    def test_instanceof_returns_empty_for_null_local_key_by_default(self):
+        self.assertEqual(LinkedProfile().tojson(), {})
+
+    def test_instanceof_returns_null_for_null_local_key_when_option_is_set(self):
+        self.assertEqual(LinkedProfileN().tojson(), {'name': None, 'userId': None, 'user': None})
