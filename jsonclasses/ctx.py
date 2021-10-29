@@ -30,6 +30,9 @@ class CtxCfg(NamedTuple):
     internal behavior. Do not set this.
     """
 
+    output_null: Optional[bool] = None
+    """On tojson, whether output null value instead of unexisting field.
+    """
 
 class Ctx(NamedTuple):
     root: JObject

@@ -21,5 +21,4 @@ class TestStr(TestCase):
 
     def test_str_is_str_when_tojson(self):
         article = SimpleArticle(title='Lak Lak')
-        self.assertEqual(article.tojson(),
-                         {'title': 'Lak Lak', 'content': None})
+        self.assertEqual(article.tojson(), {'title': 'Lak Lak'})

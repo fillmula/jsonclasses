@@ -37,4 +37,4 @@ class TestDatetime(TestCase):
     def test_datetime_is_datetime_str_when_tojson(self):
         balance = SimpleBalance(date='2020-11-20T03:03:03.333Z')
         self.assertEqual(balance.tojson(),
-                         {'date': '2020-11-20T03:03:03.333Z', 'balance': None})
+                         {'date': '2020-11-20T03:03:03.333Z'})

@@ -37,5 +37,4 @@ class TestDate(TestCase):
     def test_date_is_datetime_str_when_tojson(self):
         deadline = SimpleDeadline(ended_at='2020-11-20T03:03:03.333Z')
         self.assertEqual(deadline.tojson(),
-                         {'endedAt': '2020-11-20T00:00:00.000Z',
-                          'message': None})
+                         {'endedAt': '2020-11-20T00:00:00.000Z'})

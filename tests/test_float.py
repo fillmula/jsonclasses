@@ -25,4 +25,4 @@ class TestFloat(TestCase):
 
     def test_float_is_float_when_tojson(self):
         balance = SimpleBalance(balance=5.0)
-        self.assertEqual(balance.tojson(), {'date': None, 'balance': 5.0})
+        self.assertEqual(balance.tojson(), {'balance': 5.0})

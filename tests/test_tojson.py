@@ -12,7 +12,7 @@ class TestToJson(TestCase):
         deadline = SimpleDeadline(ended_at='2021-03-04')
         self.assertEqual(
             deadline.tojson(),
-            {'endedAt': '2021-03-04T00:00:00.000Z', 'message': None})
+            {'endedAt': '2021-03-04T00:00:00.000Z'})
 
     def test_tojson_remove_writeonly_keys_by_default(self):
         account = SimpleAccount(username='inmylife', password='iloveyoumore')
@@ -32,7 +32,6 @@ class TestToJson(TestCase):
                          {'name': 'Kia Tsiu Tai',
                           'profile': {'name': 'Tsit Po Po',
                                       'userId': None}})
-
 
     def test_tojson_linked_objects_with_tojsonrr_do_not_go_to_infinite_loop(self):
         profile = LinkedProfile(name='Tsit Po Po')

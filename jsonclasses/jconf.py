@@ -35,6 +35,7 @@ class JConf:
                  validate_all_fields: Optional[bool],
                  abstract: Optional[bool],
                  reset_all_fields: Optional[bool],
+                 output_null: Optional[bool],
                  on_create: OnCreate | list[OnCreate] | Types | None,
                  on_update: OnUpdate | list[OnUpdate] | Types | None,
                  on_delete: OnDelete | list[OnDelete] | Types | None,
@@ -62,6 +63,8 @@ class JConf:
                 be initialized.
             reset_all_fields (Optional[bool]): Whether record all previous \
                 values of an object and enable reset functionality.
+            output_null: (Optional[bool]): Whether output null on tojson
+                instead of leaving unexisting fields.
             on_create (Optional[Union[OnCreate, list[OnCreate]]]): The callback
                 on first time save.
             on_update (Optional[Union[OnUpdate, list[OnUpdate]]]): The callback
@@ -87,6 +90,7 @@ class JConf:
         self._validate_all_fields = validate_all_fields
         self._abstract = abstract
         self._reset_all_fields = reset_all_fields
+        self._output_null = output_null
         if callable(on_create) or isinstance(on_create, Types):
             self._on_create = [on_create]
         elif isinstance(on_create, list):
@@ -149,6 +153,8 @@ class JConf:
         if self.abstract != other_config.abstract:
             return False
         if self.reset_all_fields != other_config.reset_all_fields:
+            return False
+        if self.output_null != other_config.output_null:
             return False
         if self.on_create != other_config.on_create:
             return False
@@ -236,6 +242,14 @@ class JConf:
         if self._reset_all_fields is None:
             return self.cgraph.default_config.reset_all_fields
         return self._reset_all_fields
+
+    @property
+    def output_null(self: JConf) -> bool:
+        """Whether output null values in the result json.
+        """
+        if self._output_null is None:
+            return self.cgraph.default_config.output_null
+        return self._output_null
 
     @property
     def on_create(self: JConf) -> list[OnCreate | Types]:

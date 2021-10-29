@@ -190,6 +190,9 @@ class InstanceOfModifier(Modifier):
         clschain = ctx.idchain
         cls_name = val.__class__.cdef.name
         rr = ctx.ctxcfg.reverse_relationship
+        output_null = ctx.ctxcfg.output_null
+        if output_null is None:
+            output_null = val.cdef.jconf.output_null
         no_key_refs = cls_name in clschain
         for field in val.__class__.cdef.fields:
             fval = getattr(val, field.name)
@@ -220,7 +223,11 @@ class InstanceOfModifier(Modifier):
                 ictx = ctx.nextoc(fval, field.name, field.fdef, cls_name)
             else:
                 ictx = ctx.nextvc(fval, field.name, field.fdef, cls_name)
-            retval[jf_name] = field.types.modifier.tojson(ictx)
+            if val.is_partial:
+                print(val._partial_fields)
+            field_value = field.types.modifier.tojson(ictx)
+            if not output_null and field_value is not None:
+                retval[jf_name] = field_value
         return retval
 
     def serialize(self, ctx: Ctx) -> Any:

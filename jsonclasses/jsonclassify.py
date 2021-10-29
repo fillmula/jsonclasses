@@ -9,7 +9,6 @@ from .types import Types
 from .modifiers.instanceof_modifier import InstanceOfModifier
 from .jfield import JField
 from .isjsonclass import isjsonobject
-from .mgraph import MGraph
 from .ograph import OGraph
 from .odict import OwnedDict
 from .olist import OwnedList
@@ -141,7 +140,8 @@ def update(self: JObject, **kwargs: dict[str, Any]) -> JObject:
 
 def tojson(self: JObject,
            ignore_writeonly: bool = False,
-           reverse_relationship: bool = False) -> dict[str, Any]:
+           reverse_relationship: bool = False,
+           output_null: bool = False) -> dict[str, Any]:
     """Convert this JSON Class object to JSON dict.
 
     Args:
@@ -151,12 +151,16 @@ def tojson(self: JObject,
         reverse_relationship (bool): Whether including reverse relationship in
         json outputs.
 
+        output_null (bool): Whether output null instead of leaving unexisting
+        fields for null values.
+
     Returns:
         dict[str, Any]: A dict represents this object's JSON object.
     """
     self._can_read_check()
     ctxcfg = CtxCfg(ignore_writeonly=ignore_writeonly,
-                    reverse_relationship=reverse_relationship)
+                    reverse_relationship=reverse_relationship,
+                    output_null=output_null)
     ctx = Ctx.rootctx(self, ctxcfg)
     return InstanceOfModifier(self.__class__).tojson(ctx)
 

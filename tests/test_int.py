@@ -20,4 +20,4 @@ class TestInt(TestCase):
 
     def test_int_is_int_when_tojson(self):
         order = SimpleOrder(quantity=5)
-        self.assertEqual(order.tojson(), {'name': None, 'quantity': 5})
+        self.assertEqual(order.tojson(), {'quantity': 5})

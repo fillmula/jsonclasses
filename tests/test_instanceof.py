@@ -250,8 +250,8 @@ class TestInstanceOfModifier(TestCase):
         desired = {
             'name': 'John',
             'posts': [
-                {'title': 'P1', 'content': 'C1', 'author': None},
-                {'title': 'P2', 'content': 'C2', 'author': None}
+                {'title': 'P1', 'content': 'C1'},
+                {'title': 'P2', 'content': 'C2'}
             ]
         }
         self.assertEqual(result, desired)
@@ -661,3 +661,9 @@ class TestInstanceOfModifier(TestCase):
             'user': {'id': 1, 'name': 'U1'},
             'userId': 1}]}
         self.assertEqual(json, result)
+
+    def test_instanceof_returns_empty_for_null_value_by_default(self):
+        pass
+
+    def test_instanceof_returns_null_for_null_when_option_is_set(self):
+        pass

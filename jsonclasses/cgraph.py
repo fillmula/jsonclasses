@@ -54,6 +54,7 @@ class CGraph:
                                      validate_all_fields=False,
                                      abstract=False,
                                      reset_all_fields=False,
+                                     output_null=False,
                                      on_create=[],
                                      on_update=[],
                                      on_delete=[],

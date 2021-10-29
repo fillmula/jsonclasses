@@ -20,4 +20,4 @@ class TestBool(TestCase):
 
     def test_bool_is_bool_when_tojson(self):
         book = SimpleBook(published=False)
-        self.assertEqual(book.tojson(), {'name': None, 'published': False})
+        self.assertEqual(book.tojson(), {'published': False})

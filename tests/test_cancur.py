@@ -65,19 +65,19 @@ class TestCanCUR(TestCase):
         article.opby(user)
         article.save()
 
-    def test_canr_outputs_none_if_operator_is_not_present(self):
+    def test_canr_remove_field_if_operator_is_not_present(self):
         user = SuperPermissionUser(id=1, code=505)
         article = SuperPermissionArticle(id=2, code=504, user=user, title='1', content='2')
         json = article.tojson()
-        self.assertEqual(json['content'], None)
+        self.assertNotIn('content', json)
 
-    def test_canr_outputs_none_if_doesnt_pass_canr_checker(self):
+    def test_canr_remove_field_if_doesnt_pass_canr_checker(self):
         user = SuperPermissionUser(id=1, code=505)
         article = SuperPermissionArticle(id=2, code=504, user=user, title='1', content='2')
         operator = SuperPermissionUser(id=1, code=505)
         article.opby(operator)
         json = article.tojson()
-        self.assertEqual(json['content'], None)
+        self.assertNotIn('content', json)
 
     def test_canu_outputs_value_if_passes_canu_checker(self):
         user = SuperPermissionUser(id=1, code=505)
