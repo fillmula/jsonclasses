@@ -89,7 +89,7 @@ The server integration.
 
 ## Supported Python Versions
 
-`jsonclasses` supports `Python >= 3.9.0`.
+`jsonclasses` supports `Python >= 3.10.0`.
 
 ## Author
 

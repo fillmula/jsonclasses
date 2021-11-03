@@ -1,5 +1,5 @@
 language: python
 python:
-  - "3.9"
+  - "3.10"
 script:
   - python -m unittest discover tests "test_*.py"

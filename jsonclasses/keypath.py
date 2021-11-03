@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any, Union, TYPE_CHECKING
 from re import split,search
-from jsonclasses.pkgutils import check_and_install_packages
+from .pkgutils import check_and_install_packages
 from .fdef import FStore, FType
 if TYPE_CHECKING:
     from .jfield import JField
