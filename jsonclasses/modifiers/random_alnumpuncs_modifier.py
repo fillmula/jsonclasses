@@ -1,9 +1,7 @@
 """module for random alnumpuncs modifier."""
 from __future__ import annotations
-import random
 from typing import Any, TYPE_CHECKING, Callable
 from random import sample
-
 from .modifier import Modifier
 if TYPE_CHECKING:
     from ..ctx import Ctx
