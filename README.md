@@ -1,40 +1,55 @@
-JSONClasses
+🌎 JSONClasses [![Pypi][pypi-image]][pypi-url] [![Python Version][python-image]][python-url] [![License][license-image]][license-url] [![PR Welcome][pr-image]][pr-url]
 ===========
-[![Pypi][pypi-image]][pypi-url]
-[![Python Version][python-image]][python-url]
-[![Build Status][travis-image]][travis-url]
-[![License][license-image]][license-url]
-[![PR Welcome][pr-image]][pr-url]
 
-JSONClasses is a data flow pipeline and data graph framework written in Python.
+JSONClasses is a data flow pipeline and data graph framework.
 It supports data sanitization, data validation, data transformation, data
 presentation, data serialization, data graphing and data querying. It
-eliminates the redundant coding of the process by an intuitive and innovative
-declarative manner.
+eliminates the redundant coding of the process by an intuitive, innovative and declarative manner.
 
-## How JSONClasses Works?
+Official Website: https://www.jsonclasses.com
 
-JSONClasses uses several Python features like type hinting and dataclasses.
-With the great metaprogramming functionalities that Python offers, we can
-easily extend it into a great DSL for declaring data structures, transforming
-rules and validation rules.
+Official Documentation: https://docs.jsonclasses.com
 
-## Why Not Create Another DSL?
+## 🚗 Features
 
-GraphQL's Schema Definition Language cannot work well with programming
-languages' syntax checking and type completion. To support more and more
-functions, a DSL would become more and more like a programming language.
+|     | **Features**|
+| --- | ----------------------------------------------------------------------------------|
+| 🛠  | **Data Modeling** Declarative data model with Python type hints |
+| 🍸  | **Data Sanitization** Two strictness modes |
+| 🩺  | **Data Validation** Descriptive data validation rules without even a line of code |
+| 🧬  | **Data Transformation** Intuitive with modifier pipelines |
+| 🦖  | **Data Presentation** Custom key encoding & decoding strategies |
+| 🌍  | **Data Graphing** Models are linked with each other on the same graph |
+| 🏄‍♂️  | **Data Querying** Well-designed protocols and implementations for databases |
+| 🚀  | **Synthesized CRUD** Only with a line of code |
+| 👮‍♀️  | **Session & Authorization** Builtin support for session and authorization |
+| 🔐  | **Permission System** Supports both object level and field level |
+| 📁  | **File Uploading** A configuration is enough for file uploading |
+| 📦  | **Data Seeder** Declarative named graph relationship |
 
-This is similar React.js, Jetpack Compose and SwiftUI. The structures of the
-declaration is embedded in code, not in a special text file.
+## 🍎 Getting Started
 
-## Why Python Is Chosen?
+### Prerequisites
 
-Python is the programming language which is nearest to AI areas. The era we are
-living is an era and a generation empowered by AI. AI algorithms empower
-products with unimaginable stunning features. A great product should adapt to
-some level of AI to continue providing great functions for it's targeting
-audience.
+[Python >= 3.10](https://www.python.org) is required. You can download it [here](https://www.python.org/downloads/).
+
+### Install JSONClasses
+
+Install JSONClasses is simple with `pip`.
+
+```sh
+pip install jsonclasses
+```
+
+### Install Components
+
+Depends on your need, you can install ORM integration and HTTP library integration with the following commands.
+
+```sh
+pip install jsonclasses-pymongo jsonclasses-server
+```
+
+## 🎹 Examples
 
 ## Business Logic Examples
 
@@ -75,11 +90,7 @@ class User:
     updated_at: datetime = types.readonly.datetime.tsupdated.required
 ```
 
-## Documentation
-
-[Read the Documentation](https://docs.jsonclasses.com)
-
-## Database & Web Framework Integrations
+## ⚽️ Database & HTTP Library Integrations
 
 * [JSON Classes Pymongo](https://github.com/fillmula/jsonclasses-pymongo)
 The mongodb integration through pymongo driver.
@@ -87,47 +98,23 @@ The mongodb integration through pymongo driver.
 * [JSON Classes Server](https://github.com/fillmula/jsonclasses-server)
 The server integration.
 
-## Supported Python Versions
+## 🦸 Contributing
 
-`jsonclasses` supports `Python >= 3.10.0`.
+* File a [bug report](https://github.com/fillmula/jsonclasses/issues/new). Be sure to include information like what version of YoMo you are using, what your operating system is, and steps to recreate the bug.
+* Suggest a new feature.
 
-## Author
+## 🤹🏻‍♀️ Feedback
 
-JSONClasses is authored by Victor Teo.
+Any questions or good ideas, please feel free to come to our Discussion. Any feedback would be greatly appreciated!
 
 ## License
 
-MIT License
-
-Copyright (c) 2021 Victor Teo, Fillmula Inc.
-
-Copyright (c) 2020 Reflection Co., Ltd.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
+[MIT License](https://github.com/fillmula/jsonclasses/blob/master/LICENSE)
 
 [pypi-image]: https://img.shields.io/pypi/v/jsonclasses.svg?style=flat-square
 [pypi-url]: https://pypi.org/project/jsonclasses/
 [python-image]: https://img.shields.io/pypi/pyversions/jsonclasses?style=flat-square
 [python-url]: https://pypi.org/project/jsonclasses/
-[travis-image]: https://img.shields.io/travis/fillmula/jsonclasses.svg?style=flat-square&color=blue&logo=travis
-[travis-url]: https://travis-ci.com/fillmula/jsonclasses
 [license-image]: https://img.shields.io/github/license/fillmula/jsonclasses.svg?style=flat-square
 [license-url]: https://github.com/fillmula/jsonclasses/blob/master/LICENSE
 [pr-image]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square
