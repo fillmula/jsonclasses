@@ -1,10 +1,7 @@
 🌎 JSONClasses [![Pypi][pypi-image]][pypi-url] [![Python Version][python-image]][python-url] [![License][license-image]][license-url] [![PR Welcome][pr-image]][pr-url]
 ===========
 
-JSONClasses is a data flow pipeline and data graph framework.
-It supports data sanitization, data validation, data transformation, data
-presentation, data serialization, data graphing and data querying. It
-eliminates the redundant coding of the process by an intuitive, innovative and declarative manner.
+JSONClasses is a declarative data flow pipeline and data graph framework.
 
 Official Website: https://www.jsonclasses.com
 
