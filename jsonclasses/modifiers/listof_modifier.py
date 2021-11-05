@@ -31,15 +31,23 @@ class ListOfModifier(CollectionTypeModifier):
         col.append(v)
 
     def should_special_handle(self, key: Any, v: Any, ctx: Ctx) -> bool:
+        is_lkey = ctx.fdef.fstore == FStore.LOCAL_KEY
         is_fkey = ctx.fdef.fstore == FStore.FOREIGN_KEY
         uses_jt = ctx.fdef.use_join_table
-        if not (is_fkey and uses_jt):
+        if not ((is_fkey and uses_jt) or is_lkey):
             return False
         return isinstance(v, dict) and ('_add' in v or '_del' in v)
 
     def special_handle(self, key: Any, v: Any, ctx: Ctx) -> None:
         fname = ctx.keypatho[-1]
-        if '_add' in v:
-            ctx.owner._add_link_key(fname, v['_add'])
-        elif '_del' in v:
-            ctx.owner._add_unlink_key(fname, v['_del'])
+        is_lkey = ctx.fdef.fstore == FStore.LOCAL_KEY
+        if is_lkey:
+            if '_add' in v:
+                ctx.owner._link_local_keys(fname, v['_add'])
+            elif '_del' in v:
+                ctx.owner._unlink_local_keys(fname, v['_del'])
+        else:
+            if '_add' in v:
+                ctx.owner._add_link_key(fname, v['_add'])
+            elif '_del' in v:
+                ctx.owner._add_unlink_key(fname, v['_del'])

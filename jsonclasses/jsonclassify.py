@@ -416,6 +416,22 @@ def _mark_not_new(self: JObject) -> None:
     setattr(self, '_is_new', False)
 
 
+def _link_local_keys(self: JObject, fname: str, key: str | int) -> None:
+    field = self.__class__.cdef.field_named(fname)
+    ids_name = self.__class__.cdef.jconf.ref_key_encoding_strategy(field)
+    if getattr(self, ids_name) is None:
+        setattr(self, ids_name, [])
+    getattr(self, ids_name).append(key)
+
+
+def _unlink_local_keys(self: JObject, fname: str, key: str | int) -> None:
+    field = self.__class__.cdef.field_named(fname)
+    ids_name = self.__class__.cdef.jconf.ref_key_encoding_strategy(field)
+    if getattr(self, ids_name) is None:
+        return
+    getattr(self, ids_name).remove(key)
+
+
 def _add_link_key(self: JObject, fname: str, key: str | int) -> None:
     if self._link_keys.get(fname) is None:
         self._link_keys[fname] = []
@@ -937,6 +953,8 @@ def jsonclassify(class_: type) -> type[JObject]:
     class_._mark_unmodified = _mark_unmodified
     class_._set_initial_status = _set_initial_status
     class_._mark_not_new = _mark_not_new
+    class_._link_local_keys = _link_local_keys
+    class_._unlink_local_keys = _unlink_local_keys
     class_._add_link_key = _add_link_key
     class_._add_unlink_key = _add_unlink_key
     class_._add_unlinked_object = _add_unlinked_object
