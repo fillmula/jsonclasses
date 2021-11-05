@@ -141,7 +141,7 @@ def update(self: JObject, **kwargs: dict[str, Any]) -> JObject:
 def tojson(self: JObject,
            ignore_writeonly: bool = False,
            reverse_relationship: bool = False,
-           output_null: Optional[bool] = None) -> dict[str, Any]:
+           output_null: bool | None = None) -> dict[str, Any]:
     """Convert this JSON Class object to JSON dict.
 
     Args:

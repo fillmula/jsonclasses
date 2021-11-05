@@ -45,7 +45,9 @@ class JObject(Protocol):
         """
         ...
 
-    def tojson(self: T, ignore_writeonly: Optional[bool]) -> dict[str, Any]:
+    def tojson(self: T, ignore_writeonly: bool | None = False,
+                        reverse_relationship: bool | None = False,
+                        output_null: bool | None = None) -> dict[str, Any]:
         """This tojson method returns a json dict representation of the JSON
         class object.
         """
