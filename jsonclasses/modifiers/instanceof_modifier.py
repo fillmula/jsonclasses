@@ -204,7 +204,7 @@ class InstanceOfModifier(Modifier):
                 if field.foreign_field:
                     isrf = field.foreign_field.fdef == ctx.fdef
                     if not isrf:
-                        if len(ctx.keypathr) > 0:
+                        if len(ctx.keypathr) > 1:
                             key = ctx.keypathr[-2]
                             isrf = field.foreign_field.name == key
             if fd.fstore == FStore.LOCAL_KEY:
