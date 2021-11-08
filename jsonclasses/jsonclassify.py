@@ -212,15 +212,16 @@ def opby(self: JObject, operator: Any) -> JObject:
     if self.is_new:
         class_def = self.__class__.cdef
         for field in class_def.assign_operator_fields:
+            fidname = self.__class__.cdef.jconf.ref_key_encoding_strategy(field)
             if field.fdef.operator_assign_transformer is not None:
                 transformer = field.fdef.operator_assign_transformer
                 params_len = len(signature(transformer).parameters)
                 if params_len == 1:
-                    setattr(self, field.name, transformer(operator))
+                    setattr(self, fidname, transformer(operator)._id)
                 elif params_len == 2:
-                    setattr(self, field.name, transformer(operator, self))
+                    setattr(self, fidname, transformer(operator, self)._id)
             else:
-                setattr(self, field.name, operator)
+                setattr(self, fidname, operator._id)
     return self
 
 

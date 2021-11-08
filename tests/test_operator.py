@@ -7,10 +7,10 @@ from tests.classes.operator import (AsopUser, AsopTeam, AsopdUser, AsopdTeam)
 class TestOperator(TestCase):
 
     def test_asop_assigns_transformed_to_field_if_operator_is_present(self):
-        user = AsopUser(name='U')
+        user = AsopUser(name='U', id='id')
         team = AsopTeam(name='T')
         team.opby(user)
-        self.assertEqual(team.owner, user)
+        self.assertEqual(team.owner_id, user.id)
         team.validate()
 
     def test_asop_is_invalid_when_operator_is_not_present_on_create(self):
@@ -35,10 +35,10 @@ class TestOperator(TestCase):
                          "no operator being assigned")
 
     def test_asopd_assigns_directly_to_field_if_operator_is_present(self):
-        user = AsopdUser(name='U')
+        user = AsopdUser(name='U', id='id')
         team = AsopdTeam(name='T')
         team.opby(user)
-        self.assertEqual(team.owner, user)
+        self.assertEqual(team.owner_id, user.id)
         team.validate()
 
     def test_asopd_is_invalid_when_operator_is_not_present_on_create(self):

@@ -4,6 +4,7 @@ from jsonclasses import jsonclass, types
 
 @jsonclass
 class AsopUser:
+    id: str = types.str.primary.required
     name: str = types.str.required
     owned_teams: list[AsopTeam] = types.nonnull.listof('AsopTeam') \
                                        .linkedby('owner')
@@ -17,6 +18,7 @@ class AsopTeam:
 
 @jsonclass
 class AsopdUser:
+    id: str = types.str.primary.required
     name: str = types.str.required
     owned_teams: list[AsopdTeam] = types.nonnull.listof('AsopdTeam') \
                                         .linkedby('owner')
