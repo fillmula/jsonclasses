@@ -217,6 +217,7 @@ from .random_float_modifier import RandomFloatModifier
 from .random_int_modifier import RandomIntModifier
 from .cross_fetch_modifier import CrossFetchModifier
 from .fval_modifier import FValModifier
+from .fobj_modifier import FObjModifier
 from .eq_modifier import EqModifier
 from .neq_modifier import NeqModifier
 from .this_modifier import ThisModifier

@@ -1,6 +1,6 @@
 """This module defines the `jsonclassify` function."""
 from __future__ import annotations
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Optional, Union, cast
 from inspect import signature, getmro
 from .jobject import JObject
 from .ctx import Ctx, CtxCfg
@@ -23,6 +23,7 @@ from .excs import (AbstractJSONClassException, ValidationException,
                          JSONClassResetError, JSONClassResetNotEnabledError,
                          UnlinkableJSONClassException,
                          UnauthorizedActionException)
+from .orm_object import ORMObject
 
 
 
@@ -361,6 +362,48 @@ def complete(self: JObject) -> JObject:
         self._modified_fields = saved_modified_fields
     return self
 
+
+def include(self: JObject, field_name: str) -> JObject:
+    """Fetch objects on reference field.
+    """
+    field = self.__class__.cdef.field_named(field_name)
+    if field.fdef.ftype == FType.INSTANCE:
+        cls = cast(ORMObject, field.fdef.inst_cls)
+    elif field.fdef.ftype == FType.LIST:
+        cls = field.fdef.item_types.fdef.inst_cls
+    modified_fields = self.modified_fields
+    is_modified = self.is_modified
+    if field.fdef.fstore == FStore.LOCAL_KEY:
+        if field.fdef.ftype == FType.INSTANCE:
+            rkes = self.__class__.cdef.jconf.ref_key_encoding_strategy
+            ridname = rkes(field)
+            rid = getattr(self, ridname)
+            result = cls.id(rid).exec()
+            setattr(self, field.name, result)
+        elif field.fdef.ftype == FType.LIST:
+            rkes = self.__class__.cdef.jconf.ref_key_encoding_strategy
+            ridname = rkes(field)
+            rids = getattr(self, ridname)
+            result = cls.ids(rids).exec()
+            setattr(self, field.name, result)
+    elif field.fdef.fstore == FStore.FOREIGN_KEY:
+        if field.fdef.use_join_table:
+            pass
+        elif field.fdef.ftype == FType.INSTANCE:
+            ffield = field.foreign_field
+            rkes = cls.cdef.jconf.ref_key_encoding_strategy
+            idref = rkes(ffield)
+            result = cls.one(**{idref: self._id}).exec()
+            setattr(self, field.name, result)
+        elif field.fdef.ftype == FType.LIST:
+            ffield = field.foreign_field
+            rkes = cls.cdef.jconf.ref_key_encoding_strategy
+            idref = rkes(ffield)
+            result = cls.find(**{idref: [self._id]}).exec()
+            setattr(self, field.name, result)
+    setattr(self, '_modified_fields', set(modified_fields))
+    setattr(self, '_is_modified', is_modified)
+    return self
 
 def _orm_complete(self: JObject) -> JObject:
     """ORM method override. Fetch missing field values and assign to this object.
@@ -944,6 +987,7 @@ def jsonclassify(class_: type) -> type[JObject]:
     class_.delete = delete
     class_.restore = restore
     class_.complete = complete
+    class_.include = include
     # protected methods
     class_._set = _set
     class_._keypath_set = _keypath_set

@@ -1,7 +1,7 @@
 from __future__ import annotations
+from unittest import TestCase
 from tests.classes.simple_eq import SimpleEq
 from jsonclasses.excs import ValidationException
-from unittest import TestCase
 
 
 class TestEq(TestCase):

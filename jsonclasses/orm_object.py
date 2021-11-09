@@ -6,7 +6,8 @@ from typing import TypeVar, Any, TYPE_CHECKING
 from .jobject import JObject
 if TYPE_CHECKING:
     from .orm_query import (
-        BaseQuery, ListQuery, IDQuery, SingleQuery, ExistQuery, IterateQuery
+        BaseQuery, ListQuery, IDQuery, IDSQuery, SingleQuery, ExistQuery,
+         IterateQuery
     )
 
 
@@ -29,6 +30,10 @@ class ORMObject(JObject):
 
     @classmethod
     def id(cls: type[T], id: Any, *args, **kwargs) -> IDQuery[T]:
+        ...
+
+    @classmethod
+    def ids(cls: type[T], ids: list[Any], *args, **kwargs) -> IDSQuery[T]:
         ...
 
     @classmethod

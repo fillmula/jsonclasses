@@ -1,7 +1,7 @@
 from __future__ import annotations
 from datetime import datetime
-from jsonclasses.excs import JSONClassGraphMergeConflictException
 from unittest import TestCase
+from jsonclasses.excs import JSONClassGraphMergeConflictException
 from tests.classes.blog import User, Post
 
 

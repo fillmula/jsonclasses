@@ -1,6 +1,7 @@
 from __future__ import annotations
-from tests.classes.simple_calculation import SimpleCalculation
 from unittest import TestCase
+from tests.classes.simple_calculation import SimpleCalculation
+
 
 class TestDiv(TestCase):
 

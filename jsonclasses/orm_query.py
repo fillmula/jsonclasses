@@ -120,6 +120,15 @@ class OptionalIDQuery(BaseIDQuery[T]):
         ...
 
 
+class IDSQuery(BaseQuery[T]):
+
+    def exec(self) -> list[T]:
+        ...
+
+    def __await__(self) -> Generator[None, None, list[T]]:
+        ...
+
+
 class ExistQuery(BaseListQuery[T]):
 
     def exec(self) -> bool:

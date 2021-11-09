@@ -7,7 +7,7 @@ from copy import deepcopy
 from .jobject import JObject
 from .fdef import Fdef
 from .keypath import new_mongoid
-from .modifiers import (BoolModifier, ChainedModifier, FValModifier,
+from .modifiers import (BoolModifier, ChainedModifier, FValModifier, FObjModifier,
                         CompareModifier, DateModifier, DatetimeModifier,
                         DefaultModifier, DictOfModifier, EagerModifier,
                         EmbeddedModifier, EnumModifier, EqModifier, NeqModifier,
@@ -1415,6 +1415,12 @@ class Types:
         """Get value at field from a JSONClass object.
         """
         return Types(self, FValModifier(field_name))
+
+    def fobj(self: Types, field_name: str | Callable | Types) -> Types:
+        """Get referenced object at field from a JSONClass object. Include it if
+        it's not exist.
+        """
+        return Types(self, FObjModifier(field_name))
 
     def eq(self: Types, val: Any | Callable | Types) -> Types:
         """Eq modifier validates value by equal testing.

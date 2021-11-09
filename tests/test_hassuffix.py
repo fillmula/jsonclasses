@@ -1,7 +1,7 @@
 from __future__ import annotations
+from unittest import TestCase
 from jsonclasses.excs import ValidationException
 from tests.classes.super_suffix import SuperSuffix
-from unittest import TestCase
 
 
 class TestHasSuffix(TestCase):
