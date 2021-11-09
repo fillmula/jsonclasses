@@ -211,7 +211,7 @@ def opby(self: JObject, operator: Any) -> JObject:
     """
     setattr(self, '_operator', operator)
     if operator is None:
-        return
+        return self
     if self.is_new:
         class_def = self.__class__.cdef
         for field in class_def.assign_operator_fields:
