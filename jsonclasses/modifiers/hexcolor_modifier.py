@@ -1,4 +1,4 @@
-"""module for email modifier."""
+"""module for hexcolor modifier."""
 from __future__ import annotations
 from typing import Any, cast, TYPE_CHECKING
 from re import compile, match
