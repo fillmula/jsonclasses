@@ -210,6 +210,8 @@ def opby(self: JObject, operator: Any) -> JObject:
         JObject: The JObject itself is returned.
     """
     setattr(self, '_operator', operator)
+    if operator is None:
+        return
     if self.is_new:
         class_def = self.__class__.cdef
         for field in class_def.assign_operator_fields:
