@@ -11,7 +11,7 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier, FObjModifie
                         CompareModifier, DateModifier, DatetimeModifier,
                         DefaultModifier, DictOfModifier, EagerModifier,
                         EmbeddedModifier, EnumModifier, EqModifier, NeqModifier,
-                        FloatModifier, IndexModifier, InputAllModifier,
+                        FloatModifier, IndexModifier, InputAllModifier, HexColorModifier,
                         InputNameModifier, InputLnameModifier, AtModifier,
                         InputValueModifier, InstanceOfModifier, ThisModifier,
                         IntModifier, InvalidModifier, LengthModifier,
@@ -37,7 +37,7 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier, FObjModifie
                         TruncateModifier, ValidateModifier,
                         Modifier, WriteNonnullModifier, WriteonceModifier,
                         WriteonlyModifier, DenyModifier, CascadeModifier,
-                        NullifyModifier, AsopModifier,
+                        NullifyModifier, AsopModifier, 
                         AsopdModifier, UrlModifier, EmailModifier,
                         DigitModifier,AlphaModifier,NumericModifier,
                         AlnumModifier,ToTitleModifier,ToCapModifier,
@@ -507,6 +507,12 @@ class Types:
         """Values of fields marked with email should be valid email format.
         """
         return Types(self, EmailModifier())
+
+    @property
+    def hexcolor(self) -> Types:
+        """Values of fields marked with hexcolor should be valid hexcolor format.
+        """
+        return Types(self, HexColorModifier())
 
     @property
     def securepw(self) -> Types:

@@ -47,6 +47,7 @@ from .truncate_modifier import TruncateModifier
 from .trim_modifier import TrimModifier
 from .url_modifier import UrlModifier
 from .email_modifier import EmailModifier
+from .hexcolor_modifier import HexColorModifier
 from .securepw_modifier import SecurepwModifier
 from .digit_modifier import DigitModifier
 from .alpha_modifier import AlphaModifier
