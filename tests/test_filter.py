@@ -5,6 +5,10 @@ from tests.classes.super_filter import SuperFilter
 
 class TestFilter(TestCase):
 
-    def test_filter_filters_list(self):
-        item = SuperFilter(l_fil=[1, 3, 5, 13])
-        self.assertEqual(item.l_fil, list(filter(lambda a:a%2, [0, 1, 2, 3, 5, 8, 13])))
+    def test_filter_filters_list_by_callable(self):
+        item = SuperFilter(list1=[1, 2, 3, 4])
+        self.assertEqual(item.list1, [2, 4])
+
+    def test_filter_filters_list_by_types(self):
+        item = SuperFilter(list2=[1, 2, 3, 4])
+        self.assertEqual(item.list2, [2, 4])
