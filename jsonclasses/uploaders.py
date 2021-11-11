@@ -60,7 +60,12 @@ class LocalFSClient:
 
     def upload(self, value: Any) -> str:
         unique_filename = f'{uuid4().hex}{Path(value.filename).suffix.lower()}'
-        value.save(str(self.dest / unique_filename))
+        if value.__class__.__name__ == 'UploadFile':
+            file_location = str(self.dest / unique_filename)
+            with open(file_location, "wb+") as file_object:
+                file_object.write(value.file.read())
+        else:
+            value.save(str(self.dest / unique_filename))
         return self.url + '/public/' + self.dir + '/' + unique_filename
 
 
