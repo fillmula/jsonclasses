@@ -390,7 +390,11 @@ def include(self: JObject, field_name: str) -> JObject:
             setattr(self, field.name, result)
     elif field.fdef.fstore == FStore.FOREIGN_KEY:
         if field.fdef.use_join_table:
-            pass
+            ffield = field.foreign_field
+            rkes = cls.cdef.jconf.ref_key_encoding_strategy
+            idref = rkes(ffield)
+            result = cls.find(**{idref: [self._id]}).exec()
+            setattr(self, field.name, result)
         elif field.fdef.ftype == FType.INSTANCE:
             ffield = field.foreign_field
             rkes = cls.cdef.jconf.ref_key_encoding_strategy
