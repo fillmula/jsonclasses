@@ -26,6 +26,8 @@ class UploaderModifier(Modifier):
                 return {'boto3': ('boto3', '>=1.18.61,<2.0.0')}
             elif isinstance(uploader, AliOSSUploader):
                 return {'oss2': ('oss2', '>=2.0.0,<3.0.0')}
+            else:
+                return {}
         return None
 
     def transform(self, ctx: Ctx) -> Any:

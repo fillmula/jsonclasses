@@ -54,18 +54,19 @@ class LocalFSClient:
         self.dir = dir
         self.url = url
         dest = Path(getcwd()) / 'public' / self.dir
-        if not dest.is_dir:
-            dest.mkdir()
+        if not dest.is_dir():
+            dest.mkdir(parents=True)
         self.dest = dest
 
     def upload(self, value: Any) -> str:
         unique_filename = f'{uuid4().hex}{Path(value.filename).suffix.lower()}'
         value.save(str(self.dest / unique_filename))
-        return self.url + '/public' + unique_filename
+        return self.url + '/public/' + self.dir + '/' + unique_filename
 
 
 class LocalFSUploader(Uploader):
 
+    @property
     def client(self) -> Any:
         if hasattr(self, '_client'):
             return getattr(self, '_client')
@@ -74,7 +75,7 @@ class LocalFSUploader(Uploader):
         return client
 
     def upload(self, value: Any) -> str:
-        self.client.upload(value)
+        return self.client.upload(value)
 
 
 def request_uploader(name: str) -> Uploader:
