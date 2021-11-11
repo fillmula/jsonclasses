@@ -37,7 +37,7 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier, FObjModifie
                         TruncateModifier, ValidateModifier,
                         Modifier, WriteNonnullModifier, WriteonceModifier,
                         WriteonlyModifier, DenyModifier, CascadeModifier,
-                        NullifyModifier, AsopModifier, 
+                        NullifyModifier, AsopModifier, FmtModifier,
                         AsopdModifier, UrlModifier, EmailModifier,
                         DigitModifier,AlphaModifier,NumericModifier,
                         AlnumModifier,ToTitleModifier,ToCapModifier,
@@ -1121,6 +1121,17 @@ class Types:
           Types: A new types chained with this modifier.
         """
         return Types(self, EagerModifier(), TransformModifier(transformer))
+
+    def fmt(self, formatter: Callable | Types) -> Types:
+        """Fmt formats value.
+
+        Args:
+            formatter (Callable | Types): Describes the formation.
+
+        Returns:
+            Types: A new types chained with this modifier.
+        """
+        return Types(self, FmtModifier(formatter))
 
     def reverse(self) -> Types:
         """This modifier reverse iterable value

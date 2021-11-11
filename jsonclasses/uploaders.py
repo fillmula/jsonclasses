@@ -47,6 +47,12 @@ class AliOSSUploader(Uploader):
         pass
 
 
+class LocalFSUploader(Uploader):
+
+    def upload(self, value: Any) -> str:
+        pass
+
+
 def request_uploader(name: str) -> Uploader:
     if _uploaders.get(name):
         return _uploaders[name]
@@ -70,6 +76,10 @@ def request_uploader(name: str) -> Uploader:
             return uploader
         case 'alioss':
             uploader = AliOSSUploader(config)
+            _uploaders[name] = uploader
+            return uploader
+        case 'localfs':
+            uploader = LocalFSUploader(config)
             _uploaders[name] = uploader
             return uploader
         case _:

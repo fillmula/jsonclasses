@@ -3,7 +3,6 @@ from unittest import TestCase
 from tests.classes.super_round import SuperRound
 
 
-
 class TestFloor(TestCase):
 
     def test_floor_transforms_float_value_into_int_by_flooring(self):

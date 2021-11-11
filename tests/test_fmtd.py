@@ -1,7 +1,8 @@
 from __future__ import annotations
 from datetime import date, datetime
-from tests.classes.simple_datetime import SimpleDatetime
 from unittest import TestCase
+from tests.classes.simple_datetime import SimpleDatetime
+
 
 class TestFormatDatetime(TestCase):
 

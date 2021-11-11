@@ -182,14 +182,15 @@ from .default_modifier import DefaultModifier
 # transform
 from .transform_modifier import TransformModifier
 
+# formatter
+from .fmt_modifier import FmtModifier
+
 # operator
 from .asop_modifier import AsopModifier
 from .asopd_modifier import AsopdModifier
 from .canc_modifier import CanCModifier
 from .canu_modifier import CanUModifier
 from .canr_modifier import CanRModifier
-
-
 
 # chained modifier
 from .chained_modifier import ChainedModifier

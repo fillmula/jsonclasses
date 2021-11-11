@@ -5,6 +5,7 @@ from .modifier import Modifier
 if TYPE_CHECKING:
     from ..ctx import Ctx
 
+
 class AbsModifier(Modifier):
     """Abs modifier transforms number value to its absolute value."""
 
