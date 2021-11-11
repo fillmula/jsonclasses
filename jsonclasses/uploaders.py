@@ -35,9 +35,15 @@ class S3Uploader(Uploader):
 
     def upload(self, value: Any) -> str:
         unique_filename = f'{uuid4().hex}{Path(value.filename).suffix.lower()}'
-        self.client.upload_fileobj(value, self.config['bucket'], unique_filename, ExtraArgs={
+        if value.__class__.__name__ == 'UploadFile':
+            uploadobj = value.file
+            content_type = value.content_type
+        else:
+            uploadobj = value
+            content_type = value.content_type
+        self.client.upload_fileobj(uploadobj, self.config['bucket'], unique_filename, ExtraArgs={
             'ACL': self.config['acl'],
-            'ContentType': value.content_type
+            'ContentType': content_type
         })
         return f"{self.config['endpointURL']}/{self.config['bucket']}/{unique_filename}"
 
