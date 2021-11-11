@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Any
+from os import getcwd
 from uuid import uuid4
 from pathlib import Path
 from .user_conf import user_conf
@@ -47,10 +48,33 @@ class AliOSSUploader(Uploader):
         pass
 
 
-class LocalFSUploader(Uploader):
+class LocalFSClient:
+
+    def __init__(self, dir: str, url: str) -> None:
+        self.dir = dir
+        self.url = url
+        dest = Path(getcwd()) / 'public' / self.dir
+        if not dest.is_dir:
+            dest.mkdir()
+        self.dest = dest
 
     def upload(self, value: Any) -> str:
-        pass
+        unique_filename = f'{uuid4().hex}{Path(value.filename).suffix.lower()}'
+        value.save(str(self.dest / unique_filename))
+        return self.url + '/public' + unique_filename
+
+
+class LocalFSUploader(Uploader):
+
+    def client(self) -> Any:
+        if hasattr(self, '_client'):
+            return getattr(self, '_client')
+        client = LocalFSClient(dir=self.config['dir'], url=self.config['url'])
+        setattr(self, '_client', client)
+        return client
+
+    def upload(self, value: Any) -> str:
+        self.client.upload(value)
 
 
 def request_uploader(name: str) -> Uploader:
