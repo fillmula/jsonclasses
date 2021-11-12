@@ -6,7 +6,6 @@ from enum import Enum
 from copy import deepcopy
 from .jobject import JObject
 from .fdef import Fdef
-from .keypath import new_mongoid
 from .modifiers import (BoolModifier, ChainedModifier, FValModifier, FObjModifier,
                         CompareModifier, DateModifier, DatetimeModifier,
                         DefaultModifier, DictOfModifier, EagerModifier,
@@ -34,7 +33,7 @@ from .modifiers import (BoolModifier, ChainedModifier, FValModifier, FObjModifie
                         DivModifier, ModModifier, MulModifier, GetOpModifier,
                         StrModifier, StrictModifier, AssignModifier,
                         TempModifier, TransformModifier, TrimModifier,
-                        TruncateModifier, ValidateModifier,
+                        TruncateModifier, ValidateModifier, MongoIdModifier,
                         Modifier, WriteNonnullModifier, WriteonceModifier,
                         WriteonlyModifier, DenyModifier, CascadeModifier,
                         NullifyModifier, AsopModifier, FmtModifier,
@@ -1263,7 +1262,7 @@ class Types:
     def mongoid(self: Types) -> Types:
         """This modifier assigns a default bson object id to the field.
         """
-        return Types(self, DefaultModifier(lambda: new_mongoid()))
+        return Types(self, MongoIdModifier())
 
     @property
     def tscreated(self: Types) -> Types:

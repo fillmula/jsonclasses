@@ -65,6 +65,7 @@ from .salt_modifier import SaltModifier
 from .tostr_modifier import ToStrModifier
 from .padstart_modifier import PadStartModifier
 from .padend_modifier import PadEndModifier
+from .mongoid_modifier import MongoIdModifier
 
 # number modifiers
 from .int_modifier import IntModifier

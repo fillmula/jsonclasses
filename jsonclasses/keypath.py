@@ -58,11 +58,6 @@ def reference_key(field: JField) -> str:
                          "supported reference field type")
 
 
-def new_mongoid() -> str:
-    from bson.objectid import ObjectId
-    return str(ObjectId())
-
-
 def concat_keypath(*args: Union[str, int]) -> str:
     """Concatenate partial keypaths and keys into a concatenated single
     keypath.

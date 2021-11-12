@@ -28,6 +28,13 @@ class FType(Enum):
     UNION = 'union'
 
 
+class FSubtype(Enum):
+    """Defined field subtypes of jsonclass fields.
+    """
+    FILE = 'file'
+    MONGOID = 'mongoid'
+
+
 class FStore(Enum):
     """Defined field storage types of jsonclass fields.
     """
@@ -120,7 +127,8 @@ class Fdef:
         self._cdef: Optional[Cdef] = None
         self._unresolved: bool = False
         self._unresolved_name: Optional[str] = None
-        self._ftype: Optional[FType] = None
+        self._ftype: FType | None = None
+        self._fsubtype: FSubtype | None = None
         self._fstore: FStore = FStore.EMBEDDED
         self._getter: Types | Callable | None = None
         self._setter: Types | Callable | None = None
@@ -178,6 +186,13 @@ class Fdef:
         """
         self._resolve_if_needed()
         return cast(FType, self._ftype)
+
+    @property
+    def fsubtype(self: Fdef) -> FSubtype | None:
+        """The field's subtype.
+        """
+        self._resolve_if_needed()
+        return self._fsubtype
 
     @property
     def fstore(self: Fdef) -> FStore:

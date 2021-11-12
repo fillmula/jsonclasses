@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Callable, Any, TYPE_CHECKING
 from inspect import signature
 from .modifier import Modifier
+from ..fdef import Fdef, FSubtype
 from ..uploaders import request_uploader, S3Uploader, AliOSSUploader
 if TYPE_CHECKING:
     from ..ctx import Ctx
@@ -17,7 +18,11 @@ class UploaderModifier(Modifier):
             params_len = len(signature(arg).parameters)
             if params_len > 2 or params_len < 1:
                 raise ValueError('not a valid transformer')
-        self.check_packages()
+        else:
+            self.check_packages()
+
+    def define(self, fdef: Fdef) -> None:
+        fdef._fsubtype = FSubtype.FILE
 
     def packages(self) -> dict[str, (str, str)] | None:
         if type(self.arg) is str:
@@ -28,7 +33,7 @@ class UploaderModifier(Modifier):
                 return {'oss2': ('oss2', '>=2.0.0,<3.0.0')}
             else:
                 return {}
-        return None
+        return {}
 
     def transform(self, ctx: Ctx) -> Any:
         if ctx.val is None:
