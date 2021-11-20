@@ -15,7 +15,7 @@ class ToNextMonModifier(Modifier):
             if month == 0:
                 month = 12
                 year = year -1
-            next_month = datetime(ctx.val.year + year, month, 1)
+            next_month = datetime(ctx.val.year + year, month, 1, tzinfo=ctx.val.tzinfo)
             return next_month
         if type(ctx.val) is date:
             year, month = divmod(ctx.val.month + 1, 12)

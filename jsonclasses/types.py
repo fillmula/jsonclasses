@@ -1,7 +1,7 @@
 """This modules contains the JSONClasses types modifier."""
 from __future__ import annotations
 from typing import Callable, Any, Optional
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from enum import Enum
 from copy import deepcopy
 from .jobject import JObject
@@ -1268,7 +1268,7 @@ class Types:
     def tscreated(self: Types) -> Types:
         """This modifier adds a default current time to the field.
         """
-        return Types(self, DefaultModifier(datetime.now))
+        return Types(self, DefaultModifier(lambda: datetime.now(timezone.utc)))
 
     @property
     def tsupdated(self: Types) -> Types:
@@ -1277,7 +1277,7 @@ class Types:
         return Types(self,
                      DefaultModifier(datetime.now),
                      PreserializeModifier(),
-                     SetOnSaveModifier(lambda: datetime.now()))
+                     SetOnSaveModifier(lambda: datetime.now(timezone.utc)))
 
     def umininterval(self: Types, interval: timedelta) -> Types:
         """This modifier compares old and new value against the time interval.

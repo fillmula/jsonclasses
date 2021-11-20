@@ -11,7 +11,7 @@ class ToNextYearModifier(Modifier):
 
     def transform(self, ctx: Ctx) -> Any:
         if type(ctx.val) is datetime:
-            return datetime(ctx.val.year + 1, 1, 1, 0, 0, 0, 0)
+            return datetime(ctx.val.year + 1, 1, 1, 0, 0, 0, 0, tzinfo=ctx.val.tzinfo)
         if type(ctx.val) is date:
             return date(ctx.val.year + 1, 1, 1)
         else:

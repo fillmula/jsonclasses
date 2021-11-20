@@ -1,7 +1,7 @@
 """module for datetime modifier."""
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from ..fdef import FType
 from .type_modifier import TypeModifier
 if TYPE_CHECKING:
@@ -21,13 +21,15 @@ class DatetimeModifier(TypeModifier):
             return None
         elif isinstance(ctx.val, str):
             try:
-                return datetime.fromisoformat(ctx.val.replace('Z', ''))
+                retval = datetime.fromisoformat(ctx.val.replace('Z', ''))
+                return retval.replace(tzinfo=timezone.utc)
             except ValueError:
                 ctx.raise_vexc('wrong datetime format')
         elif type(ctx.val) is date:
-            return datetime(ctx.val.year,
-                            ctx.val.month,
-                            ctx.val.day, 0, 0, 0)
+            retval = datetime(ctx.val.year,
+                              ctx.val.month,
+                              ctx.val.day, 0, 0, 0)
+            return retval.replace(tzinfo=timezone.utc)
         else:
             return ctx.val
 
