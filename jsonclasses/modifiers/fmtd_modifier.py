@@ -1,7 +1,7 @@
 """module for fmtd modifier."""
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING, Callable
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from .modifier import Modifier
 if TYPE_CHECKING:
     from ..ctx import Ctx
@@ -18,7 +18,7 @@ class FormatDatetimeModifier(Modifier):
         if isinstance(ctx.val, date) or isinstance(ctx.val, datetime):
             return ctx.val.strftime(self.resolve_param(self.format, ctx))
         elif type(ctx.val) is str:
-            dt = datetime.fromisoformat(ctx.val.replace('Z', ''))
+            dt = datetime.fromisoformat(ctx.val.replace('Z', '')).replace(tzinfo=timezone.utc)
             return dt.strftime(self.resolve_param(self.format, ctx))
         else:
             return ctx.val
