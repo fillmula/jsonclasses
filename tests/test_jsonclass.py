@@ -25,8 +25,8 @@ class TestJsonClass(TestCase):
     def test_jsonclass_install_default_config_without_arguments(self):
         class_config = SimpleAccount.cdef.jconf
         default_config = JConf(cgraph='default',
-                                input_key_strategy=camelize_key,
-                                output_key_strategy=underscore_key,
+                                output_key_strategy=camelize_key,
+                                input_key_strategy=underscore_key,
                                 strict_input=True,
                                 ref_name_strategy=reference_key,
                                 validate_all_fields=False,
@@ -47,13 +47,13 @@ class TestJsonClass(TestCase):
         company_graph = CGraph('simplecompany')
         self.assertEqual(cgraph, company_graph)
 
-    def test_jsonclass_input_key_strategy_changes_config(self):
-        self.assertEqual(
-            SimpleEmployee.cdef.jconf.input_key_strategy, identical_key)
-
     def test_jsonclass_output_key_strategy_changes_config(self):
         self.assertEqual(
             SimpleEmployee.cdef.jconf.output_key_strategy, identical_key)
+
+    def test_jsonclass_input_key_strategy_changes_config(self):
+        self.assertEqual(
+            SimpleEmployee.cdef.jconf.input_key_strategy, identical_key)
 
     def test_jsonclass_strict_input_changes_config(self):
         self.assertEqual(

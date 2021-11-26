@@ -48,7 +48,7 @@ class JField:
     def json_name(self: JField) -> str:
         """The name of the field when converted into JSON dict.
         """
-        return self.cdef.jconf.input_key_strategy(self._name)
+        return self.cdef.jconf.output_key_strategy(self._name)
 
     @property
     def default(self: JField) -> Any:

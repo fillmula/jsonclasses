@@ -122,15 +122,15 @@ class Cdef:
                 if jfield.fdef.ftype == FType.INSTANCE:
                     self._reference_names.append(ref_name_strategy(jfield))
                     self._camelized_reference_names.append(
-                        self.jconf.input_key_strategy(ref_name_strategy(jfield)))
+                        self.jconf.output_key_strategy(ref_name_strategy(jfield)))
                 elif jfield.fdef.ftype == FType.LIST:
                     self._list_reference_names.append(ref_name_strategy(jfield))
                     self._camelized_list_reference_names.append(
-                        self.jconf.input_key_strategy(ref_name_strategy(jfield)))
+                        self.jconf.output_key_strategy(ref_name_strategy(jfield)))
             elif jfield.types.fdef._fstore == FStore.FOREIGN_KEY:
                 if jfield.types.fdef._use_join_table:
                     rkes = self.jconf.ref_name_strategy
-                    jkes = self.jconf.input_key_strategy
+                    jkes = self.jconf.output_key_strategy
                     rk = rkes(jfield)
                     self._virtual_reference_names.append(rk)
                     self._camelized_virtual_reference_names.append(jkes(rk))

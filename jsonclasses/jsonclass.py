@@ -30,8 +30,8 @@ def jsonclass(cls: T) -> T | type[JObject]: ...
 def jsonclass(
     cls: None = None,
     class_graph: Optional[str] = 'default',
-    input_key_strategy: Optional[Callable[[str], str]] = None,
     output_key_strategy: Optional[Callable[[str], str]] = None,
+    input_key_strategy: Optional[Callable[[str], str]] = None,
     camelize_json_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
     ref_name_strategy: Optional[Callable[[JField], str]] = None,
@@ -53,8 +53,8 @@ def jsonclass(
 def jsonclass(
     cls: T,
     class_graph: Optional[str] = 'default',
-    input_key_strategy: Optional[Callable[[str], str]] = None,
     output_key_strategy: Optional[Callable[[str], str]] = None,
+    input_key_strategy: Optional[Callable[[str], str]] = None,
     camelize_json_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
     ref_name_strategy: Optional[Callable[[JField], str]] = None,
@@ -75,8 +75,8 @@ def jsonclass(
 def jsonclass(
     cls: Optional[T] = None,
     class_graph: Optional[str] = 'default',
-    input_key_strategy: Optional[Callable[[str], str]] = None,
     output_key_strategy: Optional[Callable[[str], str]] = None,
+    input_key_strategy: Optional[Callable[[str], str]] = None,
     camelize_json_keys: Optional[bool] = None,
     strict_input: Optional[bool] = None,
     ref_name_strategy: Optional[Callable[[JField], str]] = None,
@@ -104,12 +104,12 @@ def jsonclass(
         if not isinstance(cls, type):
             raise ValueError('@jsonclass should be used to decorate a class.')
         if camelize_json_keys is False:
-            input_key_strategy = identical_key
             output_key_strategy = identical_key
+            input_key_strategy = identical_key
         jconf = JConf(
             cgraph=cast(str, class_graph),
-            input_key_strategy=input_key_strategy,
             output_key_strategy=output_key_strategy,
+            input_key_strategy=input_key_strategy,
             strict_input=strict_input,
             ref_name_strategy=ref_name_strategy,
             validate_all_fields=validate_all_fields,
@@ -134,8 +134,8 @@ def jsonclass(
             return jsonclass(
                 cls,
                 class_graph=class_graph,
-                input_key_strategy=input_key_strategy,
                 output_key_strategy=output_key_strategy,
+                input_key_strategy=input_key_strategy,
                 camelize_json_keys=camelize_json_keys,
                 strict_input=strict_input,
                 ref_name_strategy=ref_name_strategy,

@@ -29,8 +29,8 @@ class JConf:
 
     def __init__(self: JConf,
                  cgraph: str | None,
-                 input_key_strategy: Callable[[str], str] | Literal['identical', 'underscore'] | None,
                  output_key_strategy: Callable[[str], str] | Literal['identical', 'camelize'] | None,
+                 input_key_strategy: Callable[[str], str] | Literal['identical', 'underscore'] | None,
                  strict_input: bool | None,
                  ref_name_strategy: Callable[[JField], str] | None,
                  validate_all_fields: bool | None,
@@ -50,9 +50,9 @@ class JConf:
         Args:
             cgraph (Optional[str]): The name of the class graph on which \
                 the JSON class is defined.
-            input_key_strategy (Optional[Callable[[str], str]]): How \
-                object keys are encoded. The default is camelize.
             output_key_strategy (Optional[Callable[[str], str]]): How \
+                object keys are encoded. The default is camelize.
+            input_key_strategy (Optional[Callable[[str], str]]): How \
                 object keys are decoded. The default is underscore.
             strict_input (Optional[bool]): Whether raise errors on receiving \
                 invalid input keys.
@@ -84,8 +84,8 @@ class JConf:
         from .types import Types
         self._cls: type[JObject] | None = None
         self._cgraph = cgraph or 'default'
-        self._input_key_strategy = _figure_out(input_key_strategy)
         self._output_key_strategy = _figure_out(output_key_strategy)
+        self._input_key_strategy = _figure_out(input_key_strategy)
         self._strict_input = strict_input
         self._ref_name_strategy = ref_name_strategy
         self._validate_all_fields = validate_all_fields
@@ -141,9 +141,9 @@ class JConf:
         other_config = cast(JConf, other)
         if self.cgraph != other_config.cgraph:
             return False
-        if self.input_key_strategy != other_config.input_key_strategy:
-            return False
         if self.output_key_strategy != other_config.output_key_strategy:
+            return False
+        if self.input_key_strategy != other_config.input_key_strategy:
             return False
         if self.strict_input != other_config.strict_input:
             return False
@@ -187,20 +187,20 @@ class JConf:
         return CGraph(self._cgraph)
 
     @property
-    def input_key_strategy(self: JConf) -> Callable[[str], str]:
-        """The object key encoding strategy.
-        """
-        if self._input_key_strategy is None:
-            return self.cgraph.default_config.input_key_strategy
-        return self._input_key_strategy
-
-    @property
     def output_key_strategy(self: JConf) -> Callable[[str], str]:
-        """The object key decoding strategy.
+        """The object key encoding strategy.
         """
         if self._output_key_strategy is None:
             return self.cgraph.default_config.output_key_strategy
         return self._output_key_strategy
+
+    @property
+    def input_key_strategy(self: JConf) -> Callable[[str], str]:
+        """The object key decoding strategy.
+        """
+        if self._input_key_strategy is None:
+            return self.cgraph.default_config.input_key_strategy
+        return self._input_key_strategy
 
     @property
     def strict_input(self: JConf) -> bool:

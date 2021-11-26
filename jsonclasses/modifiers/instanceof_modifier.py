@@ -148,7 +148,7 @@ class InstanceOfModifier(Modifier):
                         refname = tsfm(field)
                         if ctx.val.get(refname) is not None:
                             setattr(dest, refname, ctx.val.get(refname))
-                        crefname = dest.__class__.cdef.jconf.input_key_strategy(refname)
+                        crefname = dest.__class__.cdef.jconf.output_key_strategy(refname)
                         if ctx.val.get(crefname) is not None:
                             setattr(dest, refname, ctx.val.get(crefname))
                     pass
@@ -212,7 +212,7 @@ class InstanceOfModifier(Modifier):
                     if field.name not in val._partial_picks:
                         continue
                 rk = val.__class__.cdef.jconf.ref_name_strategy(field)
-                jrk = val.__class__.cdef.jconf.input_key_strategy(rk)
+                jrk = val.__class__.cdef.jconf.output_key_strategy(rk)
                 valatk = getattr(val, rk)
                 if output_null or (valatk is not None):
                     retval[jrk] = valatk
