@@ -106,7 +106,7 @@ class Types:
     def primary(self) -> Types:
         """Field marked with primary become the object's primary key.
         """
-        return Types(self, PrimaryModifier())
+        return Types(self, ResetModifier(), PrimaryModifier())
 
     @property
     def readonly(self) -> Types:

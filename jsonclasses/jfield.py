@@ -3,12 +3,12 @@ records the detailed information of a JSON class field.
 """
 from __future__ import annotations
 from jsonclasses.jobject import JObject
-from jsonclasses.fdef import FType
+from jsonclasses.fdef import FStore, FType
 from typing import Any, Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from .types import Types
     from .fdef import Fdef
-    from .cdef import Cdef
+    from .cdef import CDef
     from .modifiers import ChainedModifier
 
 
@@ -19,7 +19,7 @@ class JField:
     """
 
     def __init__(
-            self: JField, cdef: Cdef, name: str, default: Any,types: Types
+            self: JField, cdef: CDef, name: str, default: Any, types: Types
         ) -> None:
         self._cdef = cdef
         self._name = name
@@ -33,7 +33,7 @@ class JField:
         self._foreign_class = None
 
     @property
-    def cdef(self: JField) -> Cdef:
+    def cdef(self: JField) -> CDef:
         """The class definition on which this field is defined.
         """
         return self._cdef
@@ -76,7 +76,7 @@ class JField:
         return self._types.modifier
 
     @property
-    def foreign_cdef(self: JField) -> Optional[Cdef]:
+    def foreign_cdef(self: JField) -> Optional[CDef]:
         self.cdef._resolve_ref_types_if_needed()
         if self._resolved_foreign:
             return self._foreign_cdef
@@ -140,3 +140,56 @@ class JField:
             if ffield:
                 self._foreign_field = ffield
                 self._foreign_fname = ffield.name
+
+    @property
+    def is_primary(self) -> bool:
+        return self.fdef.primary
+
+    @property
+    def is_inst_field(self) -> bool:
+        return self.fdef.ftype == FType.INSTANCE
+
+    @property
+    def is_list_field(self) -> bool:
+        return self.fdef.ftype == FType.LIST
+
+    @property
+    def is_list_inst_field(self) -> bool:
+        if not self.is_list_field:
+            return False
+        t = self.fdef.item_types
+        if t.fdef.raw_inst_types is not None:
+            return True
+        return False
+
+    @property
+    def is_foreign_key_store(self) -> bool:
+        return self.fdef.fstore == FStore.FOREIGN_KEY
+
+    @property
+    def is_local_key_store(self) -> bool:
+        return self.fdef.fstore == FStore.LOCAL_KEY
+
+    @property
+    def is_foreign_one_ref(self) -> bool:
+        return self.is_inst_field and self.is_foreign_key_store
+
+    @property
+    def is_foreign_many_ref(self) -> bool:
+        return self.is_list_field and self.is_foreign_key_store
+
+    @property
+    def is_local_one_ref(self) -> bool:
+        return self.is_inst_field and self.is_local_key_store
+
+    @property
+    def is_local_many_ref(self) -> bool:
+        return self.is_list_field and self.is_local_key_store
+
+    @property
+    def is_join_table_ref(self) -> bool:
+        return self.fdef.use_join_table is True
+
+    @property
+    def ref_name(self) -> str:
+        return self.cdef.jconf.ref_name_strategy(self)

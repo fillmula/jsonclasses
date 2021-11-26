@@ -1,5 +1,5 @@
 """
-This module defines `Cdef`. Each JSON class has its own class
+This module defines `CDef`. Each JSON class has its own class
 definition. The class definition object contains detailed information about how
 user defines a JSON class. This is used by the framework to lookup class fields
 and class field settings.
@@ -16,14 +16,14 @@ if TYPE_CHECKING:
 
 
 @final
-class Cdef:
+class CDef:
     """Class definition represents the class definition of JSON classes. Each
     JSON class has its own class definition. The class definition object
     contains detailed information about how user defines a JSON class. This is
     used by the framework to lookup class fields and class field settings.
     """
 
-    def __init__(self: Cdef, cls: type[JObject], jconf: JConf) -> None:
+    def __init__(self: CDef, cls: type[JObject], jconf: JConf) -> None:
         """
         Initialize a new class definition.
 
@@ -99,23 +99,23 @@ class Cdef:
                 self._auth_by_fields.append(jfield)
         self._tuple_fields: tuple[JField, ...] = tuple(self._list_fields)
 
-    def _resolve_ref_types_if_needed(self: Cdef) -> None:
+    def _resolve_ref_types_if_needed(self: CDef) -> None:
         if self._ref_types_resolved is False:
             self._resolve_types()
             self._ref_types_resolved = True
 
-    def _resolve_ref_names_if_needed(self: Cdef) -> None:
+    def _resolve_ref_names_if_needed(self: CDef) -> None:
         if self._ref_names_resolved is False:
             self._resolve_ref_names()
             self._ref_names_resolved = True
 
-    def _resolve_types(self: Cdef) -> None:
+    def _resolve_types(self: CDef) -> None:
         for jfield in self._tuple_fields:
             if jfield.types.fdef._unresolved:
                 cgraph = self.jconf.cgraph
                 jfield._types = rnamedtypes(jfield.types, cgraph, self.name)
 
-    def _resolve_ref_names(self: Cdef) -> None:
+    def _resolve_ref_names(self: CDef) -> None:
         for jfield in self._tuple_fields:
             if jfield.types.fdef._fstore == FStore.LOCAL_KEY:
                 ref_name_strategy = self.jconf.ref_name_strategy
@@ -146,26 +146,26 @@ class Cdef:
                                            + self._list_reference_names)
 
     @property
-    def cls(self: Cdef) -> type:
+    def cls(self: CDef) -> type:
         """The JSON class on which this class definition is defined.
         """
         return self._cls
 
     @property
-    def name(self: Cdef) -> str:
+    def name(self: CDef) -> str:
         """The name of the JSON class on which this class definition is
         defined.
         """
         return self._name
 
     @property
-    def jconf(self: Cdef) -> JConf:
+    def jconf(self: CDef) -> JConf:
         """The configuration object of the JSON class on which this class
         definition is defined.
         """
         return self._jconf
 
-    def field_named(self: Cdef, name: str) -> JField:
+    def field_named(self: CDef, name: str) -> JField:
         """
         Get the field which is named `name`.
 
@@ -183,20 +183,20 @@ class Cdef:
         return self._dict_fields[name]
 
     @property
-    def fields(self: Cdef) -> tuple[JField, ...]:
+    def fields(self: CDef) -> tuple[JField, ...]:
         """Get the fields of this class definition as a tuple. This is useful
         for looping and iterating.
         """
         return self._tuple_fields
 
     @property
-    def calc_fields(self: Cdef) -> list[JField]:
+    def calc_fields(self: CDef) -> list[JField]:
         """Calculated fields of this class definition.
         """
         return self._calc_fields
 
     @property
-    def calc_field_names(self: Cdef) -> list[str]:
+    def calc_field_names(self: CDef) -> list[str]:
         """Names of calculated fields.
         """
         if hasattr(self, '_calc_field_names'):
@@ -205,13 +205,13 @@ class Cdef:
         return self._calc_field_names
 
     @property
-    def setter_fields(self: Cdef) -> list[JField]:
+    def setter_fields(self: CDef) -> list[JField]:
         """Calculated fields with setter of this class definition.
         """
         return self._setter_fields
 
     @property
-    def setter_field_names(self: Cdef) -> list[str]:
+    def setter_field_names(self: CDef) -> list[str]:
         """Names of calculated fields with setter.
         """
         if hasattr(self, '_setter_field_names'):
@@ -220,57 +220,57 @@ class Cdef:
         return self._setter_field_names
 
     @property
-    def deny_fields(self: Cdef) -> list[JField]:
+    def deny_fields(self: CDef) -> list[JField]:
         """Reference fields with deny delete rule.
         """
         return self._deny_fields
 
     @property
-    def nullify_fields(self: Cdef) -> list[JField]:
+    def nullify_fields(self: CDef) -> list[JField]:
         """Reference fields with nullify delete rule.
         """
         return self._nullify_fields
 
     @property
-    def cascade_fields(self: Cdef) -> list[JField]:
+    def cascade_fields(self: CDef) -> list[JField]:
         """Reference fields with cascade delete rule.
         """
         return self._cascade_fields
 
     @property
-    def primary_field(self: Cdef) -> Optional[JField]:
+    def primary_field(self: CDef) -> Optional[JField]:
         """The class definition's primary field. This can be None if it's not
         defined by user.
         """
         return self._primary_field
 
     @property
-    def unique_fields(self: Cdef) -> list[JField]:
+    def unique_fields(self: CDef) -> list[JField]:
         """The unique fields of this class definition.
         """
         return self._unique_fields
 
     @property
-    def assign_operator_fields(self: Cdef) -> list[JField]:
+    def assign_operator_fields(self: CDef) -> list[JField]:
         """The class definition's fields which require operator assigning on
         object creation.
         """
         return self._assign_operator_fields
 
     @property
-    def auth_identity_fields(self: Cdef) -> list[JField]:
+    def auth_identity_fields(self: CDef) -> list[JField]:
         """Auth identity fields.
         """
         return self._auth_identity_fields
 
     @property
-    def auth_by_fields(self: Cdef) -> list[JField]:
+    def auth_by_fields(self: CDef) -> list[JField]:
         """Auth by fields.
         """
         return self._auth_by_fields
 
     def rfield(
-            self: Cdef, fcls: type[JObject], fname: Optional[str],
+            self: CDef, fcls: type[JObject], fname: Optional[str],
             fkey: Optional[str]) -> Optional[JField]:
         for field in self._tuple_fields:
             if field.foreign_class is fcls:
@@ -284,46 +284,46 @@ class Cdef:
             return None
 
     @property
-    def available_names(self: Cdef) -> set[str]:
+    def available_names(self: CDef) -> set[str]:
         self._resolve_ref_names_if_needed()
         return self._available_names
 
     @property
-    def update_names(self: Cdef) -> set[str]:
+    def update_names(self: CDef) -> set[str]:
         self._resolve_ref_names_if_needed()
         return self._update_names
 
     @property
-    def reference_names(self: Cdef) -> set[str]:
+    def reference_names(self: CDef) -> set[str]:
         self._resolve_ref_names_if_needed()
         return set(self._reference_names)
 
     @property
-    def camelized_reference_names(self: Cdef) -> set[str]:
+    def camelized_reference_names(self: CDef) -> set[str]:
         self._resolve_ref_names_if_needed()
         return set(self._camelized_reference_names)
 
     @property
-    def list_reference_names(self: Cdef) -> set[str]:
+    def list_reference_names(self: CDef) -> set[str]:
         self._resolve_ref_names_if_needed()
         return set(self._list_reference_names)
 
     @property
-    def camelized_list_reference_names(self: Cdef) -> set[str]:
+    def camelized_list_reference_names(self: CDef) -> set[str]:
         self._resolve_ref_names_if_needed()
         return set(self._camelized_list_reference_names)
 
     @property
-    def virtual_reference_names(self: Cdef) -> str[str]:
+    def virtual_reference_names(self: CDef) -> str[str]:
         self._resolve_ref_names_if_needed()
         return set(self._virtual_reference_names)
 
     @property
-    def camelized_virtual_reference_names(self: Cdef) -> str[str]:
+    def camelized_virtual_reference_names(self: CDef) -> str[str]:
         self._resolve_ref_names_if_needed()
         return set(self._camelized_virtual_reference_names)
 
     @property
-    def virtual_reference_fields(self: Cdef) -> dict[str, JField]:
+    def virtual_reference_fields(self: CDef) -> dict[str, JField]:
         self._resolve_ref_names_if_needed()
         return self._virtual_reference_fields

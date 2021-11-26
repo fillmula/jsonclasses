@@ -9,7 +9,7 @@ from .excs import (JSONClassRedefinitionException,
                          JSONClassNotFoundException,
                          JSONClassTypedDictNotFoundException)
 if TYPE_CHECKING:
-    from .cdef import Cdef
+    from .cdef import CDef
 
 
 @final
@@ -44,7 +44,7 @@ class CGraph:
         if self.__class__._initialized_map.get(name):
             return
         self._name: str = name
-        self._map: dict[str, Cdef] = {}
+        self._map: dict[str, CDef] = {}
         self._enum_map: dict[str, type] = {}
         self._default_config = JConf(cgraph=self.name,
                                      output_key_strategy=camelize_key,
@@ -78,7 +78,7 @@ class CGraph:
         """The default configuration used on this class graph."""
         return self._default_config
 
-    def put(self: CGraph, cdef: Cdef) -> None:
+    def put(self: CGraph, cdef: CDef) -> None:
         """Put a class onto this class graph.
 
         Args:
@@ -94,7 +94,7 @@ class CGraph:
                                                  exist_definition.cls)
         self._map[cdef.name] = cdef
 
-    def fetch(self: CGraph, name_or_class: str | type) -> Cdef:
+    def fetch(self: CGraph, name_or_class: str | type) -> CDef:
         """Fetch a class by it's name from this class graph.
 
         Args:

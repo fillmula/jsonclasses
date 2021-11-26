@@ -7,7 +7,7 @@ from .isjsonclass import isjsonclass
 from .jobject import JObject
 if TYPE_CHECKING:
     from .types import Types
-    from .cdef import Cdef
+    from .cdef import CDef
 
 
 class FType(Enum):
@@ -124,7 +124,7 @@ class Fdef:
     """
 
     def __init__(self: Fdef) -> None:
-        self._cdef: Optional[Cdef] = None
+        self._cdef: Optional[CDef] = None
         self._unresolved: bool = False
         self._unresolved_name: Optional[str] = None
         self._ftype: FType | None = None
@@ -174,11 +174,11 @@ class Fdef:
         self._auth_by_checker: Optional[Types] = None
 
     @property
-    def cdef(self: Fdef) -> Cdef:
+    def cdef(self: Fdef) -> CDef:
         """The class definition which owns this field.
         """
-        from .cdef import Cdef
-        return cast(Cdef, self._cdef)
+        from .cdef import CDef
+        return cast(CDef, self._cdef)
 
     @property
     def ftype(self: Fdef) -> FType:

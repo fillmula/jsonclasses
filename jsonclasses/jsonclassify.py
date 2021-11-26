@@ -620,11 +620,24 @@ def _run_on_delete_callbacks(self: JObject) -> None:
 
 
 @property
-def _id(self: JObject) -> Union[str, int, None]:
+def _id(self: JObject) -> str | int | None:
     field = self.__class__.cdef.primary_field
     if not field:
         return None
     return getattr(self, field.name)
+
+
+@property
+def _previous_id(self: JObject) -> str | int | None:
+    if self.is_new:
+        return self._id
+    field = self.__class__.cdef.primary_field
+    if not field:
+        return None
+    if self.is_modified:
+        if field.name in self.modified_fields:
+            return self.previous_values[field.name]
+    return self._id
 
 
 def __is_private_attr__(name: str) -> bool:
@@ -1024,6 +1037,7 @@ def jsonclassify(class_: type) -> type[JObject]:
     class_._run_on_update_callbacks = _run_on_update_callbacks
     class_._run_on_delete_callbacks = _run_on_delete_callbacks
     class_._id = _id
+    class_._previous_id = _previous_id
     # private methods
     class_.__original_setattr__ = class_.__setattr__
     class_.__setattr__ = __setattr__

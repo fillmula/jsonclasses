@@ -1,12 +1,12 @@
 """This module defines JSON Class context objects."""
 from __future__ import annotations
-from typing import Any, NamedTuple, Union, Optional, cast, TYPE_CHECKING
+from typing import Any, NamedTuple, Optional, cast, TYPE_CHECKING
 from .jconf import JConf
 from .types import types
 from .mgraph import MGraph
 from .excs import ValidationException
 if TYPE_CHECKING:
-    from .cdef import Cdef
+    from .cdef import CDef
     from .fdef import Fdef
     from .jobject import JObject
 
@@ -57,15 +57,15 @@ class Ctx(NamedTuple):
     passin: Optional[Any] = None
 
     @property
-    def cdefroot(self: Ctx) -> Cdef:
+    def cdefroot(self: Ctx) -> CDef:
         return self.root.__class__.cdef
 
     @property
-    def cdefowner(self: Ctx) -> Cdef:
+    def cdefowner(self: Ctx) -> CDef:
         return self.owner.__class__.cdef
 
     @property
-    def cdefholder(self: Ctx) -> Cdef:
+    def cdefholder(self: Ctx) -> CDef:
         return cast(JObject, self.holder).__class__.cdef
 
     @property

@@ -12,7 +12,7 @@ from .jconf import (
     OnUpdate
 )
 from .jfield import JField
-from .cdef import Cdef
+from .cdef import CDef
 from .jsonclassify import jsonclassify
 from .jobject import JObject
 if TYPE_CHECKING:
@@ -125,7 +125,7 @@ def jsonclass(
             can_read=can_read)
         dcls: type = dataclass(init=False)(cls)
         jcls = jsonclassify(dcls)
-        cdef = Cdef(jcls, jconf)
+        cdef = CDef(jcls, jconf)
         jcls.cdef = cdef
         jconf.cgraph.put(cdef)
         return jcls

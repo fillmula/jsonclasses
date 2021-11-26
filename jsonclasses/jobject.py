@@ -6,7 +6,7 @@ from typing import (
     Any, Callable, TypeVar, Optional, ClassVar, Protocol, Set, TYPE_CHECKING
 )
 if TYPE_CHECKING:
-    from .cdef import Cdef
+    from .cdef import CDef
     from .fdef import Fdef
     from .odict import OwnedDict
     from .olist import OwnedList
@@ -20,7 +20,7 @@ class JObject(Protocol):
     should implement.
     """
 
-    cdef: ClassVar[Cdef]
+    cdef: ClassVar[CDef]
     """The configuration user passed to JSON class through the jsonclass
     decorator.
     """
@@ -178,6 +178,9 @@ class JObject(Protocol):
 
     @property
     def _id(self: T) -> str | int | None: ...
+
+    @property
+    def _previous_id(self: T) -> str | int | None: ...
 
     @property
     def _operator(self: T) -> Optional[JObject]: ...
