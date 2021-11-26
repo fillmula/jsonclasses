@@ -3,7 +3,7 @@ from typing import Any
 from os import getcwd
 from uuid import uuid4
 from pathlib import Path
-from .uconf import uconf
+from .uconf import uconf, UserConf
 
 
 _uploaders: dict[str, Uploader] = {}
