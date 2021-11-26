@@ -1,12 +1,11 @@
-"""This module defines ORM queries. These are used in conjuction with ORM
-objects.
+"""This module defines ORM protocols, the protocols that objects of JSONClasses
+ORM integrations should implement.
 """
 from __future__ import annotations
 from typing import (
-    Protocol, Optional, TypeVar, Union, Any, Generator, Iterator, TYPE_CHECKING
+    Protocol, Optional, TypeVar, Union, Any, Generator, Iterator
 )
-if TYPE_CHECKING:
-    from .orm_object import ORMObject
+from .jobject import JObject
 
 
 T = TypeVar('T', bound='ORMObject', covariant=True)
@@ -144,4 +143,45 @@ class IterateQuery(BaseListQuery[T]):
         ...
 
     def __await__(self) -> Generator[None, None, Iterator[T]]:
+        ...
+
+
+class ORMObject(JObject):
+    """The `ORMObject` protocol defines methods that JSONClasses ORM
+    integrations should implement.
+    """
+
+
+    @classmethod
+    def find(cls: type[T], *args, **kwargs: Any) -> ListQuery[T]:
+        ...
+
+    @classmethod
+    def one(cls: type[T], *args, **kwargs: Any) -> SingleQuery[T]:
+        ...
+
+    @classmethod
+    def id(cls: type[T], id: Any, *args, **kwargs) -> IDQuery[T]:
+        ...
+
+    @classmethod
+    def ids(cls: type[T], ids: list[Any], *args, **kwargs) -> IDSQuery[T]:
+        ...
+
+    @classmethod
+    def linked(cls: type[T], *args, **kwargs: Any) -> BaseQuery[T]:
+        ...
+
+    @classmethod
+    def exist(cls: type[T], **kwargs: Any) -> ExistQuery[T]:
+        ...
+
+    @classmethod
+    def iterate(cls: type[T], **kwargs: Any) -> IterateQuery[T]:
+        ...
+
+    def _orm_delete(self: T, no_raise: bool = False) -> None:
+        ...
+
+    def _orm_restore(self: T) -> None:
         ...

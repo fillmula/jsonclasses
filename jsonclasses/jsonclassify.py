@@ -23,7 +23,7 @@ from .excs import (AbstractJSONClassException, ValidationException,
                          JSONClassResetError, JSONClassResetNotEnabledError,
                          UnlinkableJSONClassException,
                          UnauthorizedActionException)
-from .orm_object import ORMObject
+from .orm import ORMObject
 
 
 
