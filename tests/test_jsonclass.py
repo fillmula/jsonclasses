@@ -25,10 +25,10 @@ class TestJsonClass(TestCase):
     def test_jsonclass_install_default_config_without_arguments(self):
         class_config = SimpleAccount.cdef.jconf
         default_config = JConf(cgraph='default',
-                                key_encoding_strategy=camelize_key,
-                                key_decoding_strategy=underscore_key,
+                                input_key_strategy=camelize_key,
+                                output_key_strategy=underscore_key,
                                 strict_input=True,
-                                ref_key_encoding_strategy=reference_key,
+                                ref_name_strategy=reference_key,
                                 validate_all_fields=False,
                                 abstract=False,
                                 reset_all_fields=False,
@@ -47,13 +47,13 @@ class TestJsonClass(TestCase):
         company_graph = CGraph('simplecompany')
         self.assertEqual(cgraph, company_graph)
 
-    def test_jsonclass_key_encoding_strategy_changes_config(self):
+    def test_jsonclass_input_key_strategy_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.cdef.jconf.key_encoding_strategy, identical_key)
+            SimpleEmployee.cdef.jconf.input_key_strategy, identical_key)
 
-    def test_jsonclass_key_decoding_strategy_changes_config(self):
+    def test_jsonclass_output_key_strategy_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.cdef.jconf.key_decoding_strategy, identical_key)
+            SimpleEmployee.cdef.jconf.output_key_strategy, identical_key)
 
     def test_jsonclass_strict_input_changes_config(self):
         self.assertEqual(
@@ -61,7 +61,7 @@ class TestJsonClass(TestCase):
 
     def test_jsonclass_key_transformer_changes_config(self):
         self.assertEqual(
-            SimpleEmployee.cdef.jconf.ref_key_encoding_strategy,
+            SimpleEmployee.cdef.jconf.ref_name_strategy,
             yet_another_key_transformer)
 
     def test_jsonclass_validate_all_fields_changes_config(self):

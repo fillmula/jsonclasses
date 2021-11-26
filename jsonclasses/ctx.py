@@ -132,7 +132,7 @@ class Ctx(NamedTuple):
     def rootctxp(cls: type[Ctx], root: JObject, key: str, val: Any, passin: Any) -> Ctx:
         fdef = types.objof(root.__class__).fdef
         fdef._cdef = root.__class__.cdef
-        ekey = root.__class__.cdef.jconf.key_encoding_strategy(key)
+        ekey = root.__class__.cdef.jconf.input_key_strategy(key)
         return Ctx(root=root, owner=root, parent=root, holder=None, val=val,
                    original=root, ctxcfg=CtxCfg(),
                    keypatho=[key], fkeypatho=[ekey],
@@ -164,7 +164,7 @@ class Ctx(NamedTuple):
                    idchain=self.idchain, passin=self.passin)
 
     def nextv(self: Ctx, val: Any, key: str | int, fdef: Fdef) -> Ctx:
-        ekey = self.owner.__class__.cdef.jconf.key_encoding_strategy(key)
+        ekey = self.owner.__class__.cdef.jconf.input_key_strategy(key)
         return Ctx(root=self.root, owner=self.owner, parent=self.parent,
                    holder=self.holder, val=val, original=None,
                    ctxcfg=self.ctxcfg,
@@ -181,7 +181,7 @@ class Ctx(NamedTuple):
                    idchain=self.idchain, passin=self.passin)
 
     def nexto(self: Ctx, val: Any, key: str | int, fdef: Fdef) -> Ctx:
-        ekey = self.owner.__class__.cdef.jconf.key_encoding_strategy(key)
+        ekey = self.owner.__class__.cdef.jconf.input_key_strategy(key)
         return Ctx(root=self.root, owner=val, parent=val, holder=self.owner,
                    val=val, original=None, ctxcfg=self.ctxcfg, keypatho=[],
                    fkeypatho=[],
@@ -194,7 +194,7 @@ class Ctx(NamedTuple):
                    passin=self.passin)
 
     def nextvc(self: Ctx, val: Any, key: str | int, fdef: Fdef, c: str) -> Ctx:
-        ekey = self.owner.__class__.cdef.jconf.key_encoding_strategy(key)
+        ekey = self.owner.__class__.cdef.jconf.input_key_strategy(key)
         return Ctx(root=self.root, owner=self.owner, parent=self.parent,
                    holder=self.holder, val=val, original=None,
                    ctxcfg=self.ctxcfg,
@@ -211,7 +211,7 @@ class Ctx(NamedTuple):
                    idchain=[*self.idchain, c], passin=self.passin)
 
     def nextoc(self: Ctx, val: Any, key: str | int, fdef: Fdef, c: str) -> Ctx:
-        ekey = self.owner.__class__.cdef.jconf.key_encoding_strategy(key)
+        ekey = self.owner.__class__.cdef.jconf.input_key_strategy(key)
         return Ctx(root=self.root, owner=val, parent=val, holder=self.owner,
                    val=val, original=None, ctxcfg=self.ctxcfg,
                    keypatho=[],
@@ -227,7 +227,7 @@ class Ctx(NamedTuple):
                    idchain=[*self.idchain, c], passin=self.passin)
 
     def nextvo(self: Ctx, val: Any, key: str | int, fdef: Fdef, o: JObject) -> Ctx:
-        ekey = self.owner.__class__.cdef.jconf.key_encoding_strategy(key)
+        ekey = self.owner.__class__.cdef.jconf.input_key_strategy(key)
         return Ctx(root=self.root, owner=o, parent=self.parent,
                    holder=self.holder, val=val, original=None,
                    ctxcfg=self.ctxcfg,
@@ -260,7 +260,7 @@ class Ctx(NamedTuple):
                    idchain=self.idchain, passin=self.passin)
 
     def default(self: Ctx, owner: JObject, key: str | int, fdef: Fdef) -> Ctx:
-        ekey = self.owner.__class__.cdef.jconf.key_encoding_strategy(key)
+        ekey = self.owner.__class__.cdef.jconf.input_key_strategy(key)
         return Ctx(root=self.root, owner=owner, parent=owner,
                    holder=self.holder, val=None,
                    original=None, ctxcfg=self.ctxcfg,

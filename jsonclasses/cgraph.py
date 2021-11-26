@@ -47,10 +47,10 @@ class CGraph:
         self._map: dict[str, Cdef] = {}
         self._enum_map: dict[str, type] = {}
         self._default_config = JConf(cgraph=self.name,
-                                     key_encoding_strategy=camelize_key,
-                                     key_decoding_strategy=underscore_key,
+                                     input_key_strategy=camelize_key,
+                                     output_key_strategy=underscore_key,
                                      strict_input=True,
-                                     ref_key_encoding_strategy=reference_key,
+                                     ref_name_strategy=reference_key,
                                      validate_all_fields=False,
                                      abstract=False,
                                      reset_all_fields=False,

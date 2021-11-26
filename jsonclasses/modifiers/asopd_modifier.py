@@ -18,6 +18,6 @@ class AsopdModifier(Modifier):
     def validate(self, ctx: Ctx) -> None:
         if ctx.holder.is_new or ctx.keypathr[-1] in ctx.holder.modified_fields:
             field = ctx.holder.__class__.cdef.field_named(ctx.keypathr[-1])
-            fidname = ctx.holder.__class__.cdef.jconf.ref_key_encoding_strategy(field)
+            fidname = ctx.holder.__class__.cdef.jconf.ref_name_strategy(field)
             if getattr(ctx.holder, fidname) is None:
                 ctx.raise_vexc('no operator being assigned')

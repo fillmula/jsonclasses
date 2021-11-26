@@ -40,7 +40,7 @@ def __init__(self: JObject, **kwargs: dict[str, Any]) -> None:
         if field.fdef.fstore != FStore.CALCULATED:
             setattr(self, field.name, None)
         if field.fdef.fstore == FStore.LOCAL_KEY:
-            transformer = self.__class__.cdef.jconf.ref_key_encoding_strategy
+            transformer = self.__class__.cdef.jconf.ref_name_strategy
             local_key = transformer(field)
             if field.fdef.ftype == FType.LIST:
                 setattr(self, local_key, to_owned_list(self, [], local_key))
@@ -215,7 +215,7 @@ def opby(self: JObject, operator: Any) -> JObject:
     if self.is_new:
         class_def = self.__class__.cdef
         for field in class_def.assign_operator_fields:
-            fidname = self.__class__.cdef.jconf.ref_key_encoding_strategy(field)
+            fidname = self.__class__.cdef.jconf.ref_name_strategy(field)
             if field.fdef.operator_assign_transformer is not None:
                 transformer = field.fdef.operator_assign_transformer
                 params_len = len(signature(transformer).parameters)
@@ -377,13 +377,13 @@ def include(self: JObject, field_name: str) -> JObject:
     is_modified = self.is_modified
     if field.fdef.fstore == FStore.LOCAL_KEY:
         if field.fdef.ftype == FType.INSTANCE:
-            rkes = self.__class__.cdef.jconf.ref_key_encoding_strategy
+            rkes = self.__class__.cdef.jconf.ref_name_strategy
             ridname = rkes(field)
             rid = getattr(self, ridname)
             result = cls.id(rid).exec()
             setattr(self, field.name, result)
         elif field.fdef.ftype == FType.LIST:
-            rkes = self.__class__.cdef.jconf.ref_key_encoding_strategy
+            rkes = self.__class__.cdef.jconf.ref_name_strategy
             ridname = rkes(field)
             rids = getattr(self, ridname)
             result = cls.ids(rids).exec()
@@ -391,19 +391,19 @@ def include(self: JObject, field_name: str) -> JObject:
     elif field.fdef.fstore == FStore.FOREIGN_KEY:
         if field.fdef.use_join_table:
             ffield = field.foreign_field
-            rkes = cls.cdef.jconf.ref_key_encoding_strategy
+            rkes = cls.cdef.jconf.ref_name_strategy
             idref = rkes(ffield)
             result = cls.find(**{idref: [self._id]}).exec()
             setattr(self, field.name, result)
         elif field.fdef.ftype == FType.INSTANCE:
             ffield = field.foreign_field
-            rkes = cls.cdef.jconf.ref_key_encoding_strategy
+            rkes = cls.cdef.jconf.ref_name_strategy
             idref = rkes(ffield)
             result = cls.one(**{idref: self._id}).exec()
             setattr(self, field.name, result)
         elif field.fdef.ftype == FType.LIST:
             ffield = field.foreign_field
-            rkes = cls.cdef.jconf.ref_key_encoding_strategy
+            rkes = cls.cdef.jconf.ref_name_strategy
             idref = rkes(ffield)
             result = cls.find(**{idref: [self._id]}).exec()
             setattr(self, field.name, result)
@@ -468,7 +468,7 @@ def _mark_not_new(self: JObject) -> None:
 
 def _link_local_keys(self: JObject, fname: str, key: str | int) -> None:
     field = self.__class__.cdef.field_named(fname)
-    ids_name = self.__class__.cdef.jconf.ref_key_encoding_strategy(field)
+    ids_name = self.__class__.cdef.jconf.ref_name_strategy(field)
     if getattr(self, ids_name) is None:
         setattr(self, ids_name, [])
     getattr(self, ids_name).append(key)
@@ -476,7 +476,7 @@ def _link_local_keys(self: JObject, fname: str, key: str | int) -> None:
 
 def _unlink_local_keys(self: JObject, fname: str, key: str | int) -> None:
     field = self.__class__.cdef.field_named(fname)
-    ids_name = self.__class__.cdef.jconf.ref_key_encoding_strategy(field)
+    ids_name = self.__class__.cdef.jconf.ref_name_strategy(field)
     if getattr(self, ids_name) is None:
         return
     getattr(self, ids_name).remove(key)
@@ -707,7 +707,7 @@ def __setattr__(self: JObject, name: str, value: Any) -> None:
             self.__unlink_field__(field, getattr(self, name))
         self.__original_setattr__(name, value)
         if field.fdef.fstore == FStore.LOCAL_KEY:
-            rkes = self.__class__.cdef.jconf.ref_key_encoding_strategy
+            rkes = self.__class__.cdef.jconf.ref_name_strategy
             rname = rkes(field)
             if field.fdef.ftype == FType.INSTANCE:
                 if value is None:
@@ -822,7 +822,7 @@ def __olist_add__(self: JObject, olist: OwnedList, idx: int, val: Any) -> None:
     if field is not None and field.fdef.is_ref:
         self.__link_field__(field, [val])
         if field.fdef.fstore == FStore.LOCAL_KEY:
-            rkes = cdef.jconf.ref_key_encoding_strategy
+            rkes = cdef.jconf.ref_name_strategy
             rk = rkes(field)
             rlist = getattr(self, rk)
             if len(rlist) != len(olist):
@@ -865,7 +865,7 @@ def __olist_del__(self: JObject, olist: OwnedList, val: Any) -> None:
         self.__unlink_field__(field, [val])
         if field.fdef.fstore == FStore.LOCAL_KEY:
             ## TODO: replace the underneath implementation
-            rkes = cdef.jconf.ref_key_encoding_strategy
+            rkes = cdef.jconf.ref_name_strategy
             rk = rkes(field)
             rlist = getattr(self, rk)
             if len(rlist) != len(olist):
@@ -905,7 +905,7 @@ def __unlink_field__(self: JObject, field: JField, value: Any) -> None:
                 item.__original_setattr__(other_field.name, None)
                 of = other_field
                 if of.fdef.fstore == FStore.LOCAL_KEY:
-                    tsfm = item.__class__.cdef.jconf.ref_key_encoding_strategy
+                    tsfm = item.__class__.cdef.jconf.ref_name_strategy
                     item.__original_setattr__(tsfm(other_field), None)
                     item._modified_fields.add(other_field.name)
                 item._add_unlinked_object(other_field.name, self)

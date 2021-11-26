@@ -2,8 +2,9 @@
 configuration object tweaks the behavior of JSON classes.
 """
 from __future__ import annotations
-from typing import Optional, Callable, Any, cast, final, TYPE_CHECKING
+from typing import Callable, Literal, Any, cast, final, TYPE_CHECKING
 from .jobject import JObject
+from .keypath import camelize_key, underscore_key, identical_key
 if TYPE_CHECKING:
     from .jfield import JField
     from .cgraph import CGraph
@@ -27,15 +28,15 @@ class JConf:
     """
 
     def __init__(self: JConf,
-                 cgraph: Optional[str],
-                 key_encoding_strategy: Optional[Callable[[str], str]],
-                 key_decoding_strategy: Optional[Callable[[str], str]],
-                 strict_input: Optional[bool],
-                 ref_key_encoding_strategy: Optional[Callable[[JField], str]],
-                 validate_all_fields: Optional[bool],
-                 abstract: Optional[bool],
-                 reset_all_fields: Optional[bool],
-                 output_null: Optional[bool],
+                 cgraph: str | None,
+                 input_key_strategy: Callable[[str], str] | Literal['identical', 'underscore'] | None,
+                 output_key_strategy: Callable[[str], str] | Literal['identical', 'camelize'] | None,
+                 strict_input: bool | None,
+                 ref_name_strategy: Callable[[JField], str] | None,
+                 validate_all_fields: bool | None,
+                 abstract: bool | None,
+                 reset_all_fields: bool | None,
+                 output_null: bool | None,
                  on_create: OnCreate | list[OnCreate] | Types | None,
                  on_update: OnUpdate | list[OnUpdate] | Types | None,
                  on_delete: OnDelete | list[OnDelete] | Types | None,
@@ -49,13 +50,13 @@ class JConf:
         Args:
             cgraph (Optional[str]): The name of the class graph on which \
                 the JSON class is defined.
-            key_encoding_strategy (Optional[Callable[[str], str]]): How \
+            input_key_strategy (Optional[Callable[[str], str]]): How \
                 object keys are encoded. The default is camelize.
-            key_decoding_strategy (Optional[Callable[[str], str]]): How \
+            output_key_strategy (Optional[Callable[[str], str]]): How \
                 object keys are decoded. The default is underscore.
             strict_input (Optional[bool]): Whether raise errors on receiving \
                 invalid input keys.
-            ref_key_encoding_strategy (Optional[Callable[[JField], str]]): The \
+            ref_name_strategy (Optional[Callable[[JField], str]]): The \
                 reference field local key conversion function.
             validate_all_fields (Optional[bool]): The default field \
                 validating method when performing saving and validating.
@@ -81,12 +82,12 @@ class JConf:
                 guard.
         """
         from .types import Types
-        self._cls: Optional[type[JObject]] = None
+        self._cls: type[JObject] | None = None
         self._cgraph = cgraph or 'default'
-        self._key_encoding_strategy = key_encoding_strategy
-        self._key_decoding_strategy = key_decoding_strategy
+        self._input_key_strategy = _figure_out(input_key_strategy)
+        self._output_key_strategy = _figure_out(output_key_strategy)
         self._strict_input = strict_input
-        self._ref_key_encoding_strategy = ref_key_encoding_strategy
+        self._ref_name_strategy = ref_name_strategy
         self._validate_all_fields = validate_all_fields
         self._abstract = abstract
         self._reset_all_fields = reset_all_fields
@@ -140,13 +141,13 @@ class JConf:
         other_config = cast(JConf, other)
         if self.cgraph != other_config.cgraph:
             return False
-        if self.key_encoding_strategy != other_config.key_encoding_strategy:
+        if self.input_key_strategy != other_config.input_key_strategy:
             return False
-        if self.key_decoding_strategy != other_config.key_decoding_strategy:
+        if self.output_key_strategy != other_config.output_key_strategy:
             return False
         if self.strict_input != other_config.strict_input:
             return False
-        if self.ref_key_encoding_strategy != other_config.ref_key_encoding_strategy:
+        if self.ref_name_strategy != other_config.ref_name_strategy:
             return False
         if self.validate_all_fields != other_config.validate_all_fields:
             return False
@@ -186,20 +187,20 @@ class JConf:
         return CGraph(self._cgraph)
 
     @property
-    def key_encoding_strategy(self: JConf) -> Callable[[str], str]:
+    def input_key_strategy(self: JConf) -> Callable[[str], str]:
         """The object key encoding strategy.
         """
-        if self._key_encoding_strategy is None:
-            return self.cgraph.default_config.key_encoding_strategy
-        return self._key_encoding_strategy
+        if self._input_key_strategy is None:
+            return self.cgraph.default_config.input_key_strategy
+        return self._input_key_strategy
 
     @property
-    def key_decoding_strategy(self: JConf) -> Callable[[str], str]:
+    def output_key_strategy(self: JConf) -> Callable[[str], str]:
         """The object key decoding strategy.
         """
-        if self._key_decoding_strategy is None:
-            return self.cgraph.default_config.key_decoding_strategy
-        return self._key_decoding_strategy
+        if self._output_key_strategy is None:
+            return self.cgraph.default_config.output_key_strategy
+        return self._output_key_strategy
 
     @property
     def strict_input(self: JConf) -> bool:
@@ -210,12 +211,12 @@ class JConf:
         return self._strict_input
 
     @property
-    def ref_key_encoding_strategy(self: JConf) -> Callable[[JField], str]:
+    def ref_name_strategy(self: JConf) -> Callable[[JField], str]:
         """The reference field local key conversion function.
         """
-        if self._ref_key_encoding_strategy is None:
-            return self.cgraph.default_config.ref_key_encoding_strategy
-        return self._ref_key_encoding_strategy
+        if self._ref_name_strategy is None:
+            return self.cgraph.default_config.ref_name_strategy
+        return self._ref_name_strategy
 
     @property
     def validate_all_fields(self: JConf) -> bool:
@@ -292,3 +293,17 @@ class JConf:
         """The object reading guard.
         """
         return self._can_read
+
+
+def _figure_out(s: Callable[[str], str] | Literal['identical', 'underscore', 'camelize'] | None) -> Callable[[str], str]:
+    if s is None:
+        return None
+    if type(s) is str:
+        match s:
+            case 'underscore':
+                return underscore_key
+            case 'camelize':
+                return camelize_key
+            case _:
+                return identical_key
+    return s

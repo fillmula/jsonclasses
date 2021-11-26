@@ -28,7 +28,7 @@ class FValModifier(Modifier):
             if obj is not None:
                 return obj
             else:
-                kt = val.__class__.cdef.jconf.ref_key_encoding_strategy
+                kt = val.__class__.cdef.jconf.ref_name_strategy
                 fidname = kt(field)
                 cls_name = field.fdef.inst_cls.__name__
                 ref_id = getattr(val, fidname)

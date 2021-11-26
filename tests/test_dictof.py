@@ -47,12 +47,12 @@ class TestDictOf(TestCase):
         record1.validate()
 
     def test_dictof_keep_keys_on_init(self):
-        weather = CamelizedWeather(data={'lastDay': '2', 'nextDay': '4'})
-        self.assertEqual(weather.data, {'lastDay': '2', 'nextDay': '4'})
+        weather = CamelizedWeather(dataData={'lastDay': '2', 'nextDay': '4'})
+        self.assertEqual(weather.data_data, {'lastDay': '2', 'nextDay': '4'})
 
     def test_dictof_keep_keys_on_tojson(self):
-        weather = CamelizedWeather(data={'lastDay': '2', 'nextDay': '4'})
-        self.assertEqual(weather.tojson()['data'],
+        weather = CamelizedWeather(dataData={'lastDay': '2', 'nextDay': '4'})
+        self.assertEqual(weather.tojson()['dataData'],
                          {'lastDay': '2', 'nextDay': '4'})
 
     def test_dictof_validate_raises_for_one_item(self):

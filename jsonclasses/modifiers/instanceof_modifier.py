@@ -144,11 +144,11 @@ class InstanceOfModifier(Modifier):
                         if fdef.collection_nullability == Nullability.NONNULL:
                             nonnull_ref_lists.append(field.name)
                     elif fdef.fstore == FStore.LOCAL_KEY:
-                        tsfm = dest.__class__.cdef.jconf.ref_key_encoding_strategy
+                        tsfm = dest.__class__.cdef.jconf.ref_name_strategy
                         refname = tsfm(field)
                         if ctx.val.get(refname) is not None:
                             setattr(dest, refname, ctx.val.get(refname))
-                        crefname = dest.__class__.cdef.jconf.key_encoding_strategy(refname)
+                        crefname = dest.__class__.cdef.jconf.input_key_strategy(refname)
                         if ctx.val.get(crefname) is not None:
                             setattr(dest, refname, ctx.val.get(crefname))
                     pass
@@ -211,8 +211,8 @@ class InstanceOfModifier(Modifier):
                 if val.is_partial:
                     if field.name not in val._partial_picks:
                         continue
-                rk = val.__class__.cdef.jconf.ref_key_encoding_strategy(field)
-                jrk = val.__class__.cdef.jconf.key_encoding_strategy(rk)
+                rk = val.__class__.cdef.jconf.ref_name_strategy(field)
+                jrk = val.__class__.cdef.jconf.input_key_strategy(rk)
                 valatk = getattr(val, rk)
                 if output_null or (valatk is not None):
                     retval[jrk] = valatk
@@ -252,7 +252,7 @@ class InstanceOfModifier(Modifier):
             if field.fdef.is_ref or field.fdef.is_inst or should_update or field.fdef.force_set_on_save:
                 if field.fdef.fstore == FStore.LOCAL_KEY:
                     if getattr(value, field.name) is None:
-                        tsf = value.__class__.cdef.jconf.ref_key_encoding_strategy
+                        tsf = value.__class__.cdef.jconf.ref_name_strategy
                         if getattr(value, tsf(field)) is not None:
                             continue
                 if field.fdef.fstore != FStore.CALCULATED:
