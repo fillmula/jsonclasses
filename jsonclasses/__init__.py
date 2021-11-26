@@ -14,5 +14,5 @@ from .jsonclass import jsonclass
 from .jsonenum import jsonenum
 from .types import types
 from .typing import linkto, linkedby, linkedthru
-from .json_encoder import JSONEncoder
+from .encoder import JSONEncoder
 from .isjsonclass import isjsonclass, isjsonobject

@@ -4,7 +4,6 @@ that encodes JSON Classes objects.
 """
 from typing import Any
 from json.encoder import JSONEncoder as PythonDefaultJSONEncoder
-from .jobject import JObject
 
 
 class JSONEncoder(PythonDefaultJSONEncoder):
