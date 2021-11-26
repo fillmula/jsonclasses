@@ -16,3 +16,4 @@ from .types import types
 from .typing import linkto, linkedby, linkedthru
 from .encoder import JSONEncoder
 from .isjsonclass import isjsonclass, isjsonobject
+from .uconf import uconf

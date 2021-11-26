@@ -3,7 +3,7 @@ from typing import Any
 from os import getcwd
 from uuid import uuid4
 from pathlib import Path
-from .user_conf import user_conf
+from .uconf import uconf
 
 
 _uploaders: dict[str, Uploader] = {}
@@ -26,10 +26,10 @@ class S3Uploader(Uploader):
         if hasattr(self, '_client'):
             return getattr(self, '_client')
         client = s3_client('s3',
-                region_name=self.config['regionName'],
-                endpoint_url=self.config['endpointURL'],
-                aws_access_key_id=self.config['awsAccessKeyId'],
-                aws_secret_access_key=self.config['awsSecretAccessKey'])
+                region_name=self.config['region_name'],
+                endpoint_url=self.config['endpoint_url'],
+                aws_access_key_id=self.config['aws_access_key_id'],
+                aws_secret_access_key=self.config['aws_secret_access_key'])
         setattr(self, '_client', client)
         return client
 
@@ -45,7 +45,7 @@ class S3Uploader(Uploader):
             'ACL': self.config['acl'],
             'ContentType': content_type
         })
-        return f"{self.config['endpointURL']}/{self.config['bucket']}/{unique_filename}"
+        return f"{self.config['endpoint_url']}/{self.config['bucket']}/{unique_filename}"
 
 
 class AliOSSUploader(Uploader):
@@ -92,7 +92,7 @@ class LocalFSUploader(Uploader):
 def request_uploader(name: str) -> Uploader:
     if _uploaders.get(name):
         return _uploaders[name]
-    conf = user_conf()
+    conf = uconf()
     uploaders_dict = conf.get('uploaders')
     if uploaders_dict is None:
         raise ValueError(f"uploader '{name}' is undefined")
