@@ -2,26 +2,17 @@
 from __future__ import annotations
 from typing import Any, Union, TYPE_CHECKING
 from re import split,search
-from .pkgutils import check_and_install_packages
+from inflection import camelize, singularize, underscore
 from .fdef import FStore, FType
 if TYPE_CHECKING:
     from .jfield import JField
 
 
-def check_inflection_installed() -> None:
-    packages = {'inflection': ('inflection', '>=0.5.1,<1.0.0')}
-    check_and_install_packages(packages)
-
-
 def camelize_key(key: str) -> str:
-    check_inflection_installed()
-    from inflection import camelize
-    return camelize(key, False)
+    return camelize(key)
 
 
 def underscore_key(key: str) -> str:
-    check_inflection_installed()
-    from inflection import underscore
     return underscore(key)
 
 
@@ -44,8 +35,6 @@ def reference_key(field: JField) -> str:
         ValueError: ValueError is raised if the field definition is not a \
             supported reference field.
     """
-    check_inflection_installed()
-    from inflection import singularize
     if field.fdef.fstore not in \
             [FStore.FOREIGN_KEY, FStore.LOCAL_KEY]:
         raise ValueError(f"field named {field.name} is not a reference field")
