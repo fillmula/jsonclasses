@@ -4,7 +4,7 @@ from jsonclasses.vmsgcollector import VMsgCollector
 from typing import (
     Any, Collection, Iterable, TypeVar, Union, TYPE_CHECKING
 )
-from ..fdef import Fdef, Nullability
+from ..fdef import FDef, Nullability
 from ..jconf import JConf
 from ..excs import ValidationException
 from .type_modifier import TypeModifier
@@ -23,7 +23,7 @@ class CollectionTypeModifier(TypeModifier):
         self.raw_item_types = raw_item_types
         self.exact_type = False
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         super().define(fdef)
         fdef._raw_item_types = self.raw_item_types
 

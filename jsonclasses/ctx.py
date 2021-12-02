@@ -7,7 +7,7 @@ from .mgraph import MGraph
 from .excs import ValidationException
 if TYPE_CHECKING:
     from .cdef import CDef
-    from .fdef import Fdef
+    from .fdef import FDef
     from .jobject import JObject
 
 
@@ -50,7 +50,7 @@ class Ctx(NamedTuple):
     fkeypathp: list[str | int]
     keypathh: list[str | int]
     fkeypathh: list[str | int]
-    fdef: Fdef
+    fdef: FDef
     operator: Any
     mgraph: MGraph = MGraph()
     idchain: list[str] = []
@@ -143,7 +143,7 @@ class Ctx(NamedTuple):
                    operator=root._operator, mgraph=MGraph(), idchain=[],
                    passin=passin)
 
-    def alterfdef(self: Ctx, fdef: Fdef) -> Ctx:
+    def alterfdef(self: Ctx, fdef: FDef) -> Ctx:
         return Ctx(root=self.root, owner=self.owner, parent=self.parent, holder=self.holder,
                    val=self.val,
                    original=self.original, ctxcfg=self.ctxcfg, keypatho=self.keypatho, fkeypatho=self.fkeypatho,
@@ -163,7 +163,7 @@ class Ctx(NamedTuple):
                    operator=self.operator, mgraph=self.mgraph,
                    idchain=self.idchain, passin=self.passin)
 
-    def nextv(self: Ctx, val: Any, key: str | int, fdef: Fdef) -> Ctx:
+    def nextv(self: Ctx, val: Any, key: str | int, fdef: FDef) -> Ctx:
         ekey = self.owner.__class__.cdef.jconf.output_key_strategy(key)
         return Ctx(root=self.root, owner=self.owner, parent=self.parent,
                    holder=self.holder, val=val, original=None,
@@ -180,7 +180,7 @@ class Ctx(NamedTuple):
                    operator=self.operator, mgraph=self.mgraph,
                    idchain=self.idchain, passin=self.passin)
 
-    def nexto(self: Ctx, val: Any, key: str | int, fdef: Fdef) -> Ctx:
+    def nexto(self: Ctx, val: Any, key: str | int, fdef: FDef) -> Ctx:
         ekey = self.owner.__class__.cdef.jconf.output_key_strategy(key)
         return Ctx(root=self.root, owner=val, parent=val, holder=self.owner,
                    val=val, original=None, ctxcfg=self.ctxcfg, keypatho=[],
@@ -193,7 +193,7 @@ class Ctx(NamedTuple):
                    mgraph=self.mgraph, idchain=self.idchain,
                    passin=self.passin)
 
-    def nextvc(self: Ctx, val: Any, key: str | int, fdef: Fdef, c: str) -> Ctx:
+    def nextvc(self: Ctx, val: Any, key: str | int, fdef: FDef, c: str) -> Ctx:
         ekey = self.owner.__class__.cdef.jconf.output_key_strategy(key)
         return Ctx(root=self.root, owner=self.owner, parent=self.parent,
                    holder=self.holder, val=val, original=None,
@@ -210,7 +210,7 @@ class Ctx(NamedTuple):
                    operator=self.operator, mgraph=self.mgraph,
                    idchain=[*self.idchain, c], passin=self.passin)
 
-    def nextoc(self: Ctx, val: Any, key: str | int, fdef: Fdef, c: str) -> Ctx:
+    def nextoc(self: Ctx, val: Any, key: str | int, fdef: FDef, c: str) -> Ctx:
         ekey = self.owner.__class__.cdef.jconf.output_key_strategy(key)
         return Ctx(root=self.root, owner=val, parent=val, holder=self.owner,
                    val=val, original=None, ctxcfg=self.ctxcfg,
@@ -226,7 +226,7 @@ class Ctx(NamedTuple):
                    operator=self.operator, mgraph=self.mgraph,
                    idchain=[*self.idchain, c], passin=self.passin)
 
-    def nextvo(self: Ctx, val: Any, key: str | int, fdef: Fdef, o: JObject) -> Ctx:
+    def nextvo(self: Ctx, val: Any, key: str | int, fdef: FDef, o: JObject) -> Ctx:
         ekey = self.owner.__class__.cdef.jconf.output_key_strategy(key)
         return Ctx(root=self.root, owner=o, parent=self.parent,
                    holder=self.holder, val=val, original=None,
@@ -243,7 +243,7 @@ class Ctx(NamedTuple):
                    operator=self.operator, mgraph=self.mgraph,
                    idchain=self.idchain, passin=self.passin)
 
-    def colval(self: Ctx, val: Any, key: str | int, fdef: Fdef, p: Any) -> Ctx:
+    def colval(self: Ctx, val: Any, key: str | int, fdef: FDef, p: Any) -> Ctx:
         return Ctx(root=self.root, owner=self.owner, parent=p,
                    holder=self.holder,
                    val=val, original=None, ctxcfg=self.ctxcfg,
@@ -259,7 +259,7 @@ class Ctx(NamedTuple):
                    operator=self.operator, mgraph=self.mgraph,
                    idchain=self.idchain, passin=self.passin)
 
-    def default(self: Ctx, owner: JObject, key: str | int, fdef: Fdef) -> Ctx:
+    def default(self: Ctx, owner: JObject, key: str | int, fdef: FDef) -> Ctx:
         ekey = self.owner.__class__.cdef.jconf.output_key_strategy(key)
         return Ctx(root=self.root, owner=owner, parent=owner,
                    holder=self.holder, val=None,

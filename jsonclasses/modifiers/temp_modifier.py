@@ -1,6 +1,6 @@
 """module for temp modifier."""
 from .modifier import Modifier
-from ..fdef import FStore, Fdef
+from ..fdef import FStore, FDef
 
 
 class TempModifier(Modifier):
@@ -9,5 +9,5 @@ class TempModifier(Modifier):
     temporary fields' values are set to None.
     """
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         fdef._fstore = FStore.TEMP

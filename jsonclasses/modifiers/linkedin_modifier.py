@@ -1,6 +1,6 @@
 """module for linkedin modifier."""
 from typing import Any
-from ..fdef import DeleteRule, Fdef, FStore
+from ..fdef import DeleteRule, FDef, FStore
 from .modifier import Modifier
 
 
@@ -11,7 +11,7 @@ class LinkedInModifier(Modifier):
     def __init__(self, cls: Any) -> None:
         self.cls = cls
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         fdef._fstore = FStore.FOREIGN_KEY
         fdef._join_table_cls = self.cls
         fdef._use_join_table = True

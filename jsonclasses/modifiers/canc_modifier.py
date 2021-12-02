@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Callable, TYPE_CHECKING
 from .cancu_modifier import CanCUModifier
-from ..fdef import Fdef
+from ..fdef import FDef
 if TYPE_CHECKING:
     from ..ctx import Ctx
     from ..types import Types

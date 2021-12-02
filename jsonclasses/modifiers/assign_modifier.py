@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any, Callable, TYPE_CHECKING
 from inspect import signature
-from ..fdef import FStore, Fdef
+from ..fdef import FStore, FDef
 from .modifier import Modifier
 if TYPE_CHECKING:
     from ..ctx import Ctx

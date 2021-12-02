@@ -7,7 +7,7 @@ from jsonclasses.fdef import FStore, FType
 from typing import Any, Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from .types import Types
-    from .fdef import Fdef
+    from .fdef import FDef
     from .cdef import CDef
     from .modifiers import ChainedModifier
 
@@ -64,7 +64,7 @@ class JField:
         return self._types
 
     @property
-    def fdef(self: JField) -> Fdef:
+    def fdef(self: JField) -> FDef:
         """The detailed field definition defined with the types chain.
         """
         return self._types.fdef

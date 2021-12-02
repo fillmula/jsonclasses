@@ -1,7 +1,7 @@
 """module for listof modifier."""
 from __future__ import annotations
 from typing import Any, Collection, Iterable, TYPE_CHECKING
-from ..fdef import Fdef, FStore, FType, Nullability
+from ..fdef import FDef, FStore, FType, Nullability
 from .collection_type_modifier import CollectionTypeModifier
 if TYPE_CHECKING:
     from ..ctx import Ctx
@@ -15,7 +15,7 @@ class ListOfModifier(CollectionTypeModifier):
         self.cls = list
         self.ftype = FType.LIST
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         super().define(fdef)
         if fdef._fstore == FStore.LOCAL_KEY or fdef._foreign_key is not None:
             if fdef._collection_nullability is Nullability.UNDEFINED:

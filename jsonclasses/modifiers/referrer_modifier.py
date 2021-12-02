@@ -1,5 +1,5 @@
 """module for referrer modifier."""
-from ..fdef import Fdef
+from ..fdef import FDef
 from .modifier import Modifier
 
 
@@ -9,5 +9,5 @@ class ReferrerModifier(Modifier):
     def __init__(self, referrer_key: str) -> None:
         self.referrer_key = referrer_key
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         fdef._join_table_referrer_key = self.referrer_key

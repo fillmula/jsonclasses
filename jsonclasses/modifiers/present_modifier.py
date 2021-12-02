@@ -1,7 +1,7 @@
 """module for required modifier."""
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from ..fdef import Fdef
+from ..fdef import FDef
 from ..excs import ValidationException
 from .modifier import Modifier
 if TYPE_CHECKING:
@@ -14,7 +14,7 @@ class PresentModifier(Modifier):
     key fields to do required validation.
     """
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         fdef._required = True
 
     def validate(self, ctx: Ctx) -> None:

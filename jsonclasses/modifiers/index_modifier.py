@@ -1,6 +1,6 @@
 """module for index modifier."""
 from .modifier import Modifier
-from ..fdef import Fdef
+from ..fdef import FDef
 
 
 class IndexModifier(Modifier):
@@ -10,7 +10,7 @@ class IndexModifier(Modifier):
         self.unique = unique
         self.index_name = index_name
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         if self.index_name:
             if self.unique:
                 fdef._cunique = True

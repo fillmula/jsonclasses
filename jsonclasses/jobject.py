@@ -7,7 +7,7 @@ from typing import (
 )
 if TYPE_CHECKING:
     from .cdef import CDef
-    from .fdef import Fdef
+    from .fdef import FDef
     from .odict import OwnedDict
     from .olist import OwnedList
     from .jfield import JField
@@ -116,7 +116,7 @@ class JObject(Protocol):
                       dest: Any,
                       items: list[str],
                       value: Any,
-                      fdef: Fdef,
+                      fdef: FDef,
                       used_items: list[str]) -> None: ...
 
     def _orm_complete(self: T) -> None: ...

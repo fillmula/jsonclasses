@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Callable, TYPE_CHECKING
 from inspect import signature
-from ..fdef import Fdef
+from ..fdef import FDef
 from .modifier import Modifier
 if TYPE_CHECKING:
     from ..ctx import Ctx
@@ -21,7 +21,7 @@ class AsopModifier(Modifier):
             raise ValueError('not a valid asop transformer')
         self.transformer = transformer
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         fdef._requires_operator_assign = True
         fdef._operator_assign_transformer = self.transformer
 

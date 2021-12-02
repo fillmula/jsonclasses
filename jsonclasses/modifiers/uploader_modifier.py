@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Callable, Any, TYPE_CHECKING
 from inspect import signature
 from .modifier import Modifier
-from ..fdef import Fdef, FSubtype
+from ..fdef import FDef, FSubtype
 from ..uploaders import request_uploader, S3Uploader, AliOSSUploader
 if TYPE_CHECKING:
     from ..ctx import Ctx
@@ -21,7 +21,7 @@ class UploaderModifier(Modifier):
         else:
             self.check_packages()
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         fdef._fsubtype = FSubtype.FILE
 
     def packages(self) -> dict[str, (str, str)] | None:

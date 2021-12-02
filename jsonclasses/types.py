@@ -5,7 +5,7 @@ from datetime import date, datetime, timedelta, timezone
 from enum import Enum
 from copy import deepcopy
 from .jobject import JObject
-from .fdef import Fdef
+from .fdef import FDef
 from .modifiers import (BoolModifier, ChainedModifier, FValModifier, FObjModifier,
                         CompareModifier, DateModifier, DatetimeModifier,
                         DefaultModifier, DictOfModifier, EagerModifier,
@@ -85,7 +85,7 @@ class Types:
         *args: Modifier
     ) -> None:
         if not original:
-            self.fdef = Fdef()
+            self.fdef = FDef()
             self.modifier = ChainedModifier()
         else:
             self.fdef = deepcopy(original.fdef)

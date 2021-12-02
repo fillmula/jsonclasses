@@ -1,5 +1,5 @@
 """module for referee modifier."""
-from ..fdef import Fdef
+from ..fdef import FDef
 from .modifier import Modifier
 
 
@@ -9,5 +9,5 @@ class RefereeModifier(Modifier):
     def __init__(self, referee_key: str) -> None:
         self.referee_key = referee_key
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         fdef._join_table_referee_key = self.referee_key

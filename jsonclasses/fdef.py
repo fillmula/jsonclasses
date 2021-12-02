@@ -118,12 +118,12 @@ class CopyBehavior(Enum):
     NOCOPY = "nocopy"
 
 
-class Fdef:
+class FDef:
     """The description of a JSONClass field. Some type markers annotate on
     this definition.
     """
 
-    def __init__(self: Fdef) -> None:
+    def __init__(self: FDef) -> None:
         self._cdef: Optional[CDef] = None
         self._unresolved: bool = False
         self._unresolved_name: Optional[str] = None
@@ -174,42 +174,42 @@ class Fdef:
         self._auth_by_checker: Optional[Types] = None
 
     @property
-    def cdef(self: Fdef) -> CDef:
+    def cdef(self: FDef) -> CDef:
         """The class definition which owns this field.
         """
         from .cdef import CDef
         return cast(CDef, self._cdef)
 
     @property
-    def ftype(self: Fdef) -> FType:
+    def ftype(self: FDef) -> FType:
         """The field's type.
         """
         self._resolve_if_needed()
         return cast(FType, self._ftype)
 
     @property
-    def fsubtype(self: Fdef) -> FSubtype | None:
+    def fsubtype(self: FDef) -> FSubtype | None:
         """The field's subtype.
         """
         self._resolve_if_needed()
         return self._fsubtype
 
     @property
-    def fstore(self: Fdef) -> FStore:
+    def fstore(self: FDef) -> FStore:
         """The field's storage.
         """
         self._resolve_if_needed()
         return self._fstore
 
     @property
-    def getter(self: Fdef) -> Types | Callable | None:
+    def getter(self: FDef) -> Types | Callable | None:
         """The calculated field's getter.
         """
         self._resolve_if_needed()
         return self._getter
 
     @property
-    def setter(self: Fdef) -> Types | Callable | None:
+    def setter(self: FDef) -> Types | Callable | None:
         """The calculated field's setter.
         """
         self._resolve_if_needed()
@@ -218,7 +218,7 @@ class Fdef:
     # primary key
 
     @property
-    def primary(self: Fdef) -> bool:
+    def primary(self: FDef) -> bool:
         """Whether this field is a primary field. A class can only has one
         primary field.
         """
@@ -228,7 +228,7 @@ class Fdef:
     # database modifiers
 
     @property
-    def index(self: Fdef) -> bool:
+    def index(self: FDef) -> bool:
         """Whether perform single database index on this field. This is marked
         for ORM implementers.
         """
@@ -236,7 +236,7 @@ class Fdef:
         return self._index
 
     @property
-    def cindex(self: Fdef) -> bool:
+    def cindex(self: FDef) -> bool:
         """Whether perform compound database index on this field. This is
         marked for ORM implementers.
         """
@@ -244,14 +244,14 @@ class Fdef:
         return self._cindex
 
     @property
-    def cindex_names(self: Fdef) -> list[str]:
+    def cindex_names(self: FDef) -> list[str]:
         """The compound index name for this index field.
         """
         self._resolve_if_needed()
         return self._cindex_names
 
     @property
-    def unique(self: Fdef) -> bool:
+    def unique(self: FDef) -> bool:
         """Whether this field's value is unique. This is marked for ORM
         implementers.
         """
@@ -259,7 +259,7 @@ class Fdef:
         return self._unique
 
     @property
-    def cunique(self: Fdef) -> bool:
+    def cunique(self: FDef) -> bool:
         """Whether perform compound database index on this field. This is
         marked for ORM implementers.
         """
@@ -267,14 +267,14 @@ class Fdef:
         return self._cunique
 
     @property
-    def cunique_names(self: Fdef) -> list[str]:
+    def cunique_names(self: FDef) -> list[str]:
         """The compound index name for this index field.
         """
         self._resolve_if_needed()
         return self._cunique_names
 
     @property
-    def required(self: Fdef) -> bool:
+    def required(self: FDef) -> bool:
         """Whether this field is required. This is marked for ORM
         implementers.
         """
@@ -284,14 +284,14 @@ class Fdef:
     # enum marks
 
     @property
-    def raw_enum_class(self: Fdef) -> Optional[type[Enum] | str]:
+    def raw_enum_class(self: FDef) -> Optional[type[Enum] | str]:
         """The raw enum class.
         """
         self._resolve_if_needed()
         return self._raw_enum_class
 
     @property
-    def enum_class(self: Fdef) -> type[Enum]:
+    def enum_class(self: FDef) -> type[Enum]:
         """The class of the enum.
         """
         self._resolve_if_needed()
@@ -305,21 +305,21 @@ class Fdef:
         return cast(type[Enum], self._enum_class)
 
     @property
-    def enum_input(self: Fdef) -> Optional[EnumInput]:
+    def enum_input(self: FDef) -> Optional[EnumInput]:
         """The allowed input types of this enum class.
         """
         self._resolve_if_needed()
         return self._enum_input
 
     @property
-    def enum_output(self: Fdef) -> Optional[EnumOutput]:
+    def enum_output(self: FDef) -> Optional[EnumOutput]:
         """The output type of this enum class.
         """
         self._resolve_if_needed()
         return self._enum_output
 
     @property
-    def raw_union_types(self: Fdef) -> Optional[list[Types]]:
+    def raw_union_types(self: FDef) -> Optional[list[Types]]:
         """The raw union types of this union field.
         """
         self._resolve_if_needed()
@@ -328,14 +328,14 @@ class Fdef:
     # subtypes
 
     @property
-    def raw_item_types(self: Fdef) -> Optional[Any]:
+    def raw_item_types(self: FDef) -> Optional[Any]:
         """The raw item types of this collection field.
         """
         self._resolve_if_needed()
         return self._raw_item_types
 
     @property
-    def item_types(self: Fdef) -> Types:
+    def item_types(self: FDef) -> Types:
         """The item types of this collection field.
         """
         from .types import Types
@@ -355,14 +355,14 @@ class Fdef:
         return self._resolved_item_types
 
     @property
-    def raw_inst_types(self: Fdef) -> Optional[str | type[JObject]]:
+    def raw_inst_types(self: FDef) -> Optional[str | type[JObject]]:
         """The raw instance types of this instance field.
         """
         self._resolve_if_needed()
         return self._raw_inst_types
 
     @property
-    def inst_cls(self: Fdef) -> Optional[type[JObject]]:
+    def inst_cls(self: FDef) -> Optional[type[JObject]]:
         """The instance class of this field.
         """
         self._resolve_if_needed()
@@ -378,7 +378,7 @@ class Fdef:
         return self._inst_cls
 
     @property
-    def force_set_on_save(self: Fdef) -> bool:
+    def force_set_on_save(self: FDef) -> bool:
         """Whether force set on save."""
         self._resolve_if_needed()
         return self._force_set_on_save
@@ -386,42 +386,42 @@ class Fdef:
     # relationship
 
     @property
-    def foreign_key(self: Fdef) -> Optional[str]:
+    def foreign_key(self: FDef) -> Optional[str]:
         """The foreign key of the relationship.
         """
         self._resolve_if_needed()
         return self._foreign_key
 
     @property
-    def use_join_table(self: Fdef) -> Optional[bool]:
+    def use_join_table(self: FDef) -> Optional[bool]:
         """Whether this reference uses join table.
         """
         self._resolve_if_needed()
         return self._use_join_table
 
     @property
-    def join_table_cls(self: Fdef) -> Optional[Any]:
+    def join_table_cls(self: FDef) -> Optional[Any]:
         """The join table class of the relationship.
         """
         self._resolve_if_needed()
         return self._join_table_cls
 
     @property
-    def join_table_referrer_key(self: Fdef) -> Optional[str]:
+    def join_table_referrer_key(self: FDef) -> Optional[str]:
         """The referrer key of the join table.
         """
         self._resolve_if_needed()
         return self._join_table_referrer_key
 
     @property
-    def join_table_referee_key(self: Fdef) -> Optional[str]:
+    def join_table_referee_key(self: FDef) -> Optional[str]:
         """The referee key of the join table.
         """
         self._resolve_if_needed()
         return self._join_table_referee_key
 
     @property
-    def delete_rule(self: Fdef) -> Optional[DeleteRule]:
+    def delete_rule(self: FDef) -> Optional[DeleteRule]:
         """The delete rule of this relationship.
         """
         self._resolve_if_needed()
@@ -430,14 +430,14 @@ class Fdef:
     # read write rule
 
     @property
-    def read_rule(self: Fdef) -> ReadRule:
+    def read_rule(self: FDef) -> ReadRule:
         """The read rule of this field.
         """
         self._resolve_if_needed()
         return self._read_rule
 
     @property
-    def write_rule(self: Fdef) -> WriteRule:
+    def write_rule(self: FDef) -> WriteRule:
         """The write rule of this field.
         """
         self._resolve_if_needed()
@@ -446,21 +446,21 @@ class Fdef:
     # collection and collection items null rules
 
     @property
-    def collection_nullability(self: Fdef) -> Nullability:
+    def collection_nullability(self: FDef) -> Nullability:
         """The collection nullability of this field.
         """
         self._resolve_if_needed()
         return self._collection_nullability
 
     @property
-    def item_nullability(self: Fdef) -> Nullability:
+    def item_nullability(self: FDef) -> Nullability:
         """The item nullability of this field.
         """
         self._resolve_if_needed()
         return self._item_nullability
 
     @property
-    def strictness(self: Fdef) -> Strictness:
+    def strictness(self: FDef) -> Strictness:
         """The strictness of this instance field.
         """
         self._resolve_if_needed()
@@ -469,21 +469,21 @@ class Fdef:
     # special modifier marks
 
     @property
-    def has_eager_modifier(self: Fdef) -> bool:
+    def has_eager_modifier(self: FDef) -> bool:
         """Whether there is at least an eager modifier in the chain.
         """
         self._resolve_if_needed()
         return self._has_eager_modifier
 
     @property
-    def has_reset_modifier(self: Fdef) -> bool:
+    def has_reset_modifier(self: FDef) -> bool:
         """Whether there is at least an reset modifier in the chain.
         """
         self._resolve_if_needed()
         return self._has_reset_modifier
 
     @property
-    def has_preserialize_modifier(self: Fdef) -> bool:
+    def has_preserialize_modifier(self: FDef) -> bool:
         """Whether there is at least a preserialize modifier in the chain.
         """
         self._resolve_if_needed()
@@ -492,49 +492,49 @@ class Fdef:
     # operator
 
     @property
-    def requires_operator_assign(self: Fdef) -> bool:
+    def requires_operator_assign(self: FDef) -> bool:
         """Whether this field requires an operator assigned.
         """
         self._resolve_if_needed()
         return self._requires_operator_assign
 
     @property
-    def operator_assign_transformer(self: Fdef) -> Optional[Callable]:
+    def operator_assign_transformer(self: FDef) -> Optional[Callable]:
         """The operator assign transformer of this field.
         """
         self._resolve_if_needed()
         return self._operator_assign_transformer
 
     @property
-    def queryability(self: Fdef) -> Queryability:
+    def queryability(self: FDef) -> Queryability:
         """The queryability of this field.
         """
         self._resolve_if_needed()
         return self._queryability or Queryability.QUERYABLE
 
     @property
-    def copy_behavior(self: Fdef) -> CopyBehavior:
+    def copy_behavior(self: FDef) -> CopyBehavior:
         """The copy behavior of this field.
         """
         self._resolve_if_needed()
         return self._copy_behavior or CopyBehavior.COPY
 
     @property
-    def auth_identity(self: Fdef) -> bool:
+    def auth_identity(self: FDef) -> bool:
         """Whether this field is authorization identity.
         """
         self._resolve_if_needed()
         return self._auth_identity
 
     @property
-    def auth_by(self: Fdef) -> bool:
+    def auth_by(self: FDef) -> bool:
         """Whether this field is authorization checker.
         """
         self._resolve_if_needed()
         return self._auth_by
 
     @property
-    def auth_by_checker(self: Fdef) -> Types:
+    def auth_by_checker(self: FDef) -> Types:
         """The auth by checker of this field.
         """
         from .types import Types
@@ -544,7 +544,7 @@ class Fdef:
     # old reference properties
 
     @property
-    def is_ref(self: Fdef) -> bool:
+    def is_ref(self: FDef) -> bool:
         self._resolve_if_needed()
         if self.fstore in \
                 [FStore.LOCAL_KEY, FStore.FOREIGN_KEY]:
@@ -552,7 +552,7 @@ class Fdef:
         return False
 
     @property
-    def is_inst(self: Fdef) -> bool:
+    def is_inst(self: FDef) -> bool:
         self._resolve_if_needed()
         if self.ftype == FType.INSTANCE:
             return True
@@ -562,7 +562,7 @@ class Fdef:
         return False
 
     @property
-    def has_linked(self: Fdef) -> bool:
+    def has_linked(self: FDef) -> bool:
         self._resolve_if_needed()
         if self.fstore == FStore.LOCAL_KEY:
             return True
@@ -572,15 +572,15 @@ class Fdef:
             return self.item_types.fdef.has_linked
         return False
 
-    def _resolve_if_needed(self: Fdef) -> None:
+    def _resolve_if_needed(self: FDef) -> None:
         if self._unresolved:
             # resolve
             self._resolve()
             self._unresolved = False
             self._unresolved_name = None
 
-    def _resolve(self: Fdef) -> None:
+    def _resolve(self: FDef) -> None:
         self.cdef._resolve_ref_types_if_needed()
 
     def __str__(self):
-        return '<Fdef: ' + str(vars(self)) + '>'
+        return '<FDef: ' + str(vars(self)) + '>'

@@ -4,7 +4,7 @@ from jsonclasses.vmsgcollector import VMsgCollector
 from jsonclasses.jfield import JField
 from typing import Any, Sequence, Union, cast, TYPE_CHECKING
 from ..fdef import (
-    Fdef, FStore, FType, Nullability, WriteRule, ReadRule, Strictness
+    FDef, FStore, FType, Nullability, WriteRule, ReadRule, Strictness
 )
 from ..excs import ValidationException
 from .modifier import Modifier
@@ -20,7 +20,7 @@ class InstanceOfModifier(Modifier):
     def __init__(self, raw_type: Union[str, type[JObject]]) -> None:
         self.raw_type = raw_type
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         fdef._ftype = FType.INSTANCE
         fdef._raw_inst_types = self.raw_type
 

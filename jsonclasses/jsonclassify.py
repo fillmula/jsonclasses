@@ -4,7 +4,7 @@ from typing import Any, Callable, Optional, Union, cast
 from inspect import signature, getmro
 from .jobject import JObject
 from .ctx import Ctx, CtxCfg
-from .fdef import Fdef, FStore, FType
+from .fdef import FDef, FStore, FType
 from .types import Types
 from .modifiers.instanceof_modifier import InstanceOfModifier
 from .jfield import JField
@@ -90,7 +90,7 @@ def _set_to_container(self: JObject,
                       dest: Any,
                       items: list[str],
                       value: Any,
-                      fdef: Fdef,
+                      fdef: FDef,
                       used_items: list[str]) -> None:
     if fdef.ftype == FType.INSTANCE:
         if dest is None:

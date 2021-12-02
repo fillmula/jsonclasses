@@ -1,6 +1,6 @@
 """module for reset modifier."""
 from .modifier import Modifier
-from ..fdef import Fdef
+from ..fdef import FDef
 
 
 class ResetModifier(Modifier):
@@ -8,5 +8,5 @@ class ResetModifier(Modifier):
     This is used for comparing and validating values on update.
     """
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         fdef._has_reset_modifier = True

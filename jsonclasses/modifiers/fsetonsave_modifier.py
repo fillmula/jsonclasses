@@ -1,7 +1,7 @@
 """module for fsetonsave modifier."""
 from __future__ import annotations
 from .setonsave_modifier import SetOnSaveModifier
-from ..fdef import Fdef
+from ..fdef import FDef
 
 
 class FSetOnSaveModifier(SetOnSaveModifier):
@@ -9,5 +9,5 @@ class FSetOnSaveModifier(SetOnSaveModifier):
     modified or not.
     """
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         fdef._force_set_on_save = True

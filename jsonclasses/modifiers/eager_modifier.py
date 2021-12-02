@@ -1,6 +1,6 @@
 """module for eager modifier."""
 from .modifier import Modifier
-from ..fdef import Fdef
+from ..fdef import FDef
 
 
 class EagerModifier(Modifier):
@@ -8,5 +8,5 @@ class EagerModifier(Modifier):
     This is used usually before heavy transforming modifiers.
     """
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         fdef._has_eager_modifier = True

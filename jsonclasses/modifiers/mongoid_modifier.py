@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 from .modifier import Modifier
-from ..fdef import Fdef, FSubtype
+from ..fdef import FDef, FSubtype
 if TYPE_CHECKING:
     from ..ctx import Ctx
 
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 class MongoIdModifier(Modifier):
     """Marks a field as mongoid and set the default value."""
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         fdef._fsubtype = FSubtype.MONGOID
 
     def transform(self, ctx: Ctx) -> Any:

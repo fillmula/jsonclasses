@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Callable
 from inspect import signature
-from ..fdef import FStore, Fdef
+from ..fdef import FStore, FDef
 from .modifier import Modifier
 if TYPE_CHECKING:
     from ..ctx import Ctx
@@ -21,6 +21,6 @@ class SetterModifier(Modifier):
             if params_len != 2:
                 raise ValueError('not a valid setter')
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         fdef._fstore = FStore.CALCULATED
         fdef._setter = self.calc

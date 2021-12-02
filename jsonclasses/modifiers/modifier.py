@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 from inspect import signature
-from ..fdef import Fdef
+from ..fdef import FDef
 from ..pkgutils import check_and_install_packages
 if TYPE_CHECKING:
     from ..ctx import Ctx
@@ -35,7 +35,7 @@ class Modifier:
         else:
             return param
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         """A hook and chance for modifier to update field description."""
 
     def validate(self, ctx: Ctx) -> None:

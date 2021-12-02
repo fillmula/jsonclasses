@@ -1,7 +1,7 @@
 """module for required modifier."""
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from ..fdef import Fdef
+from ..fdef import FDef
 from .modifier import Modifier
 from ..fdef import FStore
 from ..jconf import JConf
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 class RequiredModifier(Modifier):
     """Mark a field as required."""
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         fdef._required = True
 
     def validate(self, ctx: Ctx) -> None:

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Callable, TYPE_CHECKING
 from inspect import signature
 from .modifier import Modifier
-from ..fdef import Fdef
+from ..fdef import FDef
 from ..excs import ValidationException
 if TYPE_CHECKING:
     from ..ctx import Ctx

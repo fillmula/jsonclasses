@@ -1,6 +1,6 @@
 """module for preserialize modifier."""
 from .modifier import Modifier
-from ..fdef import Fdef
+from ..fdef import FDef
 
 
 class PreserializeModifier(Modifier):
@@ -11,5 +11,5 @@ class PreserializeModifier(Modifier):
     This is usually used before setonsave modifier.
     """
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         fdef._has_preserialize_modifier = True

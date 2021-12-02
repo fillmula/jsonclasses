@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from .modifier import Modifier
-from ..fdef import Fdef
+from ..fdef import FDef
 if TYPE_CHECKING:
     from ..ctx import Ctx
 
@@ -12,7 +12,7 @@ class AsopdModifier(Modifier):
     current field directly.
     """
 
-    def define(self, fdef: Fdef) -> None:
+    def define(self, fdef: FDef) -> None:
         fdef._requires_operator_assign = True
 
     def validate(self, ctx: Ctx) -> None:
