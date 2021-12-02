@@ -60,6 +60,7 @@ class CDef:
         self._assign_operator_fields: list[JField] = []
         self._auth_identity_fields: list[JField] = []
         self._auth_by_fields: list[JField] = []
+        self._rfmap: dict[str, JField] = {}
         for field in dataclass_fields(cls):
             name = field.name
             self._field_names.append(name)
@@ -123,10 +124,12 @@ class CDef:
                     self._reference_names.append(ref_name_strategy(jfield))
                     self._camelized_reference_names.append(
                         self.jconf.output_key_strategy(ref_name_strategy(jfield)))
+                    self._rfmap[ref_name_strategy(jfield)] = jfield
                 elif jfield.fdef.ftype == FType.LIST:
                     self._list_reference_names.append(ref_name_strategy(jfield))
                     self._camelized_list_reference_names.append(
                         self.jconf.output_key_strategy(ref_name_strategy(jfield)))
+                    self._rfmap[ref_name_strategy(jfield)] = jfield
             elif jfield.types.fdef._fstore == FStore.FOREIGN_KEY:
                 if jfield.types.fdef._use_join_table:
                     rkes = self.jconf.ref_name_strategy
@@ -135,6 +138,7 @@ class CDef:
                     self._virtual_reference_names.append(rk)
                     self._camelized_virtual_reference_names.append(jkes(rk))
                     self._virtual_reference_fields[rk] = jfield
+                    self._rfmap[rk] = jfield
         self._available_names: set[str] = set(self._field_names
                                               + self._camelized_field_names
                                               + self._reference_names
@@ -327,3 +331,7 @@ class CDef:
     def virtual_reference_fields(self: CDef) -> dict[str, JField]:
         self._resolve_ref_names_if_needed()
         return self._virtual_reference_fields
+
+    def rname_to_jfield(self: CDef, ref_name: str) -> JField:
+        self._resolve_ref_names_if_needed()
+        return self._rfmap[ref_name]
