@@ -100,55 +100,6 @@ class CDef:
                 self._auth_by_fields.append(jfield)
         self._tuple_fields: tuple[JField, ...] = tuple(self._list_fields)
 
-    def _resolve_ref_types_if_needed(self: CDef) -> None:
-        if self._ref_types_resolved is False:
-            self._resolve_types()
-            self._ref_types_resolved = True
-
-    def _resolve_ref_names_if_needed(self: CDef) -> None:
-        if self._ref_names_resolved is False:
-            self._resolve_ref_names()
-            self._ref_names_resolved = True
-
-    def _resolve_types(self: CDef) -> None:
-        for jfield in self._tuple_fields:
-            if jfield.types.fdef._unresolved:
-                cgraph = self.jconf.cgraph
-                jfield._types = rnamedtypes(jfield.types, cgraph, self.name)
-
-    def _resolve_ref_names(self: CDef) -> None:
-        for jfield in self._tuple_fields:
-            if jfield.types.fdef._fstore == FStore.LOCAL_KEY:
-                ref_name_strategy = self.jconf.ref_name_strategy
-                if jfield.fdef.ftype == FType.INSTANCE:
-                    self._reference_names.append(ref_name_strategy(jfield))
-                    self._camelized_reference_names.append(
-                        self.jconf.output_key_strategy(ref_name_strategy(jfield)))
-                    self._rfmap[ref_name_strategy(jfield)] = jfield
-                elif jfield.fdef.ftype == FType.LIST:
-                    self._list_reference_names.append(ref_name_strategy(jfield))
-                    self._camelized_list_reference_names.append(
-                        self.jconf.output_key_strategy(ref_name_strategy(jfield)))
-                    self._rfmap[ref_name_strategy(jfield)] = jfield
-            elif jfield.types.fdef._fstore == FStore.FOREIGN_KEY:
-                if jfield.types.fdef._use_join_table:
-                    rkes = self.jconf.ref_name_strategy
-                    jkes = self.jconf.output_key_strategy
-                    rk = rkes(jfield)
-                    self._virtual_reference_names.append(rk)
-                    self._camelized_virtual_reference_names.append(jkes(rk))
-                    self._virtual_reference_fields[rk] = jfield
-                    self._rfmap[rk] = jfield
-        self._available_names: set[str] = set(self._field_names
-                                              + self._camelized_field_names
-                                              + self._reference_names
-                                              + self._camelized_reference_names
-                                              + self._list_reference_names
-                                              + self._camelized_list_reference_names)
-        self._update_names: set[str] = set(self._field_names
-                                           + self._reference_names
-                                           + self._list_reference_names)
-
     @property
     def cls(self: CDef) -> type:
         """The JSON class on which this class definition is defined.
@@ -273,20 +224,6 @@ class CDef:
         """
         return self._auth_by_fields
 
-    def rfield(
-            self: CDef, fcls: type[JObject], fname: Optional[str],
-            fkey: Optional[str]) -> Optional[JField]:
-        for field in self._tuple_fields:
-            if field.foreign_class is fcls:
-                if fname is not None:
-                    if field.name == fname:
-                        return field
-                elif fkey is not None:
-                    if field.fdef.foreign_key == fkey:
-                        return field
-        else:
-            return None
-
     @property
     def available_names(self: CDef) -> set[str]:
         self._resolve_ref_names_if_needed()
@@ -318,12 +255,12 @@ class CDef:
         return set(self._camelized_list_reference_names)
 
     @property
-    def virtual_reference_names(self: CDef) -> str[str]:
+    def virtual_reference_names(self: CDef) -> set[str]:
         self._resolve_ref_names_if_needed()
         return set(self._virtual_reference_names)
 
     @property
-    def camelized_virtual_reference_names(self: CDef) -> str[str]:
+    def camelized_virtual_reference_names(self: CDef) -> set[str]:
         self._resolve_ref_names_if_needed()
         return set(self._camelized_virtual_reference_names)
 
@@ -335,3 +272,66 @@ class CDef:
     def rname_to_jfield(self: CDef, ref_name: str) -> JField:
         self._resolve_ref_names_if_needed()
         return self._rfmap[ref_name]
+
+    def rfield(
+            self: CDef, fcls: type[JObject], fname: Optional[str],
+            fkey: Optional[str]) -> Optional[JField]:
+        for field in self._tuple_fields:
+            if field.foreign_class is fcls:
+                if fname is not None:
+                    if field.name == fname:
+                        return field
+                elif fkey is not None:
+                    if field.fdef.foreign_key == fkey:
+                        return field
+        else:
+            return None
+
+    def _resolve_ref_types_if_needed(self: CDef) -> None:
+        if self._ref_types_resolved is False:
+            self._resolve_types()
+            self._ref_types_resolved = True
+
+    def _resolve_ref_names_if_needed(self: CDef) -> None:
+        if self._ref_names_resolved is False:
+            self._resolve_ref_names()
+            self._ref_names_resolved = True
+
+    def _resolve_types(self: CDef) -> None:
+        for jfield in self._tuple_fields:
+            if jfield.types.fdef._unresolved:
+                cgraph = self.jconf.cgraph
+                jfield._types = rnamedtypes(jfield.types, cgraph, self.name)
+
+    def _resolve_ref_names(self: CDef) -> None:
+        for jfield in self._tuple_fields:
+            if jfield.types.fdef._fstore == FStore.LOCAL_KEY:
+                ref_name_strategy = self.jconf.ref_name_strategy
+                if jfield.fdef.ftype == FType.INSTANCE:
+                    self._reference_names.append(ref_name_strategy(jfield))
+                    self._camelized_reference_names.append(
+                        self.jconf.output_key_strategy(ref_name_strategy(jfield)))
+                    self._rfmap[ref_name_strategy(jfield)] = jfield
+                elif jfield.fdef.ftype == FType.LIST:
+                    self._list_reference_names.append(ref_name_strategy(jfield))
+                    self._camelized_list_reference_names.append(
+                        self.jconf.output_key_strategy(ref_name_strategy(jfield)))
+                    self._rfmap[ref_name_strategy(jfield)] = jfield
+            elif jfield.types.fdef._fstore == FStore.FOREIGN_KEY:
+                if jfield.types.fdef._use_join_table:
+                    rkes = self.jconf.ref_name_strategy
+                    jkes = self.jconf.output_key_strategy
+                    rk = rkes(jfield)
+                    self._virtual_reference_names.append(rk)
+                    self._camelized_virtual_reference_names.append(jkes(rk))
+                    self._virtual_reference_fields[rk] = jfield
+                    self._rfmap[rk] = jfield
+        self._available_names: set[str] = set(self._field_names
+                                              + self._camelized_field_names
+                                              + self._reference_names
+                                              + self._camelized_reference_names
+                                              + self._list_reference_names
+                                              + self._camelized_list_reference_names)
+        self._update_names: set[str] = set(self._field_names
+                                           + self._reference_names
+                                           + self._list_reference_names)
