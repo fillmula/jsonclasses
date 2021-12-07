@@ -111,36 +111,6 @@ class JField:
         self._resolved_foreign_class = True
         return self._foreign_class
 
-    def _resolve_foreign(self: JField) -> None:
-        self._do_resolve_foreign()
-        self._resolved_foreign = True
-
-    def _do_resolve_foreign(self: JField) -> None:
-        from .fdef import FStore
-        if self.fdef.fstore not in [FStore.LOCAL_KEY, FStore.FOREIGN_KEY]:
-            return None
-        scls = self.fdef.cdef.cls
-        slocal = self.fdef.fstore == FStore.LOCAL_KEY
-        fcls = self.foreign_class
-        if self.fdef.ftype == FType.INSTANCE:
-            stype = 'inst'
-        elif self.fdef.ftype == FType.LIST:
-            stype = 'list'
-        if not fcls:
-            return
-        self._foreign_cdef = fcls.cdef
-        if slocal:
-            ffield = fcls.cdef.rfield(scls, None, self.name)
-            if ffield:
-                self._foreign_field = ffield
-                self._foreign_fname = ffield.name
-        else:
-            fkey = self.fdef.foreign_key
-            ffield = fcls.cdef.rfield(scls, fkey, None)
-            if ffield:
-                self._foreign_field = ffield
-                self._foreign_fname = ffield.name
-
     @property
     def is_primary(self) -> bool:
         return self.fdef.primary
@@ -193,3 +163,33 @@ class JField:
     @property
     def ref_name(self) -> str:
         return self.cdef.jconf.ref_name_strategy(self)
+
+    def _resolve_foreign(self: JField) -> None:
+        self._do_resolve_foreign()
+        self._resolved_foreign = True
+
+    def _do_resolve_foreign(self: JField) -> None:
+        from .fdef import FStore
+        if self.fdef.fstore not in [FStore.LOCAL_KEY, FStore.FOREIGN_KEY]:
+            return None
+        scls = self.fdef.cdef.cls
+        slocal = self.fdef.fstore == FStore.LOCAL_KEY
+        fcls = self.foreign_class
+        if self.fdef.ftype == FType.INSTANCE:
+            stype = 'inst'
+        elif self.fdef.ftype == FType.LIST:
+            stype = 'list'
+        if not fcls:
+            return
+        self._foreign_cdef = fcls.cdef
+        if slocal:
+            ffield = fcls.cdef.rfield(scls, None, self.name)
+            if ffield:
+                self._foreign_field = ffield
+                self._foreign_fname = ffield.name
+        else:
+            fkey = self.fdef.foreign_key
+            ffield = fcls.cdef.rfield(scls, fkey, None)
+            if ffield:
+                self._foreign_field = ffield
+                self._foreign_fname = ffield.name
