@@ -105,7 +105,7 @@ class UserConfRoot(UserConf):
             if type(v) is str:
                 result[k] = self._replace_envs_str(v)
             elif isinstance(v, dict):
-                result[k] = self._replace_envs(v)
+                result[k] = self._replace_envs_dict(v)
             elif isinstance(v, list):
                 result[k] = self._replace_envs_list(v)
             else:
@@ -118,7 +118,7 @@ class UserConfRoot(UserConf):
             if type(v) is str:
                 result.append(self._replace_envs_str(v))
             elif isinstance(v, dict):
-                result.append(self._replace_envs(v))
+                result.append(self._replace_envs_dict(v))
             elif isinstance(v, list):
                 result.append(self._replace_envs_list(v))
             else:
