@@ -166,6 +166,29 @@ def tojson(self: JObject,
     return InstanceOfModifier(self.__class__).tojson(ctx)
 
 
+def pick(self: JObject, picks: list[str]) -> None:
+    """
+    Partial picks some items that from JSON Class to return, it will work when
+    convert this JSON Class object to JSON dict.
+    """
+    self.is_partial = True
+    self._partial_picks = picks
+
+
+def omit(self: JObject, omits: list[str]) -> None:
+    """
+    Partial omits some items that from JSON Class to return, it will work when
+    convert this JSON Class object to JSON dict.
+    """
+    self.is_partial = True
+    if hasattr(self, '_partial_picks'):
+        picks = self._partial_picks
+    else:
+        picks = self.cdef._field_names
+    for o in omits:
+        picks.remove(o)
+    self._partial_picks = picks
+
 def validate(self: JObject, all_fields: Optional[bool] = None) -> JObject:
     """Validate the jsonclass object's validity. Raises ValidationException
     on validation failed.
@@ -990,6 +1013,8 @@ def jsonclassify(class_: type) -> type[JObject]:
     class_.set = jsonobject_set
     class_.update = update
     class_.tojson = tojson
+    class_.pick = pick
+    class_.omit = omit
     class_.validate = validate
     class_.is_valid = is_valid
     class_.opby = opby

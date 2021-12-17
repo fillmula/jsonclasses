@@ -53,6 +53,18 @@ class JObject(Protocol):
         """
         ...
 
+    def pick(self: T, picks: list[str]) -> None:
+        """This pick method picks some item from the JSON class object, it
+        will work when the JSON class object use tojson method.
+        """
+        ...
+
+    def omit(self: T, omits: list[str]) -> None:
+        """This omit method omits some item from the JSON class object, it
+        will work when the JSON class object use tojson method.
+        """
+        ...
+
     def validate(self: T, all_fields: Optional[bool]) -> T:
         """This validate method validates the JSON class object. It raises if
         it's not valid.
