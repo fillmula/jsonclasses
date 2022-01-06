@@ -143,7 +143,7 @@ class InstanceOfModifier(Modifier):
                     if fdef.ftype == FType.LIST:
                         if fdef.collection_nullability == Nullability.NONNULL:
                             nonnull_ref_lists.append(field.name)
-                    elif fdef.fstore == FStore.LOCAL_KEY:
+                    if fdef.fstore == FStore.LOCAL_KEY:
                         tsfm = dest.__class__.cdef.jconf.ref_name_strategy
                         refname = tsfm(field)
                         if ctx.val.get(refname) is not None:
