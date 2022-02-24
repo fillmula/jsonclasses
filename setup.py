@@ -7,7 +7,7 @@ README = (Path(__file__).parent / "README.md").read_text()
 
 setup(
     name='jsonclasses',
-    version='3.2.0',
+    version='3.3.0',
     description=('The modern declarative data flow pipeline and data graph '
                  'framework for the AI empowered generation.'),
     long_description=README,
@@ -22,7 +22,8 @@ setup(
     include_package_data=True,
     python_requires='>=3.10',
     install_requires=[
-        'inflection-plus==0.1.0'
+        'inflection-plus==0.1.0',
+        'bcrypt>=3.2.0,<4.0.0'
     ],
     classifiers=[
         "Programming Language :: Python :: 3.10"
