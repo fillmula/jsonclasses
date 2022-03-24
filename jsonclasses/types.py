@@ -1,5 +1,6 @@
 """This modules contains the JSONClasses types modifier."""
 from __future__ import annotations
+from ast import Call
 from typing import Callable, Any, Optional
 from datetime import date, datetime, timedelta, timezone
 from enum import Enum
@@ -839,7 +840,7 @@ class Types:
 
     @property
     def present(self) -> Types:
-        """When validating, field marked with present, can not pass validation
+        """When validating, modifiered with present, can not pass validation
         if it has a None value. This is useful for foreign key fields to do
         required validation.
         """
@@ -862,7 +863,22 @@ class Types:
         return Types(self, PresentWithoutModifier(referring_keys))
 
     def validate(self, validator: Callable | Types) -> Types:
-        """The validate field mark takes a modifier callable as its sole
+        """The validate modifier takes a modifier callable as its sole
+        argument. Use this to define custom field value validations.
+
+        Args:
+            validator (Callable): The validate callable takes up to 2
+            arguments, which are value and context. Returning None or True
+            means the value is valid, while returning a str message or False
+            means validation failed.
+
+        Returns:
+            Types: A new types chained with this modifier.
+        """
+        return Types(self, ValidateModifier(validator))
+
+    def v(self, validator: Callable | Types) -> Types:
+        """The validate modifier takes a modifier callable as its sole
         argument. Use this to define custom field value validations.
 
         Args:
@@ -877,7 +893,7 @@ class Types:
         return Types(self, ValidateModifier(validator))
 
     def vmsg(self, validator: Callable | Types, message: str) -> Types:
-        """The validate field mark takes a modifier callable as its sole
+        """The validate modifier takes a modifier callable as its sole
         argument. Use this to define custom field value validations.
 
         Args:
@@ -893,7 +909,7 @@ class Types:
         return Types(self, ValidateModifier(validator, message))
 
     def compare(self, compare_callable: Callable) -> Types:
-        """The compare field mark takes a modifier callable as its sole
+        """The compare modifier takes a modifier callable as its sole
         argument. If value of compared fields are changed, this modifier is
         called with 2 to 5 arguments.
 
@@ -1108,9 +1124,23 @@ class Types:
         return Types(self, EagerModifier(), AbsModifier())
 
     def transform(self, transformer: Callable | Types) -> Types:
-        """This mark applies transfromer on the value. When value is None, the
-        transformer is not called. This class barely means to transform. Use
-        default mark with a callable to assign calculated default value.
+        """This modifier applies transfromer on the value. When value is None,
+        the transformer is not called. This class barely means to transform.
+        Use default mark with a callable to assign calculated default value.
+
+        Args:
+          transformer (Callable): This transformer function takes one argument
+          which is the current value of the field.
+
+        Returns:
+          Types: A new types chained with this modifier.
+        """
+        return Types(self, EagerModifier(), TransformModifier(transformer))
+
+    def t(self, transformer: Callable | Types) -> Types:
+        """This modifier applies transfromer on the value. When value is None,
+        the transformer is not called. This class barely means to transform.
+        Use default mark with a callable to assign calculated default value.
 
         Args:
           transformer (Callable): This transformer function takes one argument

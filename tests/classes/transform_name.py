@@ -15,4 +15,4 @@ class CTransformName:
 
 @jsonclass
 class TTransformName:
-    age: Optional[int] = types.int.transform(types.add(5).mul(5))
+    age: Optional[int] = types.int.t(types.add(5).mul(5))
