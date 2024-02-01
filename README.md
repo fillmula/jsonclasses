@@ -1,3 +1,8 @@
+DEPRECATED NOTICE!
+===========
+
+This project is **deprecated**. Use [Teo](https://teocloud.io) instead.
+
 🌎 JSONClasses [![Pypi][pypi-image]][pypi-url] [![Python Version][python-image]][python-url] [![License][license-image]][license-url] [![PR Welcome][pr-image]][pr-url]
 ===========
 
